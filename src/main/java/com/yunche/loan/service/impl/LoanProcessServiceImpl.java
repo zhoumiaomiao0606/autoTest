@@ -2208,12 +2208,14 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         List<TaskEntityImpl> insteadPayTaskList = activitiDeploymentMapper.listInsteadPayTaskByOrderId(orderId);
         List<TaskEntityImpl> collectionTaskList = activitiDeploymentMapper.listCollectionTaskByOrderId(orderId);
         List<TaskEntityImpl> legalTaskList = activitiDeploymentMapper.listLegalTaskByOrderId(orderId);
+        List<TaskEntityImpl> bridgeTaskList = activitiDeploymentMapper.listBridgeTaskByOrderId(orderId);
 
         List<Task> runTaskList = Lists.newArrayList();
         runTaskList.addAll(insteadPayTaskList);
         runTaskList.addAll(collectionTaskList);
         runTaskList.addAll(loanProcessTaskList);
         runTaskList.addAll(legalTaskList);
+        runTaskList.addAll(bridgeTaskList);
 
         List<TaskStateVO> taskStateVOS = Lists.newArrayList();
         if (!CollectionUtils.isEmpty(runTaskList)) {
@@ -2506,7 +2508,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
                                 + convertActionText(e.getAction())
                                 + " "
                                 + convertTaskDefKeyText(e.getTaskDefinitionKey())
-                                + getRejectInfo(e.getAction(), e.getInfo());
+                                + getInfo(e.getAction(), e.getInfo());
 
                         historyList.add(history);
                     });
@@ -2547,15 +2549,18 @@ public class LoanProcessServiceImpl implements LoanProcessService {
     }
 
     /**
-     * 打回理由
+     * 打回/弃单 理由
      *
      * @param action
      * @param info
      * @return
      */
-    private String getRejectInfo(Byte action, String info) {
+    private String getInfo(Byte action, String info) {
 
-        if (ACTION_REJECT_MANUAL.equals(action)) {
+        if (ACTION_REJECT_MANUAL.equals(action)
+                || ACTION_REJECT_AUTO.equals(action)
+                || ACTION_CANCEL.equals(action)) {
+
             return "    理由：" + (StringUtils.isBlank(info) ? "" : info);
         }
 

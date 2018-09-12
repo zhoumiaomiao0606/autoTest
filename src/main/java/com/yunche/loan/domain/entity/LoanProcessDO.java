@@ -16,7 +16,7 @@ public class LoanProcessDO implements LoanProcessDO_ {
      */
     private Byte creditApply;
     /**
-     * 贷款信息登记
+     * 视频面签登记
      */
     private Byte loanInfoRecord;
     /**

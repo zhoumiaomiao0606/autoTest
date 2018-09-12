@@ -3,28 +3,29 @@ package com.yunche.loan.web.controller;
 import com.yunche.loan.config.anno.Limiter;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.param.ApprovalParam;
-import com.yunche.loan.service.LoanProcessCollectionService;
+import com.yunche.loan.service.LoanProcessBridgeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 /**
- * [上门催收] -流程
+ * 三方过桥资金流程
  *
  * @author liuzhe
  * @date 2018/8/20
  */
 @CrossOrigin
 @RestController
-@RequestMapping("/api/v1/loanProcess/collection")
-public class LoanProcessCollectionController {
+@RequestMapping("/api/v1/loanProcess/bridge")
+public class LoanProcessBridgeController {
+
 
     @Autowired
-    private LoanProcessCollectionService loanProcessCollectionService;
+    private LoanProcessBridgeService loanProcessBridgeService;
 
 
     /**
-     * [上门催收]流程 -审核
+     * 代偿流程 -审核
      *
      * @param approval
      * @return
@@ -35,20 +36,19 @@ public class LoanProcessCollectionController {
         approval.setCheckPermission(true);
         approval.setNeedLog(true);
         approval.setNeedPush(true);
-        return loanProcessCollectionService.approval(approval);
+        return loanProcessBridgeService.approval(approval);
     }
 
     /**
-     * 开启 [上门催收]流程
+     * 开启 [三方过桥资金]流程
      *
      * @param orderId
-     * @param bankRepayImpRecordId 批次号
      * @return
      */
+    @Limiter
     @GetMapping(value = "/startProcess")
-    public ResultBean<Long> startProcess(@RequestParam(value = "orderId") Long orderId,
-                                         @RequestParam(value = "bankRepayImpRecordId") Long bankRepayImpRecordId) {
-        Long processId = loanProcessCollectionService.startProcess(orderId, bankRepayImpRecordId);
+    public ResultBean<String> startProcess(@RequestParam(value = "orderId") Long orderId) {
+        String processId = loanProcessBridgeService.startProcess(orderId);
         return ResultBean.ofSuccess(processId);
     }
 }

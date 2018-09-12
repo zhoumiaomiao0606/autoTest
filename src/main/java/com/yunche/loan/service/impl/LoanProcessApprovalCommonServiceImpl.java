@@ -522,13 +522,13 @@ public class LoanProcessApprovalCommonServiceImpl implements LoanProcessApproval
     /**
      * 更新本地已执行的任务状态
      *
-     * @param loanProcessDO
+     * @param loanProcessDO_
      * @param taskDefinitionKey
      * @param taskProcessStatus
      * @param approval
      */
     @Override
-    public void updateCurrentTaskProcessStatus(LoanProcessDO loanProcessDO, String taskDefinitionKey,
+    public void updateCurrentTaskProcessStatus(LoanProcessDO_ loanProcessDO_, String taskDefinitionKey,
                                                Byte taskProcessStatus, ApprovalParam approval) {
 
         if (null == taskProcessStatus) {
@@ -540,24 +540,27 @@ public class LoanProcessApprovalCommonServiceImpl implements LoanProcessApproval
         }
 
         // 更新资料流转type
-        doUpdateDataFlowType(loanProcessDO, taskDefinitionKey, taskProcessStatus, approval);
+        doUpdateDataFlowType(loanProcessDO_, taskDefinitionKey, taskProcessStatus, approval);
 
         // 执行更新
-        doUpdateCurrentTaskProcessStatus(loanProcessDO, taskDefinitionKey, taskProcessStatus);
+        doUpdateCurrentTaskProcessStatus(loanProcessDO_, taskDefinitionKey, taskProcessStatus);
     }
 
     /**
      * 更新资料流转type
      *
-     * @param loanProcessDO
+     * @param loanProcessDO_
      * @param taskDefinitionKey
      * @param taskProcessStatus
      * @param approval
      */
-    private void doUpdateDataFlowType(LoanProcessDO loanProcessDO, String taskDefinitionKey, Byte taskProcessStatus, ApprovalParam approval) {
+    private void doUpdateDataFlowType(LoanProcessDO_ loanProcessDO_, String taskDefinitionKey, Byte taskProcessStatus, ApprovalParam approval) {
 
         // 如果是：[资料流转]节点
         if (taskDefinitionKey.startsWith(DATA_FLOW_TASK_KEY_PREFIX)) {
+
+            // convert
+            LoanProcessDO loanProcessDO = (LoanProcessDO) loanProcessDO_;
 
             String[] taskKeyArr = taskDefinitionKey.split(DATA_FLOW_TASK_KEY_REVIEW_SUFFIX);
 
