@@ -405,6 +405,8 @@
             select complex.*,
             complex_log.usertask_credit_apply_gmt_user_name                                    AS creditMan,
             DATE_FORMAT(complex_log.usertask_credit_apply_create_time, '%Y-%m-%d %H:%i:%S' )   AS creditDate,
+            DATE_FORMAT(complex_log.usertask_bank_credit_record_create_time, '%Y-%m-%d %H:%i:%S' )   AS bankCreditDate,
+            DATE_FORMAT(complex_log.usertask_social_credit_record_create_time, '%Y-%m-%d %H:%i:%S' )   AS socialCreditDate,
             DATE_FORMAT(complex_log.usertask_remit_review_create_time,'%Y-%m-%d %H:%i:%S')     AS remitGmtCreate,
             DATE_FORMAT(complex_log.usertask_loan_apply_create_time,'%Y-%m-%d %H:%i:%S')       AS loanGmtCreate,
             DATE_FORMAT(complex_log.usertask_telephone_verify_create_time,'%Y-%m-%d %H:%i:%S') AS telephoneGmtCreate,

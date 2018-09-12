@@ -13,6 +13,7 @@ import com.yunche.loan.domain.vo.GpsDetailTotalVO;
 import com.yunche.loan.mapper.PartnerDOMapper;
 import com.yunche.loan.service.AppLoanOrderService;
 import com.yunche.loan.service.AuxiliaryService;
+import com.yunche.loan.service.MaterialService;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -37,22 +38,28 @@ public class CacheTest extends BaseTest {
 
     @Resource
     AppLoanOrderService appLoanOrderService;
+    @Resource
+    MaterialService materialService;
 
-   // @Test
+    // @Test
 
-    public void getAAA(){
-       File f =new File("/Users/admin/Desktop/有意义.xlsx");
-       System.out.println(f.length());
+    public void getAAA() {
+        File f = new File("/Users/admin/Desktop/有意义.xlsx");
+        System.out.println(f.length());
     }
+
+    //@Test
+    public void doV() {
+        System.out.println("tmp/123".substring(4));
+    }
+
     @Test
-    public void doV(){
-        String s="da\"sdas";
-        System.out.println(s);
-        System.out.println(s.replace("\"",""));
+    public void doY() {
+        materialService.downSupplementFiles2OSS(Long.valueOf("1809051406599576357"), true, Long.valueOf("193"));
     }
 
-  // @Test
-    public void doA1123(){
+    // @Test
+    public void doA1123() {
         try {
             ZhongAnQueryParam zhongAnQueryParam = new ZhongAnQueryParam();
             zhongAnQueryParam.setOrder_id("123");
@@ -67,7 +74,7 @@ public class CacheTest extends BaseTest {
             customers.add(zhongAnCusParam);
             zhongAnQueryParam.setCustomers(customers);
             appLoanOrderService.zhongAnQuery(zhongAnQueryParam);
-           // ZhongAnHttpUtil.queryInfo("易翠","18210819553","362228199206074083","1","2","3333","1","999967");
+            // ZhongAnHttpUtil.queryInfo("易翠","18210819553","362228199206074083","1","2","3333","1","999967");
 
             // ZhongAnHttpUtil.queryInfo("易翠","18210819553","362228199206074083","1","2","3333","1","99993");
 //
@@ -79,61 +86,67 @@ public class CacheTest extends BaseTest {
     public void getToken() throws Exception {
         OpenApiUtil.getToken();
     }
-   // @Test
-    public void refToken(){
+
+    // @Test
+    public void refToken() {
         try {
-            OpenApiUtil.refreshToken("fcd8c2fcc670aa7d86514b97298678fc","af1a423014db1117440aadbcb4998ec4");
+            OpenApiUtil.refreshToken("fcd8c2fcc670aa7d86514b97298678fc", "af1a423014db1117440aadbcb4998ec4");
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-   //@Test
-    public void doA(){
-        auxiliaryService.queryJimi("浙江杭州测试张三团队");
-    }
-   // @Test
-    public void doB(){
-        GpsDetailTotalVO a=auxiliaryService.detail(Long.valueOf("1805041826416031160"));
-        int i=0;
     }
 
     //@Test
-    public void getGpsinfo(){
+    public void doA() {
+        auxiliaryService.queryJimi("浙江杭州测试张三团队");
+    }
+
+    // @Test
+    public void doB() {
+        GpsDetailTotalVO a = auxiliaryService.detail(Long.valueOf("1805041826416031160"));
+        int i = 0;
+    }
+
+    //@Test
+    public void getGpsinfo() {
         try {
-            OpenApiUtil.getGpsInfo(getAccToken(),"浙江鑫宝行");
+            OpenApiUtil.getGpsInfo(getAccToken(), "浙江鑫宝行");
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-   //@Test
-    public void update()  {
-        try{
-            OpenApiUtil.updateGpsInfo(getAccToken(),"868120193961791","","");
-        }catch(Exception e){
+    //@Test
+    public void update() {
+        try {
+            OpenApiUtil.updateGpsInfo(getAccToken(), "868120193961791", "", "");
+        } catch (Exception e) {
             System.out.println(e);
         }
     }
+
     //@Test
-    public void doA1(){
+    public void doA1() {
         PartnerDO partnerDO = partnerDOMapper.queryLeaderNameById(Long.valueOf("1805041826416031160"));
         System.out.println(partnerDO.getGpsAccount());
     }
+
     //@Test
-    public void getchild(){
-        try{
-            String accToken=getAccToken();
+    public void getchild() {
+        try {
+            String accToken = getAccToken();
             System.out.println(accToken);
-            List<Map<String,Object>> list = OpenApiUtil.getChildTarget(accToken);
-            if(list.size() > 0){
-                while("1004".equals((String)list.get(0).get("code"))){
+            List<Map<String, Object>> list = OpenApiUtil.getChildTarget(accToken);
+            if (list.size() > 0) {
+                while ("1004".equals((String) list.get(0).get("code"))) {
                     list = OpenApiUtil.getChildTarget(getAccToken());
                 }
             }
-        }catch(Exception e){
+        } catch (Exception e) {
             System.out.println(e);
         }
     }
+
     //@Test
     public void carLoanGetGpsInfo() throws Exception {
         CarLoanHttpUtil.getGpsInfo("39182250606");
@@ -143,27 +156,30 @@ public class CacheTest extends BaseTest {
     public void carLoanUpdateGpsInfo() throws Exception {
         CarLoanHttpUtil.getGpsStatus("39182250606");
     }
+
     //@Test
-    public void createCus()throws Exception {
-       // CarLoanHttpUtil.modifyCustomer("111111","808","志飞","奥迪");
-        CarLoanHttpUtil.bindGps("39182250606","808");
+    public void createCus() throws Exception {
+        // CarLoanHttpUtil.modifyCustomer("111111","808","志飞","奥迪");
+        CarLoanHttpUtil.bindGps("39182250606", "808");
     }
+
     //@Test
-    public void unBind()throws Exception{
-        CarLoanHttpUtil.unbindGps("39182250606","808");
+    public void unBind() throws Exception {
+        CarLoanHttpUtil.unbindGps("39182250606", "808");
     }
 
 
-   //@Test
-    public void getDetail(){
+    //@Test
+    public void getDetail() {
         try {
-            String accToken=getAccToken();
-            OpenApiUtil.getGpsDetailInfo(accToken,"868120191493086");
+            String accToken = getAccToken();
+            OpenApiUtil.getGpsDetailInfo(accToken, "868120191493086");
         } catch (Exception e) {
             e.printStackTrace();
         }
 
     }
+
     private String getAccToken() throws Exception {
         String[] tokens = tokenCache.getToken();
 
@@ -171,22 +187,22 @@ public class CacheTest extends BaseTest {
         tokens[0]="";
         tokens[1]="";
         tokens[2]="";*/
-        String accToken="";
-        if("".equals(tokens[0])){
+        String accToken = "";
+        if ("".equals(tokens[0])) {
             String[] tokenStr = OpenApiUtil.getToken();
-            if("1006".equals(tokenStr[0])){
-                while(true){
+            if ("1006".equals(tokenStr[0])) {
+                while (true) {
                     String repToken = tokenCache.getToken()[0];
-                    if(!"".equals(repToken)){
+                    if (!"".equals(repToken)) {
                         accToken = repToken;
                         break;
                     }
                 }
-            }else{
+            } else {
                 accToken = tokenStr[0];
                 tokenCache.insertToken(tokenStr[0], tokenStr[1]);
             }
-        }else{
+        } else {
             accToken = tokens[0];
         }
         return accToken;

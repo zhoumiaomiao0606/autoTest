@@ -170,4 +170,6 @@ public class CustomerParam {
 
     private List<FileVO> files = Collections.EMPTY_LIST;
 
+    private String occupation;
+
 }

@@ -23,4 +23,8 @@ public interface MaterialAuditDOMapper {
     List<MaterialDownloadParam> selectDownloadMaterial(@Param(value = "orderId") Long orderId,
                                                        @Param(value = "customerId") Long customerId);
 
+    List<MaterialDownloadParam> selectDownloadMaterialSupId(@Param(value = "orderId") Long orderId,
+                                                       @Param(value = "customerId") Long customerId,
+                                                            @Param(value = "infoSupplementId") Long infoSupplementId);
+
 }

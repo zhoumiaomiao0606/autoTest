@@ -350,6 +350,7 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
                            String diskName = "img"+File.separator+"bank";
                            OSSUnit.deleteFile(ossClient, bucketName, diskName + File.separator, fileName.toString());
                            OSSUnit.uploadObject2OSS(ossClient, file, bucketName, diskName + File.separator);
+                           retPath = retPath.substring(4);
                            filePathString.add(diskName + retPath);
                        }
                     }
@@ -379,6 +380,7 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
                         if(loanCustomerDO !=null &&picPath.size()!=0) {
                             String fileName = loanCustomerDO.getName() + loanCustomerDO.getId()+".jpg";
                             String retPath = ImageUtil.mergeImage2Pic(fileName, picPath);
+
                             File file = new File(retPath);
                             //上传OSS
                             OSSClient ossClient = OSSUnit.getOSSClient();
@@ -386,6 +388,7 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
                             String diskName = "img"+File.separator+"society";
                             OSSUnit.deleteFile(ossClient, bucketName, diskName + File.separator, fileName.toString());
                             OSSUnit.uploadObject2OSS(ossClient, file, bucketName, diskName + File.separator);
+                            retPath = retPath.substring(4);
                             filePathString.add(diskName + retPath);
                         }
                     }

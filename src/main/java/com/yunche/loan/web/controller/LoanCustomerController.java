@@ -103,6 +103,7 @@ public class LoanCustomerController {
      * 客户银行图片导出
      *
      */
+    @Limiter("/api/v1/loanorder/customer/bankpicexport")
     @PostMapping(value = "/bankpicexport")
     public ResultBean bankPicExport(@RequestBody BankAndSocietyExportVO bankAndSocietyExport) {
         return ResultBean.ofSuccess(loanCustomerService.bankPicExport(bankAndSocietyExport.getCusList()));
@@ -112,6 +113,7 @@ public class LoanCustomerController {
      * 客户社会图片导出
      *
      */
+    @Limiter("/api/v1/loanorder/customer/societypicexport")
     @PostMapping(value = "/societypicexport")
     public ResultBean societyPicExport(@RequestBody BankAndSocietyExportVO bankAndSocietyExport) {
         return ResultBean.ofSuccess(loanCustomerService.societyPicExport(bankAndSocietyExport.getCusList()));
