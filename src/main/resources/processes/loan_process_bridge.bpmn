@@ -2,43 +2,53 @@
 <definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.activiti.org/test">
   <process id="loan_process_bridge" name="过桥资金流程" isExecutable="true">
     <startEvent id="startevent1" name="Start"></startEvent>
-    <userTask id="usertask1" name="金投行过桥处理(乙)"></userTask>
-    <sequenceFlow id="flow1" sourceRef="startevent1" targetRef="usertask1"></sequenceFlow>
-    <userTask id="usertask2" name="金投行还款登记(甲)"></userTask>
-    <sequenceFlow id="flow2" sourceRef="usertask1" targetRef="usertask2"></sequenceFlow>
+    <userTask id="usertask_bridge_handle" name="过桥处理(乙)"></userTask>
+    <sequenceFlow id="flow1" sourceRef="startevent1" targetRef="usertask_bridge_handle"></sequenceFlow>
+    <userTask id="usertask_bridge_repay_record" name="还款登记(甲)"></userTask>
+    <sequenceFlow id="flow2" name="提交" sourceRef="usertask_bridge_handle" targetRef="usertask_bridge_repay_record">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1}]]></conditionExpression>
+    </sequenceFlow>
     <exclusiveGateway id="exclusivegateway1" name="Exclusive Gateway"></exclusiveGateway>
-    <sequenceFlow id="flow3" sourceRef="usertask2" targetRef="exclusivegateway1"></sequenceFlow>
-    <userTask id="usertask3" name="金投行息费登记(甲)"></userTask>
-    <sequenceFlow id="flow4" sourceRef="exclusivegateway1" targetRef="usertask3"></sequenceFlow>
-    <userTask id="usertask4" name="金投行还款信息(甲乙)"></userTask>
-    <sequenceFlow id="flow5" sourceRef="exclusivegateway2" targetRef="usertask4"></sequenceFlow>
+    <sequenceFlow id="flow3" sourceRef="usertask_bridge_repay_record" targetRef="exclusivegateway1"></sequenceFlow>
+    <userTask id="usertask_bridge_interest_record" name="息费登记(甲)"></userTask>
+    <userTask id="usertask_bridge_repay_info" name="还款信息(甲乙)"></userTask>
+    <sequenceFlow id="flow5" name="提交" sourceRef="exclusivegateway2" targetRef="usertask_bridge_repay_info">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1}]]></conditionExpression>
+    </sequenceFlow>
     <endEvent id="endevent2" name="End"></endEvent>
-    <sequenceFlow id="flow15" sourceRef="usertask4" targetRef="endevent2"></sequenceFlow>
-    <sequenceFlow id="flow16" name="反审" sourceRef="exclusivegateway1" targetRef="usertask1">
-      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 5}]]></conditionExpression>
+    <sequenceFlow id="flow15" name="提交" sourceRef="usertask_bridge_repay_info" targetRef="endevent2">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow16" name="反审 || 打回" sourceRef="exclusivegateway1" targetRef="usertask_bridge_handle">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 5 || action == 0}]]></conditionExpression>
     </sequenceFlow>
     <exclusiveGateway id="exclusivegateway2" name="Exclusive Gateway"></exclusiveGateway>
-    <sequenceFlow id="flow17" sourceRef="usertask3" targetRef="exclusivegateway2"></sequenceFlow>
-    <sequenceFlow id="flow18" name="反审" sourceRef="exclusivegateway2" targetRef="usertask2"></sequenceFlow>
+    <sequenceFlow id="flow18" name="反审 || 打回" sourceRef="exclusivegateway2" targetRef="usertask_bridge_repay_record">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 5 || action == 0}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow19" name="提交" sourceRef="exclusivegateway1" targetRef="usertask_bridge_interest_record">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow20" sourceRef="usertask_bridge_interest_record" targetRef="exclusivegateway2"></sequenceFlow>
   </process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_loan_process_bridge">
     <bpmndi:BPMNPlane bpmnElement="loan_process_bridge" id="BPMNPlane_loan_process_bridge">
       <bpmndi:BPMNShape bpmnElement="startevent1" id="BPMNShape_startevent1">
         <omgdc:Bounds height="35.0" width="35.0" x="300.0" y="270.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="usertask1" id="BPMNShape_usertask1">
+      <bpmndi:BPMNShape bpmnElement="usertask_bridge_handle" id="BPMNShape_usertask_bridge_handle">
         <omgdc:Bounds height="55.0" width="105.0" x="420.0" y="260.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="usertask2" id="BPMNShape_usertask2">
+      <bpmndi:BPMNShape bpmnElement="usertask_bridge_repay_record" id="BPMNShape_usertask_bridge_repay_record">
         <omgdc:Bounds height="55.0" width="105.0" x="650.0" y="260.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="exclusivegateway1" id="BPMNShape_exclusivegateway1">
         <omgdc:Bounds height="40.0" width="40.0" x="905.0" y="267.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="usertask3" id="BPMNShape_usertask3">
+      <bpmndi:BPMNShape bpmnElement="usertask_bridge_interest_record" id="BPMNShape_usertask_bridge_interest_record">
         <omgdc:Bounds height="55.0" width="105.0" x="1080.0" y="260.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="usertask4" id="BPMNShape_usertask4">
+      <bpmndi:BPMNShape bpmnElement="usertask_bridge_repay_info" id="BPMNShape_usertask_bridge_repay_info">
         <omgdc:Bounds height="55.0" width="105.0" x="1506.0" y="263.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="endevent2" id="BPMNShape_endevent2">
@@ -54,22 +64,27 @@
       <bpmndi:BPMNEdge bpmnElement="flow2" id="BPMNEdge_flow2">
         <omgdi:waypoint x="525.0" y="287.0"></omgdi:waypoint>
         <omgdi:waypoint x="650.0" y="287.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="16.0" width="22.0" x="525.0" y="287.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="flow3" id="BPMNEdge_flow3">
         <omgdi:waypoint x="755.0" y="287.0"></omgdi:waypoint>
         <omgdi:waypoint x="905.0" y="287.0"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge bpmnElement="flow4" id="BPMNEdge_flow4">
-        <omgdi:waypoint x="945.0" y="287.0"></omgdi:waypoint>
-        <omgdi:waypoint x="1080.0" y="287.0"></omgdi:waypoint>
-      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="flow5" id="BPMNEdge_flow5">
         <omgdi:waypoint x="1370.0" y="290.0"></omgdi:waypoint>
         <omgdi:waypoint x="1506.0" y="290.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="16.0" width="22.0" x="1370.0" y="290.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="flow15" id="BPMNEdge_flow15">
         <omgdi:waypoint x="1611.0" y="290.0"></omgdi:waypoint>
         <omgdi:waypoint x="1730.0" y="290.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="16.0" width="22.0" x="1611.0" y="290.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="flow16" id="BPMNEdge_flow16">
         <omgdi:waypoint x="925.0" y="267.0"></omgdi:waypoint>
@@ -80,18 +95,25 @@
           <omgdc:Bounds height="16.0" width="100.0" x="671.0" y="191.0"></omgdc:Bounds>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge bpmnElement="flow17" id="BPMNEdge_flow17">
-        <omgdi:waypoint x="1185.0" y="287.0"></omgdi:waypoint>
-        <omgdi:waypoint x="1330.0" y="290.0"></omgdi:waypoint>
-      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="flow18" id="BPMNEdge_flow18">
         <omgdi:waypoint x="1350.0" y="310.0"></omgdi:waypoint>
         <omgdi:waypoint x="1348.0" y="380.0"></omgdi:waypoint>
-        <omgdi:waypoint x="701.0" y="380.0"></omgdi:waypoint>
+        <omgdi:waypoint x="702.0" y="380.0"></omgdi:waypoint>
         <omgdi:waypoint x="702.0" y="315.0"></omgdi:waypoint>
         <bpmndi:BPMNLabel>
           <omgdc:Bounds height="16.0" width="100.0" x="1001.0" y="370.0"></omgdc:Bounds>
         </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow19" id="BPMNEdge_flow19">
+        <omgdi:waypoint x="945.0" y="287.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1080.0" y="287.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="16.0" width="22.0" x="945.0" y="287.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow20" id="BPMNEdge_flow20">
+        <omgdi:waypoint x="1185.0" y="287.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1330.0" y="290.0"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>

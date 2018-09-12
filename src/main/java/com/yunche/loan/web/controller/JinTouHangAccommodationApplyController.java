@@ -90,4 +90,9 @@ public class JinTouHangAccommodationApplyController {
     }
     //--------------------------金投行还款登记--------------------------
 
+
+    @GetMapping("/detail")
+    ResultBean detail(@RequestParam("orderId") Long orderId){
+        return  accommodationApplyService.detail(orderId);
+    }
 }

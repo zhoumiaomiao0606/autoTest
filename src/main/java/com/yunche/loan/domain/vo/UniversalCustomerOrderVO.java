@@ -19,4 +19,9 @@ public class UniversalCustomerOrderVO {
     private String partner_name;
     private String bank_name;
     private String order_gmt_create;
+
+    // 打款金额
+    private String remit_amount;
+    // 打款时间
+    private String remit_time;
 }

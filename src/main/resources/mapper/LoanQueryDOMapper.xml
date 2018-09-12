@@ -223,30 +223,59 @@
     </select>
 
     <select id="selectUniversalRefundCustomerOrder" resultType="com.yunche.loan.domain.vo.UniversalCustomerOrderVO">
-        select
-        o.id AS order_id,
-        c.name AS customer_name,
-        c.id_card AS customer_id_card
-        from loan_order o
-        left join loan_customer c on c.id = o.loan_customer_id
-        left join loan_process p on o.id = p.order_id
-        left join loan_base_info b on o.loan_base_info_id = b.id
-        where
+        SELECT
+                    o.id                         AS  order_id,
+                    c.name                       AS  customer_name,
+                    c.id_card                    AS  customer_id_card,
+                    c.name                       AS  customer_name,
+                    c.mobile                     AS  customer_mobile,
+                    e.id                         AS  salesman_id,
+                    e.name                       AS  salesman_name,
+                    d.id                         AS  department_id,
+                    d.name                       AS  department_name,
+                    p.id                         AS  partner_id,
+                    p.name                       AS  partner_name,
+                    b.bank                       AS  bank_name,
+                    r.remit_amount               AS  remit_amount,
+                    DATE_FORMAT(r.remit_time, '%Y-%m-%d %H:%i:%S')
+                                                 AS  remit_time
 
-        p.remit_review = 1
+        FROM        loan_order          o
+        LEFT JOIN   loan_process        pc       ON  o.id = pc.order_id
+        LEFT JOIN   loan_customer       c        ON  c.id = o.loan_customer_id
+        LEFT JOIN   loan_base_info      b        ON  o.loan_base_info_id = b.id
+        LEFT JOIN   employee            e        ON  e.id = b.salesman_id
+        LEFT JOIN   partner             p        ON  p.id = b.partner_id
+        LEFT JOIN   department          d        ON  d.id = p.department_id
+        LEFT JOIN   remit_details       r        ON  r.id = o.remit_details_id
 
-        <if test="name!=null">
-            and c.name like concat(concat('%',#{name}),'%')
-        </if>
+        WHERE
 
-        AND CASE WHEN #{maxGroupLevel}  = 0 THEN false
-        when  #{maxGroupLevel} = 1 then
-        b.salesman_id in
-        <foreach item="item" index="index" collection="juniorIds" open="(" separator="," close=")">
-            #{item}
-        </foreach>
-        else true end
+            <!--订单正常进行中-->
+            pc.order_status = 1
 
+            <!--打款确认-->
+            AND pc.remit_review = 1
+
+            <if test=" name != null and name != '' ">
+                AND c.name LIKE CONCAT('%', #{name}, '%')
+            </if>
+
+            AND
+
+                CASE
+
+                    WHEN #{maxGroupLevel}  = 0
+                        THEN FALSE
+                    WHEN  #{maxGroupLevel} = 1
+                        THEN
+                        b.salesman_id IN
+                        <foreach item="item" collection="juniorIds" open="(" separator="," close=")">
+                            #{item}
+                        </foreach>
+                    ELSE
+                        TRUE
+                END
     </select>
 
 

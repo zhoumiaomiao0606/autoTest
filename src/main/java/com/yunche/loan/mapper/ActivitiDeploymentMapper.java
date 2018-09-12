@@ -136,4 +136,16 @@ public interface ActivitiDeploymentMapper {
     @Select("SELECT * FROM `act_ru_task` WHERE `PROC_INST_ID_` IN " +
             " ( SELECT `process_inst_id` FROM `loan_process_legal` WHERE `order_id` = #{orderId} ) ")
     List<TaskEntityImpl> listLegalTaskByOrderId(Long orderId);
+
+
+    /**
+     * 执行中的-[第三方过桥资金]列表
+     *
+     * @param orderId
+     * @return
+     */
+    @ResultMap("taskResultMap")
+    @Select("SELECT * FROM `act_ru_task` WHERE `PROC_INST_ID_` IN " +
+            " ( SELECT `process_inst_id` FROM `loan_process_bridge` WHERE `order_id` = #{orderId} ) ")
+    List<TaskEntityImpl> listBridgeTaskByOrderId(Long orderId);
 }

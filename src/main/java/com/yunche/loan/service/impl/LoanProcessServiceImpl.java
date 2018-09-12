@@ -133,6 +133,9 @@ public class LoanProcessServiceImpl implements LoanProcessService {
     private MaterialAuditDOMapper materialAuditDOMapper;
 
     @Autowired
+    private RemitDetailsDOMapper remitDetailsDOMapper;
+
+    @Autowired
     private RuntimeService runtimeService;
 
     @Autowired
@@ -273,6 +276,9 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
         // 异步推送
         loanProcessApprovalCommonService.asyncPush(loanOrderDO, approval);
+
+        // 执行当前节点-附带任务
+        doCurrentNodeAttachTask(approval, loanOrderDO);
 
         return ResultBean.ofSuccess(null, "[" + LoanProcessEnum.getNameByCode(approval.getOriginalTaskDefinitionKey()) + "]任务执行成功");
     }
@@ -2208,12 +2214,14 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         List<TaskEntityImpl> insteadPayTaskList = activitiDeploymentMapper.listInsteadPayTaskByOrderId(orderId);
         List<TaskEntityImpl> collectionTaskList = activitiDeploymentMapper.listCollectionTaskByOrderId(orderId);
         List<TaskEntityImpl> legalTaskList = activitiDeploymentMapper.listLegalTaskByOrderId(orderId);
+        List<TaskEntityImpl> bridgeTaskList = activitiDeploymentMapper.listBridgeTaskByOrderId(orderId);
 
         List<Task> runTaskList = Lists.newArrayList();
         runTaskList.addAll(insteadPayTaskList);
         runTaskList.addAll(collectionTaskList);
         runTaskList.addAll(loanProcessTaskList);
         runTaskList.addAll(legalTaskList);
+        runTaskList.addAll(bridgeTaskList);
 
         List<TaskStateVO> taskStateVOS = Lists.newArrayList();
         if (!CollectionUtils.isEmpty(runTaskList)) {
@@ -2506,7 +2514,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
                                 + convertActionText(e.getAction())
                                 + " "
                                 + convertTaskDefKeyText(e.getTaskDefinitionKey())
-                                + getRejectInfo(e.getAction(), e.getInfo());
+                                + getInfo(e.getAction(), e.getInfo());
 
                         historyList.add(history);
                     });
@@ -2547,15 +2555,18 @@ public class LoanProcessServiceImpl implements LoanProcessService {
     }
 
     /**
-     * 打回理由
+     * 打回/弃单 理由
      *
      * @param action
      * @param info
      * @return
      */
-    private String getRejectInfo(Byte action, String info) {
+    private String getInfo(Byte action, String info) {
 
-        if (ACTION_REJECT_MANUAL.equals(action)) {
+        if (ACTION_REJECT_MANUAL.equals(action)
+                || ACTION_REJECT_AUTO.equals(action)
+                || ACTION_CANCEL.equals(action)) {
+
             return "    理由：" + (StringUtils.isBlank(info) ? "" : info);
         }
 
@@ -3146,4 +3157,35 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         runtimeService.deleteProcessInstance(processInstanceId, "弃单");
     }
 
+    /**
+     * 执行当前节点-附带任务
+     *
+     * @param approval
+     * @param loanOrderDO
+     */
+    private void doCurrentNodeAttachTask(ApprovalParam approval, LoanOrderDO loanOrderDO) {
+
+        // 附带任务-[打款确认]
+        doRemitReviewAttachTask(approval, loanOrderDO.getRemitDetailsId());
+    }
+
+    /**
+     * 附带任务-[打款确认]
+     *
+     * @param approval
+     * @param remitDetailsId
+     */
+    private void doRemitReviewAttachTask(ApprovalParam approval, Long remitDetailsId) {
+
+        if (REMIT_REVIEW.getCode().equals(approval.getTaskDefinitionKey()) && ACTION_PASS.equals(approval.getAction())) {
+
+            RemitDetailsDO remitDetailsDO = new RemitDetailsDO();
+
+            remitDetailsDO.setId(remitDetailsId);
+            remitDetailsDO.setRemit_time(new Date());
+
+            int count = remitDetailsDOMapper.updateByPrimaryKeySelective(remitDetailsDO);
+            Preconditions.checkArgument(count > 0, "编辑失败");
+        }
+    }
 }
