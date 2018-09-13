@@ -13,6 +13,7 @@ import com.yunche.loan.domain.entity.EmployeeDO;
 import com.yunche.loan.domain.entity.LoanOrderDO;
 import com.yunche.loan.mapper.BankInterfaceSerialDOMapper;
 import com.yunche.loan.mapper.LoanOrderDOMapper;
+import com.yunche.loan.mapper.LoanProcessLogDOMapper;
 import com.yunche.loan.service.LoanQueryService;
 import feign.*;
 import feign.codec.DecodeException;
@@ -20,6 +21,7 @@ import feign.codec.Decoder;
 import feign.codec.ErrorDecoder;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.util.CollectionUtils;
 
@@ -50,6 +52,9 @@ public class FeignConfig {
     Logger.Level feignLoggerLevel() {
         return Logger.Level.FULL;
     }
+
+    @Autowired
+    LoanProcessLogDOMapper loanProcessLogDOMapper;
 
     @Bean
     public RequestInterceptor basicAuthRequestInterceptor() {
@@ -151,6 +156,8 @@ public class FeignConfig {
 
                         logger.info("6666  ------  DO : {}", JSON.toJSONString(DO));
 
+
+//                        loanProcessLogDOMapper.
                         DO.setOperatePersonnel(loginUser.getName());
 
                         logger.info("77777  ------  DO : {}", JSON.toJSONString(DO));

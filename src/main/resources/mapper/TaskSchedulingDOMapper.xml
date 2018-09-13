@@ -778,7 +778,11 @@
                           bridge.bridge_repay_record             AS taskStatus
                       </when>
                       <when test="taskDefinitionKey == 'usertask_bridge_interest_record'">
-                          bridge.bridge_interest_record             AS taskStatus
+                          bridge.bridge_interest_record             AS taskStatus,
+                          third_party.interest                           AS bridgeInterest,
+                          third_party.poundage                           AS bridgePoundage
+
+
                       </when>
                       <when test="taskDefinitionKey == 'usertask_bridge_handle'">
                           third_party.lend_date                AS bridgeLendDate,
@@ -786,6 +790,7 @@
                       </when>
                       <when test="taskDefinitionKey == 'usertask_bridge_repay_info'">
                           third_party.repay_remark                AS bridgeRepayRemark,
+                          third_party.repay_type                  AS bridgeRepayType,
                           bridge.bridge_repay_info             AS taskStatus
                       </when>
                       <otherwise>

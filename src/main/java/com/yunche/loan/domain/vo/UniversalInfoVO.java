@@ -114,6 +114,7 @@ public class UniversalInfoVO {
     private String customer_ctelzone;
     private String remit_application_date;
 
+    private String bridge_lend_date;
 
 
 }
