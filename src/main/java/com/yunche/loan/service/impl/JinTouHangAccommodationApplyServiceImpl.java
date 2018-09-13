@@ -12,10 +12,7 @@ import com.yunche.loan.domain.param.AccommodationApplyParam;
 import com.yunche.loan.domain.param.ApprovalParam;
 import com.yunche.loan.domain.param.ExportApplyLoanPushParam;
 import com.yunche.loan.domain.vo.*;
-import com.yunche.loan.mapper.LoanOrderDOMapper;
-import com.yunche.loan.mapper.LoanQueryDOMapper;
-import com.yunche.loan.mapper.LoanStatementDOMapper;
-import com.yunche.loan.mapper.ThirdPartyFundBusinessDOMapper;
+import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.JinTouHangAccommodationApplyService;
 import com.yunche.loan.service.LoanProcessService;
 import com.yunche.loan.service.LoanQueryService;
@@ -60,6 +57,9 @@ public class JinTouHangAccommodationApplyServiceImpl implements JinTouHangAccomm
 
     @Autowired
     private LoanStatementDOMapper loanStatementDOMapper;
+
+    @Autowired
+    private BankLendRecordDOMapper bankLendRecordDOMapper;
 
 
     /**
@@ -168,6 +168,8 @@ public class JinTouHangAccommodationApplyServiceImpl implements JinTouHangAccomm
 
     @Override
     public ResultBean detail(Long orderId) {
+
+
         Preconditions.checkNotNull(orderId,"参数有误");
 
         LoanOrderDO orderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
@@ -183,7 +185,7 @@ public class JinTouHangAccommodationApplyServiceImpl implements JinTouHangAccomm
         UniversalInfoVO universalInfoVO = loanQueryDOMapper.selectUniversalInfo(orderId);
         UniversalCarInfoVO carInfoVO = loanQueryDOMapper.selectUniversalCarInfo(orderId);
         FinancialSchemeVO financialSchemeVO = loanQueryDOMapper.selectFinancialScheme(orderId);
-
+       
 
         recombinationVO.setInfo(universalInfoVO);
         recombinationVO.setCar(carInfoVO);
