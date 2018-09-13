@@ -609,6 +609,7 @@ public class POIUtil {
             OSSUnit.uploadObject2OSS(ossClient, file, bucketName, diskName + File.separator);
 
         } catch (Exception e) {
+            logger.error("输出excel异常",e);
             Preconditions.checkArgument(false, e.getMessage());
         } finally {
             try {
