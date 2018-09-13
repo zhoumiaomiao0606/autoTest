@@ -1260,7 +1260,6 @@
           pcustomer.id  AS  pCustomerId,
           pcustomer.`name` AS pName,
           pcustomer.name_pinyin AS  pyName,
-        --1.男  2.女
         CASE
         WHEN pcustomer.sex = 1 THEN
         '男'
@@ -1272,8 +1271,7 @@
           pcustomer.birth AS pBirth,
           pcustomer.id_card AS pIdCard,
           pcustomer.identity_validity AS pIdentityValidity,
-        <!--国籍 默认中国-->
-        --0.未婚 1.已婚
+
         CASE
         WHEN pcustomer.marry = 0 THEN
         '未婚'
@@ -1282,7 +1280,7 @@
         ELSE
         NULL END
         AS pMarry,
-        --学历：1-高中及以下;2-专科;3-本科;4-硕士;5-博士;
+
         CASE
         WHEN pcustomer.education = 1 THEN
         '高中及以下'
@@ -1301,7 +1299,7 @@
           pcustomer.address AS pAddress,
           pcustomer.mobile AS pHomeMobile,
           pcustomer.postcode AS pPostcode ,
-        --房产性质：1-自购商品房;2-分期付款购房;3-自建房;4-房改房;5-居住父母家;6-居住亲朋家;7-单位集体宿舍;8-租房;9-其他;
+
         CASE
         WHEN pcustomer.house_feature = 1 THEN
         '自购商品房'
@@ -1337,7 +1335,7 @@
           loan_financial_plan.loan_amount AS pLoanAmount,
           loan_financial_plan.loan_time AS pLoanTime,
           pcustomer.month_income AS pMonthIncome,
-          <!--个人总资产  需计算-->
+
           loan_car_info.vehicle_property AS pVehicleProperty,
           loan_car_info.cooperation_dealer AS pCooperationDealer,
           car_brand.`name` AS brandName,
@@ -1350,8 +1348,7 @@
           vehicle_information.vehicle_identification_number AS vehicleIdentificationNumber,
           vehicle_information.engine_number AS engineNumber,
           vehicle_information.apply_license_plate_area AS applyLicensePlateArea
-          <!--汽车权属人姓名-->
-        <!--申请人与抵押物权属人关系-->
+
 
           FROM
           loan_order principal_orders
@@ -1368,7 +1365,7 @@
 
         SELECT
         name AS familyLinkManName,
-        --与主贷人关系：0-本人;1-配偶;2-父母;3-子女;4-兄弟姐妹;5-亲戚;6-朋友;7-同学;8-同事;9-其它;
+
         CASE
         WHEN cust_relation = 0 THEN
         '本人'
@@ -1403,7 +1400,7 @@
         SELECT
         name AS linkManName,
         id_card AS linkManIdCard,
-        --性别: 1-男;2-女;
+
         CASE
          WHEN sex = 1 THEN
         '男'
@@ -1413,7 +1410,7 @@
          NULL END
          AS linkManSex,
         identity_validity AS linkManIdentityValidity,
-        --与主贷人关系：0-本人;1-配偶;2-父母;3-子女;4-兄弟姐妹;5-亲戚;6-朋友;7-同学;8-同事;9-其它;
+
            CASE
         WHEN cust_relation = 0 THEN
         '本人'
