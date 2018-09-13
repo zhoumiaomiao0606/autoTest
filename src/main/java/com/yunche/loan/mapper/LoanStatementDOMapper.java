@@ -32,11 +32,11 @@ public interface LoanStatementDOMapper {
     List<FamilyLinkManVO> exportFamilyLinkManList(Long pCustomerId);
 
     List<GuarantorLinkManVO> exportGuarantorLinkManList(Long pCustomerId);
+
     List<ExportApplyLoanPushVO> exportApplyLoanPush(ExportApplyLoanPushParam param);
 
     List<JinTouHangRepayInfoVO> exportJinTouHangRepayInfo(ExportApplyLoanPushParam param);
 
     List<JinTouHangInterestRegisterVO> exportJinTouHangInterestRegister(ExportApplyLoanPushParam param);
 
-    List<ExportCustomerInfoVO> exportCustomerInfo();
 }
