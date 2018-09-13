@@ -11,18 +11,11 @@ import com.yunche.loan.mapper.EmployeeDOMapper;
 import com.yunche.loan.mapper.FlowOperationMsgDOMapper;
 import com.yunche.loan.service.JpushService;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.ibatis.annotations.Param;
-import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.validation.annotation.Validated;
 
 import javax.annotation.Resource;
-import javax.validation.Valid;
-import java.sql.Timestamp;
-import java.util.Date;
 import java.util.List;
-
 
 @Service
 @Transactional
@@ -33,6 +26,7 @@ public class JpushServiceImpl implements JpushService {
 
     @Resource
     private EmployeeDOMapper employeeDOMapper;
+
 
     @Override
     public void push(FlowOperationMsgDO DO) {
