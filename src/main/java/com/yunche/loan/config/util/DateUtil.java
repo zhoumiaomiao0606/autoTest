@@ -130,13 +130,13 @@ public class DateUtil {
 
 
     /**
-     * 相隔月数  date1 >date2(不满一个月算一个月)
+     * 相隔月数  date1 >date2(不满一个月算一个月)(台州日期计算专用)
      *
      * @param date1
      * @param date2
      * @return
      */
-    public static Integer getdiffMonth1(Date date1, Date date2) {
+    public static Integer getdiffMonth_TAIZHOU(Date date1, Date date2) {
 
         if (null == date1 || null == date2) {
             return null;
@@ -156,6 +156,38 @@ public class DateUtil {
             if (cal1.get(Calendar.DAY_OF_MONTH) - cal2.get(Calendar.DAY_OF_MONTH) > 0) {
                 diffMonth += 1;
             }
+            return diffMonth;
+
+        } catch (Exception e) {
+            throw new BizException("日期格式错误");
+        }
+
+    }
+
+    /**
+     * (城站日期计算专用) 相隔月数  date1 >date2(不满一个月算0个月)
+     *
+     * @param date1
+     * @param date2
+     * @return
+     */
+    public static Integer getdiffMonth_CHENGZHAN(Date date1, Date date2) {
+
+        if (null == date1 || null == date2) {
+            return null;
+        }
+
+        try {
+
+            Calendar cal1 = Calendar.getInstance();
+            Calendar cal2 = Calendar.getInstance();
+
+            cal1.setTime(date1);
+            cal2.setTime(date2);
+
+            int diffMonth = (cal1.get(Calendar.YEAR) - cal2.get(Calendar.YEAR)) * 12 +
+                    (cal1.get(Calendar.MONTH) - cal2.get(Calendar.MONTH));
+
             return diffMonth;
 
         } catch (Exception e) {

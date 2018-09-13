@@ -7,6 +7,7 @@ import com.yunche.loan.domain.param.BankSaveParam;
 import com.yunche.loan.domain.query.BankQuery;
 import com.yunche.loan.domain.vo.BankReturnVO;
 import com.yunche.loan.domain.vo.BankVO;
+import com.yunche.loan.domain.vo.BaseVO;
 import com.yunche.loan.domain.vo.CascadeAreaVO;
 import com.yunche.loan.service.BankService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,23 +29,23 @@ public class BankController {
     private BankService bankService;
 
 
-//    /**
-//     * 获取银行列表
-//     *
-//     * @return
-//     */
-//    @GetMapping(value = "/list")
-//    public ResultBean<List<String>> listAll() {
-//        return ResultBean.ofSuccess(BANK_LIST);
-//    }
-
     /**
-     * 获取银行列表
+     * 获取银行名称列表     List<name>
      *
      * @return
      */
     @GetMapping(value = "/list")
-    public ResultBean<List<String>> listAll() {
+    public ResultBean<List<String>> list() {
+        return bankService.list();
+    }
+
+    /**
+     * 获取银行列表        List<id-name>
+     *
+     * @return
+     */
+    @GetMapping(value = "/listAll")
+    public ResultBean<List<BaseVO>> listAll() {
         return bankService.listAll();
     }
 
@@ -69,13 +70,14 @@ public class BankController {
     public ResultBean<List<BankDO>> lists() {
         return ResultBean.ofSuccess(bankService.lists());
     }
+
     /**
-    * @Author: ZhongMingxiao
-    * @Param:
-    * @return:
-    * @Date:
-    * @Description:  根据bankName 查询银行关联省市名
-    */
+     * @Author: ZhongMingxiao
+     * @Param:
+     * @return:
+     * @Date:
+     * @Description: 根据bankName 查询银行关联省市名
+     */
     @GetMapping(value = "/areaListByBankName")
     public ResultBean<List<CascadeAreaVO>> areaListByBankName(@RequestParam String bankName) {
         return ResultBean.ofSuccess(bankService.areaListByBankName(bankName));

@@ -152,9 +152,30 @@ public class BankServiceImpl implements BankService {
     }
 
     @Override
-    public ResultBean<List<String>> listAll() {
+    public ResultBean<List<String>> list() {
         List<String> allBankName = bankCache.getAllBankName();
         return ResultBean.ofSuccess(allBankName);
+    }
+
+    @Override
+    public ResultBean<List<BaseVO>> listAll() {
+
+        List<BaseVO> baseVOS = Lists.newArrayList();
+
+        Map<String, String> idNameMap = bankCache.getIdNameMap();
+        if (!CollectionUtils.isEmpty(idNameMap)) {
+
+            idNameMap.forEach((k, v) -> {
+
+                BaseVO baseVO = new BaseVO();
+                baseVO.setId(Long.valueOf(k));
+                baseVO.setName(v);
+
+                baseVOS.add(baseVO);
+            });
+        }
+
+        return ResultBean.ofSuccess(baseVOS);
     }
 
     @Override

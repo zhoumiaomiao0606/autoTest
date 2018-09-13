@@ -473,10 +473,17 @@
     </sequenceFlow>
     <userTask id="usertask_video_review" name="视频审核"></userTask>
     <endEvent id="endevent43" name="End"></endEvent>
-    <sequenceFlow id="flow296" name="提交" sourceRef="usertask_video_review" targetRef="endevent43">
+    <sequenceFlow id="flow296" name="提交" sourceRef="exclusivegateway44" targetRef="endevent43">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1}]]></conditionExpression>
     </sequenceFlow>
     <sequenceFlow id="flow297" sourceRef="parallelgateway3" targetRef="usertask_video_review"></sequenceFlow>
+    <userTask id="filter_usertask_video_review" name="拦截"></userTask>
+    <sequenceFlow id="flow298" sourceRef="usertask_video_review" targetRef="filter_usertask_video_review"></sequenceFlow>
+    <exclusiveGateway id="exclusivegateway44" name="Exclusive Gateway"></exclusiveGateway>
+    <sequenceFlow id="flow299" sourceRef="filter_usertask_video_review" targetRef="exclusivegateway44"></sequenceFlow>
+    <sequenceFlow id="flow300" name="反审 || 自动打回" sourceRef="exclusivegateway44" targetRef="usertask_video_review">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action  == 5 || action == -1}]]></conditionExpression>
+    </sequenceFlow>
   </process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_loan_process">
     <bpmndi:BPMNPlane bpmnElement="loan_process" id="BPMNPlane_loan_process">
@@ -850,7 +857,13 @@
         <omgdc:Bounds height="55.0" width="105.0" x="3732.0" y="2360.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="endevent43" id="BPMNShape_endevent43">
-        <omgdc:Bounds height="35.0" width="35.0" x="3964.0" y="2370.0"></omgdc:Bounds>
+        <omgdc:Bounds height="35.0" width="35.0" x="4298.0" y="2370.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="filter_usertask_video_review" id="BPMNShape_filter_usertask_video_review">
+        <omgdc:Bounds height="55.0" width="105.0" x="3946.0" y="2360.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway44" id="BPMNShape_exclusivegateway44">
+        <omgdc:Bounds height="40.0" width="40.0" x="4187.0" y="2367.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge bpmnElement="flow1" id="BPMNEdge_flow1">
         <omgdi:waypoint x="333.0" y="1086.0"></omgdi:waypoint>
@@ -1765,16 +1778,33 @@
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="flow296" id="BPMNEdge_flow296">
-        <omgdi:waypoint x="3837.0" y="2387.0"></omgdi:waypoint>
-        <omgdi:waypoint x="3964.0" y="2387.0"></omgdi:waypoint>
+        <omgdi:waypoint x="4227.0" y="2387.0"></omgdi:waypoint>
+        <omgdi:waypoint x="4298.0" y="2387.0"></omgdi:waypoint>
         <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="16.0" width="100.0" x="3837.0" y="2387.0"></omgdc:Bounds>
+          <omgdc:Bounds height="16.0" width="22.0" x="4227.0" y="2387.0"></omgdc:Bounds>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="flow297" id="BPMNEdge_flow297">
         <omgdi:waypoint x="3694.0" y="1096.0"></omgdi:waypoint>
         <omgdi:waypoint x="3692.0" y="2381.0"></omgdi:waypoint>
         <omgdi:waypoint x="3732.0" y="2387.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow298" id="BPMNEdge_flow298">
+        <omgdi:waypoint x="3837.0" y="2387.0"></omgdi:waypoint>
+        <omgdi:waypoint x="3946.0" y="2387.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow299" id="BPMNEdge_flow299">
+        <omgdi:waypoint x="4051.0" y="2387.0"></omgdi:waypoint>
+        <omgdi:waypoint x="4187.0" y="2387.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow300" id="BPMNEdge_flow300">
+        <omgdi:waypoint x="4207.0" y="2367.0"></omgdi:waypoint>
+        <omgdi:waypoint x="4204.0" y="2316.0"></omgdi:waypoint>
+        <omgdi:waypoint x="3781.0" y="2316.0"></omgdi:waypoint>
+        <omgdi:waypoint x="3784.0" y="2360.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="16.0" width="100.0" x="3962.0" y="2301.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>

@@ -184,21 +184,22 @@ public class VehicleInformationServiceImpl implements VehicleInformationService 
      * @return
      */
     private  Integer assessUseYear(Long orderId,Date transferOwnershipDate,Date registerDate){
-
+        Integer month =null;
         if(transferOwnershipDate==null || registerDate==null){
             return null;
         }
-        Integer month = DateUtil.getdiffMonth1(transferOwnershipDate,registerDate);
+
         LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
         LoanBaseInfoDO loanBaseInfoDO = loanBaseInfoDOMapper.selectByPrimaryKey(loanOrderDO.getLoanBaseInfoId());
         Long bankId = bankDOMapper.selectIdByName(loanBaseInfoDO.getBank());
         Preconditions.checkNotNull(bankId, "贷款银行不存在");
-        if (null != month) {
-            if(IDict.K_BANK.ICBC_TZLQ.equals(String.valueOf(bankId))){
-                month = month>60?60:month;
-            }
-        }
 
+        if(IDict.K_BANK.ICBC_TZLQ.equals(String.valueOf(bankId))){
+            DateUtil.getdiffMonth_TAIZHOU(transferOwnershipDate,registerDate);
+            month = month>60?60:month;
+        }else if(IDict.K_BANK.ICBC_HZCZ.equals(String.valueOf(bankId))){
+            month = DateUtil.getdiffMonth_CHENGZHAN(transferOwnershipDate,registerDate);
+        }
         return month;
     }
 }

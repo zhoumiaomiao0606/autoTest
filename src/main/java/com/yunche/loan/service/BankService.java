@@ -7,6 +7,7 @@ import com.yunche.loan.domain.param.BankSaveParam;
 import com.yunche.loan.domain.query.BankQuery;
 import com.yunche.loan.domain.vo.BankReturnVO;
 import com.yunche.loan.domain.vo.BankVO;
+import com.yunche.loan.domain.vo.BaseVO;
 import com.yunche.loan.domain.vo.CascadeAreaVO;
 
 import java.util.List;
@@ -16,7 +17,10 @@ import java.util.List;
  * @date 2018/5/15
  */
 public interface BankService {
-    ResultBean<List<String>> listAll();
+
+    ResultBean<List<String>> list();
+
+    ResultBean<List<BaseVO>> listAll();
 
     ResultBean<List<BankDO>> query(BankQuery query);
 

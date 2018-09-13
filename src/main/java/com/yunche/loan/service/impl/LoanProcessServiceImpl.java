@@ -36,9 +36,7 @@ import java.time.LocalDate;
 import java.util.*;
 
 import static com.yunche.loan.config.constant.ApplyOrderStatusConst.*;
-import static com.yunche.loan.config.constant.BankConst.BANK_NAME_ICBC_HangZhou_City_Station_Branch;
-import static com.yunche.loan.config.constant.BankConst.BANK_NAME_ICBC_TaiZhou_LuQiao_Branch;
-import static com.yunche.loan.config.constant.BankConst.BANK_NAME_ICBC_TaiZhou_LuQiao_Branch_TEST;
+import static com.yunche.loan.config.constant.BankConst.*;
 import static com.yunche.loan.config.constant.BaseConst.K_YORN_NO;
 import static com.yunche.loan.config.constant.BaseConst.K_YORN_YES;
 import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
@@ -199,7 +197,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         LoanBaseInfoDO loanBaseInfoDO = getLoanBaseInfoDO(loanOrderDO.getLoanBaseInfoId());
 
         // 校验审核前提条件
-        checkPreCondition(approval.getTaskDefinitionKey(), approval.getAction(), loanOrderDO, loanProcessDO);
+//        checkPreCondition(approval.getTaskDefinitionKey(), approval.getAction(), loanOrderDO, loanProcessDO);
 
         // 日志
         loanProcessApprovalCommonService.log(approval);
@@ -269,7 +267,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         loanProcessApprovalCommonService.finishTask(approval, getTaskIdList(startTaskList), loanOrderDO.getProcessInstId());
 
         // 通过银行接口  ->  自动查询征信
-        creditAutomaticCommit(approval);
+//        creditAutomaticCommit(approval);
 
         // 异步打包文件
         asyncPackZipFile(approval.getTaskDefinitionKey(), approval.getAction(), loanProcessDO, 2);
@@ -278,7 +276,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         loanProcessApprovalCommonService.asyncPush(loanOrderDO, approval);
 
         // 执行当前节点-附带任务
-        doCurrentNodeAttachTask(approval, loanOrderDO);
+        doCurrentNodeAttachTask(approval, loanOrderDO, loanProcessDO);
 
         return ResultBean.ofSuccess(null, "[" + LoanProcessEnum.getNameByCode(approval.getOriginalTaskDefinitionKey()) + "]任务执行成功");
     }
@@ -560,8 +558,11 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      */
     private ResultBean<Void> execFinancialSchemeModifyApplyTask(ApprovalParam approval, LoanOrderDO loanOrderDO, LoanProcessDO loanProcessDO) {
 
+        String taskDefinitionKey = approval.getTaskDefinitionKey();
+
         // 【金融方案修改申请】
-        if (FINANCIAL_SCHEME_MODIFY_APPLY.getCode().equals(approval.getTaskDefinitionKey())) {
+        if (FINANCIAL_SCHEME_MODIFY_APPLY.getCode().equals(taskDefinitionKey)) {
+
             // 提交
             Preconditions.checkArgument(ACTION_PASS.equals(approval.getAction()), "流程审核参数有误");
 
@@ -573,12 +574,10 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
             // [领取]完成
             finishTask_(approval);
-
-            return ResultBean.ofSuccess(null, "[金融方案修改]任务执行成功");
         }
 
         // 【金融方案修改申请审核】
-        else if (FINANCIAL_SCHEME_MODIFY_APPLY_REVIEW.getCode().equals(approval.getTaskDefinitionKey())) {
+        else if (FINANCIAL_SCHEME_MODIFY_APPLY_REVIEW.getCode().equals(taskDefinitionKey)) {
 
             // 通过/打回/弃单(整个流程)
             if (ACTION_PASS.equals(approval.getAction())) {
@@ -606,16 +605,22 @@ public class LoanProcessServiceImpl implements LoanProcessService {
                 loanProcessApprovalCommonService.updateLoanProcess(loanProcessDO);
 
             } else {
+
                 throw new BizException("流程审核参数有误");
             }
 
             // [领取]完成
             finishTask_(approval);
 
-            return ResultBean.ofSuccess(null, "[金融方案审核]任务执行成功");
+        } else {
+
+            throw new BizException("流程审核参数有误");
         }
 
-        return ResultBean.ofError("参数有误");
+        // 额外任务
+        doCurrentNodeAttachTask(approval, loanOrderDO, loanProcessDO);
+
+        return ResultBean.ofSuccess(null, "[" + LoanProcessEnum.getNameByCode(taskDefinitionKey) + "]任务执行成功");
     }
 
     /**
@@ -1069,8 +1074,9 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
         if (is_credit_apply_task__and__action_pass) {
 
-            // 中国工商银行杭州城站支行 || 台州支行 || 测试银行
+            // 中国工商银行杭州城站支行 || 哈尔滨顾乡支行 || 台州支行 || 测试银行
             if (BANK_NAME_ICBC_HangZhou_City_Station_Branch.equals(loanBaseInfoDO.getBank())
+                    || BANK_NAME_ICBC_Harbin_GuXiang_Branch.equals(loanBaseInfoDO.getBank())
                     || BANK_NAME_ICBC_TaiZhou_LuQiao_Branch.equals(loanBaseInfoDO.getBank())
                     || BANK_NAME_ICBC_TaiZhou_LuQiao_Branch_TEST.equals(loanBaseInfoDO.getBank())) {
 
@@ -3162,11 +3168,15 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      *
      * @param approval
      * @param loanOrderDO
+     * @param loanProcessDO
      */
-    private void doCurrentNodeAttachTask(ApprovalParam approval, LoanOrderDO loanOrderDO) {
+    private void doCurrentNodeAttachTask(ApprovalParam approval, LoanOrderDO loanOrderDO, LoanProcessDO loanProcessDO) {
 
         // 附带任务-[打款确认]
-        doRemitReviewAttachTask(approval, loanOrderDO.getRemitDetailsId());
+        doAttachTask_RemitReview(approval, loanOrderDO.getRemitDetailsId());
+
+        // 附带任务-[金融方案修改-审核]
+        doAttachTask_FinancialSchemeModifyApplyReview(approval, loanProcessDO);
     }
 
     /**
@@ -3175,7 +3185,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      * @param approval
      * @param remitDetailsId
      */
-    private void doRemitReviewAttachTask(ApprovalParam approval, Long remitDetailsId) {
+    private void doAttachTask_RemitReview(ApprovalParam approval, Long remitDetailsId) {
 
         if (REMIT_REVIEW.getCode().equals(approval.getTaskDefinitionKey()) && ACTION_PASS.equals(approval.getAction())) {
 
@@ -3186,6 +3196,38 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
             int count = remitDetailsDOMapper.updateByPrimaryKeySelective(remitDetailsDO);
             Preconditions.checkArgument(count > 0, "编辑失败");
+        }
+    }
+
+    /**
+     * 附带任务-[金融方案修改-审核]
+     *
+     * @param approval
+     * @param loanProcessDO
+     */
+    private void doAttachTask_FinancialSchemeModifyApplyReview(ApprovalParam approval, LoanProcessDO loanProcessDO) {
+
+        if (FINANCIAL_SCHEME_MODIFY_APPLY_REVIEW.getCode().equals(approval.getTaskDefinitionKey())
+                && ACTION_PASS.equals(approval.getAction())) {
+
+            Byte videoReviewStatus = loanProcessDO.getVideoReview();
+
+            if (TASK_PROCESS_DONE.equals(videoReviewStatus)) {
+
+                ApprovalParam param = new ApprovalParam();
+
+                param.setOrderId(approval.getOrderId());
+                param.setTaskDefinitionKey(VIDEO_REVIEW_FILTER.getCode());
+                param.setAction(ACTION_ROLL_BACK);
+                param.setInfo("金融方案修改");
+
+                param.setCheckPermission(false);
+                param.setNeedLog(true);
+                param.setNeedPush(true);
+
+                ResultBean<Void> approvalResult = approval(param);
+                Preconditions.checkArgument(approvalResult.getSuccess(), approvalResult.getMsg());
+            }
         }
     }
 }

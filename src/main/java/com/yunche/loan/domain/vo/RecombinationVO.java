@@ -11,6 +11,9 @@ public class RecombinationVO<T> {
 
     private T info;
 
+    /**
+     * 视频面签path
+     */
     private String path;
 
     private UniversalLoanFinancialPlanTempHisVO diff;

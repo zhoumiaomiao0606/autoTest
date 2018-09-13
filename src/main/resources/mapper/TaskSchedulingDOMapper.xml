@@ -347,6 +347,9 @@
                         <!-- 杭州城站 - [视频面签登记]-已提交-->
                         WHEN join_bk.id = 1 THEN
                             deputy.loan_info_record = 1
+                        <!-- 哈尔滨顾乡支行 - [视频面签登记]-已提交-->
+                        WHEN join_bk.id = 2 THEN
+                            deputy.loan_info_record = 1
                         <!-- 台州路桥支行 - [视频面签登记]-已提交-->
                         WHEN join_bk.id = 3 THEN
                             deputy.loan_info_record = 1
@@ -542,6 +545,9 @@
                       </when>
                       <when test="taskDefinitionKey == 'usertask_bank_lend_record'">
                           deputy.bank_lend_record                   AS taskStatus
+                      </when>
+                      <when test="taskDefinitionKey == 'usertask_video_review'">
+                          deputy.video_review                       AS taskStatus
                       </when>
                       <when test="taskDefinitionKey == 'usertask_info_supplement'">
                           join_s.type                               AS supplementType,
@@ -741,7 +747,7 @@
                           deputy_.id                                   AS processId,
                           compensation.partner_compensation_amount     AS partnerCompensationAmount,
                           compensation.compensation_amount             AS compensationAmount,
-                          deputy_.bank_repay_imp_record_id                 AS insteadPayOrderId,
+                          deputy_.bank_repay_imp_record_id             AS insteadPayOrderId,
                           compensation.curr_arrears                    AS currArrears,
                           compensation.loan_banlance                   AS loanBanlance,
                           compensation.advances_banlance               AS advancesBanlance,
@@ -1048,6 +1054,9 @@
                   </when>
                   <when test="taskDefinitionKey == 'usertask_loan_info_record'">
                       AND case when #{taskStatus} = 0 then deputy.loan_info_record != 0                  else deputy.loan_info_record        = #{taskStatus} end
+                  </when>
+                  <when test="taskDefinitionKey == 'usertask_video_review'">
+                      AND case when #{taskStatus} = 0 then deputy.video_review != 0                      else deputy.video_review        = #{taskStatus} end
                   </when>
                   <when test="taskDefinitionKey == 'usertask_apply_instead_pay'">
                       AND case when #{taskStatus} = 0 then deputy_.apply_instead_pay != 0                else deputy_.apply_instead_pay        = #{taskStatus} end

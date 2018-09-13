@@ -1,9 +1,6 @@
 package com.yunche.loan.service;
 
-import com.yunche.loan.domain.vo.BankInterfaceSerialReturnVO;
-import com.yunche.loan.domain.vo.UniversalCustomerDetailVO;
-import com.yunche.loan.domain.vo.UniversalCustomerFileVO;
-import com.yunche.loan.domain.vo.UniversalInfoSupplementVO;
+import com.yunche.loan.domain.vo.*;
 
 import java.util.List;
 
@@ -48,4 +45,12 @@ public interface LoanQueryService {
      * @return
      */
     List<UniversalCustomerFileVO> selectUniversalCustomerFile(Long customerId);
+
+    /**
+     * 视频面签path
+     *
+     * @param orderId
+     * @return
+     */
+    String selectVideoFacePath(Long orderId);
 }
