@@ -259,11 +259,11 @@ public class BankSolutionServiceImpl implements BankSolutionService {
             default:
                 return;
         }
-
     }
 
 
     public void multimediaUploadProcess(Long orderId, String phybrno) {
+
         LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
         if (loanOrderDO == null) {
             throw new BizException("此订单不存在");
@@ -288,25 +288,18 @@ public class BankSolutionServiceImpl implements BankSolutionService {
             throw new BizException("贷款人不存在");
         }
 
-        List<ICBCApiRequest.Picture> pictures = Lists.newArrayList();
-
         String path = loanQueryDOMapper.selectVideoFacePath(orderId);
         if (StringUtils.isBlank(path)) {
             throw new BizException("缺少面签视频");
         }
-
-        if (StringUtils.isBlank(path)) {
-            throw new BizException("缺少面签视频");
-        }
-
 
         String picName = GeneratorIDUtil.execute() + ImageUtil.MP4_SUFFIX;
         ICBCApiRequest.Picture picture = new ICBCApiRequest.Picture();
         picture.setPicid(MultimediaUploadEnum.VIDEO_INTERVIEW.getKey());
         picture.setPicname(picName);
         picture.setPicnote(MultimediaUploadEnum.VIDEO_INTERVIEW.getValue());
-        pictures.add(picture);
 
+        List<ICBCApiRequest.Picture> pictures = Lists.newArrayList(picture);
         if (pictures.size() == 0) {
             throw new BizException("缺少面签视频");
         }

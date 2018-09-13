@@ -36,9 +36,7 @@ import java.time.LocalDate;
 import java.util.*;
 
 import static com.yunche.loan.config.constant.ApplyOrderStatusConst.*;
-import static com.yunche.loan.config.constant.BankConst.BANK_NAME_ICBC_HangZhou_City_Station_Branch;
-import static com.yunche.loan.config.constant.BankConst.BANK_NAME_ICBC_TaiZhou_LuQiao_Branch;
-import static com.yunche.loan.config.constant.BankConst.BANK_NAME_ICBC_TaiZhou_LuQiao_Branch_TEST;
+import static com.yunche.loan.config.constant.BankConst.*;
 import static com.yunche.loan.config.constant.BaseConst.K_YORN_NO;
 import static com.yunche.loan.config.constant.BaseConst.K_YORN_YES;
 import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
@@ -1069,8 +1067,9 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
         if (is_credit_apply_task__and__action_pass) {
 
-            // 中国工商银行杭州城站支行 || 台州支行 || 测试银行
+            // 中国工商银行杭州城站支行 || 哈尔滨顾乡支行 || 台州支行 || 测试银行
             if (BANK_NAME_ICBC_HangZhou_City_Station_Branch.equals(loanBaseInfoDO.getBank())
+                    || BANK_NAME_ICBC_Harbin_GuXiang_Branch.equals(loanBaseInfoDO.getBank())
                     || BANK_NAME_ICBC_TaiZhou_LuQiao_Branch.equals(loanBaseInfoDO.getBank())
                     || BANK_NAME_ICBC_TaiZhou_LuQiao_Branch_TEST.equals(loanBaseInfoDO.getBank())) {
 

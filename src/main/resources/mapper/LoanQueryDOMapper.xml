@@ -1016,9 +1016,9 @@
                     TRUE
                 WHEN f.upload_type = 2 THEN
                     s.status = 1
-            ELSE
+                ELSE
                     FALSE
-        END
+            END
 
     </select>
 
@@ -2072,4 +2072,61 @@
             and customer.name like concat(concat('%',#{name}),'%')
         </if>
     </select>
+
+
+    <!--BaseInfo-->
+    <select id="selectUniversalBaseInfo" resultType="com.yunche.loan.domain.vo.UniversalBaseInfoVO">
+
+        SELECT
+                o.id                                       AS    order_id,
+                DATE_FORMAT(o.gmt_create  ,'%Y-%m-%d %H:%i:%S')
+                                                           AS    order_gmt_create,
+
+                c.id                                       AS    customer_id,
+                c.name                                     AS    customer_name,
+                c.id_card                                  AS    customer_id_card,
+                c.mobile                                   AS    customer_mobile,
+                e.id                                       AS    salesman_id,
+                e.name                                     AS    salesman_name,
+                p.id                                       AS    partner_id,
+                p.name                                     AS    partner_name,
+                d.id                                       AS    department_id,
+                d.name                                     AS    department_name,
+
+                bk.id                                      AS    bank_id,
+                bk.name                                    AS    bank_name,
+
+                fp.id					                   AS	financial_id,
+                fp.loan_amount					           AS	financial_loan_amount,
+                fp.loan_time							   AS	financial_loan_time,
+                fp.car_price							   AS	financial_car_price,
+                fp.actual_car_price					       AS	financial_actual_car_price,
+
+                car.car_detail_id					       AS	car_detail_id,
+                car.car_detail_name					       AS	car_detail_name
+
+        FROM
+
+                    loan_order 					    o
+
+        LEFT JOIN   loan_financial_plan 		    fp      ON   fp.id = o.loan_financial_plan_id
+
+        LEFT JOIN   loan_car_info 		            car     ON   car.id = o.loan_car_info_id
+
+        LEFT JOIN   loan_customer 					c       ON   c.id = o.loan_customer_id
+
+        LEFT JOIN   loan_base_info 					b       ON   b.id = o.loan_base_info_id
+
+        LEFT JOIN   employee                        e       ON   e.id = b.salesman_id
+
+        LEFT JOIN   partner                         p       ON   p.id = b.partner_id
+
+        LEFT JOIN   department                      d       ON   d.id = p.department_id
+
+        LEFT JOIN   bank                            bk      ON   bk.name = b.bank
+
+        WHERE       o.id = #{orderId}
+
+    </select>
+
 </mapper>
