@@ -456,7 +456,6 @@ public class EmployeeServiceImpl implements EmployeeService {
         response.setHeader("Access-Control-Allow-Origin", origin);
 
         // 使用shiro提供的方式进行身份认证
-        SessionUtils.getLoginUser();
         Subject subject = SecurityUtils.getSubject();
         String username = employeeParam.getUsername().trim();
         String password = employeeParam.getPassword().trim();
