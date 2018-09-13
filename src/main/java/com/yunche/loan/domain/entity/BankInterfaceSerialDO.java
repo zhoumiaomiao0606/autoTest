@@ -29,8 +29,4 @@ public class BankInterfaceSerialDO {
 
     private Integer fileNum;
 
-    private String operatePersonnel;
-
-    private Date operateDate;
-
 }

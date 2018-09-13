@@ -49,14 +49,15 @@
                  end                                  as customer_collateral,
 	        vehicle.assess_org                        as vehicle_assess_org,
 	        customer.id                               as customer_id,
-            vehicle.assess_use_year                   AS vehicle_assess_use_year,
+            vehicle.assess_use_year                   as vehicle_assess_use_year,
             car.car_category                          as car_category,
-            bank_interface.operate_personnel          as operate_personnel,
-            bank_interface.operate_date               as operate_date,
+            bank_log.operate_name                     as operate_name,
+            bank_log.operate_date                     as operate_date,
             current.usertask_remit_review_create_time    as remit_details_time
 
         from (select * from loan_order where id = #{orderId}) orders
         left join (select * from bank_interface_serial where order_id = #{orderId} and trans_code='applydivigeneral' order by request_time DESC limit 1) bank_interface on 1=1
+        left join bank_interface_log bank_log on (orders.id = bank_log.order_id and bank_log.trans_code='applydivigeneral')
         left join current_node_manager current on orders.id=current.order_id
         left join loan_car_info car on orders.loan_car_info_id = car.id
         left join loan_customer customer on orders.loan_customer_id = customer.id
