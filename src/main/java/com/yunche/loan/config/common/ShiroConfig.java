@@ -165,7 +165,7 @@ public class ShiroConfig {
     }
 
     /**
-     * cacheManager 缓存 redis实现
+     * shiro缓存管理器
      * <p>
      * 使用的是shiro-redis开源插件
      *
@@ -173,8 +173,17 @@ public class ShiroConfig {
      */
     @Bean
     public RedisCacheManager cacheManager() {
+
         RedisCacheManager redisCacheManager = new RedisCacheManager();
+
         redisCacheManager.setRedisManager(redisManager());
+
+        // TODO redis中针对不同用户缓存
+        redisCacheManager.setPrincipalIdFieldName("id");
+
+        // TODO 用户权限信息缓存时间
+//        redisCacheManager.setExpire(1800);
+
         return redisCacheManager;
     }
 
