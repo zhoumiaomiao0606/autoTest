@@ -27,5 +27,9 @@ public interface LoanStatementDOMapper {
 
     List<ExportRemitDetailQueryForRemitOrderVO> exportRemitDetailForRemitOrderQuerys(ExportRemitDetailQueryVerifyParam exportRemitDetailQueryVerifyParam);
 
-    List<ExportCustomerInfoVO> exportCustomerInfo();
+    List<ExportCustomerInfoVO> exportCustomerInfo(ExportCustomerInfoParam exportCustomerInfoParam);
+
+    List<FamilyLinkManVO> exportFamilyLinkManList(Long pCustomerId);
+
+    List<GuarantorLinkManVO> exportGuarantorLinkManList(Long pCustomerId);
 }

@@ -3,6 +3,11 @@ package com.yunche.loan.config.util;
 import com.aliyun.oss.OSSClient;
 import com.google.common.base.Preconditions;
 import com.yunche.loan.config.common.OSSConfig;
+import com.yunche.loan.config.exception.BizException;
+import com.yunche.loan.domain.param.CompplexHeader;
+import com.yunche.loan.domain.vo.ExportCustomerInfoVO;
+import com.yunche.loan.domain.vo.FamilyLinkManVO;
+import com.yunche.loan.domain.vo.GuarantorLinkManVO;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFCell;
@@ -17,6 +22,8 @@ import java.io.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -377,7 +384,8 @@ public class POIUtil {
             List<Method> getMethods = new ArrayList();
 
 
-            for (int i = 0; i < fields.length; i++) {
+            for (int i = 0; i < fields.length; i++)
+            {
                 Field field = fields[i];
                 // 此处应该判断beanObj,property不为null
                 PropertyDescriptor pd = new PropertyDescriptor(field.getName(), clazz);
@@ -386,19 +394,22 @@ public class POIUtil {
 
 
             //设置数据
-            for (int i = 0; i < list.size(); i++) {
+            for (int i = 0; i < list.size(); i++)
+            {
                 T data = list.get(i);
                 //创建行
                 row = sheet.createRow(i + 1);
 
-                for (int j = 0; j < getMethods.size(); j++) {
+                for (int j = 0; j < getMethods.size(); j++)
+                {
                     cell = row.createCell(j);
                     cell.setCellValue((String) getMethods.get(j).invoke(data));
                 }
 
             }
 
-            for (int j = 0; j < getMethods.size(); j++) {
+            for (int j = 0; j < getMethods.size(); j++)
+            {
                 //文件宽度自适应
                 sheet.autoSizeColumn((short) j);
             }
@@ -409,6 +420,194 @@ public class POIUtil {
             String diskName = ossConfig.getDownLoadDiskName();
             OSSUnit.deleteFile(ossClient, bucketName, diskName + File.separator, fileName.toString());
             OSSUnit.uploadObject2OSS(ossClient, file, bucketName, diskName + File.separator);
+        } catch (Exception e) {
+            Preconditions.checkArgument(false, e.getMessage());
+        } finally {
+            try {
+                if (out != null) {
+                    out.close();
+                }
+            } catch (IOException e) {
+                Preconditions.checkArgument(false, e.getMessage());
+            }
+        }
+
+        return ossConfig.getDownLoadDiskName() + File.separator + fileName;
+    }
+
+    /**
+    * @Author: ZhongMingxiao
+    * @Param:
+    * @return:
+    * @Date:
+    * @Description:  复杂格式导出
+    */
+    public static  String createComplexExcelFile(String fname, List<ExportCustomerInfoVO> list, CompplexHeader compplexHeader,  OSSConfig ossConfig)
+    {
+        StringBuilder fileName = new StringBuilder();
+        String timestamp = new SimpleDateFormat("yyyyMMdd").format(new Date());
+        Long id = SessionUtils.getLoginUser().getId();
+        fileName.append(fname).append(timestamp).append(id).append(".xlsx");
+        //创建workbook
+        File file = new File(ossConfig.getDownLoadBasepath() + File.separator + fileName);
+        FileOutputStream out = null;
+        XSSFWorkbook workbook = null;
+
+        try {
+
+            out = new FileOutputStream(file);
+
+            workbook = new XSSFWorkbook();
+            XSSFSheet sheet = workbook.createSheet();
+
+            //设置表头
+            XSSFRow headRow = sheet.createRow(0);
+            int headerpoint = 0;
+            for (int i = 0; i < compplexHeader.getPheader().size(); i++)
+            {
+                XSSFCell cell = headRow.createCell(headerpoint);
+                headerpoint++;
+                cell.setCellValue(compplexHeader.getPheader().get(i));
+            }
+
+            for (int i=0;i<compplexHeader.getCount();i++)
+            {
+                for (int j=0;j<compplexHeader.getAheader().size();j++)
+                {
+                    XSSFCell cell = headRow.createCell(headerpoint);
+                    headerpoint++;
+                    cell.setCellValue(compplexHeader.getAheader().get(j));
+                }
+            }
+
+            //设置数据
+            XSSFRow row = null;
+            XSSFCell cell = null;
+
+            //获取主客户方法
+            List<Method> getpMethods = new ArrayList();
+            //获取联系人客户方法
+            List<Method> getfMethods = new ArrayList();
+            //获取担保人-共贷人客户方法
+            List<Method> getlMethods = new ArrayList();
+
+            ExportCustomerInfoVO exportCustomer = list.get(0);
+            if (exportCustomer !=null)
+            {
+                Class<? extends ExportCustomerInfoVO> pclazz = exportCustomer.getClass();
+                Field[] fields = pclazz.getDeclaredFields();
+
+                for (int i = 0; i < fields.length; i++)
+                {
+                    Field field = fields[i];
+                    // 此处应该判断beanObj,property不为null
+                    PropertyDescriptor pd = new PropertyDescriptor(field.getName(), pclazz);
+                    getpMethods.add(pd.getReadMethod());
+                }
+
+                FamilyLinkManVO familyLinkManVO = exportCustomer.getFamilyLinkManList().get(0);
+                if (familyLinkManVO !=null)
+                {
+                    Class<? extends FamilyLinkManVO> aClass = familyLinkManVO.getClass();
+                    Field[] ffields = aClass.getDeclaredFields();
+
+                    for (int i = 0; i < ffields.length; i++)
+                    {
+                        Field field = ffields[i];
+                        // 此处应该判断beanObj,property不为null
+                        PropertyDescriptor pd = new PropertyDescriptor(field.getName(), aClass);
+                        getlMethods.add(pd.getReadMethod());
+                    }
+                }
+
+                GuarantorLinkManVO guarantorLinkManVO = exportCustomer.getGuarantorLinkManList().get(0);
+                if (guarantorLinkManVO !=null)
+                {
+                    Class<? extends GuarantorLinkManVO> gClass = guarantorLinkManVO.getClass();
+                    Field[] gfields = gClass.getDeclaredFields();
+
+                    for (int i = 0; i < gfields.length; i++)
+                    {
+                        Field field = gfields[i];
+                        // 此处应该判断beanObj,property不为null
+                        PropertyDescriptor pd = new PropertyDescriptor(field.getName(), gClass);
+                        getfMethods.add(pd.getReadMethod());
+                    }
+                }
+
+            }else{
+                throw new BizException("无数据");
+            }
+
+
+
+
+
+            for (int i=0;i<list.size();i++)
+            {
+                ExportCustomerInfoVO exportCustomerInfoVO = list.get(i);
+                //创建行
+                row = sheet.createRow(i + 1);
+
+
+                int cellpoint=0;
+
+                for (int j = 0; j < getpMethods.size(); j++)
+                {
+                    cell = row.createCell(j);
+                    cell.setCellValue((String) getpMethods.get(j).invoke(exportCustomerInfoVO));
+                    cellpoint++;
+                }
+
+                List<FamilyLinkManVO> familyLinkManList = exportCustomerInfoVO.getFamilyLinkManList();
+                for(int f=0;f<2;f++)
+                {
+                    FamilyLinkManVO familyLinkManVO = familyLinkManList.get(f);
+                    if (familyLinkManVO !=null)
+                    {
+                        for (int j = 0; j < getfMethods.size(); j++)
+                        {
+                            cell = row.createCell(cellpoint);
+                            cell.setCellValue((String) getfMethods.get(j).invoke(familyLinkManVO));
+                            cellpoint++;
+                        }
+                    }else
+                        {
+                            cellpoint = cellpoint+3;
+                    }
+                }
+                List<GuarantorLinkManVO> guarantorLinkManList = exportCustomerInfoVO.getGuarantorLinkManList();
+                for(int g=0;g<guarantorLinkManList.size();g++)
+                {
+                    GuarantorLinkManVO guarantorLinkManVO = guarantorLinkManList.get(g);
+                    if (guarantorLinkManVO !=null)
+                    {
+                        for(int j=0;j<getlMethods.size();j++)
+                        {
+                            cell = row.createCell(cellpoint);
+                            cell.setCellValue((String) getfMethods.get(j).invoke(guarantorLinkManVO));
+                            cellpoint++;
+                        }
+                    }
+                }
+
+            }
+
+            //取总列数
+            int totalcolumn = getpMethods.size() + getfMethods.size()*2 +getlMethods.size()*compplexHeader.getCount();
+            for (int j = 0; j < totalcolumn; j++)
+            {
+                //文件宽度自适应
+                sheet.autoSizeColumn((short) j);
+            }
+            workbook.write(out);
+            //上传OSS
+            OSSClient ossClient = OSSUnit.getOSSClient();
+            String bucketName = ossConfig.getBucketName();
+            String diskName = ossConfig.getDownLoadDiskName();
+            OSSUnit.deleteFile(ossClient, bucketName, diskName + File.separator, fileName.toString());
+            OSSUnit.uploadObject2OSS(ossClient, file, bucketName, diskName + File.separator);
+
         } catch (Exception e) {
             Preconditions.checkArgument(false, e.getMessage());
         } finally {
