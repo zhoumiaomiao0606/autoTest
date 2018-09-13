@@ -442,7 +442,7 @@ public class POIUtil {
     * @Date:
     * @Description:  复杂格式导出
     */
-    public static  String createComplexExcelFile(String fname, List<ExportCustomerInfoVO> list, CompplexHeader compplexHeader,  OSSConfig ossConfig)
+    public static  String createComplexExcelFile(String fname, List<ExportCustomerInfoVO> list,Class<FamilyLinkManVO> clazz1,Class<GuarantorLinkManVO> clazz2, CompplexHeader compplexHeader,  OSSConfig ossConfig)
     {
         StringBuilder fileName = new StringBuilder();
         String timestamp = new SimpleDateFormat("yyyyMMdd").format(new Date());
@@ -505,25 +505,19 @@ public class POIUtil {
                     getpMethods.add(pd.getReadMethod());
                 }
 
-                FamilyLinkManVO familyLinkManVO = exportCustomer.getFamilyLinkManList().get(0);
-                if (familyLinkManVO !=null)
-                {
-                    Class<? extends FamilyLinkManVO> aClass = familyLinkManVO.getClass();
-                    Field[] ffields = aClass.getDeclaredFields();
+                        Class<? extends Class> aClass = clazz1.getClass();
+                        Field[] ffields = aClass.getDeclaredFields();
 
-                    for (int i = 0; i < ffields.length; i++)
-                    {
-                        Field field = ffields[i];
-                        // 此处应该判断beanObj,property不为null
-                        PropertyDescriptor pd = new PropertyDescriptor(field.getName(), aClass);
-                        getlMethods.add(pd.getReadMethod());
-                    }
-                }
+                        for (int i = 0; i < ffields.length; i++)
+                        {
+                            Field field = ffields[i];
+                            // 此处应该判断beanObj,property不为null
+                            PropertyDescriptor pd = new PropertyDescriptor(field.getName(), aClass);
+                            getlMethods.add(pd.getReadMethod());
+                        }
 
-                GuarantorLinkManVO guarantorLinkManVO = exportCustomer.getGuarantorLinkManList().get(0);
-                if (guarantorLinkManVO !=null)
-                {
-                    Class<? extends GuarantorLinkManVO> gClass = guarantorLinkManVO.getClass();
+
+                    Class<? extends Class> gClass = clazz2.getClass();
                     Field[] gfields = gClass.getDeclaredFields();
 
                     for (int i = 0; i < gfields.length; i++)
@@ -533,7 +527,7 @@ public class POIUtil {
                         PropertyDescriptor pd = new PropertyDescriptor(field.getName(), gClass);
                         getfMethods.add(pd.getReadMethod());
                     }
-                }
+
 
             }else{
                 throw new BizException("无数据");
