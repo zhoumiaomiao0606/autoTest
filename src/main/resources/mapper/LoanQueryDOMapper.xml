@@ -391,7 +391,7 @@
             vehicle.old_driving_license_owner                                                       AS vehicle_old_driving_license_owner,
             vehicle.license_plate_type                                                              AS vehicle_license_plate_type,
             CONCAT(area.parent_area_name,area.area_name)                                            AS vehicle_apply_license_plate_area,
-            bank_credit.gmt_create                                                                  AS bank_credit_gmt_create,
+            DATE_FORMAT(bank_credit.gmt_create,'%Y-%m-%d %H:%i:%S')                                 AS bank_credit_gmt_create,
             society_credit.gmt_create                                                               AS society_credit_gmt_create,
             financial.id                                                                            AS financial_id,
             financial.bank                                                                          AS financial_bank,

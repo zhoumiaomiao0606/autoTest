@@ -21,6 +21,7 @@ public class ExpertController
      * EXCEl导出银行征信查询
      */
    /* @PostMapping(value = "/exportBankCreditQuery")*/
+    @PostMapping(value = "/exportCustomerInfo")
     public ResultBean exportBankCreditQuery(@RequestBody ExportBankCreditQueryVerifyParam exportBankCreditQueryVerifyParam)
     {
         return ResultBean.ofSuccess(exportQueryService.exportBankCreditQuery(exportBankCreditQueryVerifyParam));
