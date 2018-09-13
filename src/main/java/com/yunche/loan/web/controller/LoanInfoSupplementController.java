@@ -25,27 +25,27 @@ public class LoanInfoSupplementController {
     private LoanInfoSupplementService loanInfoSupplementService;
 
 
-    /**
-     * 资料增补 -客户证件图片信息
-     *
-     * @param infoSupplementParam
-     * @return
-     */
-    @PostMapping(value = "/upload_", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultBean<Void> upload(@RequestBody InfoSupplementParam infoSupplementParam) {
-        return loanInfoSupplementService.upload(infoSupplementParam);
-    }
-
-    /**
-     * 资料增补详情页
-     *
-     * @param supplementOrderId
-     * @return
-     */
-    @GetMapping(value = "/detail_")
-    public ResultBean<InfoSupplementVO> detail_(@RequestParam Long supplementOrderId) {
-        return loanInfoSupplementService.detail__(supplementOrderId);
-    }
+//    /**
+//     * 资料增补 -客户证件图片信息
+//     *
+//     * @param infoSupplementParam
+//     * @return
+//     */
+//    @PostMapping(value = "/upload_", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+//    public ResultBean<Void> upload(@RequestBody InfoSupplementParam infoSupplementParam) {
+//        return loanInfoSupplementService.upload(infoSupplementParam);
+//    }
+//
+//    /**
+//     * 资料增补详情页
+//     *
+//     * @param supplementOrderId
+//     * @return
+//     */
+//    @GetMapping(value = "/detail_")
+//    public ResultBean<InfoSupplementVO> detail_(@RequestParam Long supplementOrderId) {
+//        return loanInfoSupplementService.detail__(supplementOrderId);
+//    }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

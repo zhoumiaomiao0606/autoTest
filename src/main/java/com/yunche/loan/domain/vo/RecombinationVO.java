@@ -16,11 +16,6 @@ public class RecombinationVO<T> {
      */
     private String path;
 
-    /**
-     * 基本信息
-     */
-    private UniversalBaseInfoVO baseInfo;
-
     private UniversalLoanFinancialPlanTempHisVO diff;
 
     private UniversalLoanRefundApplyVO refund;

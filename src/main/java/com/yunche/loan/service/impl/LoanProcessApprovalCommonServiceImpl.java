@@ -118,17 +118,30 @@ public class LoanProcessApprovalCommonServiceImpl implements LoanProcessApproval
         BeanUtils.copyProperties(approval, loanProcessLogDO);
 
         EmployeeDO loginUser = null;
-        try {
-            loginUser = SessionUtils.getLoginUser();
-        } catch (Exception e) {
-            logger.info("自动任务|| 未登录");
-        }
-        if (null == loginUser) {
+
+        // 自动任务
+        if (ACTION_REJECT_AUTO.equals(approval.getAction())) {
+
             loanProcessLogDO.setUserId(AUTO_EMPLOYEE_ID);
             loanProcessLogDO.setUserName(AUTO_EMPLOYEE_NAME);
-        } else {
-            loanProcessLogDO.setUserId(loginUser.getId());
-            loanProcessLogDO.setUserName(loginUser.getName());
+
+        }
+        // 正常人为操作
+        else {
+
+            try {
+                loginUser = SessionUtils.getLoginUser();
+            } catch (Exception e) {
+                logger.info("自动任务|| 未登录");
+            }
+
+            if (null == loginUser) {
+                loanProcessLogDO.setUserId(AUTO_EMPLOYEE_ID);
+                loanProcessLogDO.setUserName(AUTO_EMPLOYEE_NAME);
+            } else {
+                loanProcessLogDO.setUserId(loginUser.getId());
+                loanProcessLogDO.setUserName(loginUser.getName());
+            }
         }
 
         loanProcessLogDO.setCreateTime(new Date());
