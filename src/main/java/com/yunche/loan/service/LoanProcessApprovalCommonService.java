@@ -136,11 +136,11 @@ public interface LoanProcessApprovalCommonService {
     /**
      * 更新本地已执行的任务状态
      *
-     * @param loanProcessDO
+     * @param loanProcessDO_
      * @param taskDefinitionKey
      * @param taskProcessStatus
      * @param approval
      */
-    void updateCurrentTaskProcessStatus(LoanProcessDO loanProcessDO, String taskDefinitionKey,
+    void updateCurrentTaskProcessStatus(LoanProcessDO_ loanProcessDO_, String taskDefinitionKey,
                                         Byte taskProcessStatus, ApprovalParam approval);
 }

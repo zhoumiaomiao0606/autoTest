@@ -164,4 +164,6 @@ public class AppCustomerParam {
     private Byte signatureType;//签单类型  1-夫妻单签  2-夫妻双签  3-其他
 
     private List<FileVO> files = Collections.EMPTY_LIST;
+
+    private String occupation;
 }

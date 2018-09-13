@@ -14,7 +14,6 @@ import com.yunche.loan.domain.entity.*;
 import com.yunche.loan.domain.param.ApprovalParam;
 import com.yunche.loan.domain.vo.LoanProcessLogVO;
 import com.yunche.loan.domain.vo.LoanRejectLogVO;
-import com.yunche.loan.domain.vo.RecombinationVO;
 import com.yunche.loan.domain.vo.TaskStateVO;
 import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.*;
@@ -37,9 +36,7 @@ import java.time.LocalDate;
 import java.util.*;
 
 import static com.yunche.loan.config.constant.ApplyOrderStatusConst.*;
-import static com.yunche.loan.config.constant.BankConst.BANK_NAME_ICBC_HangZhou_City_Station_Branch;
-import static com.yunche.loan.config.constant.BankConst.BANK_NAME_ICBC_TaiZhou_LuQiao_Branch;
-import static com.yunche.loan.config.constant.BankConst.BANK_NAME_ICBC_TaiZhou_LuQiao_Branch_TEST;
+import static com.yunche.loan.config.constant.BankConst.*;
 import static com.yunche.loan.config.constant.BaseConst.K_YORN_NO;
 import static com.yunche.loan.config.constant.BaseConst.K_YORN_YES;
 import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
@@ -132,6 +129,9 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
     @Autowired
     private MaterialAuditDOMapper materialAuditDOMapper;
+
+    @Autowired
+    private RemitDetailsDOMapper remitDetailsDOMapper;
 
     @Autowired
     private RuntimeService runtimeService;
@@ -274,6 +274,9 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
         // 异步推送
         loanProcessApprovalCommonService.asyncPush(loanOrderDO, approval);
+
+        // 执行当前节点-附带任务
+        doCurrentNodeAttachTask(approval, loanOrderDO);
 
         return ResultBean.ofSuccess(null, "[" + LoanProcessEnum.getNameByCode(approval.getOriginalTaskDefinitionKey()) + "]任务执行成功");
     }
@@ -649,26 +652,6 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         int count = loanRejectLogDOMapper.insertSelective(loanRejectLogDO);
         Preconditions.checkArgument(count > 0, "打回记录失败");
     }
-
-//    /**
-//     * 自动打回    - 放款审批 -> 业务审批
-//     *
-//     * @param loanProcessDO
-//     */
-//    private void autoRejectLoanReviewTask(LoanProcessDO loanProcessDO) {
-//        // 打回
-//        if (TASK_PROCESS_TODO.equals(loanProcessDO.getLoanReview())) {
-//
-//            ApprovalParam approvalParam = new ApprovalParam();
-//            approvalParam.setOrderId(loanProcessDO.getOrderId());
-//            approvalParam.setTaskDefinitionKey(LOAN_REVIEW.getCode());
-//            approvalParam.setAction(ACTION_REJECT_MANUAL);
-//            approvalParam.setNeedLog(false);
-//            approvalParam.setCheckPermission(false);
-//
-//            approval(approvalParam);
-//        }
-//    }
 
     /**
      * 金融方案修改审核 -审核通过
@@ -1084,8 +1067,9 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
         if (is_credit_apply_task__and__action_pass) {
 
-            // 中国工商银行杭州城站支行 || 台州支行 || 测试银行
+            // 中国工商银行杭州城站支行 || 哈尔滨顾乡支行 || 台州支行 || 测试银行
             if (BANK_NAME_ICBC_HangZhou_City_Station_Branch.equals(loanBaseInfoDO.getBank())
+                    || BANK_NAME_ICBC_Harbin_GuXiang_Branch.equals(loanBaseInfoDO.getBank())
                     || BANK_NAME_ICBC_TaiZhou_LuQiao_Branch.equals(loanBaseInfoDO.getBank())
                     || BANK_NAME_ICBC_TaiZhou_LuQiao_Branch_TEST.equals(loanBaseInfoDO.getBank())) {
 
@@ -2229,12 +2213,14 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         List<TaskEntityImpl> insteadPayTaskList = activitiDeploymentMapper.listInsteadPayTaskByOrderId(orderId);
         List<TaskEntityImpl> collectionTaskList = activitiDeploymentMapper.listCollectionTaskByOrderId(orderId);
         List<TaskEntityImpl> legalTaskList = activitiDeploymentMapper.listLegalTaskByOrderId(orderId);
+        List<TaskEntityImpl> bridgeTaskList = activitiDeploymentMapper.listBridgeTaskByOrderId(orderId);
 
         List<Task> runTaskList = Lists.newArrayList();
         runTaskList.addAll(insteadPayTaskList);
         runTaskList.addAll(collectionTaskList);
         runTaskList.addAll(loanProcessTaskList);
         runTaskList.addAll(legalTaskList);
+        runTaskList.addAll(bridgeTaskList);
 
         List<TaskStateVO> taskStateVOS = Lists.newArrayList();
         if (!CollectionUtils.isEmpty(runTaskList)) {
@@ -2527,7 +2513,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
                                 + convertActionText(e.getAction())
                                 + " "
                                 + convertTaskDefKeyText(e.getTaskDefinitionKey())
-                                + getRejectInfo(e.getAction(), e.getInfo());
+                                + getInfo(e.getAction(), e.getInfo());
 
                         historyList.add(history);
                     });
@@ -2568,15 +2554,18 @@ public class LoanProcessServiceImpl implements LoanProcessService {
     }
 
     /**
-     * 打回理由
+     * 打回/弃单 理由
      *
      * @param action
      * @param info
      * @return
      */
-    private String getRejectInfo(Byte action, String info) {
+    private String getInfo(Byte action, String info) {
 
-        if (ACTION_REJECT_MANUAL.equals(action)) {
+        if (ACTION_REJECT_MANUAL.equals(action)
+                || ACTION_REJECT_AUTO.equals(action)
+                || ACTION_CANCEL.equals(action)) {
+
             return "    理由：" + (StringUtils.isBlank(info) ? "" : info);
         }
 
@@ -3167,4 +3156,35 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         runtimeService.deleteProcessInstance(processInstanceId, "弃单");
     }
 
+    /**
+     * 执行当前节点-附带任务
+     *
+     * @param approval
+     * @param loanOrderDO
+     */
+    private void doCurrentNodeAttachTask(ApprovalParam approval, LoanOrderDO loanOrderDO) {
+
+        // 附带任务-[打款确认]
+        doRemitReviewAttachTask(approval, loanOrderDO.getRemitDetailsId());
+    }
+
+    /**
+     * 附带任务-[打款确认]
+     *
+     * @param approval
+     * @param remitDetailsId
+     */
+    private void doRemitReviewAttachTask(ApprovalParam approval, Long remitDetailsId) {
+
+        if (REMIT_REVIEW.getCode().equals(approval.getTaskDefinitionKey()) && ACTION_PASS.equals(approval.getAction())) {
+
+            RemitDetailsDO remitDetailsDO = new RemitDetailsDO();
+
+            remitDetailsDO.setId(remitDetailsId);
+            remitDetailsDO.setRemit_time(new Date());
+
+            int count = remitDetailsDOMapper.updateByPrimaryKeySelective(remitDetailsDO);
+            Preconditions.checkArgument(count > 0, "编辑失败");
+        }
+    }
 }

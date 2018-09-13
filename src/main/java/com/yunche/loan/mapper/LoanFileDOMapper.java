@@ -36,6 +36,11 @@ public interface LoanFileDOMapper {
                                              @Param("type") Byte type,
                                              @Param("uploadType") Byte uploadType);
 
+
+    List<LoanFileDO> listBySupplementIdAndType(@Param("infoSupplementId") Long infoSupplementId,
+                                               @Param("type") Byte type,
+                                               @Param("uploadType") Byte uploadType);
+
     /**
      * 批量插入
      *
@@ -55,4 +60,6 @@ public interface LoanFileDOMapper {
     List<BankAndSocietyPicVO> selectFileInfoByCusId(@Param("cusIds") List<Long> cusIds);
 
     List<BankAndSocietyPicVO> selectSocFileInfoByCusId(@Param("cusIds") List<Long> cusIds);
+
+    List<LoanFileDO> selectAllSupFileByOrderId(@Param("orderId")Long orderId);
 }

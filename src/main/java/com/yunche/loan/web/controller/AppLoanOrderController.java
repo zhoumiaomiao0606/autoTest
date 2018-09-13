@@ -8,7 +8,6 @@ import com.yunche.loan.domain.vo.AppInsuranceInfoVO;
 import com.yunche.loan.domain.param.*;
 import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.service.AppLoanOrderService;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -35,7 +34,7 @@ public class AppLoanOrderController {
      * @param appCustomerParam
      * @return
      */
-    @Limiter("/api/v1/app/loanorder/creditapply/create")
+    @Limiter
     @PostMapping(value = "/creditapply/create", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean<AppCreditApplyVO> createCreditApplyOrder(@RequestBody AppCustomerParam appCustomerParam) {
         return appLoanOrderService.createCreditApplyOrder(appCustomerParam);
@@ -95,7 +94,7 @@ public class AppLoanOrderController {
      * @param param
      * @return
      */
-    @Limiter("/api/v1/app/loanorder/baseinfo/create")
+    @Limiter
     @PostMapping(value = "/baseinfo/create", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean<Long> createBaseInfo(@RequestBody AppLoanBaseInfoParam param) {
         return appLoanOrderService.createBaseInfo(param);
@@ -140,7 +139,7 @@ public class AppLoanOrderController {
      * @param param
      * @return
      */
-    @Limiter("/api/v1/app/loanorder/customer/addrela")
+    @Limiter
     @PostMapping(value = "/customer/addrela", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean<Long> addRelaCustomer(@RequestBody AppCustomerParam param) {
         return appLoanOrderService.addRelaCustomer(param);
@@ -178,7 +177,7 @@ public class AppLoanOrderController {
      * @param appLoanCarInfoParam
      * @return
      */
-    @Limiter("/api/v1/app/loanorder/carinfo/create")
+    @Limiter
     @PostMapping(value = "/carinfo/create", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean<Long> createLoanCarInfo(@RequestBody AppLoanCarInfoParam appLoanCarInfoParam) {
         return appLoanOrderService.createLoanCarInfo(appLoanCarInfoParam);
@@ -223,7 +222,7 @@ public class AppLoanOrderController {
      * @param param
      * @return
      */
-    @Limiter("/api/v1/app/loanorder/financialplan/create")
+    @Limiter
     @PostMapping(value = "/financialplan/create", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean<Long> createLoanFinancialPlan(@RequestBody AppLoanFinancialPlanParam param) {
         return appLoanOrderService.createLoanFinancialPlan(param);
@@ -268,7 +267,7 @@ public class AppLoanOrderController {
      * @param param
      * @return
      */
-    @Limiter("/api/v1/app/loanorder/homevisit/save")
+    @Limiter
     @PostMapping(value = "/homevisit/save", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean<Void> saveLoanHomeVisit(@RequestBody AppLoanHomeVisitParam param) {
         return appLoanOrderService.createOrUpdateLoanHomeVisit(param);

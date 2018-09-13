@@ -54,7 +54,7 @@ public class LoanCustomerController {
      * @param param
      * @return
      */
-    @Limiter("/api/v1/loanorder/customer/addrela")
+    @Limiter
     @PostMapping(value = "/addrela", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean<Long> addRelaCustomer(@RequestBody CustomerParam param) {
         return loanCustomerService.addRelaCustomer(param);
@@ -103,6 +103,7 @@ public class LoanCustomerController {
      * 客户银行图片导出
      *
      */
+    @Limiter
     @PostMapping(value = "/bankpicexport")
     public ResultBean bankPicExport(@RequestBody BankAndSocietyExportVO bankAndSocietyExport) {
         return ResultBean.ofSuccess(loanCustomerService.bankPicExport(bankAndSocietyExport.getCusList()));
@@ -112,6 +113,7 @@ public class LoanCustomerController {
      * 客户社会图片导出
      *
      */
+    @Limiter
     @PostMapping(value = "/societypicexport")
     public ResultBean societyPicExport(@RequestBody BankAndSocietyExportVO bankAndSocietyExport) {
         return ResultBean.ofSuccess(loanCustomerService.societyPicExport(bankAndSocietyExport.getCusList()));

@@ -7,10 +7,9 @@ import com.yunche.loan.config.constant.LoanProcessEnum;
 import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.StringUtil;
-import com.yunche.loan.domain.entity.LoanOrderDO;
-import com.yunche.loan.domain.entity.LoanProcessDO;
-import com.yunche.loan.domain.entity.TaskDistributionDO;
+import com.yunche.loan.domain.entity.*;
 import com.yunche.loan.domain.param.ApprovalParam;
+import com.yunche.loan.mapper.LoanProcessBridgeDOMapper;
 import com.yunche.loan.mapper.TaskDistributionDOMapper;
 import com.yunche.loan.service.LoanProcessApprovalCommonService;
 import com.yunche.loan.service.LoanProcessApprovalRollBackService;
@@ -47,6 +46,9 @@ import static com.yunche.loan.config.constant.TaskDistributionConst.TASK_STATUS_
 @Service
 public class LoanProcessApprovalRollBackServiceImpl implements LoanProcessApprovalRollBackService {
 
+
+    @Autowired
+    private LoanProcessBridgeDOMapper loanProcessBridgeDOMapper;
 
     @Autowired
     private TaskDistributionDOMapper taskDistributionDOMapper;
@@ -102,6 +104,12 @@ public class LoanProcessApprovalRollBackServiceImpl implements LoanProcessApprov
             doRollBackTask_PrintReview(approval, loanOrderDO, loanProcessDO);
         }
 
+        // [视频审核]
+        else if (VIDEO_REVIEW.getCode().equals(approval.getTaskDefinitionKey())) {
+
+            doRollBackTask_VideoReview(approval, loanOrderDO, loanProcessDO);
+        }
+
         // 其他节点，暂不支持
         else {
 
@@ -112,6 +120,96 @@ public class LoanProcessApprovalRollBackServiceImpl implements LoanProcessApprov
         loanProcessApprovalCommonService.finishTask(approval, currentTaskIdList, loanOrderDO.getProcessInstId());
 
         return ResultBean.ofSuccess(null, "[" + LoanProcessEnum.getNameByCode(taskDefinitionKey) + "-反审]发起成功");
+    }
+
+    @Override
+    public ResultBean<Void> execRollBackTask(ApprovalParam approval, LoanOrderDO loanOrderDO, LoanProcessBridgeDO loanProcessDO) {
+
+        // 先获取提交之前的待执行任务列表
+        List<String> currentTaskIdList = loanProcessApprovalCommonService.getCurrentTaskIdList(loanOrderDO.getProcessInstId());
+
+        String taskDefinitionKey = approval.getTaskDefinitionKey();
+
+        // [过桥处理(乙)]
+        if (BRIDGE_HANDLE.getCode().equals(taskDefinitionKey)) {
+
+            doRollBackTask_BridgeHandle(approval, loanOrderDO, loanProcessDO);
+        }
+
+        // [还款登记(甲)]
+        else if (BRIDGE_REPAY_RECORD.getCode().equals(taskDefinitionKey)) {
+
+            doRollBackTask_BridgeRepayRecord(approval, loanOrderDO, loanProcessDO);
+        }
+
+        // 其他节点，暂不支持
+        else {
+
+            throw new BizException("[" + LoanProcessEnum.getNameByCode(taskDefinitionKey) + "]暂不支持反审");
+        }
+
+        // [领取]完成
+        loanProcessApprovalCommonService.finishTask(approval, currentTaskIdList, loanOrderDO.getProcessInstId());
+
+        return ResultBean.ofSuccess(null, "[" + LoanProcessEnum.getNameByCode(taskDefinitionKey) + "-反审]发起成功");
+    }
+
+    /**
+     * 过桥流程反审
+     *
+     * @param approval
+     * @param loanOrderDO
+     * @param loanProcessDO
+     */
+    private void doRollBackTask_BridgeRepayRecord(ApprovalParam approval, LoanOrderDO loanOrderDO, LoanProcessBridgeDO loanProcessDO) {
+
+        // 被反审的节点列表
+        List<String> nextTaskKeys = Lists.newArrayList(BRIDGE_REPAY_RECORD.getCode());
+
+        // 领取校验
+        checkTaskDistribution(approval.getOrderId(), nextTaskKeys);
+
+        // 提交校验
+        checkTaskProcessStatus(loanProcessDO, nextTaskKeys, approval.getTaskDefinitionKey());
+
+        // 执行[反审]
+        doRollBack(loanOrderDO.getProcessInstId(),
+                Lists.newArrayList(),
+                Lists.newArrayList(),
+                BRIDGE_REPAY_RECORD.getCode()
+        );
+
+        // 反审状态更新
+        updateRollBackLoanProcess_(approval, nextTaskKeys);
+    }
+
+    /**
+     * 过桥反审
+     *
+     * @param approval
+     * @param loanOrderDO
+     * @param loanProcessDO
+     */
+    private void doRollBackTask_BridgeHandle(ApprovalParam approval, LoanOrderDO loanOrderDO, LoanProcessBridgeDO loanProcessDO) {
+
+        // 被反审的节点列表
+        List<String> nextTaskKeys = Lists.newArrayList(BRIDGE_INTEREST_RECORD.getCode());
+
+        // 领取校验
+        checkTaskDistribution(approval.getOrderId(), nextTaskKeys);
+
+        // 提交校验
+        checkTaskProcessStatus(loanProcessDO, nextTaskKeys, approval.getTaskDefinitionKey());
+
+        // 执行[反审]
+        doRollBack(loanOrderDO.getProcessInstId(),
+                Lists.newArrayList(),
+                Lists.newArrayList(),
+                BRIDGE_INTEREST_RECORD.getCode()
+        );
+
+        // 反审状态更新
+        updateRollBackLoanProcess_(approval, nextTaskKeys);
     }
 
     /**
@@ -196,6 +294,35 @@ public class LoanProcessApprovalRollBackServiceImpl implements LoanProcessApprov
                 Lists.newArrayList(CAR_INSURANCE.getCode(), INSTALL_GPS.getCode(), COMMIT_KEY.getCode()),
                 Lists.newArrayList(BUSINESS_PAY.getCode(), DATA_FLOW_CONTRACT_P2C.getCode(), VEHICLE_INFORMATION.getCode()),
                 DATA_FLOW_MORTGAGE_P2C_NEW_FILTER.getCode()
+        );
+
+        // 反审状态更新
+        updateRollBackLoanProcess(approval, nextTaskKeys);
+    }
+
+    /**
+     * [视频审核]-反审
+     *
+     * @param approval
+     * @param loanOrderDO
+     * @param loanProcessDO
+     */
+    private void doRollBackTask_VideoReview(ApprovalParam approval, LoanOrderDO loanOrderDO, LoanProcessDO loanProcessDO) {
+
+        // 被反审的节点列表
+        List<String> nextTaskKeys = Lists.newArrayList(VIDEO_REVIEW_FILTER.getCode());
+
+        // 领取校验
+        checkTaskDistribution(approval.getOrderId(), nextTaskKeys);
+
+        // 提交校验
+        checkTaskProcessStatus(loanProcessDO, nextTaskKeys, approval.getTaskDefinitionKey());
+
+        // 执行[反审]
+        doRollBack(loanOrderDO.getProcessInstId(),
+                Lists.newArrayList(),
+                Lists.newArrayList(),
+                VIDEO_REVIEW_FILTER.getCode()
         );
 
         // 反审状态更新
@@ -430,7 +557,7 @@ public class LoanProcessApprovalRollBackServiceImpl implements LoanProcessApprov
      * @param nextTaskKeys          next节点列表
      * @param rollBackOriginTaskKey 发起反审的节点
      */
-    private void checkTaskProcessStatus(LoanProcessDO loanProcessDO, List<String> nextTaskKeys, String rollBackOriginTaskKey) {
+    private void checkTaskProcessStatus(LoanProcessDO_ loanProcessDO, List<String> nextTaskKeys, String rollBackOriginTaskKey) {
 
         Class<LoanProcessDO> clazz = LoanProcessDO.class;
 
@@ -440,6 +567,10 @@ public class LoanProcessApprovalRollBackServiceImpl implements LoanProcessApprov
         for (int i = 0; i < taskKeys.size(); i++) {
 
             String taskKey = taskKeys.get(i);
+
+            if (taskKey.startsWith("filter")) {
+                return;
+            }
 
             String[] taskKeyArr = taskKey.split("usertask");
 
@@ -541,6 +672,30 @@ public class LoanProcessApprovalRollBackServiceImpl implements LoanProcessApprov
         }
 
         loanProcessApprovalCommonService.updateLoanProcess(loanProcessDO);
+    }
+
+    /**
+     * @param approval
+     * @param rollBacTokTaskKeys
+     */
+    private void updateRollBackLoanProcess_(ApprovalParam approval, List<String> rollBacTokTaskKeys) {
+
+        LoanProcessBridgeDO loanProcessDO = new LoanProcessBridgeDO();
+        loanProcessDO.setOrderId(approval.getOrderId());
+
+        if (!CollectionUtils.isEmpty(rollBacTokTaskKeys)) {
+
+            rollBacTokTaskKeys.stream()
+                    .filter(StringUtils::isNotBlank)
+                    .forEach(taskKey -> {
+
+                        loanProcessApprovalCommonService.updateCurrentTaskProcessStatus(loanProcessDO, taskKey, TASK_PROCESS_TODO, approval);
+                    });
+        }
+
+        loanProcessDO.setGmtModify(new Date());
+        int count = loanProcessBridgeDOMapper.updateByPrimaryKeySelective(loanProcessDO);
+        Preconditions.checkArgument(count > 0, "更新本地流程记录失败");
     }
 
     /**

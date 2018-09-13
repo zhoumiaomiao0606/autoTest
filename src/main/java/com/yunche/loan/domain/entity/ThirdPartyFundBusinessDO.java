@@ -13,6 +13,8 @@ public class ThirdPartyFundBusinessDO {
 
     private Byte repayType;
 
+    private Date repayDate;
+
     private String repayRemark;
 
     private BigDecimal interest;

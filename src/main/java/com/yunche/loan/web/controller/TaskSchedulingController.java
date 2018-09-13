@@ -42,6 +42,7 @@ public class TaskSchedulingController {
     public ResultBean<Map> appCount() {
         return taskSchedulingService.appCount();
     }
+
     /**
      * 领取
      */
@@ -57,6 +58,7 @@ public class TaskSchedulingController {
     public ResultBean<List<ZhonganListVO>> zhonganList(@RequestBody @Validated ZhonganListQuery param) {
         return taskSchedulingService.selectZhonganList(param);
     }
+
     /**
      * 是否属于银行单子
      */
@@ -108,7 +110,7 @@ public class TaskSchedulingController {
     /**
      * 待办任务列表-all
      */
-    @Limiter(value = "/api/v1/taskscheduling/scheduletasklist", limit = 2)
+    @Limiter(2)
     @GetMapping(value = "/scheduletasklist")
     public ResultBean<List<ScheduleTaskVO>> scheduletasklist(@RequestParam(required = false) String key,
                                                              @RequestParam Integer pageIndex,
@@ -119,7 +121,7 @@ public class TaskSchedulingController {
     /**
      * 待办任务列表-all
      */
-    @Limiter(value = "/api/v1/taskscheduling/countScheduletasklist", limit = 2)
+    @Limiter(2)
     @GetMapping(value = "/countScheduletasklist")
     public ResultBean<Long> countScheduletasklist() {
         return taskSchedulingService.countScheduletasklist();
@@ -129,7 +131,7 @@ public class TaskSchedulingController {
     /**
      * 查询接口
      */
-    @Limiter(value = "/api/v1/taskscheduling/queryTaskList", limit = 2)
+//    @Limiter(2)
     @PostMapping(value = "/queryTaskList")
     public ResultBean<List<TaskListVO>> scheduleTaskList(@RequestBody @Validated TaskListQuery taskListQuery) {
         return taskSchedulingService.queryTaskList(taskListQuery);
@@ -138,7 +140,7 @@ public class TaskSchedulingController {
     /**
      * 查询接口
      */
-    @Limiter(value = "/api/v1/taskscheduling/countQueryTaskList", limit = 2)
+    @Limiter(2)
     @PostMapping(value = "/countQueryTaskList")
     public ResultBean<Long> countQueryTaskList(@RequestBody @Validated TaskListQuery taskListQuery) {
         return taskSchedulingService.countQueryTaskList(taskListQuery);
@@ -147,7 +149,7 @@ public class TaskSchedulingController {
     /**
      * 查询接口
      */
-    @Limiter(value = "/api/v1/taskscheduling/queryAppTaskList", limit = 2)
+    @Limiter(2)
     @PostMapping(value = "/queryAppTaskList")
     public ResultBean<List<AppTaskVO>> queryAppTaskList(@RequestBody @Validated AppTaskListQuery appTaskListQuery) {
         return taskSchedulingService.queryAppTaskList(appTaskListQuery);

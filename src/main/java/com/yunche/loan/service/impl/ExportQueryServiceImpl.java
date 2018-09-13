@@ -236,13 +236,13 @@ public class ExportQueryServiceImpl implements ExportQueryService
         return ossResultKey;
     }
 
-    /** 
-    * @Author: ZhongMingxiao 
+    /**
+    * @Author: ZhongMingxiao
     * @Param:
-    * @return:  
-    * @Date:  
+    * @return:
+    * @Date:
     * @Description:  客户信息中新增客户信息导出功能
-    */ 
+    */
     @Override
     public String exportCustomerInfo(ExportCustomerInfoParam exportCustomerInfoParam)
     {

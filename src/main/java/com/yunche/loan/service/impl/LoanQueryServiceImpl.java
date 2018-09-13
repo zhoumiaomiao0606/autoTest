@@ -10,12 +10,10 @@ import com.yunche.loan.domain.entity.LoanCustomerDO;
 import com.yunche.loan.domain.entity.LoanOrderDO;
 import com.yunche.loan.domain.entity.LoanProcessDO;
 import com.yunche.loan.domain.vo.*;
-import com.yunche.loan.mapper.LoanCustomerDOMapper;
-import com.yunche.loan.mapper.LoanOrderDOMapper;
-import com.yunche.loan.mapper.LoanProcessDOMapper;
-import com.yunche.loan.mapper.LoanQueryDOMapper;
+import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.DictService;
 import com.yunche.loan.service.LoanQueryService;
+import com.yunche.loan.service.VideoFaceService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -235,6 +233,19 @@ public class LoanQueryServiceImpl implements LoanQueryService {
         List<UniversalCustomerFileVO> files_ = convert(files);
 
         return files_;
+    }
+
+    @Override
+    public String selectVideoFacePath(Long orderId) {
+
+        String path = loanQueryDOMapper.selectVideoFacePath(orderId);
+        if (StringUtils.isNotBlank(path)) {
+            path = path.replace("https://yunche-videosign.oss-cn-hangzhou.aliyuncs.com/", "");
+            path = path.replace("http://yunche-videosign.oss-cn-hangzhou.aliyuncs.com/", "");
+            path.trim();
+        }
+
+        return path;
     }
 
     /**

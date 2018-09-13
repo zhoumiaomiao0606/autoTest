@@ -8,6 +8,9 @@ public enum LoanProcessEnum {
     START("start_process", "流程启动"),
     END("end_process", "流程终止"),
 
+
+/////////////////////////////////////////////////// ↓↓↓↓↓--消费贷流程--↓↓↓↓↓ /////////////////////////////////////////////////////////
+
     // 电审前
     CREDIT_APPLY("usertask_credit_apply", "征信申请"),
 
@@ -15,7 +18,7 @@ public enum LoanProcessEnum {
     SOCIAL_CREDIT_RECORD("usertask_social_credit_record", "社会征信录入"),
     LOAN_INFO_RECORD("usertask_loan_info_record", "视频面签登记"),
 
-    LOAN_APPLY("usertask_loan_apply", "业务申请"),
+    LOAN_APPLY("usertask_loan_apply", "贷款申请"),
     VISIT_VERIFY("usertask_visit_verify", "上门调查"),
 
     BANK_OPEN_CARD("usertask_bank_open_card", "银行开卡"),
@@ -31,6 +34,7 @@ public enum LoanProcessEnum {
     CAR_INSURANCE("usertask_car_insurance", "车辆保险"),
     INSTALL_GPS("usertask_install_gps", "GPS安装"),
     COMMIT_KEY("usertask_commit_key", "待收钥匙"),
+    VIDEO_REVIEW("usertask_video_review", "视频审核"),
 
     MATERIAL_REVIEW("usertask_material_review", "资料审核"),
     MATERIAL_PRINT_REVIEW("usertask_material_print_review", "合同套打"),
@@ -47,12 +51,14 @@ public enum LoanProcessEnum {
     BANK_CARD_SEND("usertask_bank_card_send", "银行卡寄送"),
     CUSTOMER_REPAY_PLAN("usertask_customer_repay_plan", "客户还款计划"),
 
+
     ///////////////////////////////////////////// ↓↓↓↓↓--filter--↓↓↓↓↓ /////////////////////////////////////////////////
     BANK_SOCIAL_CREDIT_RECORD_FILTER("filter_bank_social_credit_record", "征信记录-拦截任务"),
     LOAN_APPLY_VISIT_VERIFY_FILTER("filter_loan_apply_visit_verify", "业务申请&上门调查-拦截任务"),
     REMIT_REVIEW_FILTER("filter_remit_review", "打款确认-拦截任务"),
     DATA_FLOW_MORTGAGE_P2C_NEW_FILTER("filter_data_flow_mortgage_p2c_new", "005-抵押资料合伙人至公司-新建-拦截任务"),
     APPLY_INSTEAD_PAY_FILTER("filter_apply_instead_pay", "申请代偿-开始-拦截任务"),
+    VIDEO_REVIEW_FILTER("filter_video_review", "视频审核-拦截任务"),
     ///////////////////////////////////////////// ↑↑↑↑↑--filter--↑↑↑↑↑ /////////////////////////////////////////////////
 
     /////////////////////////////////////////// ↓↓↓↓↓--流程外的节点--↓↓↓↓↓ //////////////////////////////////////////////
@@ -111,12 +117,16 @@ public enum LoanProcessEnum {
     ////////////////////////////////////////// ↑↑↑↑↑--资料流转--↑↑↑↑↑ ///////////////////////////////////////////////////
 
 
+////////////////////////////////////////////////// ↑↑↑↑↑--消费贷流程--↑↑↑↑↑ //////////////////////////////////////////////////////////
+
+
     //////////////////////////////////////////// ↓↓↓↓↓--代偿--↓↓↓↓↓ /////////////////////////////////////////////////////
     APPLY_INSTEAD_PAY("usertask_apply_instead_pay", "申请代偿"),
     FINANCE_INSTEAD_PAY_REVIEW("usertask_finance_instead_pay_review", "财务代偿-确认"),
     PARTNER_INSTEAD_PAY("usertask_partner_instead_pay", "合伙人代偿"),
     PARTNER_INSTEAD_PAY_REVIEW("usertask_partner_instead_pay_review", "合伙人代偿-确认"),
     //////////////////////////////////////////// ↑↑↑↑↑--代偿--↑↑↑↑↑ /////////////////////////////////////////////////////
+
 
     //////////////////////////////////////////// ↓↓↓↓↓--催收--↓↓↓↓↓ /////////////////////////////////////////////////////
     VISIT_COLLECTION_REVIEW("usertask_visit_collection_review", "上门拖车-审核"),
@@ -126,8 +136,16 @@ public enum LoanProcessEnum {
     SETTLE_ORDER("usertask_settle_order", "结清"),
 
     LEGAL_REVIEW("usertask_legal_review", "法务审核"),
-    LEGAL_RECORD("usertask_legal_record", "法务登记");
+    LEGAL_RECORD("usertask_legal_record", "法务登记"),
     //////////////////////////////////////////// ↑↑↑↑↑--催收--↑↑↑↑↑ /////////////////////////////////////////////////////
+
+
+    ///////////////////////////////////////// ↓↓↓↓↓--三方过桥资金--↓↓↓↓↓ /////////////////////////////////////////////////
+    BRIDGE_HANDLE("usertask_bridge_handle", "过桥处理(乙)"),
+    BRIDGE_REPAY_RECORD("usertask_bridge_repay_record", "还款登记(甲)"),
+    BRIDGE_INTEREST_RECORD("usertask_bridge_interest_record", "息费登记(甲)"),
+    BRIDGE_REPAY_INFO("usertask_bridge_repay_info", "还款信息(甲乙)");
+    //////////////////////////////////////// ↑↑↑↑↑--三方过桥资金----↑↑↑↑↑ ////////////////////////////////////////////////
 
 
     private String code;

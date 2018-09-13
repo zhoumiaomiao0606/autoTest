@@ -16,7 +16,7 @@ import com.yunche.loan.mapper.LoanFinancialPlanDOMapper;
 import com.yunche.loan.mapper.LoanOrderDOMapper;
 import com.yunche.loan.mapper.LoanQueryDOMapper;
 import com.yunche.loan.service.InstalmentService;
-import org.apache.commons.lang3.StringUtils;
+import com.yunche.loan.service.LoanQueryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,30 +41,29 @@ public class InstalmentServiceImpl implements InstalmentService {
     private LoanFileDOMapper loanFileDOMapper;
 
     @Autowired
+    private LoanQueryService loanQueryService;
+
+    @Autowired
     private LoanFinancialPlanDOMapper loanFinancialPlanDOMapper;
+
+
     @Override
     public RecombinationVO detail(Long orderId) {
-        LoanOrderDO orderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
 
-        if(orderDO == null){
+        LoanOrderDO orderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
+        if (orderDO == null) {
             throw new BizException("此订单不存在");
         }
-        Set<Byte> types = new HashSet<Byte>();
+
+        Set<Byte> types = new HashSet<>();
         for (TermFileEnum e : TermFileEnum.values()) {
             types.add(e.getKey());
         }
 
-        String path = loanQueryDOMapper.selectVideoFacePath(orderId);
-        if(StringUtils.isNotBlank(path)){
-            path =  path.replace("https://yunche-videosign.oss-cn-hangzhou.aliyuncs.com","");
-            path.trim();
-        }
-
-
-        RecombinationVO<ApplyDiviGeneralInfoVO> recombinationVO = new RecombinationVO<ApplyDiviGeneralInfoVO>();
+        RecombinationVO<ApplyDiviGeneralInfoVO> recombinationVO = new RecombinationVO<>();
         recombinationVO.setInfo(loanQueryDOMapper.selectApplyDiviGeneralInfo(orderId));
-        recombinationVO.setMaterials(loanQueryDOMapper.selectUniversalCustomerFileByTypes(orderId,types));
-        recombinationVO.setPath(path);
+        recombinationVO.setMaterials(loanQueryDOMapper.selectUniversalCustomerFileByTypes(orderId, types));
+        recombinationVO.setPath(loanQueryService.selectVideoFacePath(orderId));
         return recombinationVO;
     }
 
@@ -72,24 +71,24 @@ public class InstalmentServiceImpl implements InstalmentService {
     public void update(InstalmentUpdateParam param) {
         LoanOrderDO orderDO = loanOrderDOMapper.selectByPrimaryKey(Long.valueOf(param.getOrder_id()));
 
-        if(orderDO == null){
+        if (orderDO == null) {
             throw new BizException("此订单不存在");
         }
         //更新基准评估价
         Long financialPlanId = orderDO.getLoanFinancialPlanId();
-        if(financialPlanId ==null){
+        if (financialPlanId == null) {
             throw new BizException("金融方案信息不存在");
-        }else{
+        } else {
             LoanFinancialPlanDO financialPlanDO = loanFinancialPlanDOMapper.selectByPrimaryKey(financialPlanId);
-            if(param.getAppraisal()!=null){
+            if (param.getAppraisal() != null) {
                 financialPlanDO.setAppraisal(param.getAppraisal());
                 int count = loanFinancialPlanDOMapper.updateByPrimaryKeySelective(financialPlanDO);
-                Preconditions.checkArgument(count>0,"更新产品基准评估价失败");
+                Preconditions.checkArgument(count > 0, "更新产品基准评估价失败");
             }
         }
 
         Long customerId = orderDO.getLoanCustomerId();
-        if(customerId == null){
+        if (customerId == null) {
             throw new BizException("客户不存在");
         }
 
@@ -97,7 +96,7 @@ public class InstalmentServiceImpl implements InstalmentService {
             if (param.getFiles() != null) {
                 if (!param.getFiles().isEmpty()) {
                     for (UniversalFileParam universalFileParam : param.getFiles()) {
-                        List<LoanFileDO> uploadList = loanFileDOMapper.listByCustomerIdAndType(customerId,new Byte(universalFileParam.getType()), null);
+                        List<LoanFileDO> uploadList = loanFileDOMapper.listByCustomerIdAndType(customerId, new Byte(universalFileParam.getType()), null);
                         for (LoanFileDO loanFileDO : uploadList) {
                             loanFileDOMapper.deleteByPrimaryKey(loanFileDO.getId());
                         }

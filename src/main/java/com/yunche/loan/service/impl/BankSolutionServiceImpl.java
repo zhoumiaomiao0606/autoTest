@@ -131,6 +131,9 @@ public class BankSolutionServiceImpl implements BankSolutionService {
     @Autowired
     private LoanProcessService loanProcessService;
 
+    @Autowired
+    private BankInterfaceLogDOMapper bankInterfaceLogDOMapper;
+
     //征信自动提交
     @Override
     public void creditAutomaticCommit(Long orderId) {
@@ -256,11 +259,11 @@ public class BankSolutionServiceImpl implements BankSolutionService {
             default:
                 return;
         }
-
     }
 
 
     public void multimediaUploadProcess(Long orderId, String phybrno) {
+
         LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
         if (loanOrderDO == null) {
             throw new BizException("此订单不存在");
@@ -285,25 +288,18 @@ public class BankSolutionServiceImpl implements BankSolutionService {
             throw new BizException("贷款人不存在");
         }
 
-        List<ICBCApiRequest.Picture> pictures = Lists.newArrayList();
-
         String path = loanQueryDOMapper.selectVideoFacePath(orderId);
         if (StringUtils.isBlank(path)) {
             throw new BizException("缺少面签视频");
         }
-
-        if (StringUtils.isBlank(path)) {
-            throw new BizException("缺少面签视频");
-        }
-
 
         String picName = GeneratorIDUtil.execute() + ImageUtil.MP4_SUFFIX;
         ICBCApiRequest.Picture picture = new ICBCApiRequest.Picture();
         picture.setPicid(MultimediaUploadEnum.VIDEO_INTERVIEW.getKey());
         picture.setPicname(picName);
         picture.setPicnote(MultimediaUploadEnum.VIDEO_INTERVIEW.getValue());
-        pictures.add(picture);
 
+        List<ICBCApiRequest.Picture> pictures = Lists.newArrayList(picture);
         if (pictures.size() == 0) {
             throw new BizException("缺少面签视频");
         }
@@ -327,6 +323,9 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         multimediaUpload.setPictures(pictures);
         multimediaUpload.setCustomerId(customerId.toString());
         violationUtil.violation(multimediaUpload, MultimediaUploadValidated.class);
+
+
+        bankInterfaceLog(orderId,IDict.K_TRANS_CODE.MULTIMEDIAUPLOAD);
 
         asyncUpload.execute(new Process() {
             @Override
@@ -680,7 +679,8 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         applyDiviGeneral.setCustomer(customer);
         applyDiviGeneral.setPictures(pictures);
         violationUtil.violation(applyDiviGeneral, ApplyDiviGeneralValidated.class);
-
+        //记录日志
+        bankInterfaceLog(orderId,IDict.K_TRANS_CODE.APPLYDIVIGENERAL);
 
         asyncUpload.execute(new Process() {
             @Override
@@ -729,11 +729,11 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         //获取用户授权书签字照
         UniversalMaterialRecordVO authSignPic = loanQueryDOMapper.getUniversalCustomerFilesByType(loanCustomerDO.getId(), new Byte("5"));
         if (authSignPic == null) {
-            throw new BizException(loanCustomerDO.getName() + "授权书签字照不存在");
+            throw new BizException(loanCustomerDO.getName() + ":授权书签字照不存在");
         }
 
         if (CollectionUtils.isEmpty(authSignPic.getUrls())) {
-            throw new BizException(loanCustomerDO.getName() + "授权书签字照不存在");
+            throw new BizException(loanCustomerDO.getName() + ":授权书签字照不存在");
         }
 
         //将身份证正反面、授权书、授权书签字照合成一个word（一个客户合成一张word，如征信申请中有2个客户，则合成2个word）。若存在一个客户合成失败，流程终止。
@@ -817,6 +817,9 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         //走你
         violationUtil.violation(applyCredit, ApplyCreditValidated.class);
 
+        //记录日志
+        bankInterfaceLog(orderId,IDict.K_TRANS_CODE.APPLYCREDIT);
+
         asyncUpload.execute(new Process() {
             @Override
             public void process() {
@@ -827,6 +830,40 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         });
 
     }
+
+    /**
+     * 记录银行接口交互操作日志
+     * @param orderId
+     * @param transCode
+     */
+    private void bankInterfaceLog(Long orderId, String transCode) {
+
+        EmployeeDO loginUser = SessionUtils.getLoginUser();
+        String name=null;
+
+        if(loginUser!=null){
+            name = loginUser.getName();
+        }else{
+            name ="未知";
+        }
+
+
+        BankInterfaceLogDO bankInterfaceLogDO = new BankInterfaceLogDO();
+        bankInterfaceLogDO.setOrderId(orderId);
+        bankInterfaceLogDO.setOperateName(name);
+        bankInterfaceLogDO.setOperateDate(new Date());
+        bankInterfaceLogDO.setTransCode(transCode);
+
+        BankInterfaceLogDO logDO = bankInterfaceLogDOMapper.selectByPrimaryKey(bankInterfaceLogDO);
+        if(logDO==null){
+            int count = bankInterfaceLogDOMapper.insertSelective(bankInterfaceLogDO);
+            Preconditions.checkArgument(count>0,transCode+":日志保存失败");
+        }else{
+            int count = bankInterfaceLogDOMapper.updateByPrimaryKeySelective(bankInterfaceLogDO);
+            Preconditions.checkArgument(count>0,transCode+":日志保存失败");
+        }
+    }
+
 
     /**
      * 银行拒绝直接打回到征信申请（待定）
@@ -1021,6 +1058,8 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         //参数校验
         violationUtil.violation(applyBankOpenCard);
         violationUtil.violation(customer);
+        //记录日志
+        bankInterfaceLog(bankOpenCardParam.getOrderId(),IDict.K_TRANS_CODE.CREDITCARDAPPLY);
 
         asyncUpload.execute(new Process() {
 

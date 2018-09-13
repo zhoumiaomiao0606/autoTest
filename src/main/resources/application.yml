@@ -2,10 +2,15 @@ spring:
   profiles: dev
   datasource:
     type: com.alibaba.druid.pool.DruidDataSource
-    url: jdbc:mysql://47.97.112.202:3307/test_loan_biz?useUnicode=true&characterEncoding=utf-8
-    username: yunche
-    password: yc_123
-    driver-class-name: com.mysql.jdbc.Driver
+    druid:
+      url: jdbc:mysql://47.97.112.202:3307/test_loan_biz?useUnicode=true&characterEncoding=utf-8
+      username: yunche
+      password: yc_123
+      driver-class-name: com.mysql.jdbc.Driver
+      max-wait: 10000
+      max-idle: 100
+      max-active: 100
+      test-on-borrow: true
     tomcat:
       max-wait: 10000
       max-idle: 100
@@ -41,14 +46,19 @@ spring:
 spring:
   profiles: prepub
   datasource:
-    url: jdbc:mysql://rm-bp1uk11f20h4i65u90o.mysql.rds.aliyuncs.com:3306/yunche_loan_biz?useUnicode=true&characterEncoding=utf-8
-    username: yuncheadmin
-    password: Yunche_2018
-    driver-class-name: com.mysql.jdbc.Driver
+    druid:
+      url: jdbc:mysql://rm-bp1uk11f20h4i65u90o.mysql.rds.aliyuncs.com:3306/yunche_loan_biz?useUnicode=true&characterEncoding=utf-8
+      username: yuncheadmin
+      password: Yunche_2018
+      driver-class-name: com.mysql.jdbc.Driver
+      max-wait: 10000
+      max-idle: 100
+      max-active: 100
+      test-on-borrow: true
     tomcat:
       max-wait: 10000
-      max-idle: 30
-      max-active: 30
+      max-idle: 1000
+      max-active: 1000
       test-on-borrow: true
 
   redis:
@@ -84,6 +94,10 @@ spring:
       username: yuncheadmin
       password: Yunche_2018
       driver-class-name: com.mysql.jdbc.Driver
+      max-wait: 10000
+      max-idle: 2000
+      max-active: 2000
+      test-on-borrow: true
     tomcat:
       max-wait: 10000
       max-idle: 2000

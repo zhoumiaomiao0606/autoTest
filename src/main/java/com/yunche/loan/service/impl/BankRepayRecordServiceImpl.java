@@ -96,7 +96,7 @@ public class BankRepayRecordServiceImpl implements BankRepayRecordService {
     }
 
     /**
-     *
+     * 文件清单列表
      * @param pageIndex
      * @param pageSize
      * @param fileName
@@ -114,7 +114,7 @@ public class BankRepayRecordServiceImpl implements BankRepayRecordService {
     }
 
     /**
-     *
+     *  银行还款详情页
      * @param pageIndex
      * @param pageSize
      * @param listId
@@ -133,7 +133,7 @@ public class BankRepayRecordServiceImpl implements BankRepayRecordService {
     }
 
     /**
-     *
+     * 导入银行还款文件
      * @param ossKey
      * @return
      */
@@ -152,7 +152,7 @@ public class BankRepayRecordServiceImpl implements BankRepayRecordService {
     }
 
     /**
-     *
+     * 还款文件自动导入
      * @param ossKey
      * @return
      */
@@ -179,7 +179,7 @@ public class BankRepayRecordServiceImpl implements BankRepayRecordService {
     }
 
     /**
-     *
+     * 线上银行还款文件自动导入
      * @param ossKey
      * @return
      */

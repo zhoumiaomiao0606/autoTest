@@ -32,9 +32,9 @@ public class LoanRefundApplyParam {
 
     public String getPath() {
         if (CollectionUtils.isEmpty(path)) {
-            return JSON.toJSONString(new ArrayList<>());
+            return "[]";
         }
-        return JSON.toJSON(path).toString();
+        return JSON.toJSONString(path);
     }
 
 }

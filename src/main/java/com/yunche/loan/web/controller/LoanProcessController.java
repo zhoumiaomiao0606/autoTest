@@ -24,7 +24,7 @@ import java.util.Map;
  */
 @CrossOrigin
 @RestController
-@RequestMapping("/api/v1/loanprocess")
+@RequestMapping(value = {"/api/v1/loanprocess", "/api/v1/app/loanprocess"})
 public class LoanProcessController {
 
     @Autowired
@@ -40,7 +40,7 @@ public class LoanProcessController {
      *
      * @return
      */
-    @Limiter("/api/v1/loanprocess/approval")
+    @Limiter
     @PostMapping(value = "/approval", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean<Void> approval(@RequestBody ApprovalParam approval) {
         approval.setCheckPermission(true);
@@ -126,6 +126,8 @@ public class LoanProcessController {
             processInstance = runtimeService.startProcessInstanceByKey(ActivitiConst.LOAN_PROCESS_COLLECTION_KEY);
         } else if (ActivitiConst.LOAN_PROCESS_LEGAL_KEY.equals(processDefinitionKey)) {
             processInstance = runtimeService.startProcessInstanceByKey(ActivitiConst.LOAN_PROCESS_LEGAL_KEY);
+        } else if (ActivitiConst.LOAN_PROCESS_BRIDGE_KEY.equals(processDefinitionKey)) {
+            processInstance = runtimeService.startProcessInstanceByKey(ActivitiConst.LOAN_PROCESS_BRIDGE_KEY);
         }
 
         Preconditions.checkNotNull(processInstance, "开启流程实例异常");

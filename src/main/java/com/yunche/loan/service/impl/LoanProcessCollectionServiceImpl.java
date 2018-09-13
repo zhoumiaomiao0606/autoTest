@@ -38,9 +38,6 @@ import static com.yunche.loan.config.constant.LoanProcessVariableConst.PROCESS_V
 public class LoanProcessCollectionServiceImpl implements LoanProcessCollectionService {
 
     @Autowired
-    private LoanOrderDOMapper loanOrderDOMapper;
-
-    @Autowired
     private LoanProcessCollectionDOMapper loanProcessCollectionDOMapper;
 
     @Autowired
@@ -95,7 +92,7 @@ public class LoanProcessCollectionServiceImpl implements LoanProcessCollectionSe
         }
 
         // 业务单
-        LoanOrderDO loanOrderDO = getLoanOrder(approval.getOrderId());
+        LoanOrderDO loanOrderDO = loanProcessApprovalCommonService.getLoanOrder(approval.getOrderId());
 
         // 节点实时状态
         LoanProcessCollectionDO loanProcessDO = getLoanProcess(approval.getProcessId());
@@ -185,20 +182,6 @@ public class LoanProcessCollectionServiceImpl implements LoanProcessCollectionSe
         Preconditions.checkArgument(count > 0, "创建失败");
 
         return loanProcessCollectionDO.getId();
-    }
-
-    /**
-     * 获取业务单
-     *
-     * @param orderId
-     * @return
-     */
-    public LoanOrderDO getLoanOrder(Long orderId) {
-        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
-        Preconditions.checkNotNull(loanOrderDO, "业务单不存在");
-        Preconditions.checkNotNull(loanOrderDO.getProcessInstId(), "流程实例ID不存在");
-
-        return loanOrderDO;
     }
 
     /**
@@ -557,5 +540,4 @@ public class LoanProcessCollectionServiceImpl implements LoanProcessCollectionSe
             Preconditions.checkArgument(count > 0, "更新失败");
         }
     }
-
 }

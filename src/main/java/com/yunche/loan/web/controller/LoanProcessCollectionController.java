@@ -29,7 +29,7 @@ public class LoanProcessCollectionController {
      * @param approval
      * @return
      */
-    @Limiter("/api/v1/loanProcess/collection/approval")
+    @Limiter
     @PostMapping(value = "/approval", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean<Void> approval(@RequestBody ApprovalParam approval) {
         approval.setCheckPermission(true);

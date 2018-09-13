@@ -347,6 +347,9 @@
                         <!-- 杭州城站 - [视频面签登记]-已提交-->
                         WHEN join_bk.id = 1 THEN
                             deputy.loan_info_record = 1
+                        <!-- 哈尔滨顾乡支行 - [视频面签登记]-已提交-->
+                        WHEN join_bk.id = 2 THEN
+                            deputy.loan_info_record = 1
                         <!-- 台州路桥支行 - [视频面签登记]-已提交-->
                         WHEN join_bk.id = 3 THEN
                             deputy.loan_info_record = 1
@@ -405,6 +408,8 @@
             select complex.*,
             complex_log.usertask_credit_apply_gmt_user_name                                    AS creditMan,
             DATE_FORMAT(complex_log.usertask_credit_apply_create_time, '%Y-%m-%d %H:%i:%S' )   AS creditDate,
+            DATE_FORMAT(complex_log.usertask_bank_credit_record_create_time, '%Y-%m-%d %H:%i:%S' )   AS bankCreditDate,
+            DATE_FORMAT(complex_log.usertask_social_credit_record_create_time, '%Y-%m-%d %H:%i:%S' )   AS socialCreditDate,
             DATE_FORMAT(complex_log.usertask_remit_review_create_time,'%Y-%m-%d %H:%i:%S')     AS remitGmtCreate,
             DATE_FORMAT(complex_log.usertask_loan_apply_create_time,'%Y-%m-%d %H:%i:%S')       AS loanGmtCreate,
             DATE_FORMAT(complex_log.usertask_telephone_verify_create_time,'%Y-%m-%d %H:%i:%S') AS telephoneGmtCreate,
@@ -541,6 +546,9 @@
                       <when test="taskDefinitionKey == 'usertask_bank_lend_record'">
                           deputy.bank_lend_record                   AS taskStatus
                       </when>
+                      <when test="taskDefinitionKey == 'usertask_video_review'">
+                          deputy.video_review                       AS taskStatus
+                      </when>
                       <when test="taskDefinitionKey == 'usertask_info_supplement'">
                           join_s.type                               AS supplementType,
                           join_s.content                            AS supplementContent,
@@ -562,11 +570,15 @@
                       <when test="taskDefinitionKey == 'usertask_refund_apply'">
                           join_refund.id                           AS refund_id,
                           DATE_FORMAT(join_refund.start_time,'%Y-%m-%d %H:%i:%S')        AS refund_start_time,
+                          DATE_FORMAT(join_refund.end_time,'%Y-%m-%d %H:%i:%S')          AS refund_end_time,
+                          join_refund.refund_amount                AS refund_amount,
                           join_refund.status                       AS taskStatus
                       </when>
                       <when test="taskDefinitionKey == 'usertask_refund_apply_review'">
                           join_refund.id                           AS refund_id,
                           DATE_FORMAT(join_refund.start_time,'%Y-%m-%d %H:%i:%S')        AS refund_start_time,
+                          DATE_FORMAT(join_refund.end_time,'%Y-%m-%d %H:%i:%S')          AS refund_end_time,
+                          join_refund.refund_amount                AS refund_amount,
                           join_refund.status                       AS taskStatus
                       </when>
                       <when test="taskDefinitionKey == 'usertask_customer_repay_plan'">
@@ -735,7 +747,7 @@
                           deputy_.id                                   AS processId,
                           compensation.partner_compensation_amount     AS partnerCompensationAmount,
                           compensation.compensation_amount             AS compensationAmount,
-                          deputy_.bank_repay_imp_record_id                 AS insteadPayOrderId,
+                          deputy_.bank_repay_imp_record_id             AS insteadPayOrderId,
                           compensation.curr_arrears                    AS currArrears,
                           compensation.loan_banlance                   AS loanBanlance,
                           compensation.advances_banlance               AS advancesBanlance,
@@ -765,6 +777,27 @@
                       </when>
                       <when test="taskDefinitionKey == 'usertask_material_manage'">
                           deputy.material_manage                 AS taskStatus
+                      </when>
+
+
+                      <when test="taskDefinitionKey == 'usertask_bridge_repay_record'">
+                          bridge.bridge_repay_record             AS taskStatus
+                      </when>
+                      <when test="taskDefinitionKey == 'usertask_bridge_interest_record'">
+                          bridge.bridge_interest_record             AS taskStatus,
+                          third_party.interest                           AS bridgeInterest,
+                          third_party.poundage                           AS bridgePoundage
+
+
+                      </when>
+                      <when test="taskDefinitionKey == 'usertask_bridge_handle'">
+                          third_party.lend_date                AS bridgeLendDate,
+                          bridge.bridge_interest_record             AS taskStatus
+                      </when>
+                      <when test="taskDefinitionKey == 'usertask_bridge_repay_info'">
+                          third_party.repay_remark                AS bridgeRepayRemark,
+                          third_party.repay_type                  AS bridgeRepayType,
+                          bridge.bridge_repay_info             AS taskStatus
                       </when>
                       <otherwise>
                         0                                         AS taskStatus
@@ -820,6 +853,13 @@
                   left join loan_apply_compensation compensation on compensation.id = deputy_.bank_repay_imp_record_id
                   left join bank_file_list_record join_rep          on join_rep.bank_file_list_id = deputy_.bank_repay_imp_record_id and deputy_.order_id = join_rep.order_id
               </if>
+              <if test="taskDefinitionKey == 'usertask_bridge_handle'
+                        || taskDefinitionKey == 'usertask_bridge_repay_record'
+                        || taskDefinitionKey == 'usertask_bridge_interest_record'
+                        || taskDefinitionKey == 'usertask_bridge_repay_info'">
+                  left join loan_process_bridge bridge on bridge.order_id = main.id
+                  left join third_party_fund_business  third_party on third_party.order_id = main.id
+              </if>
               <if test="taskDefinitionKey == 'usertask_collection_workbench'">
                   left join bank_urge_record join_urgerecord        on main.id          = join_urgerecord.order_id
                   left join employee sendee                         on join_urgerecord.sendee   = sendee.id
@@ -870,6 +910,7 @@
                   left join loan_process_legal deputy_l on deputy_l.order_id = main.id
                   left join bank_file_list_record join_rep          on join_rep.bank_file_list_id = join_urgerecord.bank_repay_imp_record_id and join_urgerecord.order_id = join_rep.order_id
               </if>
+
               where 1=1
               <if test="taskStatus != 0">
                   <choose>
@@ -1014,6 +1055,9 @@
                   <when test="taskDefinitionKey == 'usertask_loan_info_record'">
                       AND case when #{taskStatus} = 0 then deputy.loan_info_record != 0                  else deputy.loan_info_record        = #{taskStatus} end
                   </when>
+                  <when test="taskDefinitionKey == 'usertask_video_review'">
+                      AND case when #{taskStatus} = 0 then deputy.video_review != 0                      else deputy.video_review        = #{taskStatus} end
+                  </when>
                   <when test="taskDefinitionKey == 'usertask_apply_instead_pay'">
                       AND case when #{taskStatus} = 0 then deputy_.apply_instead_pay != 0                else deputy_.apply_instead_pay        = #{taskStatus} end
                   </when>
@@ -1055,6 +1099,18 @@
                   </when>
                   <when test="taskDefinitionKey == 'usertask_material_manage'">
                       AND case when #{taskStatus} = 0 then deputy.material_manage != 0                   else deputy.material_manage   = #{taskStatus} end
+                  </when>
+                  <when test="taskDefinitionKey == 'usertask_bridge_handle'">
+                      AND case when #{taskStatus} = 0 then bridge.bridge_handle !=0 else bridge.bridge_handle = #{taskStatus} end
+                  </when>
+                  <when test="taskDefinitionKey == 'usertask_bridge_repay_record'">
+                      AND case when #{taskStatus} = 0 then bridge.bridge_repay_record !=0 else bridge.bridge_repay_record = #{taskStatus} end
+                  </when>
+                  <when test="taskDefinitionKey == 'usertask_bridge_interest_record'">
+                      AND case when #{taskStatus} = 0 then bridge.bridge_interest_record !=0 else bridge.bridge_interest_record = #{taskStatus} end
+                  </when>
+                  <when test="taskDefinitionKey == 'usertask_bridge_repay_info'">
+                      AND case when #{taskStatus} = 0 then bridge.bridge_repay_info !=0 else bridge.bridge_repay_info = #{taskStatus} end
                   </when>
                   <otherwise>
                       AND 1=2

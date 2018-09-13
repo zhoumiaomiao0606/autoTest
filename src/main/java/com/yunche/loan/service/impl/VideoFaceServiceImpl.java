@@ -289,6 +289,10 @@ public class VideoFaceServiceImpl implements VideoFaceService {
         if (BANK_ID_ICBC_HangZhou_City_Station_Branch.equals(bankId)) {
             questionList = get_Question_List_ICBC_HangZhou_City_Station_Branch(bankId, orderId);
         }
+        // 2
+        if (BANK_ID_ICBC_Harbin_GuXiang_Branch.equals(bankId)) {
+            questionList = get_Question_List_ICBC_Harbin_City_Station_Branch(bankId, orderId);
+        }
 
         // 3
         else if (BANK_ID_ICBC_TaiZhou_LuQiao_Branch.equals(bankId) || BANK_ID_ICBC_TaiZhou_LuQiao__Branch_TEST.equals(bankId)) {
@@ -308,6 +312,29 @@ public class VideoFaceServiceImpl implements VideoFaceService {
             videoFaceFlagVO.setFlag("1");
         }
         return videoFaceFlagVO;
+    }
+
+    private List<String> get_Question_List_ICBC_Harbin_City_Station_Branch(Long bankId, Long orderId){
+        VideoFaceQuestionAnswerVO videoFaceQuestionAnswerVO = setAndGetVideoFaceQuestionAnswerVO(bankId, orderId);
+        String question_1 = "1、您好，请问是" + redText(videoFaceQuestionAnswerVO.getCustomerName()) + "先生/女士吗？您的身份证号码多少？参考答案：是。"+redText(videoFaceQuestionAnswerVO.getCustomerIdCard());
+        String question_2 = "2、您是否通过哈尔滨云车汽车服务有限公司向工商银行哈尔滨顾乡支行申请一笔汽车专项分期付款？参考答案：是";
+        String question_3 = "3、您现在的工作单位是什么？月收入多少？";
+        String question_4 = "4、您所购车辆为"+redText(videoFaceQuestionAnswerVO.getCarBrandName())+redText(videoFaceQuestionAnswerVO.getCarName())
+                +",车辆价格为"+redText(videoFaceQuestionAnswerVO.getCarPrice())+"，分期金额为"+redText(videoFaceQuestionAnswerVO.getBankPeriodPrincipal())
+                +"元，分期期限为"+redText(videoFaceQuestionAnswerVO.getLoanTime())+"月，每月还款"+redText(videoFaceQuestionAnswerVO.getEachMonthRepay())+"元。以上信息是否确认无误?" +
+                "参考答案：是";
+        String question_5 ="您是否知晓本笔车贷业务由哈尔滨云车汽车服务有限公司进行担保，该公司会根据协议约定向您收取担保服务费，我行仅向您收取协议中约定的分期付款手续费。参考答案：是";
+        String question_6 ="请您务必在合同上填写正确的手机号码和联系地址";
+        String question_7 ="请您现在在信用卡申请表上签名";
+        String question_8 ="请您现在在征信授权书上签名";
+        String question_9 ="请您现在在汽车专项分期付款业务申请表上签名";
+        String question_10 ="请您现在在汽车专项分期付款/担保合同上签名";
+        String question_11 ="感谢您的配合，温馨提示：为了保障您的信用记录，请于每月到期还款日前存入足额本息，确保按时还款。";
+
+        List<String> questionList = Lists.newArrayList(question_1, question_2, question_3, question_4, question_5,
+                question_6, question_7, question_8, question_9, question_10,
+                question_11);
+        return questionList;
     }
 
     private List<String> get_Question_List_ICBC_TaiZhou_LuQiao_Branch(Long bankId, Long orderId, String address) {

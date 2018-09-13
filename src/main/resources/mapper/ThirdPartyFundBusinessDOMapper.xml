@@ -5,6 +5,7 @@
     <id column="order_id" jdbcType="BIGINT" property="orderId" />
     <result column="lend_date" jdbcType="TIMESTAMP" property="lendDate" />
     <result column="repay_type" jdbcType="TINYINT" property="repayType" />
+    <result column="repay_date" jdbcType="TIMESTAMP" property="repayDate" />
     <result column="repay_remark" jdbcType="VARCHAR" property="repayRemark" />
     <result column="interest" jdbcType="DECIMAL" property="interest" />
     <result column="poundage" jdbcType="DECIMAL" property="poundage" />
@@ -14,7 +15,7 @@
     <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify" />
   </resultMap>
   <sql id="Base_Column_List">
-    order_id, lend_date, repay_type, repay_remark, interest, poundage, repay_interest_date, 
+    order_id, lend_date, repay_type, repay_date, repay_remark, interest, poundage, repay_interest_date, 
     repay_register_remark, gmt_create, gmt_modify
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
@@ -29,12 +30,12 @@
   </delete>
   <insert id="insert" parameterType="com.yunche.loan.domain.entity.ThirdPartyFundBusinessDO">
     insert into third_party_fund_business (order_id, lend_date, repay_type, 
-      repay_remark, interest, poundage, 
-      repay_interest_date, repay_register_remark, 
+      repay_date, repay_remark, interest, 
+      poundage, repay_interest_date, repay_register_remark, 
       gmt_create, gmt_modify)
     values (#{orderId,jdbcType=BIGINT}, #{lendDate,jdbcType=TIMESTAMP}, #{repayType,jdbcType=TINYINT}, 
-      #{repayRemark,jdbcType=VARCHAR}, #{interest,jdbcType=DECIMAL}, #{poundage,jdbcType=DECIMAL}, 
-      #{repayInterestDate,jdbcType=TIMESTAMP}, #{repayRegisterRemark,jdbcType=VARCHAR}, 
+      #{repayDate,jdbcType=TIMESTAMP}, #{repayRemark,jdbcType=VARCHAR}, #{interest,jdbcType=DECIMAL}, 
+      #{poundage,jdbcType=DECIMAL}, #{repayInterestDate,jdbcType=TIMESTAMP}, #{repayRegisterRemark,jdbcType=VARCHAR}, 
       #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModify,jdbcType=TIMESTAMP})
   </insert>
   <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.ThirdPartyFundBusinessDO">
@@ -48,6 +49,9 @@
       </if>
       <if test="repayType != null">
         repay_type,
+      </if>
+      <if test="repayDate != null">
+        repay_date,
       </if>
       <if test="repayRemark != null">
         repay_remark,
@@ -81,6 +85,9 @@
       <if test="repayType != null">
         #{repayType,jdbcType=TINYINT},
       </if>
+      <if test="repayDate != null">
+        #{repayDate,jdbcType=TIMESTAMP},
+      </if>
       <if test="repayRemark != null">
         #{repayRemark,jdbcType=VARCHAR},
       </if>
@@ -113,6 +120,9 @@
       <if test="repayType != null">
         repay_type = #{repayType,jdbcType=TINYINT},
       </if>
+      <if test="repayDate != null">
+        repay_date = #{repayDate,jdbcType=TIMESTAMP},
+      </if>
       <if test="repayRemark != null">
         repay_remark = #{repayRemark,jdbcType=VARCHAR},
       </if>
@@ -141,6 +151,7 @@
     update third_party_fund_business
     set lend_date = #{lendDate,jdbcType=TIMESTAMP},
       repay_type = #{repayType,jdbcType=TINYINT},
+      repay_date = #{repayDate,jdbcType=TIMESTAMP},
       repay_remark = #{repayRemark,jdbcType=VARCHAR},
       interest = #{interest,jdbcType=DECIMAL},
       poundage = #{poundage,jdbcType=DECIMAL},
@@ -154,14 +165,14 @@
   <!-- batchInsert -->
   <insert id="batchInsert" parameterType="java.util.List">
     insert into third_party_fund_business (order_id, lend_date, repay_type,
-    repay_remark, interest, poundage,
-    repay_interest_date, repay_register_remark,
+    repay_date, repay_remark, interest,
+    poundage, repay_interest_date, repay_register_remark,
     gmt_create, gmt_modify)
     values
     <foreach collection="list" item="item" index="index" separator=",">
       (#{item.orderId,jdbcType=BIGINT}, #{item.lendDate,jdbcType=TIMESTAMP}, #{item.repayType,jdbcType=TINYINT},
-      #{item.repayRemark,jdbcType=VARCHAR}, #{item.interest,jdbcType=DECIMAL}, #{item.poundage,jdbcType=DECIMAL},
-      #{item.repayInterestDate,jdbcType=TIMESTAMP}, #{item.repayRegisterRemark,jdbcType=VARCHAR},
+      #{item.repayDate,jdbcType=TIMESTAMP},#{item.repayRemark,jdbcType=VARCHAR}, #{item.interest,jdbcType=DECIMAL},
+      #{item.poundage,jdbcType=DECIMAL},#{item.repayInterestDate,jdbcType=TIMESTAMP}, #{item.repayRegisterRemark,jdbcType=VARCHAR},
       #{item.gmtCreate,jdbcType=TIMESTAMP}, #{item.gmtModify,jdbcType=TIMESTAMP})
     </foreach>
   </insert>
