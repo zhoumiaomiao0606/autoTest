@@ -568,6 +568,10 @@ public class LoanProcessApprovalRollBackServiceImpl implements LoanProcessApprov
 
             String taskKey = taskKeys.get(i);
 
+            if (taskKey.startsWith("filter")) {
+                return;
+            }
+
             String[] taskKeyArr = taskKey.split("usertask");
 
             String methodBody = StringUtil.underline2Camel(taskKeyArr[1]);

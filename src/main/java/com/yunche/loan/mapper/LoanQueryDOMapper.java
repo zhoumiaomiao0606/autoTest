@@ -51,7 +51,8 @@ public interface LoanQueryDOMapper {
     boolean checkCollectionUserRole(@Param("loginUserId") Long loginUserId);
 
     List<UniversalCustomerOrderVO> selectUniversalModifyCustomerOrder(@Param("employeeId") Long employeeId,
-                                                                      @Param("name") String name, @Param("maxGroupLevel") Long maxGroupLevel,
+                                                                      @Param("name") String name,
+                                                                      @Param("maxGroupLevel") Long maxGroupLevel,
                                                                       @Param("juniorIds") Set<String> juniorIds);
 
     List<UniversalCustomerOrderVO> selectUniversalRefundCustomerOrder(@Param("employeeId") Long employeeId,
@@ -67,7 +68,8 @@ public interface LoanQueryDOMapper {
      * @return
      */
     List<UniversalCustomerOrderVO> selectUniversalDataFlowCustomerOrder(@Param("employeeId") Long employeeId,
-                                                                        @Param("name") String name, @Param("maxGroupLevel") Long maxGroupLevel,
+                                                                        @Param("name") String name,
+                                                                        @Param("maxGroupLevel") Long maxGroupLevel,
                                                                         @Param("juniorIds") Set<String> juniorIds);
 
     VehicleInformationVO selectVehicleInformation(Long orderId);
@@ -270,7 +272,8 @@ public interface LoanQueryDOMapper {
 
     List<InsuranceCustomerVO> selectInsuranceCustomer(Long orderId);
 
-    List<InsuranceCustomerVO> selectInsuranceCustomerByYear(@Param("orderId") Long orderId, @Param("insuranceYear") Byte insuranceYear);
+    List<InsuranceCustomerVO> selectInsuranceCustomerByYear(@Param("orderId") Long orderId,
+                                                            @Param("insuranceYear") Byte insuranceYear);
 
     InsuranceCustomerVO selectInsuranceCustomerNormalizeInsuranceYear(Long orderId);
 
