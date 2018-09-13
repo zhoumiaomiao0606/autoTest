@@ -514,7 +514,7 @@ public class POIUtil {
                             Field field = ffields[i];
                             // 此处应该判断beanObj,property不为null
                             PropertyDescriptor pd = new PropertyDescriptor(field.getName(), clazz1);
-                            getlMethods.add(pd.getReadMethod());
+                            getfMethods.add(pd.getReadMethod());
                         }
 
 
@@ -526,7 +526,7 @@ public class POIUtil {
                         Field field = gfields[i];
                         // 此处应该判断beanObj,property不为null
                         PropertyDescriptor pd = new PropertyDescriptor(field.getName(), clazz2);
-                        getfMethods.add(pd.getReadMethod());
+                        getlMethods.add(pd.getReadMethod());
                     }
 
 
@@ -570,17 +570,17 @@ public class POIUtil {
                             if (familyLinkManList.get(f) != null)
                             {
                                 FamilyLinkManVO familyLinkManVO = familyLinkManList.get(f);
-                                for (int j = 0; j < getlMethods.size(); j++)
+                                for (int j = 0; j < getfMethods.size(); j++)
                                 {
                                     cell = row.createCell(cellpoint);
-                                    if (getlMethods.get(j).invoke(familyLinkManVO) instanceof BigDecimal)
+                                    if (getfMethods.get(j).invoke(familyLinkManVO) instanceof BigDecimal)
                                     {
 
-                                        cell.setCellValue(((BigDecimal) getlMethods.get(j).invoke(familyLinkManVO)).toString());
+                                        cell.setCellValue(((BigDecimal) getfMethods.get(j).invoke(familyLinkManVO)).toString());
 
                                     } else
                                         {
-                                        cell.setCellValue((String) getlMethods.get(j).invoke(familyLinkManVO));
+                                        cell.setCellValue((String) getfMethods.get(j).invoke(familyLinkManVO));
                                     }
 
                                     cellpoint++;
@@ -609,14 +609,14 @@ public class POIUtil {
                         for(int j=0;j<getlMethods.size();j++)
                         {
                             cell = row.createCell(cellpoint);
-                            if (getfMethods.get(j).invoke(guarantorLinkManVO) instanceof BigDecimal)
+                            if (getlMethods.get(j).invoke(guarantorLinkManVO) instanceof BigDecimal)
                             {
 
-                                cell.setCellValue( ((BigDecimal)getfMethods.get(j).invoke(guarantorLinkManVO)).toString());
+                                cell.setCellValue( ((BigDecimal)getlMethods.get(j).invoke(guarantorLinkManVO)).toString());
 
                             }else
                             {
-                                cell.setCellValue((String)getfMethods.get(j).invoke(guarantorLinkManVO));
+                                cell.setCellValue((String)getlMethods.get(j).invoke(guarantorLinkManVO));
                             }
                             cellpoint++;
                         }
