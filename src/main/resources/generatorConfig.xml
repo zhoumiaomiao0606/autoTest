@@ -47,7 +47,24 @@
 
 
         <!-- 指定数据库表 -->
-        <!-- schema即为数据库名 tableName为对应的数据库表 domainObjectName是要生成的实体类 enable*ByExample : 是否生成 example类   -->
+        <!--
+            schema即为数据库名
+            tableName为对应的数据库表
+            domainObjectName是要生成的实体类
+            enable*ByExample : 是否生成 example类
+            useActualColumnNames 采用下划线字段
+         -->
+
+        <!--
+
+            <table tableName="remit_details" domainObjectName="RemitDetailsDO"
+                   enableCountByExample="false" enableUpdateByExample="false"
+                   enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+                &lt;!&ndash;采用下划线字段&ndash;&gt;
+                <property name="useActualColumnNames" value="true"/>
+            </table>
+
+        -->
 
         <!--
 
@@ -364,18 +381,13 @@
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
         </table>
 
+-->
+
+
         <table tableName="loan_process_collection" domainObjectName="LoanProcessCollectionDO"
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
         </table>
-
--->
-
-        <table tableName="loan_process_bridge" domainObjectName="LoanProcessBridgeDO"
-               enableCountByExample="false" enableUpdateByExample="false"
-               enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
-        </table>
-
 
 
         <!-- 忽略列，不生成bean 字段

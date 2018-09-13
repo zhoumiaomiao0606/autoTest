@@ -230,6 +230,12 @@ public class ExportQueryServiceImpl implements ExportQueryService
     public String exportCustomerInfo()
     {
 
+        //根据筛选条件  银行、合同资料公司至银行-确认接收时间、合伙人团队、主贷人姓名  过滤主贷人信息
+
+        //选出紧急联系人
+
+        //关联人要导出全部共贷人和银行担保
+
         List<ExportCustomerInfoVO> list = loanStatementDOMapper.exportCustomerInfo();
 
         ArrayList<String> header = Lists.newArrayList("业务区域","客户姓名", "身份证号",

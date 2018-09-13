@@ -290,7 +290,7 @@ public class WebSocketServiceImpl implements WebSocketService {
             return true;
         }
 
-        // 2、金额＜30万时，每天08:30~12:00 以及 14:00~17:30  等待时长20分钟后，自动接通机器面签; 剩余时间，等待0分钟后，走机器面签
+        // 2、金额＜30万时，每天08:30~12:00 以及 14:00~17:30  等待时长10分钟后，自动接通机器面签; 剩余时间，等待0分钟后，走机器面签
         else {
 
             LocalTime now_time = LocalTime.now();
@@ -315,8 +315,8 @@ public class WebSocketServiceImpl implements WebSocketService {
                     // 排队时间
                     long waitTime = System.currentTimeMillis() - startWaitTime;
 
-                    // 等待时长20分钟后，自动接通机器面签
-                    if (waitTime >= 20 * 60 * 1000) {
+                    // 等待时长10分钟后，自动接通机器面签
+                    if (waitTime >= 10 * 60 * 1000) {
 
                         // 进行机器面签
                         return doMachineFace(webSocketParam, wsSessionId);

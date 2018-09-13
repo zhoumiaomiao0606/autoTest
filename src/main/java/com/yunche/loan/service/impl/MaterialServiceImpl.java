@@ -306,7 +306,7 @@ public class MaterialServiceImpl implements MaterialService {
             ossClient = OSSUnit.getOSSClient();
             String fileName = null;
             if (downloadParams != null) {
-                fileName = downloadParams.get(0).getName() + "_" + downloadParams.get(0).getIdCard() + ".zip";
+                fileName = downloadParams.get(0).getName() + "_" + downloadParams.get(0).getIdCard()+"_"+infoSupplementId+ ".zip";
 //                fileName = downloadParams.get(0).getName() +".zip";
             }
             // 创建临时文件
@@ -458,10 +458,6 @@ public class MaterialServiceImpl implements MaterialService {
                 loanFileDO.setType(ZIP_PACK.getType());
                 loanFileDO.setCustomerId(customerId);
                 loanFileDOMapper.insertSelective(loanFileDO);
-
-                System.out.println("--");
-
-
             } else {
                 loanFileDOS.parallelStream().forEach(e -> {
                     e.setStatus(DOING_STATUS);
@@ -897,9 +893,7 @@ public class MaterialServiceImpl implements MaterialService {
         MaterialDownloadParam materialDownloadParam = new MaterialDownloadParam();
         LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
         Long loanCustomerId = loanOrderDO.getLoanCustomerId();
-
         // 是否已经存在文件了
-
         List<LoanFileDO> loanFileDOS = loanFileDOMapper.listByCustomerIdAndType(loanCustomerId, ZIP_PACK.getType(), UPLOAD_TYPE_NORMAL);
         if (CollectionUtils.isEmpty(loanFileDOS)) {
             materialDownloadParam.setFileStatus("2");//文件不存在,需要强制重新打包
@@ -912,6 +906,31 @@ public class MaterialServiceImpl implements MaterialService {
             });
         }
         return ResultBean.ofSuccess(materialDownloadParam);
+    }
+
+    @Override
+    public ResultBean zipSupCheck(Long infoSupplementId) {
+        MaterialDownloadParam materialDownloadParam = new MaterialDownloadParam();
+        // 是否已经存在文件了
+        List<LoanFileDO> loanFileDOS = loanFileDOMapper.listBySupplementIdAndType(infoSupplementId, ZIP_PACK.getType(), UPLOAD_TYPE_SUPPLEMENT);
+        if (CollectionUtils.isEmpty(loanFileDOS)) {
+            materialDownloadParam.setFileStatus("2");//文件不存在,需要强制重新打包
+        } else {
+            materialDownloadParam.setFileStatus("1");//文件处理中
+            loanFileDOS.stream().filter(Objects::nonNull).forEach(e -> {
+                if (e.getStatus() != null && e.getStatus().equals(BaseConst.VALID_STATUS)) {
+                    materialDownloadParam.setFileStatus("0");//文件已经打包完成
+                }
+            });
+        }
+        return ResultBean.ofSuccess(materialDownloadParam);
+    }
+
+
+    @Override
+    public List<LoanFileDO> selectAllSupFileByOrderId(Long orderId) {
+        List<LoanFileDO> list = loanFileDOMapper.selectAllSupFileByOrderId(orderId);
+        return list;
     }
 
     private boolean checkParamsNotNull(String... args) {

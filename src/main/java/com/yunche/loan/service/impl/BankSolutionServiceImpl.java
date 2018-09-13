@@ -683,7 +683,8 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         applyDiviGeneral.setCustomer(customer);
         applyDiviGeneral.setPictures(pictures);
         violationUtil.violation(applyDiviGeneral, ApplyDiviGeneralValidated.class);
-
+        //预先插入一条流水记录
+        addEmptySerial(applyDiviGeneral.getCmpseq());
 
         asyncUpload.execute(new Process() {
             @Override
@@ -846,7 +847,6 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         serialDO.setOperatePersonnel(operatePersonnel);
         serialDO.setOperateDate(new Date());
         int count = bankInterfaceSerialDOMapper.insertSelective(serialDO);
-        LOG.info("》》》》》》银行流水记录成功");
         Preconditions.checkArgument(count>0,"银行流水记录异常");
     }
 

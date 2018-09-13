@@ -133,6 +133,9 @@ public class LoanProcessServiceImpl implements LoanProcessService {
     private MaterialAuditDOMapper materialAuditDOMapper;
 
     @Autowired
+    private RemitDetailsDOMapper remitDetailsDOMapper;
+
+    @Autowired
     private RuntimeService runtimeService;
 
     @Autowired
@@ -273,6 +276,9 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
         // 异步推送
         loanProcessApprovalCommonService.asyncPush(loanOrderDO, approval);
+
+        // 执行当前节点-附带任务
+        doCurrentNodeAttachTask(approval, loanOrderDO);
 
         return ResultBean.ofSuccess(null, "[" + LoanProcessEnum.getNameByCode(approval.getOriginalTaskDefinitionKey()) + "]任务执行成功");
     }
@@ -3151,4 +3157,35 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         runtimeService.deleteProcessInstance(processInstanceId, "弃单");
     }
 
+    /**
+     * 执行当前节点-附带任务
+     *
+     * @param approval
+     * @param loanOrderDO
+     */
+    private void doCurrentNodeAttachTask(ApprovalParam approval, LoanOrderDO loanOrderDO) {
+
+        // 附带任务-[打款确认]
+        doRemitReviewAttachTask(approval, loanOrderDO.getRemitDetailsId());
+    }
+
+    /**
+     * 附带任务-[打款确认]
+     *
+     * @param approval
+     * @param remitDetailsId
+     */
+    private void doRemitReviewAttachTask(ApprovalParam approval, Long remitDetailsId) {
+
+        if (REMIT_REVIEW.getCode().equals(approval.getTaskDefinitionKey()) && ACTION_PASS.equals(approval.getAction())) {
+
+            RemitDetailsDO remitDetailsDO = new RemitDetailsDO();
+
+            remitDetailsDO.setId(remitDetailsId);
+            remitDetailsDO.setRemit_time(new Date());
+
+            int count = remitDetailsDOMapper.updateByPrimaryKeySelective(remitDetailsDO);
+            Preconditions.checkArgument(count > 0, "编辑失败");
+        }
+    }
 }
