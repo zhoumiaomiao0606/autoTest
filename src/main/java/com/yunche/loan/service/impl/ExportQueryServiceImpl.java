@@ -387,7 +387,7 @@ public class ExportQueryServiceImpl implements ExportQueryService
         compplexHeader.setCount(max);
 
         //特殊导出
-        String ossResultKey = POIUtil.createComplexExcelFile("客户信息",exportCustomerInfoVOList,compplexHeader,ossConfig);
+        String ossResultKey = POIUtil.createComplexExcelFile("customerInfo",exportCustomerInfoVOList,compplexHeader,ossConfig);
 
         return ossResultKey;
     }
