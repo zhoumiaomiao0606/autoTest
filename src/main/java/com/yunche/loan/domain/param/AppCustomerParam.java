@@ -166,4 +166,6 @@ public class AppCustomerParam {
     private List<FileVO> files = Collections.EMPTY_LIST;
 
     private String occupation;
+
+    private String ctelzone;
 }
