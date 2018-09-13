@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunche.loan.mapper.BankInterfaceLogDOMapper">
+  <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.BankInterfaceLogDO">
+    <id column="order_id" jdbcType="BIGINT" property="orderId" />
+    <id column="trans_code" jdbcType="VARCHAR" property="transCode" />
+    <result column="operate_name" jdbcType="VARCHAR" property="operateName" />
+    <result column="operate_date" jdbcType="TIMESTAMP" property="operateDate" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    order_id, trans_code, operate_name, operate_date
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="com.yunche.loan.domain.entity.BankInterfaceLogDOKey" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from bank_interface_log
+    where order_id = #{orderId,jdbcType=BIGINT}
+      and trans_code = #{transCode,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="com.yunche.loan.domain.entity.BankInterfaceLogDOKey">
+    delete from bank_interface_log
+    where order_id = #{orderId,jdbcType=BIGINT}
+      and trans_code = #{transCode,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.yunche.loan.domain.entity.BankInterfaceLogDO">
+    insert into bank_interface_log (order_id, trans_code, operate_name, 
+      operate_date)
+    values (#{orderId,jdbcType=BIGINT}, #{transCode,jdbcType=VARCHAR}, #{operateName,jdbcType=VARCHAR}, 
+      #{operateDate,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.BankInterfaceLogDO">
+    insert into bank_interface_log
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="orderId != null">
+        order_id,
+      </if>
+      <if test="transCode != null">
+        trans_code,
+      </if>
+      <if test="operateName != null">
+        operate_name,
+      </if>
+      <if test="operateDate != null">
+        operate_date,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="orderId != null">
+        #{orderId,jdbcType=BIGINT},
+      </if>
+      <if test="transCode != null">
+        #{transCode,jdbcType=VARCHAR},
+      </if>
+      <if test="operateName != null">
+        #{operateName,jdbcType=VARCHAR},
+      </if>
+      <if test="operateDate != null">
+        #{operateDate,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.BankInterfaceLogDO">
+    update bank_interface_log
+    <set>
+      <if test="operateName != null">
+        operate_name = #{operateName,jdbcType=VARCHAR},
+      </if>
+      <if test="operateDate != null">
+        operate_date = #{operateDate,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where order_id = #{orderId,jdbcType=BIGINT}
+      and trans_code = #{transCode,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.BankInterfaceLogDO">
+    update bank_interface_log
+    set operate_name = #{operateName,jdbcType=VARCHAR},
+      operate_date = #{operateDate,jdbcType=TIMESTAMP}
+    where order_id = #{orderId,jdbcType=BIGINT}
+      and trans_code = #{transCode,jdbcType=VARCHAR}
+  </update>
+</mapper>
