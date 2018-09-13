@@ -52,7 +52,7 @@ public class ConfThirdPartyMoneyServiceImpl implements ConfThirdPartyMoneyServic
 
         confThirdPartyMoneyDO.setGmtModify(new Date());
 
-        int count = confThirdPartyMoneyDOMapper.insertSelective(confThirdPartyMoneyDO);
+        int count = confThirdPartyMoneyDOMapper.updateByPrimaryKeySelective(confThirdPartyMoneyDO);
         Preconditions.checkArgument(count > 0, "编辑失败");
 
         return null;
