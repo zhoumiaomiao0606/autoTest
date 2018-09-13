@@ -563,32 +563,36 @@ public class POIUtil {
                 List<FamilyLinkManVO> familyLinkManList = exportCustomerInfoVO.getFamilyLinkManList();
                 if(familyLinkManList !=null && familyLinkManList.size() !=0)
                 {
-                    for (int f = 0; f < familyLinkManList.size(); f++)
-                    {
-
-                        if (familyLinkManList.get(f) != null)
+                    for (int f = 0; f < familyLinkManList.size(); f++) {
+                        if (f < 2)
                         {
-                            FamilyLinkManVO familyLinkManVO = familyLinkManList.get(f);
-                            for (int j = 0; j < getlMethods.size(); j++) {
-                                cell = row.createCell(cellpoint);
-                                if (getlMethods.get(j).invoke(familyLinkManVO) instanceof BigDecimal) {
 
-                                    cell.setCellValue(((BigDecimal) getlMethods.get(j).invoke(familyLinkManVO)).toString());
-
-                                } else {
-                                    cell.setCellValue((String) getlMethods.get(j).invoke(familyLinkManVO));
-                                }
-
-                                cellpoint++;
-                            }
-                        } else
+                            if (familyLinkManList.get(f) != null)
                             {
+                                FamilyLinkManVO familyLinkManVO = familyLinkManList.get(f);
+                                for (int j = 0; j < getlMethods.size(); j++)
+                                {
+                                    cell = row.createCell(cellpoint);
+                                    if (getlMethods.get(j).invoke(familyLinkManVO) instanceof BigDecimal)
+                                    {
+
+                                        cell.setCellValue(((BigDecimal) getlMethods.get(j).invoke(familyLinkManVO)).toString());
+
+                                    } else
+                                        {
+                                        cell.setCellValue((String) getlMethods.get(j).invoke(familyLinkManVO));
+                                    }
+
+                                    cellpoint++;
+                                }
+                            } else {
+                                cellpoint = cellpoint + 3;
+                            }
+                        }
+                        if (familyLinkManList.size() == 1) {
                             cellpoint = cellpoint + 3;
                         }
-                    }
-                    if (familyLinkManList.size() == 1)
-                    {
-                        cellpoint = cellpoint + 3;
+
                     }
 
                 }else {
