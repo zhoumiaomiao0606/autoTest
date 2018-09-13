@@ -33,7 +33,7 @@ public class VideoReviewServiceImpl implements VideoReviewService {
 
         RecombinationVO recombinationVO = new RecombinationVO();
 
-        recombinationVO.setBaseInfo(loanQueryDOMapper.selectUniversalBaseInfo(orderId));
+        recombinationVO.setInfo(loanQueryDOMapper.selectUniversalBaseInfo(orderId));
         recombinationVO.setCar(loanQueryDOMapper.selectUniversalCarInfo(orderId));
         recombinationVO.setFinancial(loanQueryDOMapper.selectFinancialScheme(orderId));
 
