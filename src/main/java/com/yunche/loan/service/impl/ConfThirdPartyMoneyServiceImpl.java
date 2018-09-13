@@ -3,16 +3,21 @@ package com.yunche.loan.service.impl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.common.base.Preconditions;
+import com.yunche.loan.config.cache.BankCache;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.entity.ConfThirdPartyMoneyDO;
 import com.yunche.loan.domain.query.ConfThirdPartyMoneyQuery;
+import com.yunche.loan.domain.vo.ConfThirdPartyMoneyVO;
 import com.yunche.loan.mapper.ConfThirdPartyMoneyDOMapper;
 import com.yunche.loan.service.ConfThirdPartyMoneyService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * @author liuzhe
@@ -23,6 +28,9 @@ public class ConfThirdPartyMoneyServiceImpl implements ConfThirdPartyMoneyServic
 
     @Autowired
     private ConfThirdPartyMoneyDOMapper confThirdPartyMoneyDOMapper;
+
+    @Autowired
+    private BankCache bankCache;
 
 
     @Override
@@ -74,7 +82,14 @@ public class ConfThirdPartyMoneyServiceImpl implements ConfThirdPartyMoneyServic
 
         PageHelper.startPage(query.getPageIndex(), query.getPageSize(), true);
         List<ConfThirdPartyMoneyDO> list = confThirdPartyMoneyDOMapper.query(query);
-        PageInfo<ConfThirdPartyMoneyDO> pageInfo = new PageInfo<>(list);
+
+        List<ConfThirdPartyMoneyVO> collect = list.parallelStream().filter(Objects::nonNull).map(e -> {
+            ConfThirdPartyMoneyVO confThirdPartyMoneyVO = new ConfThirdPartyMoneyVO();
+            BeanUtils.copyProperties(e, confThirdPartyMoneyVO);
+            confThirdPartyMoneyVO.setBankName(bankCache.getNameById(e.getBankId()));
+            return confThirdPartyMoneyVO;
+        }).collect(Collectors.toList());
+        PageInfo<ConfThirdPartyMoneyVO> pageInfo = new PageInfo<>(collect);
 
         return ResultBean.ofSuccess(list, new Long(pageInfo.getTotal()).intValue(),
                 pageInfo.getPageNum(), pageInfo.getPageSize());
