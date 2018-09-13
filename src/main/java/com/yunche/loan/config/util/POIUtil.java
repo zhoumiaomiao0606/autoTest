@@ -563,9 +563,10 @@ public class POIUtil {
                 List<FamilyLinkManVO> familyLinkManList = exportCustomerInfoVO.getFamilyLinkManList();
                 for(int f=0;f<2;f++)
                 {
-                    FamilyLinkManVO familyLinkManVO = familyLinkManList.get(f);
-                    if (familyLinkManVO !=null)
+
+                    if (familyLinkManList.size() !=0 && familyLinkManList.get(f) !=null)
                     {
+                        FamilyLinkManVO familyLinkManVO = familyLinkManList.get(f);
                         for (int j = 0; j < getlMethods.size(); j++)
                         {
                             cell = row.createCell(cellpoint);
@@ -589,9 +590,10 @@ public class POIUtil {
                 List<GuarantorLinkManVO> guarantorLinkManList = exportCustomerInfoVO.getGuarantorLinkManList();
                 for(int g=0;g<guarantorLinkManList.size();g++)
                 {
-                    GuarantorLinkManVO guarantorLinkManVO = guarantorLinkManList.get(g);
-                    if (guarantorLinkManVO !=null)
+
+                    if (guarantorLinkManList.size()!=0 && guarantorLinkManList.get(g) !=null)
                     {
+                        GuarantorLinkManVO guarantorLinkManVO = guarantorLinkManList.get(g);
                         for(int j=0;j<getlMethods.size();j++)
                         {
                             cell = row.createCell(cellpoint);
