@@ -21,6 +21,7 @@ import java.beans.PropertyDescriptor;
 import java.io.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -534,9 +535,6 @@ public class POIUtil {
             }
 
 
-
-
-
             for (int i=0;i<list.size();i++)
             {
                 ExportCustomerInfoVO exportCustomerInfoVO = list.get(i);
@@ -549,7 +547,16 @@ public class POIUtil {
                 for (int j = 0; j < getpMethods.size(); j++)
                 {
                     cell = row.createCell(j);
-                    cell.setCellValue((String) getpMethods.get(j).invoke(exportCustomerInfoVO));
+                    if (getpMethods.get(j).invoke(exportCustomerInfoVO) instanceof BigDecimal)
+                    {
+
+                        cell.setCellValue( ((BigDecimal)getpMethods.get(j).invoke(exportCustomerInfoVO)).toString());
+
+                    }else
+                        {
+                            cell.setCellValue((String) getpMethods.get(j).invoke(exportCustomerInfoVO));
+                        }
+
                     cellpoint++;
                 }
 
@@ -559,10 +566,19 @@ public class POIUtil {
                     FamilyLinkManVO familyLinkManVO = familyLinkManList.get(f);
                     if (familyLinkManVO !=null)
                     {
-                        for (int j = 0; j < getfMethods.size(); j++)
+                        for (int j = 0; j < getlMethods.size(); j++)
                         {
                             cell = row.createCell(cellpoint);
-                            cell.setCellValue((String) getfMethods.get(j).invoke(familyLinkManVO));
+                            if (getlMethods.get(j).invoke(familyLinkManVO) instanceof BigDecimal)
+                            {
+
+                                cell.setCellValue( ((BigDecimal)getlMethods.get(j).invoke(familyLinkManVO)).toString());
+
+                            }else
+                            {
+                                cell.setCellValue((String) getlMethods.get(j).invoke(familyLinkManVO));
+                            }
+
                             cellpoint++;
                         }
                     }else
@@ -579,7 +595,15 @@ public class POIUtil {
                         for(int j=0;j<getlMethods.size();j++)
                         {
                             cell = row.createCell(cellpoint);
-                            cell.setCellValue((String) getfMethods.get(j).invoke(guarantorLinkManVO));
+                            if (getfMethods.get(j).invoke(guarantorLinkManVO) instanceof BigDecimal)
+                            {
+
+                                cell.setCellValue( ((BigDecimal)getfMethods.get(j).invoke(guarantorLinkManVO)).toString());
+
+                            }else
+                            {
+                                cell.setCellValue((String)getfMethods.get(j).invoke(guarantorLinkManVO));
+                            }
                             cellpoint++;
                         }
                     }
