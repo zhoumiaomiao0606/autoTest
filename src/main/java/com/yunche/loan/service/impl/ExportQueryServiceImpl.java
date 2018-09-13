@@ -16,13 +16,19 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
 public class ExportQueryServiceImpl implements ExportQueryService
 {
+    private static final Pattern pattern = Pattern.compile(".*长期.*");
+
     @Autowired
     private OSSConfig ossConfig;
 
@@ -43,8 +49,10 @@ public class ExportQueryServiceImpl implements ExportQueryService
     @Override
     public String exportBankCreditQuery(ExportBankCreditQueryVerifyParam exportBankCreditQueryVerifyParam)
     {
-        String startDate = exportBankCreditQueryVerifyParam.getStartDate();
-        String endDate = exportBankCreditQueryVerifyParam.getEndDate();
+        Long loginUserId = SessionUtils.getLoginUser().getId();
+
+        exportBankCreditQueryVerifyParam.setJuniorIds(employeeService.getSelfAndCascadeChildIdList(loginUserId));
+        exportBankCreditQueryVerifyParam.setMaxGroupLevel(taskSchedulingDOMapper.selectMaxGroupLevel(loginUserId));
 
         List<ExportBankCreditQueryVO> list = loanStatementDOMapper.exportBankCreditQuerys(exportBankCreditQueryVerifyParam);
 
@@ -64,8 +72,10 @@ public class ExportQueryServiceImpl implements ExportQueryService
      */
     @Override
     public String expertSocialCreditQuery(ExportSocialCreditQueryVerifyParam exportSocialCreditQueryVerifyParam) {
-        String startDate = exportSocialCreditQueryVerifyParam.getStartDate();
-        String endDate = exportSocialCreditQueryVerifyParam.getEndDate();
+        Long loginUserId = SessionUtils.getLoginUser().getId();
+
+        exportSocialCreditQueryVerifyParam.setJuniorIds(employeeService.getSelfAndCascadeChildIdList(loginUserId));
+        exportSocialCreditQueryVerifyParam.setMaxGroupLevel(taskSchedulingDOMapper.selectMaxGroupLevel(loginUserId));
 
         List<ExportSocialCreditQueryVO> list = loanStatementDOMapper.exportSocialCreditQuerys(exportSocialCreditQueryVerifyParam);
 
@@ -226,151 +236,159 @@ public class ExportQueryServiceImpl implements ExportQueryService
         return ossResultKey;
     }
 
+    /**
+    * @Author: ZhongMingxiao
+    * @Param:
+    * @return:
+    * @Date:
+    * @Description:  客户信息中新增客户信息导出功能
+    */
     @Override
-    public String exportCustomerInfo()
+    public String exportCustomerInfo(ExportCustomerInfoParam exportCustomerInfoParam)
     {
 
         //根据筛选条件  银行、合同资料公司至银行-确认接收时间、合伙人团队、主贷人姓名  过滤主贷人信息
+        List<ExportCustomerInfoVO> list = loanStatementDOMapper.exportCustomerInfo(exportCustomerInfoParam);
 
-        //选出紧急联系人
 
-        //关联人要导出全部共贷人和银行担保
+        //去空
+        List<ExportCustomerInfoVO> exportCustomerInfoVOList = list.stream()
+                .filter(exportCustomerInfoVO -> exportCustomerInfoVO != null)
+                .collect(Collectors.toList());
 
-        List<ExportCustomerInfoVO> list = loanStatementDOMapper.exportCustomerInfo();
 
-        ArrayList<String> header = Lists.newArrayList("业务区域","客户姓名", "身份证号",
-                "手机号", "贷款银行", "业务团队", "业务员", "车型", "车价", "执行利率", "首付款", "贷款金额", "银行分期本金", "打款金额",
-                "公司收益","履约金","上牌押金","GPS使用费","风险金","公正评估费","上省外牌","基础保证金","其他","返利不内扣","返利金额","额外费用",
-                "创建时间","垫款时间","退款时间","提交人"
+                   exportCustomerInfoVOList.forEach(
+                    e ->
+                    {
+                        //选出紧急联系人
+                        List<FamilyLinkManVO> familyLinkManList = loanStatementDOMapper.exportFamilyLinkManList(e.getPCustomerId());
+                        e.setFamilyLinkManList(familyLinkManList);
+                        //关联人要导出全部共贷人和银行担保
+                        List<GuarantorLinkManVO> guarantorLinkManList = loanStatementDOMapper.exportGuarantorLinkManList(e.getPCustomerId());
+                        //判断有效期-计算主贷人总资产
+                        BigDecimal totalAsset=new BigDecimal(0);
+
+                        //去空
+                        List<GuarantorLinkManVO> collect = guarantorLinkManList.stream()
+                                .filter(guarantorLinkManVO -> guarantorLinkManVO != null)
+                                .collect(Collectors.toList());
+                        System.out.println("!!!!!!!!!!!!"+collect.size());
+
+                                 collect.forEach(guarantorLinkManVO -> {
+                                    if (guarantorLinkManVO.getLinkManIdentityValidity()!=null && pattern.matcher(guarantorLinkManVO.getLinkManIdentityValidity()).find())
+                                    {
+                                        guarantorLinkManVO.setBooleanLongTerm("是");
+                                        System.out.println("姓名"+e.getPName()+"====担保人名字"+guarantorLinkManVO.getLinkManName());
+                                    }
+                                    else{
+                                        guarantorLinkManVO.setBooleanLongTerm("否");
+                                    }
+                                    if (guarantorLinkManVO.getLinkManYearIncome() !=null)
+                                    {
+                                        totalAsset.multiply(guarantorLinkManVO.getLinkManYearIncome());
+                                    }
+
+                                });
+
+                                 e.setGuarantorLinkManList(collect);
+
+                                 if(e.getPYearIncome() !=null)
+                                 {
+                                     totalAsset.multiply(e.getPYearIncome());
+                                 }
+
+                                 e.setTotalAsset(totalAsset);
+
+                    }
+                        );
+
+        //计算共贷人和担保人数最大值
+        int max=exportCustomerInfoVOList.stream().max(new Comparator<ExportCustomerInfoVO>() {
+            @Override
+            public int compare(ExportCustomerInfoVO o1, ExportCustomerInfoVO o2) {
+                return o1.getGuarantorLinkManList().size()-o2.getGuarantorLinkManList().size();
+            }
+        }).get().getGuarantorLinkManList().size();
+
+        System.out.println("======================="+max+"=======================================");
+
+
+        //TODO  后期用linkedMap修改
+                   //动态生成列表头---主要是后面共贷人和担保人需取最大数量值
+        ArrayList<String> pheader = Lists.newArrayList(
+                "姓名",
+                "姓名拼音",
+                "性别",
+                "出生日期",
+                "证件号码",
+                "证件有效截止日",
+                "国籍",
+                "婚姻状况",
+                "教育程度",
+                "手机号",
+                "住宅地址",
+                "住宅电话",
+                "邮编",
+                "住宅状况",
+                "单位名称",
+                "单位地址",
+                "邮编",
+                "单位电话",
+                "单位经济性质",
+                "所属行业",
+                "职业",
+                "职务",
+                "年收入",
+                "首付款",
+                "贷款金额",
+                "贷款期限",
+                "还款人月均总收入",
+                "个人总资产",
+                "进口车标志",
+                "生产厂商",
+                "汽车品牌",
+                "款式规格",
+                "购车年月",
+                "车牌号码",
+                "车架号",
+                "发动机号",
+                "汽车办理抵押地区",
+                "汽车权属人姓名",
+                "申请人与抵押物权属人关系",
+
+                "亲属联系人1姓名",
+                "关系",
+                "手机号",
+                "亲属联系人2姓名",
+                "关系",
+                "手机号"
+
         );
 
+        ArrayList<String> aheader = Lists.newArrayList(
+                "客户姓名",
+                "关联人证件号码",
+                "性别",
+                "证件是否长期有效",
+                "证件有效期截止日",
+                "与申请人关系",
+                "个人年收入",
+                "住宅地址",
+                "单位名称",
+                "单位地址",
+                "手机号"
 
-        String ossResultKey = POIUtil.createExcelFile("客户信息",list,header,ExportCustomerInfoVO.class,ossConfig);
+
+        );
+
+        CompplexHeader compplexHeader =new CompplexHeader();
+        compplexHeader.setPheader(pheader);
+        compplexHeader.setAheader(aheader);
+        compplexHeader.setCount(max);
+
+        //特殊导出
+        String ossResultKey = POIUtil.createComplexExcelFile("客户信息",exportCustomerInfoVOList,compplexHeader,ossConfig);
+
         return ossResultKey;
     }
-
-    /**
-     * 导出文件
-     *
-     * @param
-     * @return
-     */
-   /* private String createExcelFile(ExpertBankCreditQueryVerifyParam expertBankCreditQueryVerifyParam) {
-
-        String timestamp = new SimpleDateFormat("yyyyMMdd").format(new Date());
-        Long id = SessionUtils.getLoginUser().getId();
-        String fileName = timestamp + id + ".xlsx";
-        //创建workbook
-        File file = new File("D:" + File.separator + fileName);
-        FileOutputStream out = null;
-        XSSFWorkbook workbook = null;
-        try {
-
-            out = new FileOutputStream(file);
-
-            workbook = new XSSFWorkbook();
-            XSSFSheet sheet = workbook.createSheet();
-
-
-
-            //申请单号	客户名称	证件类型	证件号	业务员	合伙人团队	贷款金额	gps数量	申请单状态	提交状态	备注	审核员	审核时间
-            XSSFRow headRow = sheet.createRow(0);
-            for (int i = 0; i < header.size(); i++) {
-                XSSFCell cell = headRow.createCell(i);
-                cell.setCellValue(header.get(i));
-            }
-            XSSFRow row = null;
-            XSSFCell cell = null;
-            for (int i = 0; i < list.size(); i++) {
-                ExpertBankCreditQueryVO expertBankCreditQueryVO = list.get(i);
-                //创建行
-                row = sheet.createRow(i + 1);
-
-                cell = row.createCell(0);
-                cell.setCellValue(expertBankCreditQueryVO.getArea_name());
-
-                cell = row.createCell(1);
-                cell.setCellValue(expertBankCreditQueryVO.getCustomer_name());
-                //
-
-                cell = row.createCell(2);
-                cell.setCellValue(expertBankCreditQueryVO.getCust_type());
-
-                cell = row.createCell(3);
-                cell.setCellValue(expertBankCreditQueryVO.getCustomer_name());
-
-                cell = row.createCell(4);
-                cell.setCellValue(expertBankCreditQueryVO.getCustomer_id_card());
-
-                cell = row.createCell(5);
-                cell.setCellValue(expertBankCreditQueryVO.getCustomer_mobile());
-
-                cell = row.createCell(6);
-                cell.setCellValue(expertBankCreditQueryVO.getPrincipal_base());
-
-                cell = row.createCell(7);
-                cell.setCellValue(expertBankCreditQueryVO.getBank());
-
-                cell = row.createCell(8);
-                cell.setCellValue(expertBankCreditQueryVO.getPartner_name());
-
-                cell = row.createCell(9);
-                cell.setCellValue(expertBankCreditQueryVO.getSalesman_name());
-
-                cell = row.createCell(10);
-                cell.setCellValue(expertBankCreditQueryVO.getPrincipal_name());
-
-                cell = row.createCell(11);
-                cell.setCellValue(expertBankCreditQueryVO.getCredit_result());
-
-                cell = row.createCell(12);
-                cell.setCellValue(expertBankCreditQueryVO.getCredit_apply_time());
-
-
-                cell = row.createCell(13);
-                cell.setCellValue(expertBankCreditQueryVO.getCredit_query_time());
-
-                cell = row.createCell(14);
-                cell.setCellValue(expertBankCreditQueryVO.getOp_info());
-
-
-            }
-            //文件宽度自适应
-            sheet.autoSizeColumn((short) 0);
-            sheet.autoSizeColumn((short) 1);
-            sheet.autoSizeColumn((short) 2);
-            sheet.autoSizeColumn((short) 3);
-            sheet.autoSizeColumn((short) 4);
-            sheet.autoSizeColumn((short) 5);
-            sheet.autoSizeColumn((short) 6);
-            sheet.autoSizeColumn((short) 7);
-            sheet.autoSizeColumn((short) 8);
-            sheet.autoSizeColumn((short) 9);
-            sheet.autoSizeColumn((short) 10);
-            sheet.autoSizeColumn((short) 11);
-            sheet.autoSizeColumn((short) 12);
-            sheet.autoSizeColumn((short) 13);
-            sheet.autoSizeColumn((short) 14);
-
-            workbook.write(out);
-            //上传OSS
-            OSSClient ossClient = OSSUnit.getOSSClient();
-            String bucketName = ossConfig.getBucketName();
-            String diskName = ossConfig.getDownLoadDiskName();
-            OSSUnit.deleteFile(ossClient, bucketName, diskName + File.separator, fileName);
-            OSSUnit.uploadObject2OSS(ossClient, file, bucketName, diskName + File.separator);
-        } catch (Exception e) {
-            Preconditions.checkArgument(false, e.getMessage());
-        } finally {
-            try {
-                if (out != null) {
-                    out.close();
-                }
-            } catch (IOException e) {
-                Preconditions.checkArgument(false, e.getMessage());
-            }
-        }
-
-        return ossConfig.getDownLoadDiskName() + File.separator + fileName;
-    }*/
 }
