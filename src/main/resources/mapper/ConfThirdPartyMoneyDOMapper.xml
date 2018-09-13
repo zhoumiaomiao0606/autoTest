@@ -49,12 +49,6 @@
         <if test="bankId != null">
             AND bank_id = #{bankId}
         </if>
-        <if test="entryDateStart != null">
-            <![CDATA[ AND entry_date >= #{entryDateStart} ]]>
-        </if>
-        <if test="entryDateEnd != null">
-            <![CDATA[ AND entry_date <= #{entryDateEnd} ]]>
-        </if>
         <if test="gmtCreateStart != null">
             <![CDATA[ AND gmt_create >= #{gmtCreateStart} ]]>
         </if>
