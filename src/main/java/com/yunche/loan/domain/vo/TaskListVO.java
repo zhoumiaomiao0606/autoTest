@@ -139,6 +139,10 @@ public class TaskListVO {
 
     private String bridgeRepayRemark;
     private String bridgeLendDate;
+    private String bridgeRepayType;
+
+    private String bridgeInterest;//利息
+    private String bridgePoundage;//手续费
 
 }
 

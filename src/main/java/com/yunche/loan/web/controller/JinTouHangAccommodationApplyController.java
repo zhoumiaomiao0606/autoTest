@@ -46,7 +46,7 @@ public class JinTouHangAccommodationApplyController {
      * @return
      */
     @RequestMapping(value = "/abnormal",consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    ResultBean abnormalRepay(AccommodationApplyParam param){
+    ResultBean abnormalRepay(@RequestBody AccommodationApplyParam param){
         return  accommodationApplyService.abnormalRepay(param);
     }
    //--------------------------金投行还款登记------------------------

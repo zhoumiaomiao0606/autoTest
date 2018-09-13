@@ -131,6 +131,9 @@ public class BankSolutionServiceImpl implements BankSolutionService {
     @Autowired
     private LoanProcessService loanProcessService;
 
+    @Autowired
+    private BankInterfaceLogDOMapper bankInterfaceLogDOMapper;
+
     //征信自动提交
     @Override
     public void creditAutomaticCommit(Long orderId) {
@@ -321,8 +324,8 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         multimediaUpload.setCustomerId(customerId.toString());
         violationUtil.violation(multimediaUpload, MultimediaUploadValidated.class);
 
-        //预先插入一条流水记录
-        addEmptySerial(multimediaUpload.getCmpseq());
+
+        bankInterfaceLog(orderId,IDict.K_TRANS_CODE.MULTIMEDIAUPLOAD);
 
         asyncUpload.execute(new Process() {
             @Override
@@ -676,8 +679,8 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         applyDiviGeneral.setCustomer(customer);
         applyDiviGeneral.setPictures(pictures);
         violationUtil.violation(applyDiviGeneral, ApplyDiviGeneralValidated.class);
-        //预先插入一条流水记录
-        addEmptySerial(applyDiviGeneral.getCmpseq());
+        //记录日志
+        bankInterfaceLog(orderId,IDict.K_TRANS_CODE.APPLYDIVIGENERAL);
 
         asyncUpload.execute(new Process() {
             @Override
@@ -726,11 +729,11 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         //获取用户授权书签字照
         UniversalMaterialRecordVO authSignPic = loanQueryDOMapper.getUniversalCustomerFilesByType(loanCustomerDO.getId(), new Byte("5"));
         if (authSignPic == null) {
-            throw new BizException(loanCustomerDO.getName() + "授权书签字照不存在");
+            throw new BizException(loanCustomerDO.getName() + ":授权书签字照不存在");
         }
 
         if (CollectionUtils.isEmpty(authSignPic.getUrls())) {
-            throw new BizException(loanCustomerDO.getName() + "授权书签字照不存在");
+            throw new BizException(loanCustomerDO.getName() + ":授权书签字照不存在");
         }
 
         //将身份证正反面、授权书、授权书签字照合成一个word（一个客户合成一张word，如征信申请中有2个客户，则合成2个word）。若存在一个客户合成失败，流程终止。
@@ -814,8 +817,8 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         //走你
         violationUtil.violation(applyCredit, ApplyCreditValidated.class);
 
-        //预先插入一条流水记录
-        addEmptySerial(applyCredit.getCmpseq());
+        //记录日志
+        bankInterfaceLog(orderId,IDict.K_TRANS_CODE.APPLYCREDIT);
 
         asyncUpload.execute(new Process() {
             @Override
@@ -829,31 +832,49 @@ public class BankSolutionServiceImpl implements BankSolutionService {
     }
 
     /**
-     * 在bank_interface_serial 中先插入当前记录流水、操作人以及操作时间
-     *
-     * @param cmpseq
+     * 记录银行接口交互操作日志
+     * @param orderId
+     * @param transCode
      */
-    private void addEmptySerial(String cmpseq) {
-        String operatePersonnel = SessionUtils.getLoginUser().getName();
-        BankInterfaceSerialDO serialDO = new BankInterfaceSerialDO();
-        serialDO.setSerialNo(cmpseq);
-        serialDO.setOperatePersonnel(operatePersonnel);
-        serialDO.setOperateDate(new Date());
-        int count = bankInterfaceSerialDOMapper.insertSelective(serialDO);
-        Preconditions.checkArgument(count > 0, "银行流水记录异常");
+    private void bankInterfaceLog(Long orderId, String transCode) {
+
+        EmployeeDO loginUser = SessionUtils.getLoginUser();
+        String name=null;
+
+        if(loginUser!=null){
+            name = loginUser.getName();
+        }else{
+            name ="未知";
+        }
+
+
+        BankInterfaceLogDO bankInterfaceLogDO = new BankInterfaceLogDO();
+        bankInterfaceLogDO.setOrderId(orderId);
+        bankInterfaceLogDO.setOperateName(name);
+        bankInterfaceLogDO.setOperateDate(new Date());
+        bankInterfaceLogDO.setTransCode(transCode);
+
+        BankInterfaceLogDO logDO = bankInterfaceLogDOMapper.selectByPrimaryKey(bankInterfaceLogDO);
+        if(logDO==null){
+            int count = bankInterfaceLogDOMapper.insertSelective(bankInterfaceLogDO);
+            Preconditions.checkArgument(count>0,transCode+":日志保存失败");
+        }else{
+            int count = bankInterfaceLogDOMapper.updateByPrimaryKeySelective(bankInterfaceLogDO);
+            Preconditions.checkArgument(count>0,transCode+":日志保存失败");
+        }
     }
+
 
     /**
      * 银行拒绝直接打回到征信申请（待定）
-     *
      * @param orderId
      * @param customers
      */
     private void back2creditpply(Long orderId, List<LoanCustomerDO> customers) {
 
-        for (LoanCustomerDO customerDO : customers) {
+        for(LoanCustomerDO customerDO:customers){
             UniversalBankInterfaceSerialVO universalBankInterfaceSerialVO = loanQueryDOMapper.selectUniversalLatestBankInterfaceSerial(customerDO.getId(), IDict.K_TRANS_CODE.APPLYCREDIT);
-            if (!"2".equals(universalBankInterfaceSerialVO.getStatus()) && !"1".equals(universalBankInterfaceSerialVO.getStatus())) {
+            if(!"2".equals(universalBankInterfaceSerialVO.getStatus()) && !"1".equals(universalBankInterfaceSerialVO.getStatus())){
                 LOG.info("征信查询 自动打回开始 ===============================================================");
                 ApprovalParam approvalParam = new ApprovalParam();
                 approvalParam.setAction(new Byte("0"));
@@ -1037,11 +1058,8 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         //参数校验
         violationUtil.violation(applyBankOpenCard);
         violationUtil.violation(customer);
-        //预先插入一条流水记录
-        addEmptySerial(applyBankOpenCard.getCmpseq());
-
-        //预先插入一条流水记录
-        addEmptySerial(applyBankOpenCard.getCmpseq());
+        //记录日志
+        bankInterfaceLog(bankOpenCardParam.getOrderId(),IDict.K_TRANS_CODE.CREDITCARDAPPLY);
 
         asyncUpload.execute(new Process() {
 

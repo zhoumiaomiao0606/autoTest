@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import static com.yunche.loan.config.constant.LoanProcessEnum.BRIDGE_HANDLE;
 
 
 @Service
@@ -103,8 +104,7 @@ public class JinTouHangAccommodationApplyServiceImpl implements JinTouHangAccomm
             collect.stream().forEach(e->{
                 ApprovalParam approvalParam = new ApprovalParam();
                 approvalParam.setOrderId(e.getOrderId());
-                // TODO
-                approvalParam.setTaskDefinitionKey("");
+                approvalParam.setTaskDefinitionKey(BRIDGE_HANDLE.getCode());
                 approvalParam.setAction(ProcessApprovalConst.ACTION_PASS);
                 approvalParam.setNeedLog(true);
                 approvalParam.setCheckPermission(false);

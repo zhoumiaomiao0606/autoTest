@@ -1,18 +1,16 @@
 package com.yunche.loan.config.feign.config;
 
-import com.alibaba.fastjson.JSON;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yunche.loan.config.constant.IConstant;
 import com.yunche.loan.config.constant.IDict;
 import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.feign.response.base.BasicResponse;
-import com.yunche.loan.config.util.SessionUtils;
 import com.yunche.loan.domain.entity.BankInterfaceSerialDO;
-import com.yunche.loan.domain.entity.EmployeeDO;
 import com.yunche.loan.domain.entity.LoanOrderDO;
 import com.yunche.loan.mapper.BankInterfaceSerialDOMapper;
 import com.yunche.loan.mapper.LoanOrderDOMapper;
+import com.yunche.loan.mapper.LoanProcessLogDOMapper;
 import com.yunche.loan.service.LoanQueryService;
 import feign.*;
 import feign.codec.DecodeException;
@@ -20,13 +18,13 @@ import feign.codec.Decoder;
 import feign.codec.ErrorDecoder;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.io.IOException;
 import java.lang.reflect.Type;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -50,6 +48,9 @@ public class FeignConfig {
     Logger.Level feignLoggerLevel() {
         return Logger.Level.FULL;
     }
+
+    @Autowired
+    LoanProcessLogDOMapper loanProcessLogDOMapper;
 
     @Bean
     public RequestInterceptor basicAuthRequestInterceptor() {
@@ -108,14 +109,8 @@ public class FeignConfig {
 
                 //锁表
                 BankInterfaceSerialDO V = bankInterfaceSerialDOMapper.selectByPrimaryKey(cmpseq.toString());
-
-
-                logger.info("V : {}", JSON.toJSONString(V));
-
-
                 BankInterfaceSerialDO DO = new BankInterfaceSerialDO();
 
-                logger.info("1111  ------  DO : {}", JSON.toJSONString(DO));
 
                 DO.setSerialNo(cmpseq.toString());
                 DO.setOrderId(Long.valueOf(orderno.toString()));
@@ -125,49 +120,11 @@ public class FeignConfig {
                 DO.setFileNum(Integer.parseInt(fileNum.toString()));
                 DO.setApiStatus(200);
 
-                logger.info("2222  ------  DO : {}", JSON.toJSONString(DO));
 
                 if (V != null) {
-
-
-                    logger.info("33333  ------  DO : {}", JSON.toJSONString(DO));
-
-
                     bankInterfaceSerialDOMapper.updateByPrimaryKeySelective(DO);
-
-
-                    logger.info("4444  ------  DO : {}", JSON.toJSONString(DO));
-
-
                 } else {
-
-                    logger.info("55555  ------  DO : {}", JSON.toJSONString(DO));
-
-
-                    //当前操作人
-                    EmployeeDO loginUser = SessionUtils.getLoginUser();
-                    if (null != loginUser) {
-
-
-                        logger.info("6666  ------  DO : {}", JSON.toJSONString(DO));
-
-                        DO.setOperatePersonnel(loginUser.getName());
-
-                        logger.info("77777  ------  DO : {}", JSON.toJSONString(DO));
-
-                        logger.info("loginUserName : {}", loginUser.getName());
-                        logger.info("operatePersonnel : {}", DO.getOperatePersonnel());
-                    }
-
-                    logger.info("8888  ------  DO : {}", JSON.toJSONString(DO));
-
-                    //操作时间
-                    DO.setOperateDate(new Date());
-
                     bankInterfaceSerialDOMapper.insertSelective(DO);
-
-                    logger.info("99999  ------  DO : {}", JSON.toJSONString(DO));
-
                 }
             }
         };
@@ -244,10 +201,6 @@ public class FeignConfig {
                 if (V != null) {
                     bankInterfaceSerialDOMapper.updateByPrimaryKeySelective(DO);
                 } else {
-                    //当前操作人
-                    DO.setOperatePersonnel(SessionUtils.getLoginUser().getName());
-                    //操作时间
-                    DO.setOperateDate(new Date());
                     bankInterfaceSerialDOMapper.insertSelective(DO);
                 }
 
@@ -363,10 +316,6 @@ public class FeignConfig {
                         if (V != null) {
                             bankInterfaceSerialDOMapper.updateByPrimaryKeySelective(DO);
                         } else {
-                            //当前操作人
-                            DO.setOperatePersonnel(SessionUtils.getLoginUser().getName());
-                            //操作时间
-                            DO.setOperateDate(new Date());
                             bankInterfaceSerialDOMapper.insertSelective(DO);
                         }
                         return obj;
@@ -383,10 +332,6 @@ public class FeignConfig {
                         if (V != null) {
                             bankInterfaceSerialDOMapper.updateByPrimaryKeySelective(DO);
                         } else {
-                            //当前操作人
-                            DO.setOperatePersonnel(SessionUtils.getLoginUser().getName());
-                            //操作时间
-                            DO.setOperateDate(new Date());
                             bankInterfaceSerialDOMapper.insertSelective(DO);
                         }
                         throw new BizException(returnMsg);
