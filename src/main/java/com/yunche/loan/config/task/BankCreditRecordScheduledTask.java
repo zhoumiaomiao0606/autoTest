@@ -88,18 +88,29 @@ public class BankCreditRecordScheduledTask {
 
                         approval.setOrderId(orderId);
 
-                        // {"ICBC_API_RETMSG":"success","ICBC_API_TIMESTAMP":"2018-08-27 08:23:52","pub":{"retcode":"22094","retmsg":"该客户为灰名单客户"},"ICBC_API_RETCODE":0}
-                        String apiMsg = bankInterfaceSerialDO.getApiMsg();
-                        if (StringUtils.isNotBlank(apiMsg)) {
+                        Byte status = bankInterfaceSerialDO.getStatus();
 
-                            JSONObject jsonObject = JSON.parseObject(apiMsg);
-                            JSONObject pub = jsonObject.getJSONObject("pub");
+                        // 3
+                        if (new Byte("3").equals(status)) {
 
-                            if (!CollectionUtils.isEmpty(pub)) {
-                                String retmsg = pub.getString("retmsg");
-                                approval.setInfo(retmsg);
+                            approval.setInfo(bankInterfaceSerialDO.getRejectReason());
+
+                        } else {
+
+                            // {"ICBC_API_RETMSG":"success","ICBC_API_TIMESTAMP":"2018-08-27 08:23:52","pub":{"retcode":"22094","retmsg":"该客户为灰名单客户"},"ICBC_API_RETCODE":0}
+                            String apiMsg = bankInterfaceSerialDO.getApiMsg();
+                            if (StringUtils.isNotBlank(apiMsg)) {
+
+                                JSONObject jsonObject = JSON.parseObject(apiMsg);
+                                JSONObject pub = jsonObject.getJSONObject("pub");
+
+                                if (!CollectionUtils.isEmpty(pub)) {
+                                    String retmsg = pub.getString("retmsg");
+                                    approval.setInfo(retmsg);
+                                }
                             }
                         }
+
 
                         try {
 

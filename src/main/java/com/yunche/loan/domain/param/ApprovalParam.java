@@ -75,7 +75,7 @@ public class ApprovalParam {
      */
     private Long supplementOrderId;
     /**
-     * 增补类型：  1-电审资料增补;  2-资料审核增补;
+     * 资料增补类型(1-电审增补;2-送银行资料缺少;3-银行退件;4-上门家访资料增补;5-费用调整;6-垫款资料缺少;7-视频增补;)
      */
     private Byte supplementType;
     /**
