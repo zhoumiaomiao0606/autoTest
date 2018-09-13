@@ -471,7 +471,7 @@
     <sequenceFlow id="flow295" name="[征信录入-反审]弃单" sourceRef="exclusivegateway42" targetRef="endevent42">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 2}]]></conditionExpression>
     </sequenceFlow>
-    <userTask id="usertask_video_review" name="视频审核"></userTask>
+    <userTask id="usertask_video_review" name="视频审核" activiti:candidateGroups="管理员,总经理,培训经理"></userTask>
     <endEvent id="endevent43" name="End"></endEvent>
     <sequenceFlow id="flow296" name="提交" sourceRef="exclusivegateway44" targetRef="endevent43">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1}]]></conditionExpression>
@@ -1803,7 +1803,7 @@
         <omgdi:waypoint x="3781.0" y="2316.0"></omgdi:waypoint>
         <omgdi:waypoint x="3784.0" y="2360.0"></omgdi:waypoint>
         <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="16.0" width="100.0" x="3962.0" y="2301.0"></omgdc:Bounds>
+          <omgdc:Bounds height="16.0" width="78.0" x="3962.0" y="2301.0"></omgdc:Bounds>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
