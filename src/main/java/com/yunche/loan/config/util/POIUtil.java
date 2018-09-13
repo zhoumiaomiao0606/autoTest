@@ -505,12 +505,6 @@ public class POIUtil {
                     getpMethods.add(pd.getReadMethod());
                 }
 
-
-                    FamilyLinkManVO familyLinkManVO = exportCustomer.getFamilyLinkManList().get(0);
-
-
-
-
                         Class<? extends Class> aClass = clazz1.getClass();
                         Field[] ffields = aClass.getDeclaredFields();
 
