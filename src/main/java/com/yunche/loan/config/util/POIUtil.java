@@ -505,26 +505,26 @@ public class POIUtil {
                     getpMethods.add(pd.getReadMethod());
                 }
 
-                        Class<? extends Class> aClass = clazz1.getClass();
-                        Field[] ffields = aClass.getDeclaredFields();
+
+                        Field[] ffields = clazz1.getDeclaredFields();
 
                         for (int i = 0; i < ffields.length; i++)
                         {
                             Field field = ffields[i];
                             // 此处应该判断beanObj,property不为null
-                            PropertyDescriptor pd = new PropertyDescriptor(field.getName(), aClass);
+                            PropertyDescriptor pd = new PropertyDescriptor(field.getName(), clazz1);
                             getlMethods.add(pd.getReadMethod());
                         }
 
 
-                    Class<? extends Class> gClass = clazz2.getClass();
-                    Field[] gfields = gClass.getDeclaredFields();
+
+                    Field[] gfields = clazz2.getDeclaredFields();
 
                     for (int i = 0; i < gfields.length; i++)
                     {
                         Field field = gfields[i];
                         // 此处应该判断beanObj,property不为null
-                        PropertyDescriptor pd = new PropertyDescriptor(field.getName(), gClass);
+                        PropertyDescriptor pd = new PropertyDescriptor(field.getName(), clazz2);
                         getfMethods.add(pd.getReadMethod());
                     }
 
