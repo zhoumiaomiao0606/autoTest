@@ -1290,7 +1290,20 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             // PASS
             if (ACTION_PASS.equals(action)) {
 
-                // 前置校验
+                // 1、所有银行提交付款申请时，均要判断是否录入GPS
+                Byte installGpsStatus = loanProcessDO.getInstallGps();
+                Preconditions.checkArgument(TASK_PROCESS_DONE.equals(installGpsStatus), "请先提交[GPS安装]");
+
+                // 2、台州工行提交付款申请时，要判断是否提交视频面签
+                LoanBaseInfoDO loanBaseInfoDO = getLoanBaseInfoDO(loanOrderDO.getLoanBaseInfoId());
+                String bankName = loanBaseInfoDO.getBank();
+                if (BANK_NAME_ICBC_TaiZhou_LuQiao_Branch.equals(bankName)) {
+
+                    Byte loanInfoRecordStatus = loanProcessDO.getLoanInfoRecord();
+                    Preconditions.checkArgument(TASK_PROCESS_DONE.equals(loanInfoRecordStatus), "请先提交[视频面签登记]");
+                }
+
+                // 3、前置校验
                 boolean is_match_condition_bank = tel_verify_match_condition_bank(loanOrderDO.getLoanBaseInfoId());
 
                 if (is_match_condition_bank) {
