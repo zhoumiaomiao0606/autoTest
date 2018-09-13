@@ -1780,7 +1780,7 @@
         and case when #{maxGroupLevel} = 0 then false
         when #{maxGroupLevel} = 1 then
         task.salesmanId in
-        <foreach item="item" index="index" collection="juniorIds" open="(" separator="," close=")">
+        <foreach item="item" collection="juniorIds" open="(" separator="," close=")">
             #{item}
         </foreach>
         else true end
@@ -1811,8 +1811,8 @@
                 #{item}
             </foreach>
         </if>
-        end
-        order by complex.createScheduleDate asc
+        END
+        ORDER BY complex.createScheduleDate ASC
     </select>
 
 

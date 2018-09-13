@@ -165,14 +165,18 @@ public class BankServiceImpl implements BankService {
         Map<String, String> idNameMap = bankCache.getIdNameMap();
         if (!CollectionUtils.isEmpty(idNameMap)) {
 
+            List<BaseVO> baseVOList = Lists.newArrayList();
             idNameMap.forEach((k, v) -> {
 
                 BaseVO baseVO = new BaseVO();
                 baseVO.setId(Long.valueOf(k));
                 baseVO.setName(v);
 
-                baseVOS.add(baseVO);
+                baseVOList.add(baseVO);
             });
+
+            // sort
+            baseVOS = baseVOList.stream().sorted(Comparator.comparing(BaseVO::getId)).collect(Collectors.toList());
         }
 
         return ResultBean.ofSuccess(baseVOS);
