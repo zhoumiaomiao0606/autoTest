@@ -155,6 +155,9 @@ public class LoanProcessServiceImpl implements LoanProcessService {
     private BankSolutionService bankSolutionService;
 
     @Autowired
+    private LoanProcessBridgeService loanProcessBridgeService;
+
+    @Autowired
     private LoanProcessApprovalCommonService loanProcessApprovalCommonService;
 
     @Autowired
@@ -3189,6 +3192,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
         if (REMIT_REVIEW.getCode().equals(approval.getTaskDefinitionKey()) && ACTION_PASS.equals(approval.getAction())) {
 
+            // 打款时间
             RemitDetailsDO remitDetailsDO = new RemitDetailsDO();
 
             remitDetailsDO.setId(remitDetailsId);
@@ -3196,6 +3200,9 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
             int count = remitDetailsDOMapper.updateByPrimaryKeySelective(remitDetailsDO);
             Preconditions.checkArgument(count > 0, "编辑失败");
+
+            // 自动启动流程 -> [第三方过桥资金]
+            loanProcessBridgeService.startProcess(approval.getOrderId());
         }
     }
 
