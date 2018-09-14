@@ -384,7 +384,7 @@
 -->
 
 
-        <table tableName="conf_refund_apply_account" domainObjectName="ConfRefundApplyAccountDO"
+        <table tableName="loan_apply_compensation" domainObjectName="LoanApplyCompensationDO"
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
         </table>

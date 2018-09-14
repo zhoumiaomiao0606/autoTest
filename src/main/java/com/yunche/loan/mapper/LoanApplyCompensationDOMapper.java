@@ -1,14 +1,13 @@
 package com.yunche.loan.mapper;
 
 import com.yunche.loan.domain.entity.LoanApplyCompensationDO;
-import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.Date;
 import java.util.List;
 
-@Mapper
 public interface LoanApplyCompensationDOMapper {
+
     int deleteByPrimaryKey(Long id);
 
     int insert(LoanApplyCompensationDO record);
@@ -21,12 +20,14 @@ public interface LoanApplyCompensationDOMapper {
 
     int updateByPrimaryKey(LoanApplyCompensationDO record);
 
-    List<LoanApplyCompensationDO> selectByOrderId(@Param("orderId")Long orderId);
+    List<LoanApplyCompensationDO> selectByOrderId(@Param("orderId") Long orderId);
 
 
-    LoanApplyCompensationDO selectByOrderIdAndDate(@Param("orderId")Long orderId,@Param("applyCompensationDate") Date applyCompensationDate);
+    LoanApplyCompensationDO selectByOrderIdAndDate(@Param("orderId") Long orderId,
+                                                   @Param("applyCompensationDate") Date applyCompensationDate);
 
-    LoanApplyCompensationDO selectLastByOrderId(@Param("orderId")Long orderId);
+    LoanApplyCompensationDO selectLastByOrderId(@Param("orderId") Long orderId);
 
-    LoanApplyCompensationDO selectByOrderIdAndBankRepayImpRecordId(@Param("orderId")Long orderId,@Param("bank_repay_imp_record_id")Long bank_repay_imp_record_id);
+    LoanApplyCompensationDO selectByOrderIdAndBankRepayImpRecordId(@Param("orderId") Long orderId,
+                                                                   @Param("bank_repay_imp_record_id") Long bank_repay_imp_record_id);
 }

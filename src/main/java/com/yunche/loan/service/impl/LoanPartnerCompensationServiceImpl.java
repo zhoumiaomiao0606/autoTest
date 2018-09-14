@@ -30,8 +30,7 @@ import static com.yunche.loan.config.constant.LoanFileConst.UPLOAD_TYPE_NORMAL;
  */
 @Service
 public class LoanPartnerCompensationServiceImpl implements LoanPartnerCompensationService {
-    
-    
+
     @Autowired
     private LoanApplyCompensationDOMapper loanApplyCompensationDOMapper;
 
@@ -43,46 +42,50 @@ public class LoanPartnerCompensationServiceImpl implements LoanPartnerCompensati
 
     @Autowired
     private LoanQueryDOMapper loanQueryDOMapper;
+
+
     /**
      * 合伙人代偿信息保存
+     *
      * @param param
      * @return
      */
     @Override
     @Transactional
     public Void save(UniversalCompensationParam param) {
-        Preconditions.checkNotNull(param,"参数有误");
-        Preconditions.checkNotNull(param.getOrderId(),"业务单号不能为空");
-        Preconditions.checkNotNull(param.getApplyCompensationDate(),"代偿申请日期不能为空");
+        Preconditions.checkNotNull(param, "参数有误");
+        Preconditions.checkNotNull(param.getOrderId(), "业务单号不能为空");
+        Preconditions.checkNotNull(param.getApplyCompensationDate(), "代偿申请日期不能为空");
         LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(param.getOrderId());
-        Preconditions.checkNotNull(loanOrderDO,"订单不存在：["+param.getOrderId()+"]");
+        Preconditions.checkNotNull(loanOrderDO, "订单不存在：[" + param.getOrderId() + "]");
         int count = loanApplyCompensationDOMapper.updateByPrimaryKeySelective(param);
-        Preconditions.checkArgument(count>0,"合伙人代偿保存失败");
+        Preconditions.checkArgument(count > 0, "合伙人代偿保存失败");
 
         //保存图片
-        ResultBean<Void> resultBean = loanFileService.updateOrInsertByCustomerIdAndUploadType(loanOrderDO.getLoanCustomerId(), param.getFiles(),UPLOAD_TYPE_NORMAL );
-        Preconditions.checkArgument(resultBean.getSuccess(),"合伙人代偿打款凭证保存失败");
+        ResultBean<Void> resultBean = loanFileService.updateOrInsertByCustomerIdAndUploadType(loanOrderDO.getLoanCustomerId(), param.getFiles(), UPLOAD_TYPE_NORMAL);
+        Preconditions.checkArgument(resultBean.getSuccess(), "合伙人代偿打款凭证保存失败");
 
         return null;
     }
 
     /**
      * 合伙人代偿详情
+     *
      * @param query
      * @return
      */
     @Override
     public ResultBean detail(UniversalCompensationQuery query) {
-        Preconditions.checkNotNull(query,"参数有误");
-        Preconditions.checkNotNull(query.getOrderId(),"业务单号不能为空");
-        Preconditions.checkNotNull(query.getInsteadPayOrderId(),"代偿申请ID不能为空");
+        Preconditions.checkNotNull(query, "参数有误");
+        Preconditions.checkNotNull(query.getOrderId(), "业务单号不能为空");
+        Preconditions.checkNotNull(query.getInsteadPayOrderId(), "代偿申请ID不能为空");
 
 
         //数据查询
 
         LoanApplyCompensationDO applyCompensation = loanApplyCompensationDOMapper.selectByPrimaryKey(query.getInsteadPayOrderId());
-        Preconditions.checkNotNull(applyCompensation,"代偿记录不存在");
-        if(applyCompensation.getPartnerCompensationAmount()==null){
+        Preconditions.checkNotNull(applyCompensation, "代偿记录不存在");
+        if (applyCompensation.getPartnerCompensationAmount() == null) {
             BigDecimal amount = applyCompensation.getCompensationAmount();//代偿金额
             BigDecimal ratio = applyCompensation.getRiskTakingRatio().divide(new BigDecimal("100"));//比例
 
@@ -92,9 +95,8 @@ public class LoanPartnerCompensationServiceImpl implements LoanPartnerCompensati
         }
 
         UniversalCompensationVO compensationVO = new UniversalCompensationVO();
-        BeanUtils.copyProperties(applyCompensation,compensationVO);
+        BeanUtils.copyProperties(applyCompensation, compensationVO);
         compensationVO.setOrderId(String.valueOf(applyCompensation.getOrderId()));
-
 
 
         UniversalInfoVO universalInfoVO = loanQueryDOMapper.selectUniversalInfo(query.getOrderId());//客户基本信息

@@ -8,6 +8,7 @@ import java.util.Date;
 
 @Data
 public class LoanApplyCompensationDO {
+
     private Long id;
 
     private Long orderId;
@@ -35,11 +36,10 @@ public class LoanApplyCompensationDO {
     //申请代偿时间
     private Date applyCompensationDate;
 
-    private String outCarNumber;
-
-    private String outBank;
-
-    private String outAccount;
+    /**
+     * （公司）打款账户详情关联ID
+     */
+    private Long refundApplyAccountId;
 
     private String receiveBank;
 
@@ -59,7 +59,7 @@ public class LoanApplyCompensationDO {
 
     private String partnerDcReviewOperator;
 
-    //合伙人代偿确认经办时间
+    // 合伙人代偿确认经办时间
     private Date partnerDcReviewDate;
 
     private Byte status;
@@ -72,6 +72,7 @@ public class LoanApplyCompensationDO {
 
     /**
      * 日期去掉时分秒
+     *
      * @param applyCompensationDate
      */
     @jdk.nashorn.internal.objects.annotations.Setter
@@ -79,6 +80,4 @@ public class LoanApplyCompensationDO {
         Date applyCompDate = DateUtil.getDateTo10(applyCompensationDate);
         this.applyCompensationDate = applyCompDate;
     }
-
-
 }
