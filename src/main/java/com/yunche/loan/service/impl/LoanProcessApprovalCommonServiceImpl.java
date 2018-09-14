@@ -23,10 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.lang.reflect.Method;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
 import static com.yunche.loan.config.constant.LoanDataFlowConst.DATA_FLOW_TASK_KEY_PREFIX;
@@ -213,9 +210,8 @@ public class LoanProcessApprovalCommonServiceImpl implements LoanProcessApproval
         return null;
     }
 
-
     /**
-     * [领取]完成
+     * [领取]完成  -相邻节点
      *
      * @param approval
      * @param startTaskIdList
@@ -224,35 +220,56 @@ public class LoanProcessApprovalCommonServiceImpl implements LoanProcessApproval
     @Override
     public void finishTask(ApprovalParam approval, List<String> startTaskIdList, String processInstId) {
 
-        if (null != approval.getTaskId()) {
+        Byte action = approval.getAction();
 
-            Byte action = approval.getAction();
+//        // 1、打回 -> 自动释放所有回滚的任务
+//
+//        // REJECT || ROLL_BACK
+//        if (ACTION_REJECT_MANUAL.equals(action) || ACTION_REJECT_AUTO.equals(action)
+//                || ACTION_ROLL_BACK.equals(action)) {
+//
+//            // 跨节点打回
+//            if (!isBack_B2A) {
+//
+//                Preconditions.checkArgument(!CollectionUtils.isEmpty(reject2Tasks), "跨节点打回，跨节点任务列表：reject2Tasks不能为空");
+//
+//                // 以当前orderId为taskId                  跨区间节点为1->N时，暂不支持！！！
+//                Long taskId = approval.getOrderId();
+//                Long orderId = approval.getOrderId();
+//
+//                // open - reject2Tasks
+//                taskDistributionService.rejectFinish(taskId, orderId, reject2Tasks);
+//            }
+//
+//            // 相邻节点打回
+//            else {
+//
+//                // 相邻节点列表
+//                List<String> newTaskKeyList = getNewTaskKeyList(processInstId, startTaskIdList);
+//
+//                if (!CollectionUtils.isEmpty(newTaskKeyList)) {
+//
+//                    // open - reject2Tasks
+//                    taskDistributionService.rejectFinish(approval.getTaskId(), approval.getOrderId(), newTaskKeyList);
+//                }
+//            }
+//        }
 
-            // PASS
-            if (ACTION_PASS.equals(action)) {
+        //  PASS
+        if (ACTION_PASS.equals(action)) {
+
+            // 当前有taskId，处理当前任务
+            if (null != approval.getTaskId()) {
 
                 // pass-当前task
                 taskDistributionService.finish(approval.getTaskId(), approval.getOrderId(), approval.getTaskDefinitionKey());
-
-                // open-新产生的任务    如果新任务是：过去已存在(被打回过)，一律OPEN
-                List<String> newTaskKeyList = getNewTaskKeyList(processInstId, startTaskIdList);
-
-                // open-被打回过的Tasks
-                taskDistributionService.rejectFinish(approval.getTaskId(), approval.getOrderId(), newTaskKeyList);
             }
 
-            // REJECT || ROLL_BACK
-            else if (ACTION_REJECT_MANUAL.equals(action) || ACTION_REJECT_AUTO.equals(action)
-                    || ACTION_ROLL_BACK.equals(action)) {
+            // open-新产生的任务    如果新任务是：过去已存在(被打回过)，一律OPEN
+            List<String> newTaskKeyList = getNewTaskKeyList(processInstId, startTaskIdList);
 
-                List<String> newTaskKeyList = getNewTaskKeyList(processInstId, startTaskIdList);
-
-                if (!CollectionUtils.isEmpty(newTaskKeyList)) {
-
-                    // open-reject2Tasks
-                    taskDistributionService.rejectFinish(approval.getTaskId(), approval.getOrderId(), newTaskKeyList);
-                }
-            }
+            // open-被打回过的Tasks
+            taskDistributionService.rejectFinish(approval.getTaskId(), approval.getOrderId(), newTaskKeyList);
         }
     }
 

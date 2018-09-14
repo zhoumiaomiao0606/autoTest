@@ -50,7 +50,7 @@ public interface LoanProcessApprovalCommonService {
     List<String> getCurrentTaskIdList(String processInstanceId);
 
     /**
-     * [领取]完成
+     * [领取]完成  -相邻节点
      *
      * @param approval
      * @param startTaskIdList

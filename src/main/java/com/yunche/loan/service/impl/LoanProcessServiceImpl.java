@@ -234,7 +234,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
         // 【退款申请】
         if (isRefundApplyTask(approval.getTaskDefinitionKey())) {
-            return execRefundApplyTask(approval, loanProcessDO);
+            return execRefundApplyTask(approval, loanOrderDO, loanProcessDO);
         }
 
         // 【反审】
@@ -854,13 +854,19 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      * 能发起[退款申请]的节点：[打款确认]-已提交
      *
      * @param approval
+     * @param loanOrderDO
      * @param loanProcessDO
      * @return
      */
-    private ResultBean<Void> execRefundApplyTask(ApprovalParam approval, LoanProcessDO loanProcessDO) {
+    private ResultBean<Void> execRefundApplyTask(ApprovalParam approval, LoanOrderDO loanOrderDO, LoanProcessDO loanProcessDO) {
+
+        // 先获取提交之前的待执行任务ID列表
+        List<String> currentTaskIdList = loanProcessApprovalCommonService.getCurrentTaskIdList(loanOrderDO.getProcessInstId());
+
+        String taskDefinitionKey = approval.getTaskDefinitionKey();
 
         // 【退款申请】
-        if (REFUND_APPLY.getCode().equals(approval.getTaskDefinitionKey())) {
+        if (REFUND_APPLY.getCode().equals(taskDefinitionKey)) {
             // 提交
             Preconditions.checkArgument(ACTION_PASS.equals(approval.getAction()), "流程审核参数有误");
 
@@ -873,12 +879,10 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
             // 更新申请单状态
             updateRefundApply(approval, APPLY_ORDER_TODO);
-
-            return ResultBean.ofSuccess(null, "[退款申请]任务执行成功");
         }
 
         // 【退款申请审核】
-        else if (REFUND_APPLY_REVIEW.getCode().equals(approval.getTaskDefinitionKey())) {
+        else if (REFUND_APPLY_REVIEW.getCode().equals(taskDefinitionKey)) {
 
             // 通过/打回
             if (ACTION_PASS.equals(approval.getAction())) {
@@ -908,16 +912,21 @@ public class LoanProcessServiceImpl implements LoanProcessService {
                 updateRefundApply(approval, APPLY_ORDER_REJECT);
 
                 // 打回记录
-                createRejectLog_(loanProcessDO.getOrderId(), approval.getTaskDefinitionKey(), REFUND_APPLY.getCode(), approval.getInfo());
+                createRejectLog_(loanProcessDO.getOrderId(), taskDefinitionKey, REFUND_APPLY.getCode(), approval.getInfo());
 
             } else {
+
                 throw new BizException("流程审核参数有误");
             }
 
-            return ResultBean.ofSuccess(null, "[退款申请审核]任务执行成功");
+        } else {
+
+            throw new BizException("流程审核参数有误");
         }
 
-        return ResultBean.ofError("参数有误");
+        loanProcessApprovalCommonService.finishTask(approval, currentTaskIdList, loanOrderDO.getProcessInstId());
+
+        return ResultBean.ofSuccess(null, "[" + LoanProcessEnum.getNameByCode(taskDefinitionKey) + "]任务执行成功");
     }
 
     /**
@@ -3200,12 +3209,12 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
                 Long startProcessId = loanProcessBridgeService.startProcess(approval.getOrderId());
 
-                //绑定当前流程到金投行
+                // 绑定当前流程到金投行
                 ConfThirdRealBridgeProcessDO thirdRealBridgeProcessDO = new ConfThirdRealBridgeProcessDO();
                 thirdRealBridgeProcessDO.setBridgeProcessId(startProcessId);
                 thirdRealBridgeProcessDO.setConfThirdPartyId(IDict.K_CONF_THIRD_PARTY.K_JTH);
                 int insertCount = confThirdRealBridgeProcessDOMapper.insert(thirdRealBridgeProcessDO);
-                Preconditions.checkArgument(insertCount>0,"插入失败");
+                Preconditions.checkArgument(insertCount > 0, "插入失败");
 
             }
         }
