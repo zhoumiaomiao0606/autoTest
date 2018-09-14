@@ -681,6 +681,7 @@ public class LoanProcessApprovalRollBackServiceImpl implements LoanProcessApprov
     private void updateRollBackLoanProcess_(ApprovalParam approval, List<String> rollBacTokTaskKeys) {
 
         LoanProcessBridgeDO loanProcessDO = new LoanProcessBridgeDO();
+        loanProcessDO.setId(approval.getProcessId());
         loanProcessDO.setOrderId(approval.getOrderId());
 
         if (!CollectionUtils.isEmpty(rollBacTokTaskKeys)) {
