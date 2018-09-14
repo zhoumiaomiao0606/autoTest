@@ -722,7 +722,7 @@
                           compensation.overdue_number                  AS overdueNumber,
                           compensation.advances_number                 AS advancesNumber,
                           compensation.risk_taking_ratio               AS riskTakingRatio,
-                          DATE_FORMAT(compensation.apply_compensation_date,'%Y-%m-%d %H:%i:%S') AS applyCompensationDate,
+                          DATE_FORMAT(compensation.apply_compensation_date,'%Y-%m-%d') AS applyCompensationDate,
                           join_rep.optimal_return                      AS overdueAmount,
                           join_c.lend_card                             AS lendCard,
                           deputy_.apply_instead_pay                    AS taskStatus
@@ -739,7 +739,7 @@
                           compensation.overdue_number                  AS overdueNumber,
                           compensation.advances_number                 AS advancesNumber,
                           compensation.risk_taking_ratio               AS riskTakingRatio,
-                          DATE_FORMAT(compensation.apply_compensation_date,'%Y-%m-%d %H:%i:%S') AS applyCompensationDate,
+                          DATE_FORMAT(compensation.apply_compensation_date,'%Y-%m-%d') AS applyCompensationDate,
                           join_rep.optimal_return                      AS overdueAmount,
                           deputy_.finance_instead_pay_review           AS taskStatus
                       </when>
@@ -785,7 +785,7 @@
                                   || taskDefinitionKey == 'usertask_bridge_repay_info'">
                           deputy_b.id                                  AS processId,
                           deputy_b.bridge_handle                       AS taskStatus,
-                          DATE_FORMAT(third_party.lend_date, '%Y-%m-%d %H:%i:%S')
+                          DATE_FORMAT(third_party.lend_date, '%Y-%m-%d')
                                                                        AS bridgeLendDate,
                           conf_t.loan_time                             AS confThirdLoanTime,
                           third_party.repay_type                       AS bridgeRepayType,

@@ -1253,10 +1253,10 @@
         fund.repay_type                   AS repayType,
         fund.repay_remark                 AS repayRemark
         from
-        (select * from loan_process_bridge where bridge_repay_info=1) process
+        (select * from loan_process_bridge where bridge_repay_info=2) process
         LEFT JOIN loan_order  loan ON process.order_id = loan.id
         LEFT JOIN loan_base_info base ON loan.loan_base_info_id=base.id
-        LEFT JOIN third_party_fund_business fund ON loan.id=fund.order_id
+        LEFT JOIN third_party_fund_business fund ON (loan.id=fund.order_id and fund.bridge_procecss_id=process.id)
         LEFT JOIN loan_customer customer ON loan.loan_customer_id = customer.id
         LEFT JOIN loan_financial_plan financial ON financial.id = loan.loan_financial_plan_id
         LEFT JOIN remit_details remit  ON loan.remit_details_id =remit.id
@@ -1345,7 +1345,7 @@
         NULL END
         AS pEducation,
           pcustomer.mobile AS pMobile,
-        CONCAT_WS(pcustomer.hprovince,pcustomer.hcity,pcustomer.hcounty,pcustomer.address)
+        CONCAT_WS('',pcustomer.hprovince,pcustomer.hcity,pcustomer.hcounty,pcustomer.address)
            AS pAddress,
           pcustomer.mobile AS pHomeMobile,
           pcustomer.postcode AS pPostcode ,
@@ -1373,7 +1373,7 @@
         NULL
         END AS pHouseFeature,
           pcustomer.income_certificate_company_name AS pIncomeCertificateCompanyName,
-        CONCAT_WS(pcustomer.cprovince,pcustomer.ccity,pcustomer.ccounty,pcustomer.income_certificate_company_address)
+        CONCAT_WS('',pcustomer.cprovince,pcustomer.ccity,pcustomer.ccounty,pcustomer.income_certificate_company_address)
            AS pIncomeCertificateCompanyAddress,
           pcustomer.company_postcode AS pCompanyPostcode,
           pcustomer.company_phone AS pCompanyPhone,
@@ -1515,7 +1515,12 @@
           vehicle_information.license_plate_number AS licensePlateNumber,
           vehicle_information.vehicle_identification_number AS vehicleIdentificationNumber,
           vehicle_information.engine_number AS engineNumber,
-        CONCAT(area.parent_area_name,area.area_name) AS applyLicensePlateArea,
+        CASE
+        WHEN parea.parent_area_id = '' OR parea.parent_area_id = NULL THEN
+        CONCAT(area.parent_area_name,area.area_name)
+        ELSE
+        CONCAT(parea.parent_area_name,area.area_name) END
+        AS applyLicensePlateArea,
         ( SELECT loan_data_flow.express_receive_date FROM loan_data_flow WHERE principal_orders.id = loan_data_flow.order_id AND type = 4 ORDER BY id DESC LIMIT 1 ) AS express_receive_date
 
 
@@ -1530,6 +1535,7 @@
         LEFT JOIN vehicle_information ON principal_orders.vehicle_information_id = vehicle_information.id
         LEFT JOIN loan_base_info ON  principal_orders.loan_base_info_id = loan_base_info.id
         left join base_area area on vehicle_information.apply_license_plate_area = area.area_id
+        LEFT JOIN base_area parea ON area.parent_area_id = parea.area_id
         <where>
             case when #{maxGroupLevel} = 0 then false
             when #{maxGroupLevel} = 1 then
@@ -1646,13 +1652,15 @@
         NULL
         END AS linkManREapplyPerson,
         month_income*12 AS linkManYearIncome,
-        address AS linkManAddress,
+         CONCAT_WS('',hprovince,hcity,hcounty,address)
+         AS linkManAddress,
         income_certificate_company_name AS linkManIncomeCertificateCompanyName,
-        income_certificate_company_address AS linkManIncomeCertificateCompanyAddress,
+         CONCAT_WS('',cprovince,ccity,ccounty,income_certificate_company_address)
+        AS linkManIncomeCertificateCompanyAddress,
         mobile AS linkManMobile
         FROM
         loan_customer
-        WHERE principal_cust_id = #{pCustomerId} AND cust_type IN (2,3)
+        WHERE principal_cust_id = #{pCustomerId} AND (cust_type = 2  OR   (guarantee_type = 2 AND cust_type = 3 ))
 
     </select>
 

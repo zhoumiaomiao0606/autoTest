@@ -195,7 +195,7 @@ public class VehicleInformationServiceImpl implements VehicleInformationService 
         Preconditions.checkNotNull(bankId, "贷款银行不存在");
 
         if(IDict.K_BANK.ICBC_TZLQ.equals(String.valueOf(bankId))){
-            DateUtil.getdiffMonth_TAIZHOU(transferOwnershipDate,registerDate);
+            month = DateUtil.getdiffMonth_TAIZHOU(transferOwnershipDate,registerDate);
             month = month>60?60:month;
         }else if(IDict.K_BANK.ICBC_HZCZ.equals(String.valueOf(bankId))){
             month = DateUtil.getdiffMonth_CHENGZHAN(transferOwnershipDate,registerDate);
