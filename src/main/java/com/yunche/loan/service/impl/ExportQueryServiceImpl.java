@@ -118,8 +118,10 @@ public class ExportQueryServiceImpl implements ExportQueryService
      */
     @Override
     public String expertMaterialReviewQuery(ExportMaterialReviewQueryVerifyParam exportMaterialReviewQueryVerifyParam) {
-        String startDate = exportMaterialReviewQueryVerifyParam.getStartDate();
-        String endDate = exportMaterialReviewQueryVerifyParam.getEndDate();
+        Long loginUserId = SessionUtils.getLoginUser().getId();
+
+        exportMaterialReviewQueryVerifyParam.setJuniorIds(employeeService.getSelfAndCascadeChildIdList(loginUserId));
+        exportMaterialReviewQueryVerifyParam.setMaxGroupLevel(taskSchedulingDOMapper.selectMaxGroupLevel(loginUserId));
 
         List<ExportMaterialReviewDetailQueryVO> list = loanStatementDOMapper.exportMaterialReviewQuerys(exportMaterialReviewQueryVerifyParam);
 
@@ -140,8 +142,10 @@ public class ExportQueryServiceImpl implements ExportQueryService
      */
     @Override
     public String expertMortgageOverdueQuery(ExportMortgageOverdueQueryVerifyParam exportMortgageOverdueQueryVerifyParam) {
-        String startDate = exportMortgageOverdueQueryVerifyParam.getStartDate();
-        String endDate = exportMortgageOverdueQueryVerifyParam.getEndDate();
+        Long loginUserId = SessionUtils.getLoginUser().getId();
+
+        exportMortgageOverdueQueryVerifyParam.setJuniorIds(employeeService.getSelfAndCascadeChildIdList(loginUserId));
+        exportMortgageOverdueQueryVerifyParam.setMaxGroupLevel(taskSchedulingDOMapper.selectMaxGroupLevel(loginUserId));
 
         List<ExportMortgageOverdueQueryVO> list = loanStatementDOMapper.exportMortgageOverdueQuerys(exportMortgageOverdueQueryVerifyParam);
 
@@ -157,6 +161,10 @@ public class ExportQueryServiceImpl implements ExportQueryService
 
     @Override
     public String exportOrders(ExportOrdersParam exportOrdersParam) {
+        Long loginUserId = SessionUtils.getLoginUser().getId();
+
+        exportOrdersParam.setJuniorIds(employeeService.getSelfAndCascadeChildIdList(loginUserId));
+        exportOrdersParam.setMaxGroupLevel(taskSchedulingDOMapper.selectMaxGroupLevel(loginUserId));
 
         List<ExportOrdersVO> list = loanStatementDOMapper.exportOrders(exportOrdersParam);
 
