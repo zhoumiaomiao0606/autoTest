@@ -1515,7 +1515,12 @@
           vehicle_information.license_plate_number AS licensePlateNumber,
           vehicle_information.vehicle_identification_number AS vehicleIdentificationNumber,
           vehicle_information.engine_number AS engineNumber,
-        CONCAT(area.parent_area_name,area.area_name) AS applyLicensePlateArea,
+        CASE
+        WHEN parea.parent_area_id = '' OR parea.parent_area_id = NULL THEN
+        CONCAT(area.parent_area_name,area.area_name)
+        ELSE
+        CONCAT(parea.parent_area_name,area.area_name) END
+        AS applyLicensePlateArea,
         ( SELECT loan_data_flow.express_receive_date FROM loan_data_flow WHERE principal_orders.id = loan_data_flow.order_id AND type = 4 ORDER BY id DESC LIMIT 1 ) AS express_receive_date
 
 
@@ -1530,6 +1535,7 @@
         LEFT JOIN vehicle_information ON principal_orders.vehicle_information_id = vehicle_information.id
         LEFT JOIN loan_base_info ON  principal_orders.loan_base_info_id = loan_base_info.id
         left join base_area area on vehicle_information.apply_license_plate_area = area.area_id
+        LEFT JOIN base_area parea ON area.parent_area_id = parea.area_id
         <where>
             case when #{maxGroupLevel} = 0 then false
             when #{maxGroupLevel} = 1 then
