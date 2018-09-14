@@ -115,8 +115,10 @@ public interface LoanProcessApprovalCommonService {
      * 订单状态校验
      *
      * @param orderId
+     * @param processId
+     * @param processType
      */
-    void checkOrderStatus(Long orderId);
+    void checkOrderStatus(Long orderId, Long processId, Byte processType);
 
     /**
      * 更新本地流程记录

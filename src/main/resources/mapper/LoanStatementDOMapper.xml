@@ -1441,7 +1441,7 @@
                 #{item}
             </foreach>
         </if>
-        <if test="pname !=null" >
+        <if test="pname !=null and pname !=''" >
             AND pcustomer.`name` = #{pname}
         </if>
         <if test="startTime !=null and endTime !=null and startTime !='' and endTime !=''" >
