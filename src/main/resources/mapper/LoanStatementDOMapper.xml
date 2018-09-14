@@ -1262,10 +1262,10 @@
         LEFT JOIN remit_details remit  ON loan.remit_details_id =remit.id
         where  1=1
         <if test="startRepayDate !=null">
-            fund.repay_date &gt;= #{startRepayDate}
+            AND fund.repay_date &gt;= #{startRepayDate}
         </if>
         <if test="endRepayDate !=null">
-            fund.repay_date &gt;= #{endRepayDate}
+            AND fund.repay_date &gt;= #{endRepayDate}
         </if>
     </select>
 

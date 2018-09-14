@@ -2,7 +2,9 @@ package com.yunche.loan.service.impl;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import com.yunche.loan.config.constant.IDict;
 import com.yunche.loan.config.constant.LoanProcessEnum;
+import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.entity.*;
 import com.yunche.loan.domain.param.*;
@@ -100,6 +102,9 @@ public class LoanOrderServiceImpl implements LoanOrderService {
     @Autowired
     private LoanQueryService loanQueryService;
 
+    @Autowired
+    private BankInterfaceSerialDOMapper bankInterfaceSerialDOMapper;
+
 
     @Override
     public ResultBean<CreditApplyOrderVO> creditApplyOrderDetail(Long orderId) {
@@ -132,6 +137,10 @@ public class LoanOrderServiceImpl implements LoanOrderService {
         // 权限校验
         permissionService.checkTaskPermission(LoanProcessEnum.CREDIT_APPLY.getCode());
 
+        // 校验客户是否在系统之前已经查过征信，如果已经查过了，则不允许再添加
+        //根据身份证号校验
+        checkBankInterfaceSerial(param);
+
         // 是否已经禁用该银行
         checkDisableBank(param.getLoanBaseInfo());
 
@@ -145,6 +154,67 @@ public class LoanOrderServiceImpl implements LoanOrderService {
         Long orderId = createLoanOrder(baseInfoId, customerId);
 
         return ResultBean.ofSuccess(String.valueOf(orderId));
+    }
+
+    /**
+     * 校验征信是否查询
+     * @param param
+     */
+    private void checkBankInterfaceSerial(CreditApplyOrderParam param) {
+        //主贷人校验
+        if(param.getPrincipalLender()!=null && param.getPrincipalLender().getId()==null){
+            String idCard = param.getPrincipalLender().getIdCard();
+            bankCredit(idCard,param.getPrincipalLender().getName());
+        }
+        //共待人校验
+        if(param.getCommonLenderList()!=null){
+            param.getCommonLenderList().stream().filter(e-> e.getId()==null).forEach(e->{
+                String idCard = e.getIdCard();
+                String name = e.getName();
+                bankCredit(idCard,name);
+            });
+        }
+
+        //担保人校验
+        if(param.getGuarantorList()!=null){
+            param.getGuarantorList().stream().filter(e-> e.getId()==null).forEach(e->{
+                String idCard = e.getIdCard();
+                String name = e.getName();
+                bankCredit(idCard,name);
+            });
+        }
+
+    }
+
+    private  void bankCredit(String idCard,String name){
+
+        if(StringUtils.isNotBlank(idCard)){
+
+            List<LoanCustomerDO> loanCustomerDOS = loanCustomerDOMapper.selectByIdCard(idCard);
+
+            List<BankInterfaceSerialDO> collect = loanCustomerDOS.stream().filter(Objects::nonNull).map(e -> {
+                BankInterfaceSerialDO bankInterfaceSerialDO = bankInterfaceSerialDOMapper.selectByCustomerIdAndTransCode(e.getId(), IDict.K_TRANS_CODE.APPLYCREDIT);
+                if(bankInterfaceSerialDO!=null){
+                    Date requestTime = bankInterfaceSerialDO.getRequestTime();
+                    Date currDate = new Date();
+                    int days = (int) ((currDate.getTime() - requestTime.getTime()) / (1000*3600*24));
+                    if(days<=14){
+                        return bankInterfaceSerialDO;
+                    }else{
+                        return null;
+                    }
+                }else{
+                    return null;
+                }
+            }).filter(Objects::nonNull).collect(Collectors.toList());
+
+            if(collect!=null && collect.size()>0){
+                throw new BizException(name+":征信14天内已经查询");
+            }
+
+
+        }
+
     }
 
     private void checkDisableBank(LoanBaseInfoParam loanBaseInfo) {
@@ -171,6 +241,7 @@ public class LoanOrderServiceImpl implements LoanOrderService {
     public ResultBean<Void> updateCreditApplyOrder(CreditApplyOrderParam param) {
         Preconditions.checkNotNull(param.getOrderId(), "业务单号不能为空");
 
+        checkBankInterfaceSerial(param);
         // 编辑贷款基本信息
         updateLoanBaseInfo(param.getLoanBaseInfo());
 

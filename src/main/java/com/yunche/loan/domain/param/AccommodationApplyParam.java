@@ -34,6 +34,6 @@ public class AccommodationApplyParam {
     @Data
     public static class IDPair{
         Long orderId;
-        Long bridgeProcecssId;
+        Long bridgeProcessId;
     }
 }

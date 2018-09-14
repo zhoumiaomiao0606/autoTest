@@ -586,6 +586,8 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
      */
     private Long createLoanCustomer(CustomerParam customerParam) {
 
+
+
         LoanCustomerDO loanCustomerDO = new LoanCustomerDO();
         BeanUtils.copyProperties(customerParam, loanCustomerDO);
 
