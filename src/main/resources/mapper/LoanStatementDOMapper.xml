@@ -1345,7 +1345,8 @@
         NULL END
         AS pEducation,
           pcustomer.mobile AS pMobile,
-          pcustomer.address AS pAddress,
+        CONCAT_WS(pcustomer.hprovince,pcustomer.hcity,pcustomer.hcounty,pcustomer.address)
+           AS pAddress,
           pcustomer.mobile AS pHomeMobile,
           pcustomer.postcode AS pPostcode ,
 
@@ -1372,12 +1373,123 @@
         NULL
         END AS pHouseFeature,
           pcustomer.income_certificate_company_name AS pIncomeCertificateCompanyName,
-          pcustomer.income_certificate_company_address AS pIncomeCertificateCompanyAddress,
+        CONCAT_WS(pcustomer.cprovince,pcustomer.ccity,pcustomer.ccounty,pcustomer.income_certificate_company_address)
+           AS pIncomeCertificateCompanyAddress,
           pcustomer.company_postcode AS pCompanyPostcode,
           pcustomer.company_phone AS pCompanyPhone,
-          pcustomer.company_nature AS pCompanyNature,
-          pcustomer.industry_category AS pIndustryCategory,
-          pcustomer.occupation AS pOccupation,
+        CASE
+        WHEN pcustomer.company_nature = 1 THEN
+        '政府机构'
+        WHEN pcustomer.company_nature = 2 THEN
+        '事业单位'
+        WHEN pcustomer.company_nature = 3 THEN
+        '国企'
+        WHEN pcustomer.company_nature = 4 THEN
+        '外资'
+        WHEN pcustomer.company_nature = 5 THEN
+        '合资'
+        WHEN pcustomer.company_nature = 6 THEN
+        '民营'
+        WHEN pcustomer.company_nature = 7 THEN
+        '私营'
+        WHEN pcustomer.company_nature = 8 THEN
+        '个体'
+        WHEN pcustomer.company_nature = 9 THEN
+        '其他'
+        ELSE
+        NULL END
+        AS pCompanyNature,
+        CASE
+        WHEN pcustomer.industry_category = 1 THEN
+        '计算机/互联网/通讯/电子'
+        WHEN pcustomer.industry_category = 2 THEN
+        '会计/金融/银行/保险'
+        WHEN pcustomer.industry_category = 3 THEN
+        '贸易/消费/制造/营运'
+        WHEN pcustomer.industry_category = 4 THEN
+        '制药/医疗'
+        WHEN pcustomer.industry_category = 5 THEN
+        '广告/媒体'
+        WHEN pcustomer.industry_category = 6 THEN
+        '房地产/建筑'
+        WHEN pcustomer.industry_category = 7 THEN
+        '专业服务/教育/培训'
+        WHEN pcustomer.industry_category = 8 THEN
+        '服务业'
+        WHEN pcustomer.industry_category = 9 THEN
+        '物流/运输'
+        WHEN pcustomer.industry_category = 10 THEN
+        '能源/原材料'
+        WHEN pcustomer.industry_category = 11 THEN
+        '政府/非盈利组织'
+        WHEN pcustomer.industry_category = 12 THEN
+        '其他'
+        ELSE
+        NULL END
+           AS pIndustryCategory,
+        CASE
+        WHEN pcustomer.occupation = 1 THEN
+        '公务员'
+        WHEN pcustomer.occupation = 2 THEN
+        '事业单位员工'
+        WHEN pcustomer.occupation = 3 THEN
+        '其他行业职员'
+        WHEN pcustomer.occupation = 4 THEN
+        '军人'
+        WHEN pcustomer.occupation = 5 THEN
+        '自由职业者'
+        WHEN pcustomer.occupation = 6 THEN
+        '工人'
+        WHEN pcustomer.occupation = 7 THEN
+        '农民'
+
+        WHEN pcustomer.occupation = 10 THEN
+        '邮电通讯行业职员'
+        WHEN pcustomer.occupation = 11 THEN
+        '房地产行业职员'
+        WHEN pcustomer.occupation = 12 THEN
+        '交通运输行业职员'
+        WHEN pcustomer.occupation = 13 THEN
+        '法律/司法行业职员'
+        WHEN pcustomer.occupation = 14 THEN
+        '文化/娱乐/体育行业职员'
+        WHEN pcustomer.occupation = 15 THEN
+        '媒介/广告行业职员'
+        WHEN pcustomer.occupation = 16 THEN
+        '科研/教育行业职员'
+        WHEN pcustomer.occupation = 17 THEN
+        '学生'
+        WHEN pcustomer.occupation = 18 THEN
+        '计算机/网络行业职员'
+        WHEN pcustomer.occupation = 19 THEN
+        '商业贸易行业职员'
+        WHEN pcustomer.occupation = 20 THEN
+        '银行/金融/证券/投资行业职员'
+        WHEN pcustomer.occupation = 21 THEN
+        '税务行业职员'
+        WHEN pcustomer.occupation = 22 THEN
+        '咨询行业职员'
+        WHEN pcustomer.occupation = 23 THEN
+        '社会服务行业职员'
+        WHEN pcustomer.occupation = 24 THEN
+        '旅游店行业职员'
+        WHEN pcustomer.occupation = 25 THEN
+        '健康/医疗服务行业职员'
+        WHEN pcustomer.occupation = 26 THEN
+        '管理人员'
+        WHEN pcustomer.occupation = 27 THEN
+        '技术人员'
+        WHEN pcustomer.occupation = 28 THEN
+        '文体明星'
+        WHEN pcustomer.occupation = 29 THEN
+        '无职业'
+        WHEN pcustomer.occupation = 30 THEN
+        '私人业主'
+        WHEN pcustomer.occupation = 31 THEN
+        '制造业职员'
+        ELSE
+        NULL END
+           AS pOccupation,
           pcustomer.duty AS pDuty,
           pcustomer.month_income*12 AS pYearIncome,
           loan_financial_plan.down_payment_money AS pDownPaymentMoney,
@@ -1385,7 +1497,14 @@
           loan_financial_plan.loan_time AS pLoanTime,
           pcustomer.month_income AS pMonthIncome,
 
-          loan_car_info.vehicle_property AS pVehicleProperty,
+        CASE
+        WHEN loan_car_info.vehicle_property = 1 THEN
+        '国产'
+        WHEN loan_car_info.vehicle_property = 2 THEN
+        '进口'
+        ELSE
+        NULL END
+        AS pVehicleProperty,
           loan_car_info.cooperation_dealer AS pCooperationDealer,
           car_brand.`name` AS brandName,
           car_model.`name` AS modelName,
@@ -1396,7 +1515,7 @@
           vehicle_information.license_plate_number AS licensePlateNumber,
           vehicle_information.vehicle_identification_number AS vehicleIdentificationNumber,
           vehicle_information.engine_number AS engineNumber,
-          vehicle_information.apply_license_plate_area AS applyLicensePlateArea,
+        CONCAT(area.parent_area_name,area.area_name) AS applyLicensePlateArea,
         ( SELECT loan_data_flow.express_receive_date FROM loan_data_flow WHERE principal_orders.id = loan_data_flow.order_id AND type = 4 ORDER BY id DESC LIMIT 1 ) AS express_receive_date
 
 
@@ -1410,6 +1529,7 @@
         LEFT JOIN car_brand ON car_model.brand_id = car_brand.id
         LEFT JOIN vehicle_information ON principal_orders.vehicle_information_id = vehicle_information.id
         LEFT JOIN loan_base_info ON  principal_orders.loan_base_info_id = loan_base_info.id
+        left join base_area area on vehicle_information.apply_license_plate_area = area.area_id
         <where>
             case when #{maxGroupLevel} = 0 then false
             when #{maxGroupLevel} = 1 then

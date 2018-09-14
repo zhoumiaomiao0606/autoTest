@@ -8,6 +8,12 @@ import com.yunche.loan.domain.param.CompplexHeader;
 import com.yunche.loan.domain.vo.ExportCustomerInfoVO;
 import com.yunche.loan.domain.vo.FamilyLinkManVO;
 import com.yunche.loan.domain.vo.GuarantorLinkManVO;
+import net.sourceforge.pinyin4j.PinyinHelper;
+import net.sourceforge.pinyin4j.format.HanyuPinyinCaseType;
+import net.sourceforge.pinyin4j.format.HanyuPinyinOutputFormat;
+import net.sourceforge.pinyin4j.format.HanyuPinyinToneType;
+import net.sourceforge.pinyin4j.format.HanyuPinyinVCharType;
+import net.sourceforge.pinyin4j.format.exception.BadHanyuPinyinOutputFormatCombination;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFCell;
@@ -443,7 +449,7 @@ public class POIUtil {
     * @Date:
     * @Description:  复杂格式导出
     */
-    public static  String createComplexExcelFile(String fname, List<ExportCustomerInfoVO> list,Class<FamilyLinkManVO> clazz1,Class<GuarantorLinkManVO> clazz2, CompplexHeader compplexHeader,  OSSConfig ossConfig)
+    public static  String createComplexExcelFile(String fname, List<ExportCustomerInfoVO> list,Class<ExportCustomerInfoVO> class1,Class<FamilyLinkManVO> clazz1,Class<GuarantorLinkManVO> clazz2, CompplexHeader compplexHeader,  OSSConfig ossConfig)
     {
         StringBuilder fileName = new StringBuilder();
         String timestamp = new SimpleDateFormat("yyyyMMdd").format(new Date());
@@ -491,21 +497,14 @@ public class POIUtil {
             List<Method> getfMethods = new ArrayList();
             //获取担保人-共贷人客户方法
             List<Method> getlMethods = new ArrayList();
-            ExportCustomerInfoVO exportCustomer =null;
-            if (list.size() !=0)
-            {
-                exportCustomer = list.get(0);
-            }
-            if (exportCustomer !=null)
-            {
-                Class<? extends ExportCustomerInfoVO> pclazz = exportCustomer.getClass();
-                Field[] fields = pclazz.getDeclaredFields();
+
+                Field[] fields = class1.getDeclaredFields();
 
                 for (int i = 0; i < fields.length; i++)
                 {
                     Field field = fields[i];
                     // 此处应该判断beanObj,property不为null
-                    PropertyDescriptor pd = new PropertyDescriptor(field.getName(), pclazz);
+                    PropertyDescriptor pd = new PropertyDescriptor(field.getName(), class1);
                     getpMethods.add(pd.getReadMethod());
                 }
 
@@ -533,9 +532,6 @@ public class POIUtil {
                     }
 
 
-            }else{
-                throw new BizException("无数据");
-            }
 
 
             for (int i=0;i<list.size();i++)
@@ -657,5 +653,36 @@ public class POIUtil {
         }
 
         return ossConfig.getDownLoadDiskName() + File.separator + fileName;
+    }
+
+
+    // 将汉字转换为全拼
+    public static String getPingYin(String src) {
+        char[] t1 = null;
+        t1 = src.toCharArray();
+        String[] t2 = new String[t1.length];
+        HanyuPinyinOutputFormat t3 = new HanyuPinyinOutputFormat();
+
+        t3.setCaseType(HanyuPinyinCaseType.UPPERCASE);
+        t3.setToneType(HanyuPinyinToneType.WITHOUT_TONE);
+        t3.setVCharType(HanyuPinyinVCharType.WITH_V);
+        String t4 = "";
+        int t0 = t1.length;
+        try {
+            for (int i = 0; i < t0; i++) {
+                // 判断是否为汉字字符
+                if (java.lang.Character.toString(t1[i]).matches(
+                        "[\\u4E00-\\u9FA5]+")) {
+                    t2 = PinyinHelper.toHanyuPinyinStringArray(t1[i], t3);
+                    t4 =t4 + t2[0]+" ";
+                } else
+                    t4 = t4+java.lang.Character.toString(t1[i])+" ";
+            }
+            // System.out.println(t4);
+            return t4;
+        } catch (BadHanyuPinyinOutputFormatCombination e1) {
+            e1.printStackTrace();
+        }
+        return t4;
     }
 }

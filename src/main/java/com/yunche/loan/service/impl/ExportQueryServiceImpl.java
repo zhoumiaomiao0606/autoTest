@@ -262,19 +262,17 @@ public class ExportQueryServiceImpl implements ExportQueryService
 
         //根据筛选条件  银行、合同资料公司至银行-确认接收时间、合伙人团队、主贷人姓名  过滤主贷人信息
         List<ExportCustomerInfoVO> list = loanStatementDOMapper.exportCustomerInfo(exportCustomerInfoParam);
+        CompplexHeader compplexHeader =new CompplexHeader();
+        List<ExportCustomerInfoVO> exportCustomerInfoVOList =new ArrayList<>();
 
-        if (list.size() == 0)
-        {
-            return "无数据";
-        }
-
-        //去空
-        List<ExportCustomerInfoVO> exportCustomerInfoVOList = list.stream()
-                .filter(exportCustomerInfoVO -> exportCustomerInfoVO != null)
-                .collect(Collectors.toList());
+        if (list.size() != 0) {
+            //去空
+            exportCustomerInfoVOList = list.stream()
+                    .filter(exportCustomerInfoVO -> exportCustomerInfoVO != null)
+                    .collect(Collectors.toList());
 
 
-                   exportCustomerInfoVOList.forEach(
+            exportCustomerInfoVOList.forEach(
                     e ->
                     {
                         //选出紧急联系人
@@ -288,50 +286,52 @@ public class ExportQueryServiceImpl implements ExportQueryService
                         List<GuarantorLinkManVO> collect = guarantorLinkManList.stream()
                                 .filter(guarantorLinkManVO -> guarantorLinkManVO != null)
                                 .collect(Collectors.toList());
-                                 collect.forEach(guarantorLinkManVO -> {
-                                    if (guarantorLinkManVO.getLinkManIdentityValidity()!=null && pattern.matcher(guarantorLinkManVO.getLinkManIdentityValidity()).find())
-                                    {
-                                        guarantorLinkManVO.setBooleanLongTerm("是");
-                                        System.out.println("姓名"+e.getPName()+"====担保人名字"+guarantorLinkManVO.getLinkManName());
-                                    }
-                                    else{
-                                        guarantorLinkManVO.setBooleanLongTerm("否");
-                                    }
+                        collect.forEach(guarantorLinkManVO -> {
+                            if (guarantorLinkManVO.getLinkManIdentityValidity() != null && pattern.matcher(guarantorLinkManVO.getLinkManIdentityValidity()).find()) {
+                                guarantorLinkManVO.setBooleanLongTerm("是");
+                                System.out.println("姓名" + e.getPName() + "====担保人名字" + guarantorLinkManVO.getLinkManName());
+                            } else {
+                                guarantorLinkManVO.setBooleanLongTerm("否");
+                            }
 
 
-                                });
+                        });
 
-                                 e.setGuarantorLinkManList(collect);
-                                 //计算主贷人总资产
-                        BigDecimal totalAsset=new BigDecimal(0);
-                        for (GuarantorLinkManVO guarantorLinkManVO: collect)
-                        {
-                            if (guarantorLinkManVO.getLinkManYearIncome() !=null)
-                            {
+                        e.setGuarantorLinkManList(collect);
+                        //计算主贷人总资产
+                        BigDecimal totalAsset = new BigDecimal(0);
+                        for (GuarantorLinkManVO guarantorLinkManVO : collect) {
+                            if (guarantorLinkManVO.getLinkManYearIncome() != null) {
                                 totalAsset = totalAsset.add(guarantorLinkManVO.getLinkManYearIncome());
                             }
                         }
 
-                                 if(e.getPYearIncome() !=null)
-                                 {
-                                     totalAsset = totalAsset.add(e.getPYearIncome());
-                                 }
+                        if (e.getPYearIncome() != null) {
+                            totalAsset = totalAsset.add(e.getPYearIncome());
+                        }
 
-                                 e.setTotalAsset(totalAsset);
+                        e.setTotalAsset(totalAsset);
+
+
+                        //将中文姓名导出拼音
+                        if (e.getPName()!=null){
+                            e.setPyName(POIUtil.getPingYin(e.getPName()));
+                        }
 
                     }
-                        );
+            );
 
-        //计算共贷人和担保人数最大值
-        int max=exportCustomerInfoVOList.stream().max(new Comparator<ExportCustomerInfoVO>() {
-            @Override
-            public int compare(ExportCustomerInfoVO o1, ExportCustomerInfoVO o2) {
-                return o1.getGuarantorLinkManList().size()-o2.getGuarantorLinkManList().size();
-            }
-        }).get().getGuarantorLinkManList().size();
+            //计算共贷人和担保人数最大值
+            int max = exportCustomerInfoVOList.stream().max(new Comparator<ExportCustomerInfoVO>() {
+                @Override
+                public int compare(ExportCustomerInfoVO o1, ExportCustomerInfoVO o2) {
+                    return o1.getGuarantorLinkManList().size() - o2.getGuarantorLinkManList().size();
+                }
+            }).get().getGuarantorLinkManList().size();
 
-        System.out.println("======================="+max+"=======================================");
-
+            compplexHeader.setCount(max);
+            System.out.println("=======================" + max + "=======================================");
+        }
 
         //TODO  后期用linkedMap修改
                    //动态生成列表头---主要是后面共贷人和担保人需取最大数量值
@@ -401,13 +401,13 @@ public class ExportQueryServiceImpl implements ExportQueryService
 
         );
 
-        CompplexHeader compplexHeader =new CompplexHeader();
         compplexHeader.setPheader(pheader);
         compplexHeader.setAheader(aheader);
-        compplexHeader.setCount(max);
+
+
 
         //特殊导出
-        String ossResultKey = POIUtil.createComplexExcelFile("customerInfo",exportCustomerInfoVOList,FamilyLinkManVO.class,GuarantorLinkManVO.class,compplexHeader,ossConfig);
+        String ossResultKey = POIUtil.createComplexExcelFile("customerInfo",exportCustomerInfoVOList,ExportCustomerInfoVO.class,FamilyLinkManVO.class,GuarantorLinkManVO.class,compplexHeader,ossConfig);
 
         return ossResultKey;
     }

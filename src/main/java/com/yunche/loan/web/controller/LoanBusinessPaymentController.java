@@ -21,13 +21,14 @@ public class LoanBusinessPaymentController {
 
     /**
      * 业务付款单
+     *
      * @param loanBusinessPaymentParam
      * @return
      */
     @PostMapping(value = "/update", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean<Long> create(@RequestBody LoanBusinessPaymentParam loanBusinessPaymentParam) {
-        Preconditions.checkNotNull(loanBusinessPaymentParam,"业务付款记录不能为空");
-        Preconditions.checkNotNull(loanBusinessPaymentParam.getOrderId(),"订单编号不能为空");
+        Preconditions.checkNotNull(loanBusinessPaymentParam, "业务付款记录不能为空");
+        Preconditions.checkNotNull(loanBusinessPaymentParam.getOrderId(), "订单编号不能为空");
 //        Preconditions.checkNotNull(loanBusinessPaymentParam.getApplicationDate(),"申请日期不能为空");
 //        Preconditions.checkNotNull(loanBusinessPaymentParam.getReceiveOpenBank(),"收款开户行不能为空");
 //        Preconditions.checkNotNull(loanBusinessPaymentParam.getReceiveAccount(),"收款账户不能为空");
@@ -37,18 +38,20 @@ public class LoanBusinessPaymentController {
 
         return loanBusinessPaymentService.save(loanBusinessPaymentParam);
     }
+
     /**
      * 业务付款单详情页
+     *
      * @param orderId
      * @return
      */
     @GetMapping(value = "/detail")
-    public ResultBean<RecombinationVO> businessPaymentDetail(@RequestParam("orderId") Long orderId){
+    public ResultBean<RecombinationVO> businessPaymentDetail(@RequestParam("orderId") Long orderId) {
         return loanBusinessPaymentService.detail(orderId);
     }
 
     @GetMapping(value = "/appdetail")
-    public ResultBean<RecombinationVO> appBusinessPaymentDetail(@RequestParam("orderId") Long orderId){
+    public ResultBean<RecombinationVO> appBusinessPaymentDetail(@RequestParam("orderId") Long orderId) {
         return loanBusinessPaymentService.appDetail(orderId);
     }
 }

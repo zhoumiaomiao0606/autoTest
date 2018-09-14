@@ -75,6 +75,11 @@ public class MaterialController {
         return materialService.downloadFiles2OSS(orderId, true);
     }
 
+    @GetMapping(value = "/downcar2oss")
+    public ResultBean<String> downCar2OSS(@RequestParam Long orderId) {
+        return materialService.downCarFiles2OSS(orderId, true);
+    }
+
     @GetMapping(value = "/zipCheck")
     public ResultBean checkZipStatus(@RequestParam(value = "orderId") Long orderId) {
         return materialService.zipCheck(orderId);

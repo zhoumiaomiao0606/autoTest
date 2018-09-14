@@ -52,7 +52,7 @@
             vehicle.assess_use_year                   as vehicle_assess_use_year,
             car.car_category                          as car_category,
             bank_log.operate_name                     as operate_name,
-            bank_log.operate_date                     as operate_date,
+            DATE_FORMAT(bank_log.operate_date,'%Y-%m-%d %H:%i:%S')   as operate_date,
             current.usertask_remit_review_create_time    as remit_details_time
 
         from (select * from loan_order where id = #{orderId}) orders
@@ -428,6 +428,7 @@
             remit.application_date                                                                  AS remit_application_date,
             process.apply_license_plate_deposit_info                                                AS process_apply_license_plate_deposit_info,
             process.bank_lend_record                                                                AS process_bank_lend_record,
+            process.video_review                                                                    AS process_video_review,
             bank.repay_date                                                                         AS bank_repay_date,
             bank.billing_date                                                                       AS bank_billing_date,
             car.car_category                                                                        AS car_category,
@@ -1150,11 +1151,12 @@
                     refund_amount 					            AS refund_amount,
                     DATE_FORMAT(refund_date,'%Y-%m-%d %H:%i:%S') AS refund_date,
                     refund_reason 					            AS refund_reason,
-                    refund_pay_open_bank  	                    AS refund_pay_open_bank,
-                    refund_pay_account_name                     AS refund_pay_account_name,
-                    refund_pay_account 			                AS refund_pay_account,
+                    refund_apply_account_id  	                AS refund_apply_account_id,
                     path 										AS path
-        from loan_refund_apply where  order_id= #{orderId} and id = #{refundId}
+
+        FROM    loan_refund_apply
+
+        WHERE   id = #{refundId} AND order_id = #{orderId}
 
     </select>
 

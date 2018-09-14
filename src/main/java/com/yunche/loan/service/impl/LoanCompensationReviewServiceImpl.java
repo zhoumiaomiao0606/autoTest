@@ -29,37 +29,41 @@ public class LoanCompensationReviewServiceImpl implements LoanCompensationReview
     @Autowired
     private LoanQueryDOMapper loanQueryDOMapper;
 
+
     /**
      * 代偿确认保存
+     *
      * @param param
      * @return
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Void save(UniversalCompensationParam param) {
-        Preconditions.checkNotNull(param,"参数有误");
-        Preconditions.checkNotNull(param.getId(),"代偿ID不能为空");
-        int count = loanApplyCompensationDOMapper.updateByPrimaryKeySelective(param);
-        Preconditions.checkArgument(count>0,"保存失败");
+        Preconditions.checkNotNull(param, "参数有误");
+        Preconditions.checkNotNull(param.getId(), "代偿ID不能为空");
 
-       return null;
+        int count = loanApplyCompensationDOMapper.updateByPrimaryKeySelective(param);
+        Preconditions.checkArgument(count > 0, "保存失败");
+
+        return null;
     }
 
     /**
      * 代偿确认详情页
+     *
      * @param query
      * @return
      */
     @Override
     public ResultBean detail(UniversalCompensationQuery query) {
-        Preconditions.checkNotNull(query,"参数有误");
-        Preconditions.checkNotNull(query.getOrderId(),"业务单号不能为空");
-        Preconditions.checkNotNull(query.getInsteadPayOrderId(),"代偿确认ID不能为空");
+        Preconditions.checkNotNull(query, "参数有误");
+        Preconditions.checkNotNull(query.getOrderId(), "业务单号不能为空");
+        Preconditions.checkNotNull(query.getInsteadPayOrderId(), "代偿确认ID不能为空");
 
 
         LoanApplyCompensationDO compensationReview = loanApplyCompensationDOMapper.selectByPrimaryKey(query.getInsteadPayOrderId());
         UniversalCompensationVO compensationVO = new UniversalCompensationVO();
-        BeanUtils.copyProperties(compensationReview,compensationVO);
+        BeanUtils.copyProperties(compensationReview, compensationVO);
         compensationVO.setOrderId(String.valueOf(compensationReview.getOrderId()));
 
 

@@ -2,6 +2,7 @@ package com.yunche.loan.web.controller;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
+import com.yunche.loan.config.anno.Limiter;
 import com.yunche.loan.config.constant.ActivitiConst;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.param.ApprovalParam;
@@ -41,7 +42,7 @@ public class LoanProcessController {
      *
      * @return
      */
-//    @Limiter
+    @Limiter
     @PostMapping(value = "/approval", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean<Void> approval(@RequestBody ApprovalParam approval) {
         approval.setCheckPermission(true);
