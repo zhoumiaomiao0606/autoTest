@@ -776,31 +776,30 @@
                           deputy_.partner_instead_pay_review           AS taskStatus
                       </when>
                       <when test="taskDefinitionKey == 'usertask_material_manage'">
-                          deputy.material_manage                 AS taskStatus
+                          deputy.material_manage                       AS taskStatus
                       </when>
 
+                      <when test="taskDefinitionKey == 'usertask_bridge_handle'
+                                  || taskDefinitionKey == 'usertask_bridge_repay_record'
+                                  || taskDefinitionKey == 'usertask_bridge_interest_record'
+                                  || taskDefinitionKey == 'usertask_bridge_repay_info'">
+                          deputy_b.id                                  AS processId,
+                          deputy_b.bridge_handle                       AS taskStatus,
+                          DATE_FORMAT(third_party.lend_date, '%Y-%m-%d %H:%i:%S')
+                                                                       AS bridgeLendDate,
+                          third_party.repay_type                       AS bridgeRepayType,
+                          DATE_FORMAT(third_party.repay_date, '%Y-%m-%d %H:%i:%S')
+                                                                       AS bridgeRepayDate,
+                          third_party.repay_remark                     AS bridgeRepayRemark,
+                          third_party.interest                         AS bridgeInterest,
+                          third_party.poundage                         AS bridgePoundage,
+                          DATE_FORMAT(third_party.repay_interest_date, '%Y-%m-%d %H:%i:%S')
+                                                                       AS bridgeRepayInterestDate,
+                          third_party.repay_register_remark            AS bridgeRepayRegisterRemark
+                      </when>
 
-                      <when test="taskDefinitionKey == 'usertask_bridge_repay_record'">
-                          bridge.bridge_repay_record             AS taskStatus
-                      </when>
-                      <when test="taskDefinitionKey == 'usertask_bridge_interest_record'">
-                          bridge.bridge_interest_record             AS taskStatus,
-                          third_party.interest                           AS bridgeInterest,
-                          third_party.poundage                           AS bridgePoundage
-
-
-                      </when>
-                      <when test="taskDefinitionKey == 'usertask_bridge_handle'">
-                          third_party.lend_date                AS bridgeLendDate,
-                          bridge.bridge_interest_record             AS taskStatus
-                      </when>
-                      <when test="taskDefinitionKey == 'usertask_bridge_repay_info'">
-                          third_party.repay_remark                AS bridgeRepayRemark,
-                          third_party.repay_type                  AS bridgeRepayType,
-                          bridge.bridge_repay_info             AS taskStatus
-                      </when>
                       <otherwise>
-                        0                                         AS taskStatus
+                        0                                              AS taskStatus
                       </otherwise>
                   </choose>
               from loan_order main
@@ -853,18 +852,11 @@
                   left join loan_apply_compensation compensation on compensation.id = deputy_.bank_repay_imp_record_id
                   left join bank_file_list_record join_rep          on join_rep.bank_file_list_id = deputy_.bank_repay_imp_record_id and deputy_.order_id = join_rep.order_id
               </if>
-              <if test="taskDefinitionKey == 'usertask_bridge_handle'
-                        || taskDefinitionKey == 'usertask_bridge_repay_record'
-                        || taskDefinitionKey == 'usertask_bridge_interest_record'
-                        || taskDefinitionKey == 'usertask_bridge_repay_info'">
-                  left join loan_process_bridge bridge on bridge.order_id = main.id
-                  left join third_party_fund_business  third_party on third_party.order_id = main.id
-              </if>
+
               <if test="taskDefinitionKey == 'usertask_collection_workbench'">
                   left join bank_urge_record join_urgerecord        on main.id          = join_urgerecord.order_id
                   left join employee sendee                         on join_urgerecord.sendee   = sendee.id
                   left join bank_file_list_record join_rep          on join_rep.bank_file_list_id = join_urgerecord.bank_repay_imp_record_id and join_urgerecord.order_id = join_rep.order_id
-
               </if>
               <if test="taskDefinitionKey == 'usertask_visit_collection_review'">
                   left join bank_urge_record join_urgerecord        on main.id          = join_urgerecord.order_id
@@ -907,8 +899,16 @@
               <if test="taskDefinitionKey == 'usertask_legal_record'">
                   left join bank_urge_record join_urgerecord        on main.id          = join_urgerecord.order_id
                   left join employee sendee                         on join_urgerecord.sendee   = sendee.id
-                  left join loan_process_legal deputy_l on deputy_l.order_id = main.id
+                  left join loan_process_legal deputy_l             on deputy_l.order_id = main.id
                   left join bank_file_list_record join_rep          on join_rep.bank_file_list_id = join_urgerecord.bank_repay_imp_record_id and join_urgerecord.order_id = join_rep.order_id
+              </if>
+
+              <if test="taskDefinitionKey == 'usertask_bridge_handle'
+                          || taskDefinitionKey == 'usertask_bridge_repay_record'
+                          || taskDefinitionKey == 'usertask_bridge_interest_record'
+                          || taskDefinitionKey == 'usertask_bridge_repay_info'">
+                  left join loan_process_bridge        deputy_b         on deputy_b.order_id = main.id
+                  left join third_party_fund_business  third_party      on third_party.bridge_procecss_id    = deputy_b.id
               </if>
 
               where 1=1
@@ -1101,16 +1101,16 @@
                       AND case when #{taskStatus} = 0 then deputy.material_manage != 0                   else deputy.material_manage   = #{taskStatus} end
                   </when>
                   <when test="taskDefinitionKey == 'usertask_bridge_handle'">
-                      AND case when #{taskStatus} = 0 then bridge.bridge_handle !=0 else bridge.bridge_handle = #{taskStatus} end
+                      AND case when #{taskStatus} = 0 then deputy_b.bridge_handle !=0 else deputy_b.bridge_handle = #{taskStatus} end
                   </when>
                   <when test="taskDefinitionKey == 'usertask_bridge_repay_record'">
-                      AND case when #{taskStatus} = 0 then bridge.bridge_repay_record !=0 else bridge.bridge_repay_record = #{taskStatus} end
+                      AND case when #{taskStatus} = 0 then deputy_b.bridge_repay_record !=0 else deputy_b.bridge_repay_record = #{taskStatus} end
                   </when>
                   <when test="taskDefinitionKey == 'usertask_bridge_interest_record'">
-                      AND case when #{taskStatus} = 0 then bridge.bridge_interest_record !=0 else bridge.bridge_interest_record = #{taskStatus} end
+                      AND case when #{taskStatus} = 0 then deputy_b.bridge_interest_record !=0 else deputy_b.bridge_interest_record = #{taskStatus} end
                   </when>
                   <when test="taskDefinitionKey == 'usertask_bridge_repay_info'">
-                      AND case when #{taskStatus} = 0 then bridge.bridge_repay_info !=0 else bridge.bridge_repay_info = #{taskStatus} end
+                      AND case when #{taskStatus} = 0 then deputy_b.bridge_repay_info !=0 else deputy_b.bridge_repay_info = #{taskStatus} end
                   </when>
                   <otherwise>
                       AND 1=2

@@ -1,12 +1,11 @@
 package com.yunche.loan.mapper;
 
 import com.yunche.loan.domain.entity.ThirdPartyFundBusinessDO;
-import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
 
-@Mapper
 public interface ThirdPartyFundBusinessDOMapper {
+
     int deleteByPrimaryKey(Long orderId);
 
     int insert(ThirdPartyFundBusinessDO record);

@@ -34,9 +34,7 @@ import static com.yunche.loan.config.constant.LoanDataFlowConst.DATA_FLOW_TASK_K
 import static com.yunche.loan.config.constant.LoanOrderProcessConst.*;
 import static com.yunche.loan.config.constant.LoanOrderProcessConst.TASK_PROCESS_DONE;
 import static com.yunche.loan.config.constant.LoanOrderProcessConst.TASK_PROCESS_TODO;
-import static com.yunche.loan.config.constant.LoanProcessConst.LOAN_PROCESS_COLLECTION_KEYS;
-import static com.yunche.loan.config.constant.LoanProcessConst.LOAN_PROCESS_INSTEAD_PAY_KEYS;
-import static com.yunche.loan.config.constant.LoanProcessConst.LOAN_PROCESS_LEGAL_KEYS;
+import static com.yunche.loan.config.constant.LoanProcessConst.*;
 import static com.yunche.loan.config.constant.LoanProcessEnum.DATA_FLOW_MORTGAGE_P2C;
 import static com.yunche.loan.config.constant.LoanProcessEnum.BANK_SOCIAL_CREDIT_RECORD_FILTER;
 import static com.yunche.loan.config.constant.LoanProcessEnum.CREDIT_APPLY;
@@ -75,6 +73,9 @@ public class LoanProcessApprovalCommonServiceImpl implements LoanProcessApproval
 
     @Autowired
     private LoanProcessDOMapper loanProcessDOMapper;
+
+    @Autowired
+    private LoanProcessBridgeDOMapper loanProcessBridgeDOMapper;
 
     @Autowired
     private LoanProcessInsteadPayDOMapper loanProcessInsteadPayDOMapper;
@@ -397,7 +398,13 @@ public class LoanProcessApprovalCommonServiceImpl implements LoanProcessApproval
                     && !LOAN_PROCESS_COLLECTION_KEYS.contains(taskDefinitionKey)
                     && !LOAN_PROCESS_LEGAL_KEYS.contains(taskDefinitionKey);
 
-            if (isNot_insteadPay__collection__legal_Task) {
+            // 过桥资金
+            if (LOAN_PROCESS_BRIDGE_PAY_KEYS.contains(taskDefinitionKey)) {
+
+                loanProcessDO_ = loanProcessBridgeDOMapper.selectByPrimaryKey(orderId);
+            }
+            // 消费贷
+            else if (isNot_insteadPay__collection__legal_Task) {
 
                 loanProcessDO_ = loanProcessDOMapper.selectByPrimaryKey(orderId);
 

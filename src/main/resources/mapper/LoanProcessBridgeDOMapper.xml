@@ -1,131 +1,166 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.yunche.loan.mapper.LoanProcessBridgeDOMapper" >
-  <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.LoanProcessBridgeDO" >
-    <id column="order_id" property="orderId" jdbcType="BIGINT" />
-    <result column="process_inst_id" property="processInstId" jdbcType="VARCHAR" />
-    <result column="bridge_handle" property="bridgeHandle" jdbcType="TINYINT" />
-    <result column="bridge_repay_record" property="bridgeRepayRecord" jdbcType="TINYINT" />
-    <result column="bridge_interest_record" property="bridgeInterestRecord" jdbcType="TINYINT" />
-    <result column="bridge_repay_info" property="bridgeRepayInfo" jdbcType="TINYINT" />
-    <result column="gmt_create" property="gmtCreate" jdbcType="TIMESTAMP" />
-    <result column="gmt_modify" property="gmtModify" jdbcType="TIMESTAMP" />
-  </resultMap>
-  <sql id="Base_Column_List" >
-    order_id, process_inst_id, bridge_handle, bridge_repay_record, bridge_interest_record, 
-    bridge_repay_info, gmt_create, gmt_modify
+<mapper namespace="com.yunche.loan.mapper.LoanProcessBridgeDOMapper">
+    <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.LoanProcessBridgeDO">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="order_id" property="orderId" jdbcType="BIGINT"/>
+        <result column="process_inst_id" property="processInstId" jdbcType="VARCHAR"/>
+        <result column="bridge_handle" property="bridgeHandle" jdbcType="TINYINT"/>
+        <result column="bridge_repay_record" property="bridgeRepayRecord" jdbcType="TINYINT"/>
+        <result column="bridge_interest_record" property="bridgeInterestRecord" jdbcType="TINYINT"/>
+        <result column="bridge_repay_info" property="bridgeRepayInfo" jdbcType="TINYINT"/>
+        <result column="order_status" property="orderStatus" jdbcType="TINYINT"/>
+        <result column="cancel_task_def_key" property="cancelTaskDefKey" jdbcType="VARCHAR"/>
+        <result column="gmt_create" property="gmtCreate" jdbcType="TIMESTAMP"/>
+        <result column="gmt_modify" property="gmtModify" jdbcType="TIMESTAMP"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+    id, order_id, process_inst_id, bridge_handle, bridge_repay_record, bridge_interest_record,
+    bridge_repay_info, order_status, cancel_task_def_key, gmt_create, gmt_modify
   </sql>
-  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
-    select
-    <include refid="Base_Column_List"/>
-    from loan_process_bridge
-    where order_id = #{orderId,jdbcType=BIGINT}
-  </select>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        select
+        <include refid="Base_Column_List"/>
+        from loan_process_bridge
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
     delete from loan_process_bridge
-    where order_id = #{orderId,jdbcType=BIGINT}
+    where id = #{id,jdbcType=BIGINT}
   </delete>
-  <insert id="insert" parameterType="com.yunche.loan.domain.entity.LoanProcessBridgeDO" >
-    insert into loan_process_bridge (order_id, process_inst_id, bridge_handle, 
-      bridge_repay_record, bridge_interest_record, 
-      bridge_repay_info, gmt_create, gmt_modify
-      )
-    values (#{orderId,jdbcType=BIGINT}, #{processInstId,jdbcType=VARCHAR}, #{bridgeHandle,jdbcType=TINYINT}, 
-      #{bridgeRepayRecord,jdbcType=TINYINT}, #{bridgeInterestRecord,jdbcType=TINYINT}, 
-      #{bridgeRepayInfo,jdbcType=TINYINT}, #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModify,jdbcType=TIMESTAMP}
-      )
+    <insert id="insert" parameterType="com.yunche.loan.domain.entity.LoanProcessBridgeDO"
+            useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+    insert into loan_process_bridge (id, order_id, process_inst_id,
+    bridge_handle, bridge_repay_record, bridge_interest_record,
+    bridge_repay_info, order_status, cancel_task_def_key,
+    gmt_create, gmt_modify)
+    values (#{id,jdbcType=BIGINT}, #{orderId,jdbcType=BIGINT}, #{processInstId,jdbcType=VARCHAR},
+    #{bridgeHandle,jdbcType=TINYINT}, #{bridgeRepayRecord,jdbcType=TINYINT}, #{bridgeInterestRecord,jdbcType=TINYINT},
+    #{bridgeRepayInfo,jdbcType=TINYINT}, #{orderStatus,jdbcType=TINYINT}, #{cancelTaskDefKey,jdbcType=VARCHAR},
+    #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModify,jdbcType=TIMESTAMP})
   </insert>
-  <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.LoanProcessBridgeDO" >
-    insert into loan_process_bridge
-    <trim prefix="(" suffix=")" suffixOverrides="," >
-      <if test="orderId != null" >
-        order_id,
-      </if>
-      <if test="processInstId != null" >
-        process_inst_id,
-      </if>
-      <if test="bridgeHandle != null" >
-        bridge_handle,
-      </if>
-      <if test="bridgeRepayRecord != null" >
-        bridge_repay_record,
-      </if>
-      <if test="bridgeInterestRecord != null" >
-        bridge_interest_record,
-      </if>
-      <if test="bridgeRepayInfo != null" >
-        bridge_repay_info,
-      </if>
-      <if test="gmtCreate != null" >
-        gmt_create,
-      </if>
-      <if test="gmtModify != null" >
-        gmt_modify,
-      </if>
-    </trim>
-    <trim prefix="values (" suffix=")" suffixOverrides="," >
-      <if test="orderId != null" >
-        #{orderId,jdbcType=BIGINT},
-      </if>
-      <if test="processInstId != null" >
-        #{processInstId,jdbcType=VARCHAR},
-      </if>
-      <if test="bridgeHandle != null" >
-        #{bridgeHandle,jdbcType=TINYINT},
-      </if>
-      <if test="bridgeRepayRecord != null" >
-        #{bridgeRepayRecord,jdbcType=TINYINT},
-      </if>
-      <if test="bridgeInterestRecord != null" >
-        #{bridgeInterestRecord,jdbcType=TINYINT},
-      </if>
-      <if test="bridgeRepayInfo != null" >
-        #{bridgeRepayInfo,jdbcType=TINYINT},
-      </if>
-      <if test="gmtCreate != null" >
-        #{gmtCreate,jdbcType=TIMESTAMP},
-      </if>
-      <if test="gmtModify != null" >
-        #{gmtModify,jdbcType=TIMESTAMP},
-      </if>
-    </trim>
-  </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.LoanProcessBridgeDO" >
+    <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.LoanProcessBridgeDO"
+            useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+        insert into loan_process_bridge
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="orderId != null">
+                order_id,
+            </if>
+            <if test="processInstId != null">
+                process_inst_id,
+            </if>
+            <if test="bridgeHandle != null">
+                bridge_handle,
+            </if>
+            <if test="bridgeRepayRecord != null">
+                bridge_repay_record,
+            </if>
+            <if test="bridgeInterestRecord != null">
+                bridge_interest_record,
+            </if>
+            <if test="bridgeRepayInfo != null">
+                bridge_repay_info,
+            </if>
+            <if test="orderStatus != null">
+                order_status,
+            </if>
+            <if test="cancelTaskDefKey != null">
+                cancel_task_def_key,
+            </if>
+            <if test="gmtCreate != null">
+                gmt_create,
+            </if>
+            <if test="gmtModify != null">
+                gmt_modify,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=BIGINT},
+            </if>
+            <if test="orderId != null">
+                #{orderId,jdbcType=BIGINT},
+            </if>
+            <if test="processInstId != null">
+                #{processInstId,jdbcType=VARCHAR},
+            </if>
+            <if test="bridgeHandle != null">
+                #{bridgeHandle,jdbcType=TINYINT},
+            </if>
+            <if test="bridgeRepayRecord != null">
+                #{bridgeRepayRecord,jdbcType=TINYINT},
+            </if>
+            <if test="bridgeInterestRecord != null">
+                #{bridgeInterestRecord,jdbcType=TINYINT},
+            </if>
+            <if test="bridgeRepayInfo != null">
+                #{bridgeRepayInfo,jdbcType=TINYINT},
+            </if>
+            <if test="orderStatus != null">
+                #{orderStatus,jdbcType=TINYINT},
+            </if>
+            <if test="cancelTaskDefKey != null">
+                #{cancelTaskDefKey,jdbcType=VARCHAR},
+            </if>
+            <if test="gmtCreate != null">
+                #{gmtCreate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="gmtModify != null">
+                #{gmtModify,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.LoanProcessBridgeDO">
+        update loan_process_bridge
+        <set>
+            <if test="orderId != null">
+                order_id = #{orderId,jdbcType=BIGINT},
+            </if>
+            <if test="processInstId != null">
+                process_inst_id = #{processInstId,jdbcType=VARCHAR},
+            </if>
+            <if test="bridgeHandle != null">
+                bridge_handle = #{bridgeHandle,jdbcType=TINYINT},
+            </if>
+            <if test="bridgeRepayRecord != null">
+                bridge_repay_record = #{bridgeRepayRecord,jdbcType=TINYINT},
+            </if>
+            <if test="bridgeInterestRecord != null">
+                bridge_interest_record = #{bridgeInterestRecord,jdbcType=TINYINT},
+            </if>
+            <if test="bridgeRepayInfo != null">
+                bridge_repay_info = #{bridgeRepayInfo,jdbcType=TINYINT},
+            </if>
+            <if test="orderStatus != null">
+                order_status = #{orderStatus,jdbcType=TINYINT},
+            </if>
+            <if test="cancelTaskDefKey != null">
+                cancel_task_def_key = #{cancelTaskDefKey,jdbcType=VARCHAR},
+            </if>
+            <if test="gmtCreate != null">
+                gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="gmtModify != null">
+                gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.LoanProcessBridgeDO">
     update loan_process_bridge
-    <set >
-      <if test="processInstId != null" >
-        process_inst_id = #{processInstId,jdbcType=VARCHAR},
-      </if>
-      <if test="bridgeHandle != null" >
-        bridge_handle = #{bridgeHandle,jdbcType=TINYINT},
-      </if>
-      <if test="bridgeRepayRecord != null" >
-        bridge_repay_record = #{bridgeRepayRecord,jdbcType=TINYINT},
-      </if>
-      <if test="bridgeInterestRecord != null" >
-        bridge_interest_record = #{bridgeInterestRecord,jdbcType=TINYINT},
-      </if>
-      <if test="bridgeRepayInfo != null" >
-        bridge_repay_info = #{bridgeRepayInfo,jdbcType=TINYINT},
-      </if>
-      <if test="gmtCreate != null" >
-        gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
-      </if>
-      <if test="gmtModify != null" >
-        gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
-      </if>
-    </set>
-    where order_id = #{orderId,jdbcType=BIGINT}
-  </update>
-  <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.LoanProcessBridgeDO" >
-    update loan_process_bridge
-    set process_inst_id = #{processInstId,jdbcType=VARCHAR},
+    set order_id = #{orderId,jdbcType=BIGINT},
+      process_inst_id = #{processInstId,jdbcType=VARCHAR},
       bridge_handle = #{bridgeHandle,jdbcType=TINYINT},
       bridge_repay_record = #{bridgeRepayRecord,jdbcType=TINYINT},
       bridge_interest_record = #{bridgeInterestRecord,jdbcType=TINYINT},
       bridge_repay_info = #{bridgeRepayInfo,jdbcType=TINYINT},
+      order_status = #{orderStatus,jdbcType=TINYINT},
+      cancel_task_def_key = #{cancelTaskDefKey,jdbcType=VARCHAR},
       gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
       gmt_modify = #{gmtModify,jdbcType=TIMESTAMP}
-    where order_id = #{orderId,jdbcType=BIGINT}
+    where id = #{id,jdbcType=BIGINT}
   </update>
 </mapper>

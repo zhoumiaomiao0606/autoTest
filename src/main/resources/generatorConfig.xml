@@ -384,7 +384,7 @@
 -->
 
 
-        <table tableName="loan_process" domainObjectName="LoanProcessDO"
+        <table tableName="third_party_fund_business" domainObjectName="ThirdPartyFundBusinessDO"
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
         </table>
