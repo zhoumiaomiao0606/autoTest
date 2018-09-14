@@ -127,6 +127,8 @@ public class LoanProcessBridgeServiceImpl implements LoanProcessBridgeService {
         loanProcessBridgeDO = new LoanProcessBridgeDO();
         loanProcessBridgeDO.setOrderId(orderId);
         loanProcessBridgeDO.setProcessInstId(processInstance.getProcessInstanceId());
+        loanProcessBridgeDO.setBridgeHandle(TASK_PROCESS_TODO);
+
         loanProcessBridgeDO.setGmtCreate(new Date());
         loanProcessBridgeDO.setGmtModify(new Date());
 
