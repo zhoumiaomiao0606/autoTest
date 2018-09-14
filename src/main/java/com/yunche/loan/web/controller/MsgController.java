@@ -5,14 +5,14 @@ import com.yunche.loan.service.JpushService;
 import com.yunche.loan.service.MsgService;
 import com.yunche.loan.service.TaskSchedulingService;
 import org.springframework.web.bind.annotation.*;
+
 import javax.annotation.Resource;
 
 //任务调度中心
 @CrossOrigin
 @RestController
-@RequestMapping(value = {"/api/v1/msg","/api/v1/app/msg"})
+@RequestMapping(value = {"/api/v1/msg", "/api/v1/app/msg"})
 public class MsgController {
-
 
 
     @Resource
@@ -24,7 +24,7 @@ public class MsgController {
 
     @GetMapping(value = "/list")
     public ResultBean list(@RequestParam Integer pageIndex, @RequestParam Integer pageSize) {
-        return jpushService.list(pageIndex,pageSize);
+        return jpushService.list(pageIndex, pageSize);
     }
 
     @GetMapping(value = "/read")
