@@ -176,7 +176,7 @@ public class LoanProcessApprovalRollBackServiceImpl implements LoanProcessApprov
         doRollBack(loanOrderDO.getProcessInstId(),
                 Lists.newArrayList(),
                 Lists.newArrayList(),
-                BRIDGE_REPAY_RECORD.getCode()
+                BRIDGE_INTEREST_RECORD.getCode()
         );
 
         // 反审状态更新
@@ -205,7 +205,7 @@ public class LoanProcessApprovalRollBackServiceImpl implements LoanProcessApprov
         doRollBack(loanOrderDO.getProcessInstId(),
                 Lists.newArrayList(),
                 Lists.newArrayList(),
-                BRIDGE_INTEREST_RECORD.getCode()
+                BRIDGE_REPAY_RECORD.getCode()
         );
 
         // 反审状态更新
