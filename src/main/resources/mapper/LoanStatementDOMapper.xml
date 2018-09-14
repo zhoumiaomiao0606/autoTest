@@ -1660,7 +1660,7 @@
         mobile AS linkManMobile
         FROM
         loan_customer
-        WHERE principal_cust_id = #{pCustomerId} AND cust_type IN (2,3)
+        WHERE principal_cust_id = #{pCustomerId} AND (cust_type = 2  OR   (guarantee_type = 2 AND cust_type = 3 ))
 
     </select>
 
