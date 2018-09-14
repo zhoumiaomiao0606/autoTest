@@ -7,6 +7,8 @@ import java.util.Date;
 @Data
 public class LoanProcessBridgeDO implements LoanProcessDO_ {
 
+    private Long id;
+
     private Long orderId;
 
     private String processInstId;
@@ -18,6 +20,10 @@ public class LoanProcessBridgeDO implements LoanProcessDO_ {
     private Byte bridgeInterestRecord;
 
     private Byte bridgeRepayInfo;
+
+    private Byte orderStatus;
+
+    private String cancelTaskDefKey;
 
     private Date gmtCreate;
 

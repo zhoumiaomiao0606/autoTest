@@ -45,6 +45,7 @@ public class LoanProcessCollectionController {
      * @param bankRepayImpRecordId 批次号
      * @return
      */
+    @Limiter
     @GetMapping(value = "/startProcess")
     public ResultBean<Long> startProcess(@RequestParam(value = "orderId") Long orderId,
                                          @RequestParam(value = "bankRepayImpRecordId") Long bankRepayImpRecordId) {

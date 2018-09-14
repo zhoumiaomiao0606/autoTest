@@ -5,19 +5,20 @@ import lombok.Data;
 @Data
 public class TaskListVO {
 
-    // 未加
+    private String id;
+    private String processId;
+    private String taskId;
+    private String taskKey;
+
     private String overdueAmount;
     private String taskDisStatus;
     private String receiveManId;
     private String receiveManName;
-    private String taskId;
-    private String taskKey;
     private String remitAmount;
     private String telephoneGmtCreate;
     private String partnerCompensationAmount;
     private String visitGmtCreate;
-    // 已加
-    private String id;
+
     private String salesmanId;
     private String salesman;
     private String partnerId;
@@ -42,7 +43,6 @@ public class TaskListVO {
     private String overdueNum;
     private String telephoneVerifyStatus;
     private String bankRepayImpRecordId;
-    private String processId;
     private String insteadPayOrderId;
     private String currArrears;
     private String loanBanlance;
@@ -52,7 +52,7 @@ public class TaskListVO {
     private String advancesNumber;
     private String riskTakingRatio;
     private String applyCompensationDate;
-    // 未加
+
     private String taskStatus;
     private String supplementOrderId;
     private String supplementType;
@@ -63,7 +63,6 @@ public class TaskListVO {
     private String printGmtCreate;
 
     private String car_detail_id;
-    // 已加
     private String lendDate;
     private String financial_product_name;
     private String car_price;
@@ -137,13 +136,16 @@ public class TaskListVO {
 
     private String lendCard;
 
-    private String bridgeRepayRemark;
+    /////////////////////////////--过桥资金--//////////////////////////////
     private String bridgeLendDate;
     private String bridgeRepayType;
-
+    private String bridgeRepayDate;
+    private String bridgeRepayRemark;
     private String bridgeInterest;//利息
     private String bridgePoundage;//手续费
-
+    private String bridgeRepayInterestDate;//还利日期
+    private String bridgeRepayRegisterRemark;//还款登记备注
+    /////////////////////////////--过桥资金--//////////////////////////////
 }
 
 

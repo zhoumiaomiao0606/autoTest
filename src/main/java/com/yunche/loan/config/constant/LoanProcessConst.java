@@ -13,6 +13,16 @@ import static com.yunche.loan.config.constant.LoanProcessEnum.*;
 public class LoanProcessConst {
 
     /**
+     * 第三方过桥资金-KEY
+     */
+    public static final Set<String> LOAN_PROCESS_BRIDGE_PAY_KEYS = Sets.newHashSet(
+            BRIDGE_HANDLE.getCode(),
+            BRIDGE_REPAY_RECORD.getCode(),
+            BRIDGE_INTEREST_RECORD.getCode(),
+            BRIDGE_REPAY_INFO.getCode()
+    );
+
+    /**
      * 代偿流程-KEY
      */
     public static final Set<String> LOAN_PROCESS_INSTEAD_PAY_KEYS = Sets.newHashSet(

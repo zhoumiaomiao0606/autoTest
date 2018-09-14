@@ -7,6 +7,9 @@ import java.util.Date;
 
 @Data
 public class ThirdPartyFundBusinessDO {
+
+    private Long bridgeProcecssId;
+
     private Long orderId;
 
     private Date lendDate;
@@ -28,5 +31,4 @@ public class ThirdPartyFundBusinessDO {
     private Date gmtCreate;
 
     private Date gmtModify;
-
-   }
+}

@@ -8,6 +8,7 @@ import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.entity.*;
 import com.yunche.loan.domain.param.ApprovalParam;
 import com.yunche.loan.mapper.LoanProcessBridgeDOMapper;
+import com.yunche.loan.mapper.ThirdPartyFundBusinessDOMapper;
 import com.yunche.loan.service.*;
 import org.activiti.engine.TaskService;
 import org.activiti.engine.runtime.ProcessInstance;
@@ -26,12 +27,11 @@ import java.util.Objects;
 import static com.yunche.loan.config.constant.ActivitiConst.LOAN_PROCESS_BRIDGE_KEY;
 import static com.yunche.loan.config.constant.LoanOrderProcessConst.*;
 import static com.yunche.loan.config.constant.LoanProcessEnum.*;
-import static com.yunche.loan.config.constant.LoanProcessEnum.SETTLE_ORDER;
 import static com.yunche.loan.config.constant.LoanProcessVariableConst.PROCESS_VARIABLE_ACTION;
-import static com.yunche.loan.config.constant.LoanProcessVariableConst.PROCESS_VARIABLE_TARGET;
 import static com.yunche.loan.config.constant.ProcessApprovalConst.*;
 import static com.yunche.loan.config.constant.ProcessApprovalConst.ACTION_CANCEL;
 import static com.yunche.loan.config.constant.ProcessApprovalConst.ACTION_PASS;
+import static com.yunche.loan.config.constant.ProcessTypeConst.PROCESS_TYPE_LOAN_PROCESS_BRIDGE;
 
 /**
  * @author liuzhe
@@ -43,6 +43,9 @@ public class LoanProcessBridgeServiceImpl implements LoanProcessBridgeService {
 
     @Autowired
     private LoanProcessBridgeDOMapper loanProcessBridgeDOMapper;
+
+    @Autowired
+    private ThirdPartyFundBusinessDOMapper thirdPartyFundBusinessDOMapper;
 
     @Autowired
     private TaskService taskService;
@@ -66,6 +69,7 @@ public class LoanProcessBridgeServiceImpl implements LoanProcessBridgeService {
         Preconditions.checkNotNull(approval.getOrderId(), "业务单号不能为空");
         Preconditions.checkNotNull(approval.getAction(), "审核结果不能为空");
         Preconditions.checkArgument(StringUtils.isNotBlank(approval.getTaskDefinitionKey()), "执行任务不能为空");
+        Preconditions.checkNotNull(approval.getProcessId(), "processId不能为空");
 
         // 节点权限校验
         if (approval.isCheckPermission()) {
@@ -73,7 +77,7 @@ public class LoanProcessBridgeServiceImpl implements LoanProcessBridgeService {
         }
 
         // 订单状态校验
-        loanProcessApprovalCommonService.checkOrderStatus(approval.getOrderId());
+        loanProcessApprovalCommonService.checkOrderStatus(approval.getOrderId(), approval.getProcessId(), PROCESS_TYPE_LOAN_PROCESS_BRIDGE);
 
         // 操作日志
         loanProcessApprovalCommonService.log(approval);
@@ -82,7 +86,7 @@ public class LoanProcessBridgeServiceImpl implements LoanProcessBridgeService {
         LoanOrderDO loanOrderDO = loanProcessApprovalCommonService.getLoanOrder(approval.getOrderId());
 
         // 节点实时状态
-        LoanProcessBridgeDO loanProcessDO = getLoanProcess(approval.getOrderId());
+        LoanProcessBridgeDO loanProcessDO = getLoanProcess(approval.getProcessId());
 
         if (ACTION_ROLL_BACK.equals(approval.getAction())) {
             return loanProcessApprovalRollBackService.execRollBackTask(approval, loanOrderDO, loanProcessDO);
@@ -114,39 +118,60 @@ public class LoanProcessBridgeServiceImpl implements LoanProcessBridgeService {
 
     @Override
     @Transactional
-    public String startProcess(Long orderId) {
+    public Long startProcess(Long orderId) {
         Preconditions.checkNotNull(orderId, "orderId不能为空");
 
-        LoanProcessBridgeDO loanProcessBridgeDO = loanProcessBridgeDOMapper.selectByPrimaryKey(orderId);
-        Preconditions.checkArgument(null == loanProcessBridgeDO, "[第三方过桥资金]流程记录已存在");
-
-        // 开启activiti流程  -上门催收
+        // 开启activiti流程  -过桥资金
         ProcessInstance processInstance = activitiService.startProcessInstanceByKey(LOAN_PROCESS_BRIDGE_KEY);
 
         // 创建流程记录
-        loanProcessBridgeDO = new LoanProcessBridgeDO();
+        Long processId = create(orderId, processInstance.getProcessInstanceId());
+
+        return processId;
+    }
+
+    /**
+     * 创建[过桥资金]流程记录
+     *
+     * @param orderId
+     * @param processInstanceId
+     * @return
+     */
+    private Long create(Long orderId, String processInstanceId) {
+
+        // 1、过桥流程节点表
+        LoanProcessBridgeDO loanProcessBridgeDO = new LoanProcessBridgeDO();
         loanProcessBridgeDO.setOrderId(orderId);
-        loanProcessBridgeDO.setProcessInstId(processInstance.getProcessInstanceId());
+        loanProcessBridgeDO.setProcessInstId(processInstanceId);
         loanProcessBridgeDO.setBridgeHandle(TASK_PROCESS_TODO);
-
-        loanProcessBridgeDO.setGmtCreate(new Date());
-        loanProcessBridgeDO.setGmtModify(new Date());
-
+        loanProcessBridgeDO.setOrderStatus(ORDER_STATUS_DOING);
         // insert
-        int count = loanProcessBridgeDOMapper.insertSelective(loanProcessBridgeDO);
-        Preconditions.checkArgument(count > 0, "流程记录失败");
+        int count1 = loanProcessBridgeDOMapper.insertSelective(loanProcessBridgeDO);
+        Preconditions.checkArgument(count1 > 0, "流程记录失败");
 
-        return loanProcessBridgeDO.getProcessInstId();
+        // 过桥流程 - processId
+        Long bridgeProcessId = loanProcessBridgeDO.getId();
+
+
+        // 2、过桥业务记录表
+        ThirdPartyFundBusinessDO thirdPartyFundBusinessDO = new ThirdPartyFundBusinessDO();
+        thirdPartyFundBusinessDO.setBridgeProcecssId(bridgeProcessId);
+        thirdPartyFundBusinessDO.setOrderId(orderId);
+        // insert
+        int count2 = thirdPartyFundBusinessDOMapper.insertSelective(thirdPartyFundBusinessDO);
+        Preconditions.checkArgument(count2 > 0, "创建失败");
+
+        return bridgeProcessId;
     }
 
     /**
      * 获取 订单流程节点 实时状态记录
      *
-     * @param orderId
+     * @param processId
      * @return
      */
-    private LoanProcessBridgeDO getLoanProcess(Long orderId) {
-        LoanProcessBridgeDO loanProcessDO = loanProcessBridgeDOMapper.selectByPrimaryKey(orderId);
+    private LoanProcessBridgeDO getLoanProcess(Long processId) {
+        LoanProcessBridgeDO loanProcessDO = loanProcessBridgeDOMapper.selectByPrimaryKey(processId);
         Preconditions.checkNotNull(loanProcessDO, "流程记录丢失");
 
         return loanProcessDO;
@@ -186,14 +211,15 @@ public class LoanProcessBridgeServiceImpl implements LoanProcessBridgeService {
 
         // 更新状态
         LoanProcessBridgeDO loanProcessDO = new LoanProcessBridgeDO();
+        loanProcessDO.setOrderId(approval.getProcessId());
         loanProcessDO.setOrderId(approval.getOrderId());
 
-//        // 如果弃单，则记录弃单节点
-//        if (ACTION_CANCEL.equals(approval.getAction())) {
-//            loanProcessDO.setOrderStatus(ORDER_STATUS_CANCEL);
-//            loanProcessDO.setCancelTaskDefKey(approval.getTaskDefinitionKey());
-//            updateCurrentTaskProcessStatus(loanProcessDO, approval.getTaskDefinitionKey(), TASK_PROCESS_CANCEL, approval);
-//        }
+        // 如果弃单，则记录弃单节点
+        if (ACTION_CANCEL.equals(approval.getAction())) {
+            loanProcessDO.setOrderStatus(ORDER_STATUS_CANCEL);
+            loanProcessDO.setCancelTaskDefKey(approval.getTaskDefinitionKey());
+            updateCurrentTaskProcessStatus(loanProcessDO, approval.getTaskDefinitionKey(), TASK_PROCESS_CANCEL, approval);
+        }
 
         // 更新当前执行的任务状态
         Byte taskProcessStatus = null;

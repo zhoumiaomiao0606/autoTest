@@ -47,8 +47,8 @@ public class LoanProcessBridgeController {
      */
     @Limiter
     @GetMapping(value = "/startProcess")
-    public ResultBean<String> startProcess(@RequestParam(value = "orderId") Long orderId) {
-        String processId = loanProcessBridgeService.startProcess(orderId);
+    public ResultBean<Long> startProcess(@RequestParam(value = "orderId") Long orderId) {
+        Long processId = loanProcessBridgeService.startProcess(orderId);
         return ResultBean.ofSuccess(processId);
     }
 }

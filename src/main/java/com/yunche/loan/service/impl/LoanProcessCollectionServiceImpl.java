@@ -29,6 +29,7 @@ import static com.yunche.loan.config.constant.ProcessApprovalConst.*;
 import static com.yunche.loan.config.constant.LoanProcessEnum.*;
 import static com.yunche.loan.config.constant.LoanProcessVariableConst.PROCESS_VARIABLE_ACTION;
 import static com.yunche.loan.config.constant.LoanProcessVariableConst.PROCESS_VARIABLE_TARGET;
+import static com.yunche.loan.config.constant.ProcessTypeConst.PROCESS_TYPE_LOAN_PROCESS_COLLECTION;
 
 /**
  * @author liuzhe
@@ -81,7 +82,7 @@ public class LoanProcessCollectionServiceImpl implements LoanProcessCollectionSe
         }
 
         // 订单状态校验
-        loanProcessApprovalCommonService.checkOrderStatus(approval.getOrderId());
+        loanProcessApprovalCommonService.checkOrderStatus(approval.getOrderId(), approval.getProcessId(), PROCESS_TYPE_LOAN_PROCESS_COLLECTION);
 
         // 操作日志
         loanProcessApprovalCommonService.log(approval);

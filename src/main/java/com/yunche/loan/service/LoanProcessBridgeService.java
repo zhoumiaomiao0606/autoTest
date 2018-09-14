@@ -11,5 +11,5 @@ public interface LoanProcessBridgeService {
 
     ResultBean<Void> approval(ApprovalParam approval);
 
-    String startProcess(Long orderId);
+    Long startProcess(Long orderId);
 }

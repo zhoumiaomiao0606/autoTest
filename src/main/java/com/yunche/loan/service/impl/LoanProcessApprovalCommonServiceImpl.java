@@ -34,13 +34,12 @@ import static com.yunche.loan.config.constant.LoanDataFlowConst.DATA_FLOW_TASK_K
 import static com.yunche.loan.config.constant.LoanOrderProcessConst.*;
 import static com.yunche.loan.config.constant.LoanOrderProcessConst.TASK_PROCESS_DONE;
 import static com.yunche.loan.config.constant.LoanOrderProcessConst.TASK_PROCESS_TODO;
-import static com.yunche.loan.config.constant.LoanProcessConst.LOAN_PROCESS_COLLECTION_KEYS;
-import static com.yunche.loan.config.constant.LoanProcessConst.LOAN_PROCESS_INSTEAD_PAY_KEYS;
-import static com.yunche.loan.config.constant.LoanProcessConst.LOAN_PROCESS_LEGAL_KEYS;
+import static com.yunche.loan.config.constant.LoanProcessConst.*;
 import static com.yunche.loan.config.constant.LoanProcessEnum.DATA_FLOW_MORTGAGE_P2C;
 import static com.yunche.loan.config.constant.LoanProcessEnum.BANK_SOCIAL_CREDIT_RECORD_FILTER;
 import static com.yunche.loan.config.constant.LoanProcessEnum.CREDIT_APPLY;
 import static com.yunche.loan.config.constant.ProcessApprovalConst.*;
+import static com.yunche.loan.config.constant.ProcessTypeConst.*;
 import static com.yunche.loan.config.thread.ThreadPool.executorService;
 import static java.util.stream.Collectors.toList;
 
@@ -84,6 +83,9 @@ public class LoanProcessApprovalCommonServiceImpl implements LoanProcessApproval
 
     @Autowired
     private LoanProcessLegalDOMapper loanProcessLegalDOMapper;
+
+    @Autowired
+    private LoanProcessBridgeDOMapper loanProcessBridgeDOMapper;
 
     @Autowired
     private LoanDataFlowService loanDataFlowService;
@@ -332,7 +334,7 @@ public class LoanProcessApprovalCommonServiceImpl implements LoanProcessApproval
                 if (null == loginUser) {
 
                     // 自动任务
-                    DO.setSender("auto");
+                    DO.setSender(AUTO_EMPLOYEE_NAME);
 
                 } else {
 
@@ -397,7 +399,13 @@ public class LoanProcessApprovalCommonServiceImpl implements LoanProcessApproval
                     && !LOAN_PROCESS_COLLECTION_KEYS.contains(taskDefinitionKey)
                     && !LOAN_PROCESS_LEGAL_KEYS.contains(taskDefinitionKey);
 
-            if (isNot_insteadPay__collection__legal_Task) {
+            // 过桥资金
+            if (LOAN_PROCESS_BRIDGE_PAY_KEYS.contains(taskDefinitionKey)) {
+
+                loanProcessDO_ = loanProcessBridgeDOMapper.selectByPrimaryKey(orderId);
+            }
+            // 消费贷
+            else if (isNot_insteadPay__collection__legal_Task) {
 
                 loanProcessDO_ = loanProcessDOMapper.selectByPrimaryKey(orderId);
 
@@ -422,6 +430,11 @@ public class LoanProcessApprovalCommonServiceImpl implements LoanProcessApproval
             }
             // 法务处理流程
             else if (LOAN_PROCESS_LEGAL_KEYS.contains(taskDefinitionKey)) {
+
+                loanProcessDO_ = loanProcessLegalDOMapper.selectByPrimaryKey(processId);
+            }
+            // 过桥资金流程
+            else if (LOAN_PROCESS_BRIDGE_PAY_KEYS.contains(taskDefinitionKey)) {
 
                 loanProcessDO_ = loanProcessLegalDOMapper.selectByPrimaryKey(processId);
             } else {
@@ -498,12 +511,38 @@ public class LoanProcessApprovalCommonServiceImpl implements LoanProcessApproval
     }
 
     @Override
-    public void checkOrderStatus(Long orderId) {
+    public void checkOrderStatus(Long orderId, Long processId, Byte processType) {
 
-        LoanProcessDO loanProcessDO = getLoanProcess(orderId);
+        if (PROCESS_TYPE_LOAN_PROCESS.equals(processType)) {
 
-        Preconditions.checkArgument(ORDER_STATUS_DOING.equals(loanProcessDO.getOrderStatus()),
-                "当前订单" + getOrderStatusText(loanProcessDO));
+            LoanProcessDO loanProcessDO = getLoanProcess(orderId);
+            Preconditions.checkArgument(ORDER_STATUS_DOING.equals(loanProcessDO.getOrderStatus()),
+                    "当前订单总状态" + getOrderStatusText(loanProcessDO));
+
+        } else if (PROCESS_TYPE_LOAN_PROCESS_INSTEAD_PAY.equals(processType)) {
+
+//            LoanProcessInsteadPayDO loanProcessDO = loanProcessInsteadPayDOMapper.selectByPrimaryKey(processId);
+//            Preconditions.checkArgument(ORDER_STATUS_DOING.equals(loanProcessDO.getOrderStatus()),
+//                    "当前订单子状态" + getOrderStatusText(loanProcessDO));
+
+        } else if (PROCESS_TYPE_LOAN_PROCESS_COLLECTION.equals(processType)) {
+
+            LoanProcessCollectionDO loanProcessDO = loanProcessCollectionDOMapper.selectByPrimaryKey(processId);
+            Preconditions.checkArgument(ORDER_STATUS_DOING.equals(loanProcessDO.getOrderStatus()),
+                    "当前订单子状态" + getOrderStatusText(loanProcessDO));
+
+        } else if (PROCESS_TYPE_LOAN_PROCESS_LEGAL.equals(processType)) {
+
+            LoanProcessLegalDO loanProcessDO = loanProcessLegalDOMapper.selectByPrimaryKey(processId);
+            Preconditions.checkArgument(ORDER_STATUS_DOING.equals(loanProcessDO.getOrderStatus()),
+                    "当前订单子状态" + getOrderStatusText(loanProcessDO));
+
+        } else if (PROCESS_TYPE_LOAN_PROCESS_BRIDGE.equals(processType)) {
+
+            LoanProcessBridgeDO loanProcessDO = loanProcessBridgeDOMapper.selectByPrimaryKey(processId);
+            Preconditions.checkArgument(ORDER_STATUS_DOING.equals(loanProcessDO.getOrderStatus()),
+                    "当前订单子状态" + getOrderStatusText(loanProcessDO));
+        }
     }
 
     /**
@@ -727,13 +766,32 @@ public class LoanProcessApprovalCommonServiceImpl implements LoanProcessApproval
     /**
      * 订单状态Text
      *
-     * @param loanProcessDO
+     * @param loanProcessDO_
      * @return
      */
-    private String getOrderStatusText(LoanProcessDO loanProcessDO) {
-        String orderStatusText = ORDER_STATUS_CANCEL.equals(loanProcessDO.getOrderStatus()) ?
-                "[已弃单]" : (ORDER_STATUS_END.equals(loanProcessDO.getOrderStatus()) ? "[已结单]" : "[状态异常]");
-        return orderStatusText;
+    private String getOrderStatusText(LoanProcessDO_ loanProcessDO_) {
+
+        try {
+
+            // methodName
+            String methodName = "getOrderStatus";
+
+            // 获取反射对象
+            Class<? extends LoanProcessDO_> loanProcessDOClass = loanProcessDO_.getClass();
+            // 获取对应method
+            Method method = loanProcessDOClass.getMethod(methodName);
+            // 执行method
+            Object result = method.invoke(loanProcessDO_);
+
+            String orderStatusText = ORDER_STATUS_CANCEL.equals(result) ?
+                    "[已弃单]" : (ORDER_STATUS_END.equals(result) ? "[已结单]" : "[状态异常]");
+
+            return orderStatusText;
+
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
+
     }
 
     /**
