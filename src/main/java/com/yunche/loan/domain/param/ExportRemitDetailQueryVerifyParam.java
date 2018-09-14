@@ -29,7 +29,7 @@ public class ExportRemitDetailQueryVerifyParam
     //贷款银行列表
     private List<String> bankList;
 
-    Long maxGroupLevel;
+    private Long maxGroupLevel;
 
-    Set<String> juniorIds = Sets.newHashSet();
+    private Set<String> juniorIds = Sets.newHashSet();
 }

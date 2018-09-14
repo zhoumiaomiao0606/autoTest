@@ -267,24 +267,7 @@ public class MaterialServiceImpl implements MaterialService {
         Set<String> NAME_ENTRY = Sets.newHashSet();
         try {
 
-            //先将文件状态改为进行中
-            List<LoanFileDO> loanFileDOS = loanFileDOMapper.listBySupplementIdAndType(infoSupplementId, ZIP_PACK.getType(), UPLOAD_TYPE_SUPPLEMENT);
-            if (CollectionUtils.isEmpty(loanFileDOS)) {
-                LoanFileDO loanFileDO = new LoanFileDO();
-                loanFileDO.setStatus(DOING_STATUS);
-                loanFileDO.setUploadType(UPLOAD_TYPE_SUPPLEMENT);
-                loanFileDO.setType(ZIP_PACK.getType());
-                loanFileDO.setCustomerId(customerId);
-                loanFileDO.setInfoSupplementId(infoSupplementId);
-                int count = loanFileDOMapper.insertSelective(loanFileDO);
-                Preconditions.checkArgument(count > 0, "插入失败");
-            } else {
-                loanFileDOS.parallelStream().forEach(e -> {
-                    e.setStatus(DOING_STATUS);
-                    int count = loanFileDOMapper.updateByPrimaryKeySelective(e);
-                    Preconditions.checkArgument(count > 0, "更新失败");
-                });
-            }
+
             List<MaterialDownloadParam> downloadParams = materialAuditDOMapper.selectDownloadMaterialSupId(orderId, null, infoSupplementId);
             if (downloadParams == null) {
                 return null;
@@ -301,102 +284,122 @@ public class MaterialServiceImpl implements MaterialService {
                         List<String> unique = list.stream().distinct().collect(Collectors.toList());
                         param.setPathList(unique);
                     });
+            if(downloadParams.size()!=0){
+                //先将文件状态改为进行中
+                List<LoanFileDO> loanFileDOS = loanFileDOMapper.listBySupplementIdAndType(infoSupplementId, ZIP_PACK.getType(), UPLOAD_TYPE_SUPPLEMENT);
+                if (CollectionUtils.isEmpty(loanFileDOS)) {
+                    LoanFileDO loanFileDO = new LoanFileDO();
+                    loanFileDO.setStatus(DOING_STATUS);
+                    loanFileDO.setUploadType(UPLOAD_TYPE_SUPPLEMENT);
+                    loanFileDO.setType(ZIP_PACK.getType());
+                    loanFileDO.setCustomerId(customerId);
+                    loanFileDO.setInfoSupplementId(infoSupplementId);
+                    int count = loanFileDOMapper.insertSelective(loanFileDO);
+                    Preconditions.checkArgument(count > 0, "插入失败");
+                } else {
+                    loanFileDOS.parallelStream().forEach(e -> {
+                        e.setStatus(DOING_STATUS);
+                        int count = loanFileDOMapper.updateByPrimaryKeySelective(e);
+                        Preconditions.checkArgument(count > 0, "更新失败");
+                    });
+                }
 
-            // 初始化
-            ossClient = OSSUnit.getOSSClient();
-            String fileName = null;
-            if (downloadParams != null) {
-                fileName = downloadParams.get(0).getName() + "_" + downloadParams.get(0).getIdCard()+"_"+infoSupplementId+ ".zip";
+                // 初始化
+                ossClient = OSSUnit.getOSSClient();
+                String fileName = null;
+                if (downloadParams != null) {
+                    fileName = downloadParams.get(0).getName() + "_" + downloadParams.get(0).getIdCard()+"_"+infoSupplementId+ ".zip";
 //                fileName = downloadParams.get(0).getName() +".zip";
-            }
-            // 创建临时文件
-            // 创建临时文件
-            zipFile = new File(ossConfig.getDownLoadBasepath() + File.separator + fileName);
-            zipFile.createNewFile();
+                }
+                // 创建临时文件
+                // 创建临时文件
+                zipFile = new File(ossConfig.getDownLoadBasepath() + File.separator + fileName);
+                zipFile.createNewFile();
 
-            FileOutputStream f = new FileOutputStream(zipFile);
-            /**
-             * 作用是为任何OutputStream产生校验和
-             * 第一个参数是制定产生校验和的输出流，第二个参数是指定Checksum的类型 （Adler32（较快）和CRC32两种）
-             */
-            CheckedOutputStream csum = new CheckedOutputStream(f, new Adler32());
-            // 用于将数据压缩成Zip文件格式
-            zos = new ZipOutputStream(csum);
-            logger.info("打包开始：" + System.currentTimeMillis());
-            for (MaterialDownloadParam typeFile : downloadParams) {
-                // 获取Object，返回结果为OSSObject对象
-                for (String url : typeFile.getPathList()) {
-                    OSSObject ossObject = null;
-                    try {
-                        ossObject = OSSUnit.getObject(ossClient, url);
-                    } catch (Exception e) {
-                        logger.info(">>>>>>>>>文件不存在:" + url);
-                        continue;
-                    }
-
-                    // 读去Object内容  返回
-                    InputStream inputStream = ossObject.getObjectContent();
-                    // 对于每一个要被存放到压缩包的文件，都必须调用ZipOutputStream对象的putNextEntry()方法，确保压缩包里面文件不同名
-                    byte t = typeFile.getType();
-                    String documentType = null;
-
-                    switch (t) {
-                        case 19:
-                        case 20:
-                        case 21:
-                        case 22:
-                        case 94:
-                            documentType = "提车资料";
-                            break;
-                        case 12:
-                        case 13:
-                        case 16:
-                        case 17:
-                        case 18:
-                        case 95:
-                            documentType = "上门家访";
-                            break;
-
-                        default:
-                            documentType = "基本资料";
-
-                    }
-
-                    String[] urlArr = url.split("\\.");
-                    if (ArrayUtils.isNotEmpty(urlArr) && urlArr.length == 2) {
-                        String urlSuffix = urlArr[1].trim().toLowerCase();
-
-                        if (HOME_VISIT_VIDEO.getType() == t || URL_FILTER_SUFFIX.contains(urlSuffix)) {
+                FileOutputStream f = new FileOutputStream(zipFile);
+                /**
+                 * 作用是为任何OutputStream产生校验和
+                 * 第一个参数是制定产生校验和的输出流，第二个参数是指定Checksum的类型 （Adler32（较快）和CRC32两种）
+                 */
+                CheckedOutputStream csum = new CheckedOutputStream(f, new Adler32());
+                // 用于将数据压缩成Zip文件格式
+                zos = new ZipOutputStream(csum);
+                logger.info("打包开始：" + System.currentTimeMillis());
+                for (MaterialDownloadParam typeFile : downloadParams) {
+                    // 获取Object，返回结果为OSSObject对象
+                    for (String url : typeFile.getPathList()) {
+                        OSSObject ossObject = null;
+                        try {
+                            ossObject = OSSUnit.getObject(ossClient, url);
+                        } catch (Exception e) {
+                            logger.info(">>>>>>>>>文件不存在:" + url);
                             continue;
                         }
-                    }
+
+                        // 读去Object内容  返回
+                        InputStream inputStream = ossObject.getObjectContent();
+                        // 对于每一个要被存放到压缩包的文件，都必须调用ZipOutputStream对象的putNextEntry()方法，确保压缩包里面文件不同名
+                        byte t = typeFile.getType();
+                        String documentType = null;
+
+                        switch (t) {
+                            case 19:
+                            case 20:
+                            case 21:
+                            case 22:
+                            case 94:
+                                documentType = "提车资料";
+                                break;
+                            case 12:
+                            case 13:
+                            case 16:
+                            case 17:
+                            case 18:
+                            case 95:
+                                documentType = "上门家访";
+                                break;
+
+                            default:
+                                documentType = "基本资料";
+
+                        }
+
+                        String[] urlArr = url.split("\\.");
+                        if (ArrayUtils.isNotEmpty(urlArr) && urlArr.length == 2) {
+                            String urlSuffix = urlArr[1].trim().toLowerCase();
+
+                            if (HOME_VISIT_VIDEO.getType() == t || URL_FILTER_SUFFIX.contains(urlSuffix)) {
+                                continue;
+                            }
+                        }
 
 
-                    if (preCheck(NAME_ENTRY, typeFile.getCustTypeName() + "/" + documentType + "/" + typeFile.getTypeName() + "/" + url.split("/")[url.split("/").length - 1])) {
-                        zos.putNextEntry(new ZipEntry(typeFile.getCustTypeName() + "/" + documentType + "/" + typeFile.getTypeName() + "/" + url.split("/")[url.split("/").length - 1]));
-                    } else {
-                        continue;
+                        if (preCheck(NAME_ENTRY, typeFile.getCustTypeName() + "/" + documentType + "/" + typeFile.getTypeName() + "/" + url.split("/")[url.split("/").length - 1])) {
+                            zos.putNextEntry(new ZipEntry(typeFile.getCustTypeName() + "/" + documentType + "/" + typeFile.getTypeName() + "/" + url.split("/")[url.split("/").length - 1]));
+                        } else {
+                            continue;
+                        }
+                        int bytesRead = 0;
+                        // 向压缩文件中输出数据
+                        while ((bytesRead = inputStream.read()) != -1) {
+                            zos.write(bytesRead);
+                        }
+                        inputStream.close();
+                        zos.closeEntry(); // 当前文件写完，定位为写入下一条项目
                     }
-                    int bytesRead = 0;
-                    // 向压缩文件中输出数据
-                    while ((bytesRead = inputStream.read()) != -1) {
-                        zos.write(bytesRead);
-                    }
-                    inputStream.close();
-                    zos.closeEntry(); // 当前文件写完，定位为写入下一条项目
                 }
+                zos.close();
+                String bucketName = ossConfig.getZipBucketName();
+                if (StringUtil.isEmpty(bucketName)) {
+                    Preconditions.checkNotNull("OSS压缩文件上传目录不存在");
+                }
+                String diskName = ossConfig.getZipDiskName();
+                //删除OSS上的文件
+                OSSUnit.deleteFile(ossClient, bucketName, diskName + File.separator, zipFile.getName());
+                OSSUnit.uploadObject2OSS(ossClient, zipFile, bucketName, diskName + File.separator);
+                returnKey = diskName + File.separator + zipFile.getName();
+                logger.info("打包结束：" + System.currentTimeMillis());
             }
-            zos.close();
-            String bucketName = ossConfig.getZipBucketName();
-            if (StringUtil.isEmpty(bucketName)) {
-                Preconditions.checkNotNull("OSS压缩文件上传目录不存在");
-            }
-            String diskName = ossConfig.getZipDiskName();
-            //删除OSS上的文件
-            OSSUnit.deleteFile(ossClient, bucketName, diskName + File.separator, zipFile.getName());
-            OSSUnit.uploadObject2OSS(ossClient, zipFile, bucketName, diskName + File.separator);
-            returnKey = diskName + File.separator + zipFile.getName();
-            logger.info("打包结束：" + System.currentTimeMillis());
         } catch (Exception e) {
             List<LoanFileDO> loanFileDOS = loanFileDOMapper.listByCustomerIdAndType(customerId, new Byte("26"), null);
             loanFileDOS.stream().filter(Objects::nonNull).forEach(f -> {
