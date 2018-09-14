@@ -899,6 +899,7 @@
         LEFT JOIN employee saleman ON baseinfo.salesman_id = saleman.id
         LEFT JOIN department department ON saleman.department_id = department.id
         where 1=1
+        AND
         case when #{maxGroupLevel} = 0 then false
         when #{maxGroupLevel} = 1 then
         baseinfo.salesman_id in
