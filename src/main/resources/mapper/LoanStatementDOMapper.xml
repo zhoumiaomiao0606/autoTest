@@ -1375,7 +1375,16 @@
           pcustomer.income_certificate_company_address AS pIncomeCertificateCompanyAddress,
           pcustomer.company_postcode AS pCompanyPostcode,
           pcustomer.company_phone AS pCompanyPhone,
-          pcustomer.company_nature AS pCompanyNature,
+        CASE
+        WHEN pcustomer.company_nature = 1 THEN
+        '事业单位'
+        WHEN pcustomer.company_nature = 2 THEN
+        '国企'
+        WHEN pcustomer.company_nature = 3 THEN
+        '私企'
+        ELSE
+        NULL END
+        AS pCompanyNature,
           pcustomer.industry_category AS pIndustryCategory,
           pcustomer.occupation AS pOccupation,
           pcustomer.duty AS pDuty,

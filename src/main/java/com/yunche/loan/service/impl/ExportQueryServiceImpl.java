@@ -265,7 +265,7 @@ public class ExportQueryServiceImpl implements ExportQueryService
 
         if (list.size() == 0)
         {
-            return "无数据";
+            throw new BizException("无数据");
         }
 
         //去空
