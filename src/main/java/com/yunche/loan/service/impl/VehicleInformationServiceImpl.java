@@ -199,6 +199,9 @@ public class VehicleInformationServiceImpl implements VehicleInformationService 
             month = month>60?60:month;
         }else if(IDict.K_BANK.ICBC_HZCZ.equals(String.valueOf(bankId))){
             month = DateUtil.getdiffMonth_CHENGZHAN(transferOwnershipDate,registerDate);
+        }else{
+            //其他银行
+            month = DateUtil.getdiffMonth_CHENGZHAN(transferOwnershipDate,registerDate);
         }
         return month;
     }
