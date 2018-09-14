@@ -16,5 +16,5 @@ public class CompplexHeader
 
     private ArrayList<String> aheader;
 
-    private int count;
+    private int count = 0;
 }
