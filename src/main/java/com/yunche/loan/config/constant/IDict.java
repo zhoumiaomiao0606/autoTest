@@ -378,4 +378,11 @@ public class IDict {
 
     }
 
+    public static abstract interface  K_CONF_THIRD_PARTY{
+        /**
+         * 金投行配置ID
+         */
+        public static final Long K_JTH = 1L;
+    }
+
 }

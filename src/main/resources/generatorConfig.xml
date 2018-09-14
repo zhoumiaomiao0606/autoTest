@@ -384,7 +384,7 @@
 -->
 
 
-        <table tableName="loan_apply_compensation" domainObjectName="LoanApplyCompensationDO"
+        <table tableName="conf_third_real_bridge_process" domainObjectName="ConfThirdRealBridgeProcessDO"
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
         </table>

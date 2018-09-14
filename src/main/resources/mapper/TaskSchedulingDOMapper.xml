@@ -787,6 +787,7 @@
                           deputy_b.bridge_handle                       AS taskStatus,
                           DATE_FORMAT(third_party.lend_date, '%Y-%m-%d %H:%i:%S')
                                                                        AS bridgeLendDate,
+                          conf_t.loan_time                             AS confThirdLoanTime,
                           third_party.repay_type                       AS bridgeRepayType,
                           DATE_FORMAT(third_party.repay_date, '%Y-%m-%d %H:%i:%S')
                                                                        AS bridgeRepayDate,
@@ -908,6 +909,8 @@
                           || taskDefinitionKey == 'usertask_bridge_interest_record'
                           || taskDefinitionKey == 'usertask_bridge_repay_info'">
                   left join loan_process_bridge        deputy_b         on deputy_b.order_id = main.id
+                  left join conf_third_real_bridge_process real_b       on deputy_b.process_inst_id = real_b.bridge_process_id
+                  left join conf_third_party_money conf_t               on real_b.conf_third_party_id = conf_t.id
                   left join third_party_fund_business  third_party      on third_party.bridge_procecss_id    = deputy_b.id
               </if>
 

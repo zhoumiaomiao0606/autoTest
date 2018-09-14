@@ -158,6 +158,9 @@ public class LoanProcessServiceImpl implements LoanProcessService {
     @Autowired
     private LoanProcessApprovalRollBackService loanProcessApprovalRollBackService;
 
+    @Autowired
+    private ConfThirdRealBridgeProcessDOMapper confThirdRealBridgeProcessDOMapper;
+
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -3195,7 +3198,15 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             LoanBaseInfoDO loanBaseInfoDO = getLoanBaseInfoDO(loanOrderDO.getLoanBaseInfoId());
             if (BANK_NAME_ICBC_HangZhou_City_Station_Branch.equals(loanBaseInfoDO.getBank())) {
 
-                loanProcessBridgeService.startProcess(approval.getOrderId());
+                Long startProcessId = loanProcessBridgeService.startProcess(approval.getOrderId());
+
+                //绑定当前流程到金投行
+                ConfThirdRealBridgeProcessDO thirdRealBridgeProcessDO = new ConfThirdRealBridgeProcessDO();
+                thirdRealBridgeProcessDO.setBridgeProcessId(startProcessId);
+                thirdRealBridgeProcessDO.setConfThirdPartyId(IDict.K_CONF_THIRD_PARTY.K_JTH);
+                int insertCount = confThirdRealBridgeProcessDOMapper.insert(thirdRealBridgeProcessDO);
+                Preconditions.checkArgument(insertCount>0,"插入失败");
+
             }
         }
     }
