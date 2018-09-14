@@ -182,15 +182,15 @@
         poundage, repay_interest_date, repay_register_remark,
         gmt_create, gmt_modify)
         values
-        <foreach collection="list" item="item" index="index" separator="," open="(" close=")">
-            #{bridgeProcecssId,jdbcType=BIGINT},
+        <foreach collection="list" item="item" index="index">
+            (#{item.bridgeProcecssId,jdbcType=BIGINT},
             #{item.orderId,jdbcType=BIGINT}, #{item.lendDate,jdbcType=TIMESTAMP},
             #{item.repayType,jdbcType=TINYINT},
             #{item.repayDate,jdbcType=TIMESTAMP},#{item.repayRemark,jdbcType=VARCHAR},
             #{item.interest,jdbcType=DECIMAL},
             #{item.poundage,jdbcType=DECIMAL},#{item.repayInterestDate,jdbcType=TIMESTAMP},
             #{item.repayRegisterRemark,jdbcType=VARCHAR},
-            #{item.gmtCreate,jdbcType=TIMESTAMP}, #{item.gmtModify,jdbcType=TIMESTAMP}
+            #{item.gmtCreate,jdbcType=TIMESTAMP}, #{item.gmtModify,jdbcType=TIMESTAMP})
         </foreach>
     </insert>
 

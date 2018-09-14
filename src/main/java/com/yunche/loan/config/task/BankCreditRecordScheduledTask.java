@@ -3,10 +3,13 @@ package com.yunche.loan.config.task;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.yunche.loan.config.anno.DistributedLock;
+import com.yunche.loan.config.constant.BaseConst;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.entity.BankInterfaceSerialDO;
+import com.yunche.loan.domain.entity.LoanCustomerDO;
 import com.yunche.loan.domain.param.ApprovalParam;
 import com.yunche.loan.mapper.BankInterfaceSerialDOMapper;
+import com.yunche.loan.mapper.LoanCustomerDOMapper;
 import com.yunche.loan.service.LoanProcessService;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -36,6 +39,9 @@ public class BankCreditRecordScheduledTask {
 
     @Autowired
     private LoanProcessService loanProcessService;
+
+    @Autowired
+    private LoanCustomerDOMapper loanCustomerDOMapper;
 
 
     /**
@@ -90,24 +96,19 @@ public class BankCreditRecordScheduledTask {
 
                         Byte status = bankInterfaceSerialDO.getStatus();
 
-                        // 3
-                        if (new Byte("3").equals(status)) {
+                        LoanCustomerDO customerDO = loanCustomerDOMapper.selectByPrimaryKey(bankInterfaceSerialDO.getCustomerId(), BaseConst.VALID_STATUS);
+                        // {"ICBC_API_RETMSG":"success","ICBC_API_TIMESTAMP":"2018-08-27 08:23:52","pub":{"retcode":"22094","retmsg":"该客户为灰名单客户"},"ICBC_API_RETCODE":0}
+                        String apiMsg = bankInterfaceSerialDO.getApiMsg();
 
-                            approval.setInfo(bankInterfaceSerialDO.getRejectReason());
+                        if(StringUtils.isNotBlank(bankInterfaceSerialDO.getRejectReason())){
+                            approval.setInfo(customerDO.getName()+":"+bankInterfaceSerialDO.getRejectReason());
+                        }else if (StringUtils.isNotBlank(apiMsg)) {
+                            JSONObject jsonObject = JSON.parseObject(apiMsg);
+                            JSONObject pub = jsonObject.getJSONObject("pub");
 
-                        } else {
-
-                            // {"ICBC_API_RETMSG":"success","ICBC_API_TIMESTAMP":"2018-08-27 08:23:52","pub":{"retcode":"22094","retmsg":"该客户为灰名单客户"},"ICBC_API_RETCODE":0}
-                            String apiMsg = bankInterfaceSerialDO.getApiMsg();
-                            if (StringUtils.isNotBlank(apiMsg)) {
-
-                                JSONObject jsonObject = JSON.parseObject(apiMsg);
-                                JSONObject pub = jsonObject.getJSONObject("pub");
-
-                                if (!CollectionUtils.isEmpty(pub)) {
-                                    String retmsg = pub.getString("retmsg");
-                                    approval.setInfo(retmsg);
-                                }
+                            if (!CollectionUtils.isEmpty(pub)) {
+                                String retmsg = pub.getString("retmsg");
+                                approval.setInfo(customerDO.getName()+":"+retmsg);
                             }
                         }
 

@@ -434,7 +434,6 @@
             cost.performance_fee                                                                    AS performance_fee,
             repay.overdue_amount                                                                    AS overdue_amount,
             current.usertask_remit_review_create_time                                               AS remit_review_time,
-            third_party.lend_date                                                                   AS bridge_lend_date,
             bank_lend.lend_date                                                                     AS bank_lend_date
 
     from (select * from loan_order where id = #{orderId,jdbcType=BIGINT}) main_order
@@ -457,7 +456,6 @@
     left join department department on partner.department_id = department.id
     left join cost_details cost on main_order.cost_details_id = cost.id
     left join bank_repay_record repay on repay.order_id = main_order.id
-    left join third_party_fund_business third_party on    third_party.order_id = main_order.id
     left join bank_lend_record bank_lend on main_order.bank_lend_record_id = bank_lend.id
 
   </select>

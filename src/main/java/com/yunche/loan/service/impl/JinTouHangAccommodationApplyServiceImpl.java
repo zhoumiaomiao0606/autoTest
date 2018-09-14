@@ -12,9 +12,12 @@ import com.yunche.loan.domain.param.AccommodationApplyParam;
 import com.yunche.loan.domain.param.ApprovalParam;
 import com.yunche.loan.domain.param.ExportApplyLoanPushParam;
 import com.yunche.loan.domain.vo.*;
-import com.yunche.loan.mapper.*;
+import com.yunche.loan.mapper.LoanOrderDOMapper;
+import com.yunche.loan.mapper.LoanQueryDOMapper;
+import com.yunche.loan.mapper.LoanStatementDOMapper;
+import com.yunche.loan.mapper.ThirdPartyFundBusinessDOMapper;
 import com.yunche.loan.service.JinTouHangAccommodationApplyService;
-import com.yunche.loan.service.LoanProcessService;
+import com.yunche.loan.service.LoanProcessBridgeService;
 import com.yunche.loan.service.LoanQueryService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +41,7 @@ public class JinTouHangAccommodationApplyServiceImpl implements JinTouHangAccomm
     private ThirdPartyFundBusinessDOMapper thirdPartyFundBusinessDOMapper;
 
     @Autowired
-    private LoanProcessService loanProcessService;
+    private LoanProcessBridgeService loanProcessBridgeService;
 
     @Autowired
     private LoanOrderDOMapper loanOrderDOMapper;
@@ -57,17 +60,19 @@ public class JinTouHangAccommodationApplyServiceImpl implements JinTouHangAccomm
 
 
     /**
-     * 批量贷款
+     * 借款
      *
      * @return
      */
     @Override
     public ResultBean applyLoan(AccommodationApplyParam param) {
         Preconditions.checkNotNull(param, "参数有误");
-        Preconditions.checkNotNull(param.getOrderId(), "业务单号不能为空");
+        Preconditions.checkNotNull(param.getIdPair(),"参数有误");
 
         ThirdPartyFundBusinessDO aDo = new ThirdPartyFundBusinessDO();
         BeanUtils.copyProperties(param, aDo);
+        aDo.setBridgeProcecssId(param.getIdPair().getBridgeProcecssId());
+        aDo.setOrderId(param.getIdPair().getOrderId());
 
         int count = thirdPartyFundBusinessDOMapper.insertSelective(aDo);
         Preconditions.checkArgument(count > 0, "保存失败");
@@ -83,22 +88,26 @@ public class JinTouHangAccommodationApplyServiceImpl implements JinTouHangAccomm
     @Override
     public ResultBean batchLoan(AccommodationApplyParam param) {
         Preconditions.checkNotNull(param, "参数有误");
-        List<Long> orderIds = param.getOrderIds();
+        List<AccommodationApplyParam.IDPair> idPairs = param.getIdPairs();
+//        List<Long> orderIds = param.getOrderIds();
 
-        List<ThirdPartyFundBusinessDO> collect = orderIds.stream()
+        List<ThirdPartyFundBusinessDO> collect = idPairs.stream()
                 .filter(Objects::nonNull)
                 .map(e -> {
                     ThirdPartyFundBusinessDO aDo = new ThirdPartyFundBusinessDO();
-                    aDo.setOrderId(e);
+                    aDo.setBridgeProcecssId(e.getBridgeProcecssId());
+                    aDo.setOrderId(e.getOrderId());
                     aDo.setLendDate(param.getLendDate());
                     aDo.setGmtCreate(new Date());
+                    int count = thirdPartyFundBusinessDOMapper.insertSelective(aDo);
+                    Preconditions.checkArgument(count>0,"插入失败");
                     return aDo;
                 }).collect(Collectors.toList());
 
         //批量导入、提交
         if (!CollectionUtils.isEmpty(collect)) {
-            int count = thirdPartyFundBusinessDOMapper.batchInsert(collect);
-            Preconditions.checkArgument(count == collect.size(), "批量借款申请异常");
+//            int count = thirdPartyFundBusinessDOMapper.batchInsert(collect);
+//            Preconditions.checkArgument(count == collect.size(), "批量借款申请异常");
             //提交任务
             collect.stream().forEach(e -> {
                 ApprovalParam approvalParam = new ApprovalParam();
@@ -107,7 +116,8 @@ public class JinTouHangAccommodationApplyServiceImpl implements JinTouHangAccomm
                 approvalParam.setAction(ProcessApprovalConst.ACTION_PASS);
                 approvalParam.setNeedLog(true);
                 approvalParam.setCheckPermission(false);
-                ResultBean<Void> approvalResultBean = loanProcessService.approval(approvalParam);
+                approvalParam.setProcessId(e.getBridgeProcecssId());
+                ResultBean<Void> approvalResultBean = loanProcessBridgeService.approval(approvalParam);
                 Preconditions.checkArgument(approvalResultBean.getSuccess(), approvalResultBean.getMsg());
             });
         }
@@ -166,8 +176,11 @@ public class JinTouHangAccommodationApplyServiceImpl implements JinTouHangAccomm
     }
 
     @Override
-    public ResultBean detail(Long orderId) {
-        Preconditions.checkNotNull(orderId, "参数有误");
+    public ResultBean detail(Long bridgeProcessId) {
+        Preconditions.checkNotNull(bridgeProcessId, "流程ID不能为空");
+        ThirdPartyFundBusinessDO thirdPartyFundBusinessDO = thirdPartyFundBusinessDOMapper.selectByPrimaryKey(bridgeProcessId);
+
+        Long orderId = thirdPartyFundBusinessDO.getOrderId();
 
         LoanOrderDO orderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
         Preconditions.checkNotNull(orderDO, "订单信息不存在");
@@ -187,6 +200,7 @@ public class JinTouHangAccommodationApplyServiceImpl implements JinTouHangAccomm
         recombinationVO.setCar(carInfoVO);
         recombinationVO.setFinancial(financialSchemeVO);
         recombinationVO.setCustomers(customers);
+        recombinationVO.setPartyFundBusinessVO(thirdPartyFundBusinessDO);
 
         return ResultBean.ofSuccess(recombinationVO);
     }
@@ -200,10 +214,14 @@ public class JinTouHangAccommodationApplyServiceImpl implements JinTouHangAccomm
     @Override
     public ResultBean abnormalRepay(AccommodationApplyParam param) {
         Preconditions.checkNotNull(param, "参数有误");
-        Preconditions.checkNotNull(param.getOrderId(), "业务单号不能为空");
+        Preconditions.checkNotNull(param.getIdPair().getOrderId(), "业务单号不能为空");
+        Preconditions.checkNotNull(param.getIdPair().getBridgeProcecssId(), "流程ID不能为空");
 
         ThirdPartyFundBusinessDO thirdPartyFundBusinessDO = new ThirdPartyFundBusinessDO();
+
         BeanUtils.copyProperties(param, thirdPartyFundBusinessDO);
+        thirdPartyFundBusinessDO.setOrderId(param.getIdPair().getOrderId());
+        thirdPartyFundBusinessDO.setBridgeProcecssId(param.getIdPair().getBridgeProcecssId());
 
         int count = thirdPartyFundBusinessDOMapper.updateByPrimaryKeySelective(thirdPartyFundBusinessDO);
         Preconditions.checkArgument(count > 0, "异常还款跟新失败");
@@ -220,11 +238,14 @@ public class JinTouHangAccommodationApplyServiceImpl implements JinTouHangAccomm
     @Override
     public ResultBean repayInterestRegister(AccommodationApplyParam param) {
         Preconditions.checkNotNull(param, "参数有误");
-        Preconditions.checkNotNull(param.getOrderId(), "业务单号不能为空");
+        Preconditions.checkNotNull(param.getIdPair().getOrderId(), "业务单号不能为空");
+        Preconditions.checkNotNull(param.getIdPair().getBridgeProcecssId(), "流程ID不能为空");
+
 
         ThirdPartyFundBusinessDO thirdPartyFundBusinessDO = new ThirdPartyFundBusinessDO();
         BeanUtils.copyProperties(param, thirdPartyFundBusinessDO);
-
+        thirdPartyFundBusinessDO.setOrderId(param.getIdPair().getOrderId());
+        thirdPartyFundBusinessDO.setBridgeProcecssId(param.getIdPair().getBridgeProcecssId());
         int count = thirdPartyFundBusinessDOMapper.updateByPrimaryKeySelective(thirdPartyFundBusinessDO);
         Preconditions.checkArgument(count > 0, "金投行还款登记失败");
 

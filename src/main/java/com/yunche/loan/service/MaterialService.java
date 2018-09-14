@@ -24,6 +24,11 @@ public interface MaterialService {
      */
     ResultBean<String> downloadFiles2OSS(Long orderId, Boolean reGenerateZip);
 
+    /*
+    *提车资料下载
+     */
+    ResultBean<String> downCarFiles2OSS(Long orderId, Boolean reGenerateZip);
+
     /**
      *资料增补文件下载
      */
