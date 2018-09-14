@@ -312,6 +312,12 @@ public class ExportQueryServiceImpl implements ExportQueryService
 
                         e.setTotalAsset(totalAsset);
 
+
+                        //将中文姓名导出拼音
+                        if (e.getPName()!=null){
+                            e.setPyName(POIUtil.getPingYin(e.getPName()));
+                        }
+
                     }
             );
 
