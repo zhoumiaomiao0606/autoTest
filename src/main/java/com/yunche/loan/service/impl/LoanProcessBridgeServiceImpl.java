@@ -5,7 +5,9 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.yunche.loan.config.constant.LoanProcessEnum;
 import com.yunche.loan.config.result.ResultBean;
-import com.yunche.loan.domain.entity.*;
+import com.yunche.loan.domain.entity.LoanOrderDO;
+import com.yunche.loan.domain.entity.LoanProcessBridgeDO;
+import com.yunche.loan.domain.entity.ThirdPartyFundBusinessDO;
 import com.yunche.loan.domain.param.ApprovalParam;
 import com.yunche.loan.mapper.LoanProcessBridgeDOMapper;
 import com.yunche.loan.mapper.ThirdPartyFundBusinessDOMapper;
@@ -19,18 +21,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
 import static com.yunche.loan.config.constant.ActivitiConst.LOAN_PROCESS_BRIDGE_KEY;
 import static com.yunche.loan.config.constant.LoanOrderProcessConst.*;
-import static com.yunche.loan.config.constant.LoanProcessEnum.*;
+import static com.yunche.loan.config.constant.LoanProcessEnum.TELEPHONE_VERIFY;
 import static com.yunche.loan.config.constant.LoanProcessVariableConst.PROCESS_VARIABLE_ACTION;
 import static com.yunche.loan.config.constant.ProcessApprovalConst.*;
-import static com.yunche.loan.config.constant.ProcessApprovalConst.ACTION_CANCEL;
-import static com.yunche.loan.config.constant.ProcessApprovalConst.ACTION_PASS;
 import static com.yunche.loan.config.constant.ProcessTypeConst.PROCESS_TYPE_LOAN_PROCESS_BRIDGE;
 
 /**
@@ -211,7 +210,7 @@ public class LoanProcessBridgeServiceImpl implements LoanProcessBridgeService {
 
         // 更新状态
         LoanProcessBridgeDO loanProcessDO = new LoanProcessBridgeDO();
-        loanProcessDO.setOrderId(approval.getProcessId());
+        loanProcessDO.setId(approval.getProcessId());
         loanProcessDO.setOrderId(approval.getOrderId());
 
         // 如果弃单，则记录弃单节点
@@ -244,7 +243,6 @@ public class LoanProcessBridgeServiceImpl implements LoanProcessBridgeService {
      * @param loanProcessDO
      */
     private void updateLoanProcess(LoanProcessBridgeDO loanProcessDO) {
-        loanProcessDO.setGmtModify(new Date());
         int count = loanProcessBridgeDOMapper.updateByPrimaryKeySelective(loanProcessDO);
         Preconditions.checkArgument(count > 0, "更新本地流程记录失败");
     }
