@@ -67,7 +67,7 @@ public class UniversalInfoVO {
     private String vehicle_old_driving_license_owner;
     private String bank_credit_gmt_create;
     private String society_credit_gmt_create;
-    private Long   financial_id;
+    private Long financial_id;
     private String financial_bank;
     private String financial_loan_time;
     private String financial_appraisal;
@@ -96,8 +96,11 @@ public class UniversalInfoVO {
     private String remit_beneficiary_account_number;
     private String remit_amount;
     private String remit_return_rate_amount;
+
     private String process_apply_license_plate_deposit_info;
     private String process_bank_lend_record;
+    private String process_video_review;// 视频审核
+
     private String car_info;
     private String bank_repay_date;
     private String bank_billing_date;
@@ -113,10 +116,6 @@ public class UniversalInfoVO {
 
     private String customer_ctelzone;
     private String remit_application_date;
-
     private String bridge_lend_date;
-
     private String bank_lend_date;
-
-
 }

@@ -67,14 +67,20 @@ public class JinTouHangAccommodationApplyServiceImpl implements JinTouHangAccomm
     @Override
     public ResultBean applyLoan(AccommodationApplyParam param) {
         Preconditions.checkNotNull(param, "参数有误");
-        Preconditions.checkNotNull(param.getIdPair(),"参数有误");
+        Preconditions.checkNotNull(param.getIdPair(), "参数有误");
 
         ThirdPartyFundBusinessDO aDo = new ThirdPartyFundBusinessDO();
         BeanUtils.copyProperties(param, aDo);
-        aDo.setBridgeProcecssId(param.getIdPair().getBridgeProcecssId());
+        aDo.setBridgeProcecssId(param.getIdPair().getBridgeProcessId());
         aDo.setOrderId(param.getIdPair().getOrderId());
 
-        int count = thirdPartyFundBusinessDOMapper.insertSelective(aDo);
+        ThirdPartyFundBusinessDO fundBusinessDO = thirdPartyFundBusinessDOMapper.selectByPrimaryKey(param.getIdPair().getBridgeProcessId());
+        int count;
+        if (fundBusinessDO != null) {
+            count = thirdPartyFundBusinessDOMapper.updateByPrimaryKeySelective(aDo);
+        } else {
+            count = thirdPartyFundBusinessDOMapper.insertSelective(aDo);
+        }
         Preconditions.checkArgument(count > 0, "保存失败");
 
         return ResultBean.ofSuccess("借款申请成功");
@@ -95,28 +101,42 @@ public class JinTouHangAccommodationApplyServiceImpl implements JinTouHangAccomm
                 .filter(Objects::nonNull)
                 .map(e -> {
                     ThirdPartyFundBusinessDO aDo = new ThirdPartyFundBusinessDO();
-                    aDo.setBridgeProcecssId(e.getBridgeProcecssId());
+                    aDo.setBridgeProcecssId(e.getBridgeProcessId());
                     aDo.setOrderId(e.getOrderId());
                     aDo.setLendDate(param.getLendDate());
                     aDo.setGmtCreate(new Date());
-                    int count = thirdPartyFundBusinessDOMapper.insertSelective(aDo);
-                    Preconditions.checkArgument(count>0,"插入失败");
+
+                    ThirdPartyFundBusinessDO fundBusinessDO = thirdPartyFundBusinessDOMapper.selectByPrimaryKey(e.getBridgeProcessId());
+                    int count;
+                    if (fundBusinessDO != null) {
+                        count = thirdPartyFundBusinessDOMapper.updateByPrimaryKeySelective(aDo);
+                    } else {
+                        count = thirdPartyFundBusinessDOMapper.insertSelective(aDo);
+                    }
+                    Preconditions.checkArgument(count > 0, "插入失败");
                     return aDo;
                 }).collect(Collectors.toList());
 
         //批量导入、提交
         if (!CollectionUtils.isEmpty(collect)) {
+
+            ApprovalParam approvalParam = new ApprovalParam();
+            approvalParam.setTaskDefinitionKey(BRIDGE_HANDLE.getCode());
+            approvalParam.setAction(ProcessApprovalConst.ACTION_PASS);
+            approvalParam.setNeedLog(true);
+            approvalParam.setCheckPermission(false);
+
+
 //            int count = thirdPartyFundBusinessDOMapper.batchInsert(collect);
 //            Preconditions.checkArgument(count == collect.size(), "批量借款申请异常");
+
             //提交任务
             collect.stream().forEach(e -> {
-                ApprovalParam approvalParam = new ApprovalParam();
+
                 approvalParam.setOrderId(e.getOrderId());
-                approvalParam.setTaskDefinitionKey(BRIDGE_HANDLE.getCode());
-                approvalParam.setAction(ProcessApprovalConst.ACTION_PASS);
-                approvalParam.setNeedLog(true);
-                approvalParam.setCheckPermission(false);
                 approvalParam.setProcessId(e.getBridgeProcecssId());
+
+
                 ResultBean<Void> approvalResultBean = loanProcessBridgeService.approval(approvalParam);
                 Preconditions.checkArgument(approvalResultBean.getSuccess(), approvalResultBean.getMsg());
             });
@@ -176,11 +196,9 @@ public class JinTouHangAccommodationApplyServiceImpl implements JinTouHangAccomm
     }
 
     @Override
-    public ResultBean detail(Long bridgeProcessId) {
+    public ResultBean detail(Long bridgeProcessId, Long orderId) {
         Preconditions.checkNotNull(bridgeProcessId, "流程ID不能为空");
         ThirdPartyFundBusinessDO thirdPartyFundBusinessDO = thirdPartyFundBusinessDOMapper.selectByPrimaryKey(bridgeProcessId);
-
-        Long orderId = thirdPartyFundBusinessDO.getOrderId();
 
         LoanOrderDO orderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
         Preconditions.checkNotNull(orderDO, "订单信息不存在");
@@ -215,13 +233,13 @@ public class JinTouHangAccommodationApplyServiceImpl implements JinTouHangAccomm
     public ResultBean abnormalRepay(AccommodationApplyParam param) {
         Preconditions.checkNotNull(param, "参数有误");
         Preconditions.checkNotNull(param.getIdPair().getOrderId(), "业务单号不能为空");
-        Preconditions.checkNotNull(param.getIdPair().getBridgeProcecssId(), "流程ID不能为空");
+        Preconditions.checkNotNull(param.getIdPair().getBridgeProcessId(), "流程ID不能为空");
 
         ThirdPartyFundBusinessDO thirdPartyFundBusinessDO = new ThirdPartyFundBusinessDO();
 
         BeanUtils.copyProperties(param, thirdPartyFundBusinessDO);
         thirdPartyFundBusinessDO.setOrderId(param.getIdPair().getOrderId());
-        thirdPartyFundBusinessDO.setBridgeProcecssId(param.getIdPair().getBridgeProcecssId());
+        thirdPartyFundBusinessDO.setBridgeProcecssId(param.getIdPair().getBridgeProcessId());
 
         int count = thirdPartyFundBusinessDOMapper.updateByPrimaryKeySelective(thirdPartyFundBusinessDO);
         Preconditions.checkArgument(count > 0, "异常还款跟新失败");
@@ -239,13 +257,13 @@ public class JinTouHangAccommodationApplyServiceImpl implements JinTouHangAccomm
     public ResultBean repayInterestRegister(AccommodationApplyParam param) {
         Preconditions.checkNotNull(param, "参数有误");
         Preconditions.checkNotNull(param.getIdPair().getOrderId(), "业务单号不能为空");
-        Preconditions.checkNotNull(param.getIdPair().getBridgeProcecssId(), "流程ID不能为空");
+        Preconditions.checkNotNull(param.getIdPair().getBridgeProcessId(), "流程ID不能为空");
 
 
         ThirdPartyFundBusinessDO thirdPartyFundBusinessDO = new ThirdPartyFundBusinessDO();
         BeanUtils.copyProperties(param, thirdPartyFundBusinessDO);
         thirdPartyFundBusinessDO.setOrderId(param.getIdPair().getOrderId());
-        thirdPartyFundBusinessDO.setBridgeProcecssId(param.getIdPair().getBridgeProcecssId());
+        thirdPartyFundBusinessDO.setBridgeProcecssId(param.getIdPair().getBridgeProcessId());
         int count = thirdPartyFundBusinessDOMapper.updateByPrimaryKeySelective(thirdPartyFundBusinessDO);
         Preconditions.checkArgument(count > 0, "金投行还款登记失败");
 

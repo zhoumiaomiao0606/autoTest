@@ -32,8 +32,6 @@ public class LegworkReimbursementDO {
      */
     private Long refundApplyAccountId;
 
-    private String remitAccount;
-
     private String collectionBank;
 
     private String collectionAccount;

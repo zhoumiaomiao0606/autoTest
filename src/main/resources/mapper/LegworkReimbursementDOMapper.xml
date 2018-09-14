@@ -13,7 +13,6 @@
         <result column="status" property="status" jdbcType="TINYINT"/>
         <result column="reimbursement_amount" property="reimbursementAmount" jdbcType="VARCHAR"/>
         <result column="refund_apply_account_id" property="refundApplyAccountId" jdbcType="VARCHAR"/>
-        <result column="remit_account" property="remitAccount" jdbcType="VARCHAR"/>
         <result column="collection_bank" property="collectionBank" jdbcType="VARCHAR"/>
         <result column="collection_account" property="collectionAccount" jdbcType="VARCHAR"/>
         <result column="collection_account_number" property="collectionAccountNumber" jdbcType="VARCHAR"/>
@@ -25,7 +24,7 @@
     </resultMap>
     <sql id="Base_Column_List">
     id, trans_fee, hotel_fee, eat_fee, busi_fee, other_fee, gmt_create_time, gmt_update_time,
-    status, reimbursement_amount, refund_apply_account_id, remit_account, collection_bank, collection_account,
+    status, reimbursement_amount, refund_apply_account_id, collection_bank, collection_account,
     collection_account_number, busi_time, apply_user_id, apply_user_name, review_user_id,
     review_user_name
   </sql>
@@ -50,14 +49,14 @@
     insert into legwork_reimbursement (id, trans_fee, hotel_fee,
     eat_fee, busi_fee, other_fee,
     gmt_create_time, gmt_update_time, status,
-    reimbursement_amount, refund_apply_account_id, remit_account,
+    reimbursement_amount, refund_apply_account_id,
     collection_bank, collection_account, collection_account_number,
     busi_time, apply_user_id, apply_user_name,
     review_user_id, review_user_name)
     values (#{id,jdbcType=BIGINT}, #{transFee,jdbcType=VARCHAR}, #{hotelFee,jdbcType=VARCHAR},
     #{eatFee,jdbcType=VARCHAR}, #{busiFee,jdbcType=VARCHAR}, #{otherFee,jdbcType=VARCHAR},
     #{gmtCreateTime,jdbcType=TIMESTAMP}, #{gmtUpdateTime,jdbcType=TIMESTAMP}, #{status,jdbcType=TINYINT},
-    #{reimbursementAmount,jdbcType=VARCHAR}, #{refundApplyAccountId,jdbcType=BIGINT}, #{remitAccount,jdbcType=VARCHAR},
+    #{reimbursementAmount,jdbcType=VARCHAR}, #{refundApplyAccountId,jdbcType=BIGINT},
     #{collectionBank,jdbcType=VARCHAR}, #{collectionAccount,jdbcType=VARCHAR}, #{collectionAccountNumber,jdbcType=VARCHAR},
     #{busiTime,jdbcType=TIMESTAMP}, #{applyUserId,jdbcType=BIGINT}, #{applyUserName,jdbcType=VARCHAR},
     #{reviewUserId,jdbcType=BIGINT}, #{reviewUserName,jdbcType=VARCHAR})
@@ -101,9 +100,6 @@
             </if>
             <if test="refundApplyAccountId != null">
                 refund_apply_account_id,
-            </if>
-            <if test="remitAccount != null">
-                remit_account,
             </if>
             <if test="collectionBank != null">
                 collection_bank,
@@ -164,9 +160,6 @@
             <if test="refundApplyAccountId != null">
                 #{refundApplyAccountId,jdbcType=BIGINT},
             </if>
-            <if test="remitAccount != null">
-                #{remitAccount,jdbcType=VARCHAR},
-            </if>
             <if test="collectionBank != null">
                 #{collectionBank,jdbcType=VARCHAR},
             </if>
@@ -226,9 +219,6 @@
             <if test="refundApplyAccountId != null">
                 refund_apply_account_id = #{refundApplyAccountId,jdbcType=BIGINT},
             </if>
-            <if test="remitAccount != null">
-                remit_account = #{remitAccount,jdbcType=VARCHAR},
-            </if>
             <if test="collectionBank != null">
                 collection_bank = #{collectionBank,jdbcType=VARCHAR},
             </if>
@@ -268,7 +258,6 @@
       status = #{status,jdbcType=TINYINT},
       reimbursement_amount = #{reimbursementAmount,jdbcType=VARCHAR},
       refund_apply_account_id = #{refundApplyAccountId,jdbcType=BIGINT},
-      remit_account = #{remitAccount,jdbcType=VARCHAR},
       collection_bank = #{collectionBank,jdbcType=VARCHAR},
       collection_account = #{collectionAccount,jdbcType=VARCHAR},
       collection_account_number = #{collectionAccountNumber,jdbcType=VARCHAR},

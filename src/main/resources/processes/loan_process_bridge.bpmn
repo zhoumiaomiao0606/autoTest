@@ -2,16 +2,16 @@
 <definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.activiti.org/test">
   <process id="loan_process_bridge" name="过桥资金流程" isExecutable="true">
     <startEvent id="startevent1" name="Start"></startEvent>
-    <userTask id="usertask_bridge_handle" name="过桥处理(乙)"></userTask>
+    <userTask id="usertask_bridge_handle" name="过桥处理(乙)" activiti:candidateGroups="管理员,总经理,培训经理,金投行甲方"></userTask>
     <sequenceFlow id="flow1" sourceRef="startevent1" targetRef="usertask_bridge_handle"></sequenceFlow>
-    <userTask id="usertask_bridge_repay_record" name="还款登记(甲)"></userTask>
+    <userTask id="usertask_bridge_repay_record" name="还款登记(甲)" activiti:candidateGroups="管理员,总经理,培训经理,金投行乙方"></userTask>
     <sequenceFlow id="flow2" name="提交" sourceRef="usertask_bridge_handle" targetRef="usertask_bridge_repay_record">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1}]]></conditionExpression>
     </sequenceFlow>
     <exclusiveGateway id="exclusivegateway1" name="Exclusive Gateway"></exclusiveGateway>
     <sequenceFlow id="flow3" sourceRef="usertask_bridge_repay_record" targetRef="exclusivegateway1"></sequenceFlow>
-    <userTask id="usertask_bridge_interest_record" name="息费登记(甲)"></userTask>
-    <userTask id="usertask_bridge_repay_info" name="还款信息(甲乙)"></userTask>
+    <userTask id="usertask_bridge_interest_record" name="息费登记(甲)" activiti:candidateGroups="管理员,总经理,培训经理,金投行乙方"></userTask>
+    <userTask id="usertask_bridge_repay_info" name="还款信息(甲乙)" activiti:candidateGroups="管理员,总经理,培训经理,金投行甲方,金投行乙方"></userTask>
     <sequenceFlow id="flow5" name="提交" sourceRef="exclusivegateway2" targetRef="usertask_bridge_repay_info">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1}]]></conditionExpression>
     </sequenceFlow>
@@ -92,7 +92,7 @@
         <omgdi:waypoint x="472.0" y="200.0"></omgdi:waypoint>
         <omgdi:waypoint x="472.0" y="260.0"></omgdi:waypoint>
         <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="16.0" width="100.0" x="671.0" y="191.0"></omgdc:Bounds>
+          <omgdc:Bounds height="16.0" width="56.0" x="671.0" y="191.0"></omgdc:Bounds>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="flow18" id="BPMNEdge_flow18">
@@ -101,7 +101,7 @@
         <omgdi:waypoint x="702.0" y="380.0"></omgdi:waypoint>
         <omgdi:waypoint x="702.0" y="315.0"></omgdi:waypoint>
         <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="16.0" width="100.0" x="1001.0" y="370.0"></omgdc:Bounds>
+          <omgdc:Bounds height="16.0" width="56.0" x="1001.0" y="370.0"></omgdc:Bounds>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="flow19" id="BPMNEdge_flow19">

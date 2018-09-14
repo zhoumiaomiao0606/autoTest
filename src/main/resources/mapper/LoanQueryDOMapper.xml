@@ -52,7 +52,7 @@
             vehicle.assess_use_year                   as vehicle_assess_use_year,
             car.car_category                          as car_category,
             bank_log.operate_name                     as operate_name,
-            bank_log.operate_date                     as operate_date,
+            DATE_FORMAT(bank_log.operate_date,'%Y-%m-%d %H:%i:%S')   as operate_date,
             current.usertask_remit_review_create_time    as remit_details_time
 
         from (select * from loan_order where id = #{orderId}) orders
@@ -163,7 +163,10 @@
              a.apply_license_plate_deposit_date AS apply_license_plate_deposit_date,
              h.registration_certificate_number  AS registration_certificate_number,
              h.vehicle_identification_number    AS vehicle_identification_number,
-             h.car_category                     AS car_category
+             h.car_category                     AS car_category,
+             h.vehicle_identification_number    AS qualified_certificate_number,
+             h.engine_number                    AS engine_number
+
 
     from (select * from loan_order where id = #{orderId,jdbcType=BIGINT}) o
 
@@ -428,6 +431,7 @@
             remit.application_date                                                                  AS remit_application_date,
             process.apply_license_plate_deposit_info                                                AS process_apply_license_plate_deposit_info,
             process.bank_lend_record                                                                AS process_bank_lend_record,
+            process.video_review                                                                    AS process_video_review,
             bank.repay_date                                                                         AS bank_repay_date,
             bank.billing_date                                                                       AS bank_billing_date,
             car.car_category                                                                        AS car_category,
@@ -1912,6 +1916,7 @@
 
                   s.id                                      AS    supplementOrderId,
                   s.type                                    AS    type,
+                  useSupplementTypeTxt(s.type)              AS    typeText,
                   s.content                                 AS    content,
                   s.info                                    AS    info,
                   s.remark                                  AS    remark,

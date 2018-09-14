@@ -6,6 +6,7 @@ import com.yunche.loan.domain.param.ExportApplyLoanPushParam;
 import com.yunche.loan.service.JinTouHangAccommodationApplyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -29,6 +30,7 @@ public class JinTouHangAccommodationApplyController {
      * @return
      */
     @PostMapping(value = "/applyLoan", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @Transactional( rollbackFor = Exception.class)
     ResultBean applyLoan(@RequestBody AccommodationApplyParam param) {
         return accommodationApplyService.applyLoan(param);
     }
@@ -40,6 +42,7 @@ public class JinTouHangAccommodationApplyController {
      * @return
      */
     @PostMapping(value = "/batchLoan", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @Transactional( rollbackFor = Exception.class)
     ResultBean batchLoan(@RequestBody AccommodationApplyParam param) {
         return accommodationApplyService.batchLoan(param);
     }
@@ -107,7 +110,7 @@ public class JinTouHangAccommodationApplyController {
 
 
     @GetMapping("/detail")
-    ResultBean detail(@RequestParam("bridgeProcessId") Long bridgeProcessId) {
-        return accommodationApplyService.detail(bridgeProcessId);
+    ResultBean detail(@RequestParam("bridgeProcessId") Long bridgeProcessId,@RequestParam("orderId") Long orderId) {
+        return accommodationApplyService.detail(bridgeProcessId,orderId);
     }
 }

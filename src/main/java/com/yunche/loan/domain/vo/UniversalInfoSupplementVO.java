@@ -91,7 +91,7 @@ public class UniversalInfoSupplementVO {
 
 
     /**
-     * 资料增补类型(1-电审增补;2-送银行资料缺少;3-银行退件;4-上门家访资料增补;5-费用调整;6-垫款资料缺少;)
+     * 资料增补类型(1-电审增补;2-送银行资料缺少;3-银行退件;4-上门家访资料增补;5-费用调整;6-垫款资料缺少;7-视频增补;)
      */
     private Byte type;
     private String typeText;

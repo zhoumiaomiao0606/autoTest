@@ -141,7 +141,7 @@ public class LoanDataFlowServiceImpl implements LoanDataFlowService {
             Preconditions.checkNotNull(loanOrderDO.getProcessInstId(), "流程实例ID不存在");
 
             Task task = getTask(loanOrderDO.getProcessInstId(), DATA_FLOW_MORTGAGE_P2C_NEW_FILTER.getCode());
-            Preconditions.checkNotNull(task, "已新建过[抵押资料合伙人至公司]单据");
+            Preconditions.checkNotNull(task, "已新建过[005-抵押资料合伙人至公司]单据");
         }
 
         loanDataFlowDO.setGmtCreate(new Date());

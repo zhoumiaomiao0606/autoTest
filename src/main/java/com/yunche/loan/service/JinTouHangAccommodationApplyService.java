@@ -13,7 +13,7 @@ public interface JinTouHangAccommodationApplyService {
 
     ResultBean export(ExportApplyLoanPushParam param);
 
-    ResultBean detail(Long bridgeProcessId);
+    ResultBean detail(Long bridgeProcessId,Long orderId);
 
     ResultBean abnormalRepay(AccommodationApplyParam param);
 

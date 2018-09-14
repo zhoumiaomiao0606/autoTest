@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunche.loan.mapper.ConfThirdRealBridgeProcessDOMapper">
+  <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.ConfThirdRealBridgeProcessDO">
+    <id column="bridge_process_id" jdbcType="BIGINT" property="bridgeProcessId" />
+    <result column="conf_third_party_id" jdbcType="BIGINT" property="confThirdPartyId" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    bridge_process_id, conf_third_party_id
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from conf_third_real_bridge_process
+    where bridge_process_id = #{bridgeProcessId,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from conf_third_real_bridge_process
+    where bridge_process_id = #{bridgeProcessId,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.yunche.loan.domain.entity.ConfThirdRealBridgeProcessDO">
+    insert into conf_third_real_bridge_process (bridge_process_id, conf_third_party_id)
+    values (#{bridgeProcessId,jdbcType=BIGINT}, #{confThirdPartyId,jdbcType=BIGINT})
+  </insert>
+  <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.ConfThirdRealBridgeProcessDO">
+    insert into conf_third_real_bridge_process
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="bridgeProcessId != null">
+        bridge_process_id,
+      </if>
+      <if test="confThirdPartyId != null">
+        conf_third_party_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="bridgeProcessId != null">
+        #{bridgeProcessId,jdbcType=BIGINT},
+      </if>
+      <if test="confThirdPartyId != null">
+        #{confThirdPartyId,jdbcType=BIGINT},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.ConfThirdRealBridgeProcessDO">
+    update conf_third_real_bridge_process
+    <set>
+      <if test="confThirdPartyId != null">
+        conf_third_party_id = #{confThirdPartyId,jdbcType=BIGINT},
+      </if>
+    </set>
+    where bridge_process_id = #{bridgeProcessId,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.ConfThirdRealBridgeProcessDO">
+    update conf_third_real_bridge_process
+    set conf_third_party_id = #{confThirdPartyId,jdbcType=BIGINT}
+    where bridge_process_id = #{bridgeProcessId,jdbcType=BIGINT}
+  </update>
+</mapper>

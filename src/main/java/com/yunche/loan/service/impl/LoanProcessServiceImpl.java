@@ -5,7 +5,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.yunche.loan.config.constant.IDict;
 import com.yunche.loan.config.constant.LoanProcessEnum;
-import com.yunche.loan.config.constant.VideoFaceConst;
 import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.DateTimeFormatUtils;
@@ -37,21 +36,17 @@ import java.util.*;
 
 import static com.yunche.loan.config.constant.ApplyOrderStatusConst.*;
 import static com.yunche.loan.config.constant.BankConst.*;
-import static com.yunche.loan.config.constant.BaseConst.K_YORN_NO;
-import static com.yunche.loan.config.constant.BaseConst.K_YORN_YES;
-import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
+import static com.yunche.loan.config.constant.BaseConst.*;
 import static com.yunche.loan.config.constant.CarConst.CAR_KEY_FALSE;
-import static com.yunche.loan.config.constant.LoanCustomerConst.CREDIT_TYPE_SOCIAL;
-import static com.yunche.loan.config.constant.LoanCustomerConst.CUST_ID_CARD_EXPIRE_DATE;
-import static com.yunche.loan.config.constant.LoanCustomerConst.CUST_TYPE_EMERGENCY_CONTACT;
 import static com.yunche.loan.config.constant.LoanAmountConst.*;
+import static com.yunche.loan.config.constant.LoanCustomerConst.*;
 import static com.yunche.loan.config.constant.LoanOrderProcessConst.*;
 import static com.yunche.loan.config.constant.LoanProcessConst.APPROVAL_NOT_NEED_ORDER_ID_PROCESS_KEYS;
-import static com.yunche.loan.config.constant.ProcessApprovalConst.*;
 import static com.yunche.loan.config.constant.LoanProcessEnum.*;
 import static com.yunche.loan.config.constant.LoanProcessVariableConst.*;
 import static com.yunche.loan.config.constant.LoanRefundApplyConst.REFUND_REASON_3;
 import static com.yunche.loan.config.constant.LoanUserGroupConst.*;
+import static com.yunche.loan.config.constant.ProcessApprovalConst.*;
 import static com.yunche.loan.config.thread.ThreadPool.executorService;
 import static com.yunche.loan.service.impl.LoanRejectLogServiceImpl.getTaskStatus;
 import static java.util.stream.Collectors.toList;
@@ -163,6 +158,9 @@ public class LoanProcessServiceImpl implements LoanProcessService {
     @Autowired
     private LoanProcessApprovalRollBackService loanProcessApprovalRollBackService;
 
+    @Autowired
+    private ConfThirdRealBridgeProcessDOMapper confThirdRealBridgeProcessDOMapper;
+
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -200,7 +198,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         LoanBaseInfoDO loanBaseInfoDO = getLoanBaseInfoDO(loanOrderDO.getLoanBaseInfoId());
 
         // 校验审核前提条件
-//        checkPreCondition(approval.getTaskDefinitionKey(), approval.getAction(), loanOrderDO, loanProcessDO);
+//TODO        checkPreCondition(approval.getTaskDefinitionKey(), approval.getAction(), loanOrderDO, loanProcessDO);
 
         // 日志
         loanProcessApprovalCommonService.log(approval);
@@ -270,7 +268,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         loanProcessApprovalCommonService.finishTask(approval, getTaskIdList(startTaskList), loanOrderDO.getProcessInstId());
 
         // 通过银行接口  ->  自动查询征信
-//        creditAutomaticCommit(approval);
+//TODO        creditAutomaticCommit(approval);
 
         // 异步打包文件
         asyncPackZipFile(approval.getTaskDefinitionKey(), approval.getAction(), loanProcessDO, 2);
@@ -1243,19 +1241,23 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
         }
 
-        // 【业务审批】|| 【放款审批】  -> PASS
-        else if ((BUSINESS_REVIEW.getCode().equals(taskDefinitionKey) || LOAN_REVIEW.getCode().equals(taskDefinitionKey))
-                && ACTION_PASS.equals(action)) {
+        // 【业务付款申请】|| 【业务审批】|| 【放款审批】  -> PASS
+        else if (
+                (BUSINESS_PAY.getCode().equals(taskDefinitionKey)
+                        || BUSINESS_REVIEW.getCode().equals(taskDefinitionKey)
+                        || LOAN_REVIEW.getCode().equals(taskDefinitionKey))
+                        && ACTION_PASS.equals(action)) {
 
             // 财务放款审批时，需要判断几个子业务的状态
-            // 1.[金融方案修改申请]审批通过
+
+            // 1、[金融方案修改申请]审批通过
             // 进行中的【金融方案修改申请】
             LoanFinancialPlanTempHisDO loanFinancialPlanTempHisDO = loanFinancialPlanTempHisDOMapper.lastByOrderId(loanOrderDO.getId());
             if (null != loanFinancialPlanTempHisDO) {
                 Preconditions.checkArgument(APPLY_ORDER_PASS.equals(loanFinancialPlanTempHisDO.getStatus()), "当前订单已发起[金融方案修改申请]，请待审核通过后再操作！");
             }
 
-            // 2.GPS安装完成
+            // 2、GPS安装完成
             LoanCarInfoDO loanCarInfoDO = loanCarInfoDOMapper.selectByPrimaryKey(loanOrderDO.getLoanCarInfoId());
             Preconditions.checkNotNull(loanCarInfoDO, "车辆信息不存在");
             Integer gpsNum = loanCarInfoDO.getGpsNum();
@@ -1263,12 +1265,23 @@ public class LoanProcessServiceImpl implements LoanProcessService {
                 Preconditions.checkArgument(TASK_PROCESS_DONE.equals(loanProcessDO.getInstallGps()), "当前订单[GPS安装]未提交");
             }
 
-            // 3.（根据银行配置）视频面签完成   -仅：台州路桥支行
-            LoanBaseInfoDO loanBaseInfoDO = getLoanBaseInfoDO(loanOrderDO.getLoanBaseInfoId());
-            if (BANK_NAME_ICBC_TaiZhou_LuQiao_Branch.equals(loanBaseInfoDO.getBank())) {
-                VideoFaceLogDO videoFaceLogDO = videoFaceLogDOMapper.lastVideoFaceLogByOrderId(loanOrderDO.getId());
-                Preconditions.checkNotNull(videoFaceLogDO, "当前订单未进行[视频面签]");
-                Preconditions.checkArgument(VideoFaceConst.ACTION_PASS.equals(videoFaceLogDO.getAction()), "当前订单[视频面签]审核未通过");
+//            // 3、（根据银行配置）视频面签完成   -仅：台州路桥支行
+//            LoanBaseInfoDO loanBaseInfoDO = getLoanBaseInfoDO(loanOrderDO.getLoanBaseInfoId());
+//            String bankName = loanBaseInfoDO.getBank();
+//            if (BANK_NAME_ICBC_TaiZhou_LuQiao_Branch.equals(bankName)) {
+//
+//                Byte loanInfoRecordStatus = loanProcessDO.getLoanInfoRecord();
+//                Preconditions.checkArgument(TASK_PROCESS_DONE.equals(loanInfoRecordStatus), "请先提交[视频面签登记]");
+//            }
+
+            // 4、前置校验
+            boolean is_match_condition_bank = tel_verify_match_condition_bank(loanOrderDO.getLoanBaseInfoId());
+            if (is_match_condition_bank) {
+
+                // 若未开卡，提交业务付款申请单时候，提示：请先提交开卡申请
+                String lastBankInterfaceSerialStatus = loanQueryDOMapper.selectLastBankInterfaceSerialStatusByTransCode(loanOrderDO.getLoanCustomerId(), IDict.K_TRANS_CODE.CREDITCARDAPPLY);
+                Preconditions.checkArgument("1".equals(lastBankInterfaceSerialStatus) || "2".equals(lastBankInterfaceSerialStatus),
+                        "请先提交[开卡申请]");
             }
         }
 
@@ -1283,38 +1296,6 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             // 前置开卡校验
             preCondition4BankOpenCard(loanOrderDO, loanProcessDO);
         }
-
-        // [业务付款申请]
-        else if (BUSINESS_PAY.getCode().equals(taskDefinitionKey)) {
-
-            // PASS
-            if (ACTION_PASS.equals(action)) {
-
-                // 1、所有银行提交付款申请时，均要判断是否录入GPS
-                Byte installGpsStatus = loanProcessDO.getInstallGps();
-                Preconditions.checkArgument(TASK_PROCESS_DONE.equals(installGpsStatus), "请先提交[GPS安装]");
-
-                // 2、台州工行提交付款申请时，要判断是否提交视频面签
-                LoanBaseInfoDO loanBaseInfoDO = getLoanBaseInfoDO(loanOrderDO.getLoanBaseInfoId());
-                String bankName = loanBaseInfoDO.getBank();
-                if (BANK_NAME_ICBC_TaiZhou_LuQiao_Branch.equals(bankName)) {
-
-                    Byte loanInfoRecordStatus = loanProcessDO.getLoanInfoRecord();
-                    Preconditions.checkArgument(TASK_PROCESS_DONE.equals(loanInfoRecordStatus), "请先提交[视频面签登记]");
-                }
-
-                // 3、前置校验
-                boolean is_match_condition_bank = tel_verify_match_condition_bank(loanOrderDO.getLoanBaseInfoId());
-
-                if (is_match_condition_bank) {
-
-                    // 若未开卡，提交业务付款申请单时候，提示：请先提交开卡申请
-                    String lastBankInterfaceSerialStatus = loanQueryDOMapper.selectLastBankInterfaceSerialStatusByTransCode(loanOrderDO.getLoanCustomerId(), IDict.K_TRANS_CODE.CREDITCARDAPPLY);
-                    Preconditions.checkArgument("1".equals(lastBankInterfaceSerialStatus) || "2".equals(lastBankInterfaceSerialStatus),
-                            "请先提交[开卡申请]");
-                }
-            }
-        }
     }
 
     /**
@@ -1324,7 +1305,8 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      * @return
      */
     private String getOrderStatusText(LoanProcessDO loanProcessDO) {
-        String orderStatusText = ORDER_STATUS_CANCEL.equals(loanProcessDO.getOrderStatus()) ? "[已弃单]" : (ORDER_STATUS_END.equals(loanProcessDO.getOrderStatus()) ? "[已结单]" : "[状态异常]");
+        String orderStatusText = ORDER_STATUS_CANCEL.equals(loanProcessDO.getOrderStatus()) ? "[已弃单]" :
+                (ORDER_STATUS_END.equals(loanProcessDO.getOrderStatus()) ? "[已结单]" : "[状态异常]");
         return orderStatusText;
     }
 
@@ -1380,7 +1362,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
     }
 
     /**
-     * 执行【资料流转（抵押资料 - 合伙人->公司）】任务
+     * 执行【005-抵押资料合伙人至公司】任务
      *
      * @param approval
      */
@@ -3189,7 +3171,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
     private void doCurrentNodeAttachTask(ApprovalParam approval, LoanOrderDO loanOrderDO, LoanProcessDO loanProcessDO) {
 
         // 附带任务-[打款确认]
-        doAttachTask_RemitReview(approval, loanOrderDO.getRemitDetailsId());
+        doAttachTask_RemitReview(approval, loanOrderDO);
 
         // 附带任务-[金融方案修改-审核]
         doAttachTask_FinancialSchemeModifyApplyReview(approval, loanProcessDO);
@@ -3199,21 +3181,33 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      * 附带任务-[打款确认]
      *
      * @param approval
-     * @param remitDetailsId
+     * @param loanOrderDO
      */
-    private void doAttachTask_RemitReview(ApprovalParam approval, Long remitDetailsId) {
+    private void doAttachTask_RemitReview(ApprovalParam approval, LoanOrderDO loanOrderDO) {
 
         if (REMIT_REVIEW.getCode().equals(approval.getTaskDefinitionKey()) && ACTION_PASS.equals(approval.getAction())) {
 
             // 1、打款时间
             RemitDetailsDO remitDetailsDO = new RemitDetailsDO();
-            remitDetailsDO.setId(remitDetailsId);
+            remitDetailsDO.setId(loanOrderDO.getRemitDetailsId());
             remitDetailsDO.setRemit_time(new Date());
             int count = remitDetailsDOMapper.updateByPrimaryKeySelective(remitDetailsDO);
             Preconditions.checkArgument(count > 0, "编辑失败");
 
-            // 2、自动启动流程 -> [第三方过桥资金]
-            loanProcessBridgeService.startProcess(approval.getOrderId());
+            // 2、自动启动流程 -> [第三方过桥资金]   -杭州城站
+            LoanBaseInfoDO loanBaseInfoDO = getLoanBaseInfoDO(loanOrderDO.getLoanBaseInfoId());
+            if (BANK_NAME_ICBC_HangZhou_City_Station_Branch.equals(loanBaseInfoDO.getBank())) {
+
+                Long startProcessId = loanProcessBridgeService.startProcess(approval.getOrderId());
+
+                //绑定当前流程到金投行
+                ConfThirdRealBridgeProcessDO thirdRealBridgeProcessDO = new ConfThirdRealBridgeProcessDO();
+                thirdRealBridgeProcessDO.setBridgeProcessId(startProcessId);
+                thirdRealBridgeProcessDO.setConfThirdPartyId(IDict.K_CONF_THIRD_PARTY.K_JTH);
+                int insertCount = confThirdRealBridgeProcessDOMapper.insert(thirdRealBridgeProcessDO);
+                Preconditions.checkArgument(insertCount>0,"插入失败");
+
+            }
         }
     }
 
@@ -3228,14 +3222,14 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         if (FINANCIAL_SCHEME_MODIFY_APPLY_REVIEW.getCode().equals(approval.getTaskDefinitionKey())
                 && ACTION_PASS.equals(approval.getAction())) {
 
+            // 1、生成[视频审核]待办
             Byte videoReviewStatus = loanProcessDO.getVideoReview();
-
             if (TASK_PROCESS_DONE.equals(videoReviewStatus)) {
 
                 ApprovalParam param = new ApprovalParam();
 
                 param.setOrderId(approval.getOrderId());
-                param.setTaskDefinitionKey(VIDEO_REVIEW_FILTER.getCode());
+                param.setTaskDefinitionKey(VIDEO_REVIEW.getCode());
                 param.setAction(ACTION_ROLL_BACK);
                 param.setInfo("金融方案修改");
 
