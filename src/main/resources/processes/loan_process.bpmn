@@ -471,7 +471,7 @@
     <sequenceFlow id="flow295" name="[征信录入-反审]弃单" sourceRef="exclusivegateway42" targetRef="endevent42">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 2}]]></conditionExpression>
     </sequenceFlow>
-    <userTask id="usertask_video_review" name="视频审核" activiti:candidateGroups="管理员,总经理,培训经理"></userTask>
+    <userTask id="usertask_video_review" name="视频审核" activiti:candidateGroups="管理员,总经理,培训经理,台州视频审核专员,杭州城站视频审核专员,哈尔滨视频审核专员,南京视频审核专员"></userTask>
     <endEvent id="endevent43" name="End"></endEvent>
     <sequenceFlow id="flow296" name="提交" sourceRef="exclusivegateway44" targetRef="endevent43">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1}]]></conditionExpression>

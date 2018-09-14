@@ -200,7 +200,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         LoanBaseInfoDO loanBaseInfoDO = getLoanBaseInfoDO(loanOrderDO.getLoanBaseInfoId());
 
         // 校验审核前提条件
-//        checkPreCondition(approval.getTaskDefinitionKey(), approval.getAction(), loanOrderDO, loanProcessDO);
+        checkPreCondition(approval.getTaskDefinitionKey(), approval.getAction(), loanOrderDO, loanProcessDO);
 
         // 日志
         loanProcessApprovalCommonService.log(approval);
@@ -270,7 +270,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         loanProcessApprovalCommonService.finishTask(approval, getTaskIdList(startTaskList), loanOrderDO.getProcessInstId());
 
         // 通过银行接口  ->  自动查询征信
-//        creditAutomaticCommit(approval);
+        creditAutomaticCommit(approval);
 
         // 异步打包文件
         asyncPackZipFile(approval.getTaskDefinitionKey(), approval.getAction(), loanProcessDO, 2);
@@ -3230,14 +3230,14 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         if (FINANCIAL_SCHEME_MODIFY_APPLY_REVIEW.getCode().equals(approval.getTaskDefinitionKey())
                 && ACTION_PASS.equals(approval.getAction())) {
 
+            // 1、生成[视频审核]待办
             Byte videoReviewStatus = loanProcessDO.getVideoReview();
-
             if (TASK_PROCESS_DONE.equals(videoReviewStatus)) {
 
                 ApprovalParam param = new ApprovalParam();
 
                 param.setOrderId(approval.getOrderId());
-                param.setTaskDefinitionKey(VIDEO_REVIEW_FILTER.getCode());
+                param.setTaskDefinitionKey(VIDEO_REVIEW.getCode());
                 param.setAction(ACTION_ROLL_BACK);
                 param.setInfo("金融方案修改");
 
