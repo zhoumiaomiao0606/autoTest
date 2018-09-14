@@ -710,7 +710,7 @@ public class LoanProcessApprovalCommonServiceImpl implements LoanProcessApproval
      */
     private void preRecordDataFlowOrderAndType(Long orderId, Byte sendType, ApprovalParam approval) {
 
-        // 【资料流转（抵押资料 - 合伙人->公司）】任务 -[新建]
+        // 【005-抵押资料合伙人至公司】任务 -[新建]
         if (isDataFlowMortgageP2cNewTask(approval.getOriginalTaskDefinitionKey(), approval.getOriginalAction())) {
             // [提交之前]已经create过了  不能重复创建
             return;
