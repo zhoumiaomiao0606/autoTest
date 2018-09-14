@@ -1256,7 +1256,7 @@
         (select * from loan_process_bridge where bridge_repay_info=2) process
         LEFT JOIN loan_order  loan ON process.order_id = loan.id
         LEFT JOIN loan_base_info base ON loan.loan_base_info_id=base.id
-        LEFT JOIN third_party_fund_business fund ON loan.id=fund.order_id
+        LEFT JOIN third_party_fund_business fund ON (loan.id=fund.order_id and fund.bridge_procecss_id=process.id)
         LEFT JOIN loan_customer customer ON loan.loan_customer_id = customer.id
         LEFT JOIN loan_financial_plan financial ON financial.id = loan.loan_financial_plan_id
         LEFT JOIN remit_details remit  ON loan.remit_details_id =remit.id
