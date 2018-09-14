@@ -1646,9 +1646,11 @@
         NULL
         END AS linkManREapplyPerson,
         month_income*12 AS linkManYearIncome,
-        address AS linkManAddress,
+         CONCAT_WS('',hprovince,hcity,hcounty,address)
+         AS linkManAddress,
         income_certificate_company_name AS linkManIncomeCertificateCompanyName,
-        income_certificate_company_address AS linkManIncomeCertificateCompanyAddress,
+         CONCAT_WS('',cprovince,ccity,ccounty,income_certificate_company_address)
+        AS linkManIncomeCertificateCompanyAddress,
         mobile AS linkManMobile
         FROM
         loan_customer
