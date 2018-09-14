@@ -536,8 +536,8 @@ public class MaterialServiceImpl implements MaterialService {
                         }
 
 
-                        if (preCheck(NAME_ENTRY, typeFile.getCustTypeName() + "/" + documentType + "/" + typeFile.getTypeName() + "/" + url.split("/")[url.split("/").length - 1])) {
-                            zos.putNextEntry(new ZipEntry(typeFile.getCustTypeName() + "/" + documentType + "/" + typeFile.getTypeName() + "/" + url.split("/")[url.split("/").length - 1]));
+                        if (preCheck(NAME_ENTRY,  documentType  + "/" + url.split("/")[url.split("/").length - 1])) {
+                            zos.putNextEntry(new ZipEntry( documentType  + "/" + url.split("/")[url.split("/").length - 1]));
                         } else {
                             continue;
                         }
