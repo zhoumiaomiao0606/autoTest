@@ -6,7 +6,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 @Data
-public class UniversalCompensationVO{
+public class UniversalCompensationVO {
 
     private String orderId;
 
@@ -31,11 +31,10 @@ public class UniversalCompensationVO{
 
     private String compensationCause;
 
-    private String outCarNumber;
-
-    private String outBank;
-
-    private String outAccount;
+    /**
+     * （公司）打款账户详情关联ID
+     */
+    private Long refundApplyAccountId;
 
     private String receiveBank;
 
