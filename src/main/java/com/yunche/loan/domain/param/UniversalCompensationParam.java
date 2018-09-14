@@ -8,7 +8,7 @@ import java.util.Collections;
 import java.util.List;
 
 @Data
-public class UniversalCompensationParam extends LoanApplyCompensationDO{
+public class UniversalCompensationParam extends LoanApplyCompensationDO {
 
     private List<FileVO> files = Collections.EMPTY_LIST;
 }

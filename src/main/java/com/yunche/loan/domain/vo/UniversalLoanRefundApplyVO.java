@@ -15,9 +15,7 @@ public class UniversalLoanRefundApplyVO {
     private String refund_amount;
     private String refund_date;
     private String refund_reason;
-    private String refund_pay_open_bank;
-    private String refund_pay_account_name;
-    private String refund_pay_account;
+    private String refund_apply_account_id;
     private String path;
 
     public List<String> getPath() {

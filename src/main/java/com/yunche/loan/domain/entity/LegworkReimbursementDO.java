@@ -27,7 +27,10 @@ public class LegworkReimbursementDO {
 
     private String reimbursementAmount;
 
-    private String bank;
+    /**
+     * 公司退/打款账户详情关联ID
+     */
+    private Long refundApplyAccountId;
 
     private String remitAccount;
 

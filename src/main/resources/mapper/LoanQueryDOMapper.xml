@@ -1150,11 +1150,12 @@
                     refund_amount 					            AS refund_amount,
                     DATE_FORMAT(refund_date,'%Y-%m-%d %H:%i:%S') AS refund_date,
                     refund_reason 					            AS refund_reason,
-                    refund_pay_open_bank  	                    AS refund_pay_open_bank,
-                    refund_pay_account_name                     AS refund_pay_account_name,
-                    refund_pay_account 			                AS refund_pay_account,
+                    refund_apply_account_id  	                AS refund_apply_account_id,
                     path 										AS path
-        from loan_refund_apply where  order_id= #{orderId} and id = #{refundId}
+
+        FROM    loan_refund_apply
+
+        WHERE   id = #{refundId} AND order_id = #{orderId}
 
     </select>
 
