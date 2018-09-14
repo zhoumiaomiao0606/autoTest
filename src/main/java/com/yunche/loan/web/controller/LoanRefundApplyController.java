@@ -4,7 +4,6 @@ import com.yunche.loan.config.anno.Limiter;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.param.LoanRefundApplyParam;
 import com.yunche.loan.service.LoanRefundApplyService;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -23,10 +22,10 @@ public class LoanRefundApplyController {
      * 提车资料详情
      */
     @GetMapping(value = "/detail")
-    public ResultBean detail(@RequestParam String order_id,
-                             @RequestParam(required = false) String refund_id) {
+    public ResultBean detail(@RequestParam Long order_id,
+                             @RequestParam(required = false) Long refund_id) {
 
-        return ResultBean.ofSuccess(loanRefundApplyService.detail(Long.valueOf(order_id), StringUtils.isBlank(refund_id) ? null : Long.valueOf(refund_id)));
+        return ResultBean.ofSuccess(loanRefundApplyService.detail(order_id, refund_id));
     }
 
     /**

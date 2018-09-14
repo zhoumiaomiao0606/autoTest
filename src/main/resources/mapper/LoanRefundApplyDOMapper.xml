@@ -11,20 +11,19 @@
         <result column="refund_amount" property="refund_amount" jdbcType="DECIMAL"/>
         <result column="refund_date" property="refund_date" jdbcType="DATE"/>
         <result column="refund_reason" property="refund_reason" jdbcType="TINYINT"/>
-        <result column="refund_pay_open_bank" property="refund_pay_open_bank" jdbcType="VARCHAR"/>
-        <result column="refund_pay_account_name" property="refund_pay_account_name" jdbcType="VARCHAR"/>
-        <result column="refund_pay_account" property="refund_pay_account" jdbcType="VARCHAR"/>
+        <result column="refund_apply_account_id" property="refund_apply_account_id" jdbcType="BIGINT"/>
         <result column="start_time" property="start_time" jdbcType="TIMESTAMP"/>
         <result column="end_time" property="end_time" jdbcType="TIMESTAMP"/>
         <result column="status" property="status" jdbcType="TINYINT"/>
     </resultMap>
+
     <resultMap id="ResultMapWithBLOBs" type="com.yunche.loan.domain.entity.LoanRefundApplyDO" extends="BaseResultMap">
         <result column="path" property="path" jdbcType="LONGVARCHAR"/>
     </resultMap>
+
     <sql id="Base_Column_List">
     id, order_id, initiator_id, initiator_name, auditor_id, auditor_name, refund_amount, 
-    refund_date, refund_reason, refund_pay_open_bank, refund_pay_account_name, refund_pay_account, 
-    start_time, end_time, status
+    refund_date, refund_reason, refund_apply_account_id, start_time, end_time, status
   </sql>
     <sql id="Blob_Column_List">
     path
@@ -48,10 +47,12 @@
         from loan_refund_apply
         where id = #{id,jdbcType=BIGINT}
     </select>
+
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
     delete from loan_refund_apply
     where id = #{id,jdbcType=BIGINT}
   </delete>
+
     <insert id="insertSelective" useGeneratedKeys="true" keyProperty="id"
             parameterType="com.yunche.loan.domain.entity.LoanRefundApplyDO">
         insert into loan_refund_apply
@@ -83,14 +84,8 @@
             <if test="refund_reason != null">
                 refund_reason,
             </if>
-            <if test="refund_pay_open_bank != null">
-                refund_pay_open_bank,
-            </if>
-            <if test="refund_pay_account_name != null">
-                refund_pay_account_name,
-            </if>
-            <if test="refund_pay_account != null">
-                refund_pay_account,
+            <if test="refund_apply_account_id != null">
+                refund_apply_account_id,
             </if>
             <if test="start_time != null">
                 start_time,
@@ -133,14 +128,8 @@
             <if test="refund_reason != null">
                 #{refund_reason,jdbcType=TINYINT},
             </if>
-            <if test="refund_pay_open_bank != null">
-                #{refund_pay_open_bank,jdbcType=VARCHAR},
-            </if>
-            <if test="refund_pay_account_name != null">
-                #{refund_pay_account_name,jdbcType=VARCHAR},
-            </if>
-            <if test="refund_pay_account != null">
-                #{refund_pay_account,jdbcType=VARCHAR},
+            <if test="refund_apply_account_id != null">
+                #{refund_apply_account_id},
             </if>
             <if test="start_time != null">
                 #{start_time,jdbcType=TIMESTAMP},
@@ -183,14 +172,8 @@
             <if test="refund_reason != null">
                 refund_reason = #{refund_reason,jdbcType=TINYINT},
             </if>
-            <if test="refund_pay_open_bank != null">
-                refund_pay_open_bank = #{refund_pay_open_bank,jdbcType=VARCHAR},
-            </if>
-            <if test="refund_pay_account_name != null">
-                refund_pay_account_name = #{refund_pay_account_name,jdbcType=VARCHAR},
-            </if>
-            <if test="refund_pay_account != null">
-                refund_pay_account = #{refund_pay_account,jdbcType=VARCHAR},
+            <if test="refund_apply_account_id != null">
+                refund_apply_account_id = #{refund_apply_account_id},
             </if>
             <if test="start_time != null">
                 start_time = #{start_time,jdbcType=TIMESTAMP},

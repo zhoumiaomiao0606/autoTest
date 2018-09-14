@@ -7,6 +7,7 @@ import java.util.Date;
 
 @Data
 public class LoanRefundApplyDO {
+
     private Long id;
 
     private Long order_id;
@@ -26,12 +27,10 @@ public class LoanRefundApplyDO {
      * 退款原因(1-金融方案修改;2-退款不做;3-业务审批重审;)
      */
     private Byte refund_reason;
-
-    private String refund_pay_open_bank;
-
-    private String refund_pay_account_name;
-
-    private String refund_pay_account;
+    /**
+     * 退款账号详情ID
+     */
+    private String refund_apply_account_id;
 
     private Date start_time;
 

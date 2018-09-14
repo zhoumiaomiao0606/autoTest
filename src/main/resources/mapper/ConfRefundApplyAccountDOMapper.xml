@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yunche.loan.mapper.ConfRefundApplyAccountDOMapper">
+    <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.ConfRefundApplyAccountDO">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="refund_pay_open_bank" property="refundPayOpenBank" jdbcType="VARCHAR"/>
+        <result column="refund_pay_account_name" property="refundPayAccountName" jdbcType="VARCHAR"/>
+        <result column="refund_pay_account" property="refundPayAccount" jdbcType="VARCHAR"/>
+        <result column="gmt_create" property="gmtCreate" jdbcType="TIMESTAMP"/>
+        <result column="gmt_modify" property="gmtModify" jdbcType="TIMESTAMP"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+    id, refund_pay_open_bank, refund_pay_account_name, refund_pay_account, gmt_create, 
+    gmt_modify
+  </sql>
+
+    <!--getAll-->
+    <select id="getAll" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from conf_refund_apply_account
+    </select>
+
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        select
+        <include refid="Base_Column_List"/>
+        from conf_refund_apply_account
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from conf_refund_apply_account
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+    <insert id="insert" parameterType="com.yunche.loan.domain.entity.ConfRefundApplyAccountDO">
+    insert into conf_refund_apply_account (id, refund_pay_open_bank, refund_pay_account_name, 
+      refund_pay_account, gmt_create, gmt_modify
+      )
+    values (#{id,jdbcType=BIGINT}, #{refundPayOpenBank,jdbcType=VARCHAR}, #{refundPayAccountName,jdbcType=VARCHAR}, 
+      #{refundPayAccount,jdbcType=VARCHAR}, #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModify,jdbcType=TIMESTAMP}
+      )
+  </insert>
+    <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.ConfRefundApplyAccountDO">
+        insert into conf_refund_apply_account
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="refundPayOpenBank != null">
+                refund_pay_open_bank,
+            </if>
+            <if test="refundPayAccountName != null">
+                refund_pay_account_name,
+            </if>
+            <if test="refundPayAccount != null">
+                refund_pay_account,
+            </if>
+            <if test="gmtCreate != null">
+                gmt_create,
+            </if>
+            <if test="gmtModify != null">
+                gmt_modify,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=BIGINT},
+            </if>
+            <if test="refundPayOpenBank != null">
+                #{refundPayOpenBank,jdbcType=VARCHAR},
+            </if>
+            <if test="refundPayAccountName != null">
+                #{refundPayAccountName,jdbcType=VARCHAR},
+            </if>
+            <if test="refundPayAccount != null">
+                #{refundPayAccount,jdbcType=VARCHAR},
+            </if>
+            <if test="gmtCreate != null">
+                #{gmtCreate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="gmtModify != null">
+                #{gmtModify,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.ConfRefundApplyAccountDO">
+        update conf_refund_apply_account
+        <set>
+            <if test="refundPayOpenBank != null">
+                refund_pay_open_bank = #{refundPayOpenBank,jdbcType=VARCHAR},
+            </if>
+            <if test="refundPayAccountName != null">
+                refund_pay_account_name = #{refundPayAccountName,jdbcType=VARCHAR},
+            </if>
+            <if test="refundPayAccount != null">
+                refund_pay_account = #{refundPayAccount,jdbcType=VARCHAR},
+            </if>
+            <if test="gmtCreate != null">
+                gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="gmtModify != null">
+                gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.ConfRefundApplyAccountDO">
+    update conf_refund_apply_account
+    set refund_pay_open_bank = #{refundPayOpenBank,jdbcType=VARCHAR},
+      refund_pay_account_name = #{refundPayAccountName,jdbcType=VARCHAR},
+      refund_pay_account = #{refundPayAccount,jdbcType=VARCHAR},
+      gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+      gmt_modify = #{gmtModify,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

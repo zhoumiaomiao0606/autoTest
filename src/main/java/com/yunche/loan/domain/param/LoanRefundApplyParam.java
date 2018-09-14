@@ -21,6 +21,11 @@ public class LoanRefundApplyParam {
     private String refund_date;
     @NotBlank
     private String refund_reason;
+    /**
+     * 退款账号ID
+     */
+    @NotBlank
+    private Long refund_apply_account_id;
     @NotBlank
     private String refund_pay_open_bank;
     @NotBlank

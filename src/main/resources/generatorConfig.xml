@@ -384,7 +384,7 @@
 -->
 
 
-        <table tableName="third_party_fund_business" domainObjectName="ThirdPartyFundBusinessDO"
+        <table tableName="conf_refund_apply_account" domainObjectName="ConfRefundApplyAccountDO"
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
         </table>
