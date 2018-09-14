@@ -320,7 +320,7 @@ public class VideoFaceServiceImpl implements VideoFaceService {
         String question_2 = "2、您是否通过哈尔滨云车汽车服务有限公司向工商银行哈尔滨顾乡支行申请一笔汽车专项分期付款？参考答案：是";
         String question_3 = "3、您现在的工作单位是什么？月收入多少？";
         String question_4 = "4、您所购车辆为"+redText(videoFaceQuestionAnswerVO.getCarBrandName())+redText(videoFaceQuestionAnswerVO.getCarName())
-                +",车辆价格为"+redText(videoFaceQuestionAnswerVO.getCarPrice())+"，分期金额为"+redText(videoFaceQuestionAnswerVO.getBankPeriodPrincipal())
+                +",车辆价格为"+redText(videoFaceQuestionAnswerVO.getCarPrice())+"元，分期金额为"+redText(videoFaceQuestionAnswerVO.getBankPeriodPrincipal())
                 +"元，分期期限为"+redText(videoFaceQuestionAnswerVO.getLoanTime())+"月，每月还款"+redText(videoFaceQuestionAnswerVO.getEachMonthRepay())+"元。以上信息是否确认无误?" +
                 "参考答案：是";
         String question_5 ="您是否知晓本笔车贷业务由哈尔滨云车汽车服务有限公司进行担保，该公司会根据协议约定向您收取担保服务费，我行仅向您收取协议中约定的分期付款手续费。参考答案：是";
