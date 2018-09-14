@@ -1263,13 +1263,14 @@ public class LoanProcessServiceImpl implements LoanProcessService {
                 Preconditions.checkArgument(TASK_PROCESS_DONE.equals(loanProcessDO.getInstallGps()), "当前订单[GPS安装]未提交");
             }
 
-            // 3.（根据银行配置）视频面签完成   -仅：台州路桥支行
-            LoanBaseInfoDO loanBaseInfoDO = getLoanBaseInfoDO(loanOrderDO.getLoanBaseInfoId());
-            if (BANK_NAME_ICBC_TaiZhou_LuQiao_Branch.equals(loanBaseInfoDO.getBank())) {
-                VideoFaceLogDO videoFaceLogDO = videoFaceLogDOMapper.lastVideoFaceLogByOrderId(loanOrderDO.getId());
-                Preconditions.checkNotNull(videoFaceLogDO, "当前订单未进行[视频面签]");
-                Preconditions.checkArgument(VideoFaceConst.ACTION_PASS.equals(videoFaceLogDO.getAction()), "当前订单[视频面签]审核未通过");
-            }
+//            // 3.（根据银行配置）视频面签完成   -仅：台州路桥支行
+//            LoanBaseInfoDO loanBaseInfoDO = getLoanBaseInfoDO(loanOrderDO.getLoanBaseInfoId());
+//            String bankName = loanBaseInfoDO.getBank();
+//            if (BANK_NAME_ICBC_TaiZhou_LuQiao_Branch.equals(bankName)) {
+//
+//                Byte loanInfoRecordStatus = loanProcessDO.getLoanInfoRecord();
+//                Preconditions.checkArgument(TASK_PROCESS_DONE.equals(loanInfoRecordStatus), "请先提交[视频面签登记]");
+//            }
         }
 
         // [资料流转（抵押资料 - 合伙人->公司]
@@ -1294,14 +1295,14 @@ public class LoanProcessServiceImpl implements LoanProcessService {
                 Byte installGpsStatus = loanProcessDO.getInstallGps();
                 Preconditions.checkArgument(TASK_PROCESS_DONE.equals(installGpsStatus), "请先提交[GPS安装]");
 
-                // 2、台州工行提交付款申请时，要判断是否提交视频面签
-                LoanBaseInfoDO loanBaseInfoDO = getLoanBaseInfoDO(loanOrderDO.getLoanBaseInfoId());
-                String bankName = loanBaseInfoDO.getBank();
-                if (BANK_NAME_ICBC_TaiZhou_LuQiao_Branch.equals(bankName)) {
-
-                    Byte loanInfoRecordStatus = loanProcessDO.getLoanInfoRecord();
-                    Preconditions.checkArgument(TASK_PROCESS_DONE.equals(loanInfoRecordStatus), "请先提交[视频面签登记]");
-                }
+//                // 2、台州工行提交付款申请时，要判断是否提交视频面签
+//                LoanBaseInfoDO loanBaseInfoDO = getLoanBaseInfoDO(loanOrderDO.getLoanBaseInfoId());
+//                String bankName = loanBaseInfoDO.getBank();
+//                if (BANK_NAME_ICBC_TaiZhou_LuQiao_Branch.equals(bankName)) {
+//
+//                    Byte loanInfoRecordStatus = loanProcessDO.getLoanInfoRecord();
+//                    Preconditions.checkArgument(TASK_PROCESS_DONE.equals(loanInfoRecordStatus), "请先提交[视频面签登记]");
+//                }
 
                 // 3、前置校验
                 boolean is_match_condition_bank = tel_verify_match_condition_bank(loanOrderDO.getLoanBaseInfoId());
@@ -1324,7 +1325,8 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      * @return
      */
     private String getOrderStatusText(LoanProcessDO loanProcessDO) {
-        String orderStatusText = ORDER_STATUS_CANCEL.equals(loanProcessDO.getOrderStatus()) ? "[已弃单]" : (ORDER_STATUS_END.equals(loanProcessDO.getOrderStatus()) ? "[已结单]" : "[状态异常]");
+        String orderStatusText = ORDER_STATUS_CANCEL.equals(loanProcessDO.getOrderStatus()) ? "[已弃单]" :
+                (ORDER_STATUS_END.equals(loanProcessDO.getOrderStatus()) ? "[已结单]" : "[状态异常]");
         return orderStatusText;
     }
 
