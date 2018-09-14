@@ -553,13 +553,13 @@ public class LoanProcessApprovalRollBackServiceImpl implements LoanProcessApprov
     /**
      * 节点流程状态校验
      *
-     * @param loanProcessDO
+     * @param loanProcessDO_
      * @param nextTaskKeys          next节点列表
      * @param rollBackOriginTaskKey 发起反审的节点
      */
-    private void checkTaskProcessStatus(LoanProcessDO_ loanProcessDO, List<String> nextTaskKeys, String rollBackOriginTaskKey) {
+    private void checkTaskProcessStatus(LoanProcessDO_ loanProcessDO_, List<String> nextTaskKeys, String rollBackOriginTaskKey) {
 
-        Class<LoanProcessDO> clazz = LoanProcessDO.class;
+        Class<? extends LoanProcessDO_> clazz = loanProcessDO_.getClass();
 
         List<String> taskKeys = Lists.newArrayList(rollBackOriginTaskKey);
         taskKeys.addAll(nextTaskKeys);
@@ -582,7 +582,7 @@ public class LoanProcessApprovalRollBackServiceImpl implements LoanProcessApprov
 
                 Method method = clazz.getMethod(methodName);
 
-                Object result = method.invoke(loanProcessDO);
+                Object result = method.invoke(loanProcessDO_);
 
                 // current 节点
                 if (rollBackOriginTaskKey.equals(taskKey)) {
