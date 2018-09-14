@@ -447,7 +447,7 @@ public class MaterialServiceImpl implements MaterialService {
         Set<String> NAME_ENTRY = Sets.newHashSet();
         try {
             List<MaterialDownloadParam> downloadParams = materialAuditDOMapper.selectDownloadMaterial(orderId, null);
-            if (downloadParams == null) {
+            if (downloadParams == null || downloadParams.size() ==0) {
                 return null;
             }
             downloadParams.parallelStream().filter(Objects::nonNull)
@@ -467,7 +467,7 @@ public class MaterialServiceImpl implements MaterialService {
             ossClient = OSSUnit.getOSSClient();
             String fileName = null;
             if (downloadParams != null) {
-                fileName = downloadParams.get(0).getName() + "_" + downloadParams.get(0).getIdCard() + ".zip";
+                fileName = downloadParams.get(0).getName() + "_" + downloadParams.get(0).getIdCard() + "_CAR.zip";
 //                fileName = downloadParams.get(0).getName() +".zip";
             }
             // 创建临时文件
@@ -484,6 +484,7 @@ public class MaterialServiceImpl implements MaterialService {
             // 用于将数据压缩成Zip文件格式
             zos = new ZipOutputStream(csum);
             logger.info("打包开始：" + System.currentTimeMillis());
+            boolean flag = false;
             for (MaterialDownloadParam typeFile : downloadParams) {
                 if ("发票".equals(typeFile.getTypeName()) || "合格证/登记证书".equals(typeFile.getTypeName()) || "保单".equals(typeFile.getTypeName())
                         || "提车合影".equals(typeFile.getTypeName())) {
@@ -547,20 +548,26 @@ public class MaterialServiceImpl implements MaterialService {
                         }
                         inputStream.close();
                         zos.closeEntry(); // 当前文件写完，定位为写入下一条项目
+                        flag = true;
                     }
                 }
-                zos.close();
-                String bucketName = ossConfig.getZipBucketName();
-                if (StringUtil.isEmpty(bucketName)) {
-                    Preconditions.checkNotNull("OSS压缩文件上传目录不存在");
-                }
+            }
+            zos.close();
+            String bucketName = ossConfig.getZipBucketName();
+            if (StringUtil.isEmpty(bucketName)) {
+                Preconditions.checkNotNull("OSS压缩文件上传目录不存在");
+            }
+            if(flag){
                 String diskName = ossConfig.getZipDiskName();
                 //删除OSS上的文件
                 OSSUnit.deleteFile(ossClient, bucketName, diskName + File.separator, zipFile.getName());
                 OSSUnit.uploadObject2OSS(ossClient, zipFile, bucketName, diskName + File.separator);
                 returnKey = diskName + File.separator + zipFile.getName();
-                logger.info("打包结束：" + System.currentTimeMillis());
+            }else{
+                returnKey = null;
             }
+
+            logger.info("打包结束：" + System.currentTimeMillis());
         } catch (Exception e) {
             throw new RuntimeException("文件打包/上传/下载失败", e);
         } finally {
