@@ -785,7 +785,7 @@
                                   || taskDefinitionKey == 'usertask_bridge_repay_info'">
                           deputy_b.id                                  AS processId,
                           deputy_b.bridge_handle                       AS taskStatus,
-                          DATE_FORMAT(third_party.lend_date, '%Y-%m-%d %H:%i:%S')
+                          DATE_FORMAT(third_party.lend_date, '%Y-%m-%d')
                                                                        AS bridgeLendDate,
                           conf_t.loan_time                             AS confThirdLoanTime,
                           third_party.repay_type                       AS bridgeRepayType,
