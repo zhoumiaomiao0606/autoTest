@@ -676,17 +676,19 @@ public class LoanProcessApprovalRollBackServiceImpl implements LoanProcessApprov
 
     /**
      * @param approval
-     * @param rollBacTokTaskKeys
+     * @param nextTaskKeys
      */
-    private void updateRollBackLoanProcess_(ApprovalParam approval, List<String> rollBacTokTaskKeys) {
+    private void updateRollBackLoanProcess_(ApprovalParam approval, List<String> nextTaskKeys) {
 
         LoanProcessBridgeDO loanProcessDO = new LoanProcessBridgeDO();
         loanProcessDO.setId(approval.getProcessId());
         loanProcessDO.setOrderId(approval.getOrderId());
 
-        if (!CollectionUtils.isEmpty(rollBacTokTaskKeys)) {
+        loanProcessApprovalCommonService.updateCurrentTaskProcessStatus(loanProcessDO, approval.getTaskDefinitionKey(), TASK_PROCESS_TODO, approval);
 
-            rollBacTokTaskKeys.stream()
+        if (!CollectionUtils.isEmpty(nextTaskKeys)) {
+
+            nextTaskKeys.stream()
                     .filter(StringUtils::isNotBlank)
                     .forEach(taskKey -> {
 
@@ -694,7 +696,6 @@ public class LoanProcessApprovalRollBackServiceImpl implements LoanProcessApprov
                     });
         }
 
-        loanProcessDO.setGmtModify(new Date());
         int count = loanProcessBridgeDOMapper.updateByPrimaryKeySelective(loanProcessDO);
         Preconditions.checkArgument(count > 0, "更新本地流程记录失败");
     }
