@@ -1885,7 +1885,7 @@
 
         WHERE s.order_id = #{orderId}
 
-        AND   s.status = 1 AND f.type !=26
+        AND   s.status = 1
 
     </select>
 
