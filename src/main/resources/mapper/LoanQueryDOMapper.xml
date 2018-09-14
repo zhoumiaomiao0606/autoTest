@@ -163,7 +163,10 @@
              a.apply_license_plate_deposit_date AS apply_license_plate_deposit_date,
              h.registration_certificate_number  AS registration_certificate_number,
              h.vehicle_identification_number    AS vehicle_identification_number,
-             h.car_category                     AS car_category
+             h.car_category                     AS car_category,
+             h.vehicle_identification_number    AS qualified_certificate_number,
+             h.engine_number                    AS engine_number
+
 
     from (select * from loan_order where id = #{orderId,jdbcType=BIGINT}) o
 
