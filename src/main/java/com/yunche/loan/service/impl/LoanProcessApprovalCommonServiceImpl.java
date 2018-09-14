@@ -395,17 +395,13 @@ public class LoanProcessApprovalCommonServiceImpl implements LoanProcessApproval
         // 1 -> 1
         if (null == processId) {
 
-            boolean isNot_insteadPay__collection__legal_Task = !LOAN_PROCESS_INSTEAD_PAY_KEYS.contains(taskDefinitionKey)
+            boolean isLoanProcessTask = !LOAN_PROCESS_INSTEAD_PAY_KEYS.contains(taskDefinitionKey)
                     && !LOAN_PROCESS_COLLECTION_KEYS.contains(taskDefinitionKey)
-                    && !LOAN_PROCESS_LEGAL_KEYS.contains(taskDefinitionKey);
+                    && !LOAN_PROCESS_LEGAL_KEYS.contains(taskDefinitionKey)
+                    && !LOAN_PROCESS_BRIDGE_PAY_KEYS.contains(taskDefinitionKey);
 
-            // 过桥资金
-            if (LOAN_PROCESS_BRIDGE_PAY_KEYS.contains(taskDefinitionKey)) {
-
-                loanProcessDO_ = loanProcessBridgeDOMapper.selectByPrimaryKey(orderId);
-            }
             // 消费贷
-            else if (isNot_insteadPay__collection__legal_Task) {
+            if (isLoanProcessTask) {
 
                 loanProcessDO_ = loanProcessDOMapper.selectByPrimaryKey(orderId);
 
@@ -436,7 +432,7 @@ public class LoanProcessApprovalCommonServiceImpl implements LoanProcessApproval
             // 过桥资金流程
             else if (LOAN_PROCESS_BRIDGE_PAY_KEYS.contains(taskDefinitionKey)) {
 
-                loanProcessDO_ = loanProcessLegalDOMapper.selectByPrimaryKey(processId);
+                loanProcessDO_ = loanProcessBridgeDOMapper.selectByPrimaryKey(processId);
             } else {
 
                 throw new BizException("taskDefinitionKey有误");
