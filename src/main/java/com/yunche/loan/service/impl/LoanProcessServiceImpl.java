@@ -1241,19 +1241,23 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
         }
 
-        // 【业务审批】|| 【放款审批】  -> PASS
-        else if ((BUSINESS_REVIEW.getCode().equals(taskDefinitionKey) || LOAN_REVIEW.getCode().equals(taskDefinitionKey))
-                && ACTION_PASS.equals(action)) {
+        // 【业务付款申请】|| 【业务审批】|| 【放款审批】  -> PASS
+        else if (
+                (BUSINESS_PAY.getCode().equals(taskDefinitionKey)
+                        || BUSINESS_REVIEW.getCode().equals(taskDefinitionKey)
+                        || LOAN_REVIEW.getCode().equals(taskDefinitionKey))
+                        && ACTION_PASS.equals(action)) {
 
             // 财务放款审批时，需要判断几个子业务的状态
-            // 1.[金融方案修改申请]审批通过
+
+            // 1、[金融方案修改申请]审批通过
             // 进行中的【金融方案修改申请】
             LoanFinancialPlanTempHisDO loanFinancialPlanTempHisDO = loanFinancialPlanTempHisDOMapper.lastByOrderId(loanOrderDO.getId());
             if (null != loanFinancialPlanTempHisDO) {
                 Preconditions.checkArgument(APPLY_ORDER_PASS.equals(loanFinancialPlanTempHisDO.getStatus()), "当前订单已发起[金融方案修改申请]，请待审核通过后再操作！");
             }
 
-            // 2.GPS安装完成
+            // 2、GPS安装完成
             LoanCarInfoDO loanCarInfoDO = loanCarInfoDOMapper.selectByPrimaryKey(loanOrderDO.getLoanCarInfoId());
             Preconditions.checkNotNull(loanCarInfoDO, "车辆信息不存在");
             Integer gpsNum = loanCarInfoDO.getGpsNum();
@@ -1261,7 +1265,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
                 Preconditions.checkArgument(TASK_PROCESS_DONE.equals(loanProcessDO.getInstallGps()), "当前订单[GPS安装]未提交");
             }
 
-//            // 3.（根据银行配置）视频面签完成   -仅：台州路桥支行
+//            // 3、（根据银行配置）视频面签完成   -仅：台州路桥支行
 //            LoanBaseInfoDO loanBaseInfoDO = getLoanBaseInfoDO(loanOrderDO.getLoanBaseInfoId());
 //            String bankName = loanBaseInfoDO.getBank();
 //            if (BANK_NAME_ICBC_TaiZhou_LuQiao_Branch.equals(bankName)) {
@@ -1269,6 +1273,16 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 //                Byte loanInfoRecordStatus = loanProcessDO.getLoanInfoRecord();
 //                Preconditions.checkArgument(TASK_PROCESS_DONE.equals(loanInfoRecordStatus), "请先提交[视频面签登记]");
 //            }
+
+            // 4、前置校验
+            boolean is_match_condition_bank = tel_verify_match_condition_bank(loanOrderDO.getLoanBaseInfoId());
+            if (is_match_condition_bank) {
+
+                // 若未开卡，提交业务付款申请单时候，提示：请先提交开卡申请
+                String lastBankInterfaceSerialStatus = loanQueryDOMapper.selectLastBankInterfaceSerialStatusByTransCode(loanOrderDO.getLoanCustomerId(), IDict.K_TRANS_CODE.CREDITCARDAPPLY);
+                Preconditions.checkArgument("1".equals(lastBankInterfaceSerialStatus) || "2".equals(lastBankInterfaceSerialStatus),
+                        "请先提交[开卡申请]");
+            }
         }
 
         // [资料流转（抵押资料 - 合伙人->公司]
@@ -1281,38 +1295,6 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         else if (BANK_OPEN_CARD.getCode().equals(taskDefinitionKey)) {
             // 前置开卡校验
             preCondition4BankOpenCard(loanOrderDO, loanProcessDO);
-        }
-
-        // [业务付款申请]
-        else if (BUSINESS_PAY.getCode().equals(taskDefinitionKey)) {
-
-            // PASS
-            if (ACTION_PASS.equals(action)) {
-
-                // 1、所有银行提交付款申请时，均要判断是否录入GPS
-                Byte installGpsStatus = loanProcessDO.getInstallGps();
-                Preconditions.checkArgument(TASK_PROCESS_DONE.equals(installGpsStatus), "请先提交[GPS安装]");
-
-//                // 2、台州工行提交付款申请时，要判断是否提交视频面签
-//                LoanBaseInfoDO loanBaseInfoDO = getLoanBaseInfoDO(loanOrderDO.getLoanBaseInfoId());
-//                String bankName = loanBaseInfoDO.getBank();
-//                if (BANK_NAME_ICBC_TaiZhou_LuQiao_Branch.equals(bankName)) {
-//
-//                    Byte loanInfoRecordStatus = loanProcessDO.getLoanInfoRecord();
-//                    Preconditions.checkArgument(TASK_PROCESS_DONE.equals(loanInfoRecordStatus), "请先提交[视频面签登记]");
-//                }
-
-                // 3、前置校验
-                boolean is_match_condition_bank = tel_verify_match_condition_bank(loanOrderDO.getLoanBaseInfoId());
-
-                if (is_match_condition_bank) {
-
-                    // 若未开卡，提交业务付款申请单时候，提示：请先提交开卡申请
-                    String lastBankInterfaceSerialStatus = loanQueryDOMapper.selectLastBankInterfaceSerialStatusByTransCode(loanOrderDO.getLoanCustomerId(), IDict.K_TRANS_CODE.CREDITCARDAPPLY);
-                    Preconditions.checkArgument("1".equals(lastBankInterfaceSerialStatus) || "2".equals(lastBankInterfaceSerialStatus),
-                            "请先提交[开卡申请]");
-                }
-            }
         }
     }
 
