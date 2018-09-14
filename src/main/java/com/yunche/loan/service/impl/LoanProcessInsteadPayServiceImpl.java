@@ -29,6 +29,7 @@ import static com.yunche.loan.config.constant.LoanOrderProcessConst.*;
 import static com.yunche.loan.config.constant.ProcessApprovalConst.*;
 import static com.yunche.loan.config.constant.LoanProcessEnum.*;
 import static com.yunche.loan.config.constant.LoanProcessVariableConst.*;
+import static com.yunche.loan.config.constant.ProcessTypeConst.PROCESS_TYPE_LOAN_PROCESS_INSTEAD_PAY;
 
 /**
  * @author liuzhe
@@ -70,7 +71,7 @@ public class LoanProcessInsteadPayServiceImpl implements LoanProcessInsteadPaySe
         }
 
         // 订单状态校验
-        loanProcessApprovalCommonService.checkOrderStatus(approval.getOrderId());
+        loanProcessApprovalCommonService.checkOrderStatus(approval.getOrderId(), approval.getProcessId(), PROCESS_TYPE_LOAN_PROCESS_INSTEAD_PAY);
 
         // 业务单
         LoanOrderDO loanOrderDO = getLoanOrder(approval.getOrderId());

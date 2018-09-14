@@ -25,15 +25,13 @@ import java.util.Map;
 import java.util.Objects;
 
 import static com.yunche.loan.config.constant.ActivitiConst.LOAN_PROCESS_BRIDGE_KEY;
-import static com.yunche.loan.config.constant.ActivitiConst.LOAN_PROCESS_COLLECTION_KEY;
 import static com.yunche.loan.config.constant.LoanOrderProcessConst.*;
 import static com.yunche.loan.config.constant.LoanProcessEnum.*;
-import static com.yunche.loan.config.constant.LoanProcessEnum.SETTLE_ORDER;
 import static com.yunche.loan.config.constant.LoanProcessVariableConst.PROCESS_VARIABLE_ACTION;
-import static com.yunche.loan.config.constant.LoanProcessVariableConst.PROCESS_VARIABLE_TARGET;
 import static com.yunche.loan.config.constant.ProcessApprovalConst.*;
 import static com.yunche.loan.config.constant.ProcessApprovalConst.ACTION_CANCEL;
 import static com.yunche.loan.config.constant.ProcessApprovalConst.ACTION_PASS;
+import static com.yunche.loan.config.constant.ProcessTypeConst.PROCESS_TYPE_LOAN_PROCESS_BRIDGE;
 
 /**
  * @author liuzhe
@@ -71,6 +69,7 @@ public class LoanProcessBridgeServiceImpl implements LoanProcessBridgeService {
         Preconditions.checkNotNull(approval.getOrderId(), "业务单号不能为空");
         Preconditions.checkNotNull(approval.getAction(), "审核结果不能为空");
         Preconditions.checkArgument(StringUtils.isNotBlank(approval.getTaskDefinitionKey()), "执行任务不能为空");
+        Preconditions.checkNotNull(approval.getProcessId(), "processId不能为空");
 
         // 节点权限校验
         if (approval.isCheckPermission()) {
@@ -78,7 +77,7 @@ public class LoanProcessBridgeServiceImpl implements LoanProcessBridgeService {
         }
 
         // 订单状态校验
-        loanProcessApprovalCommonService.checkOrderStatus(approval.getOrderId());
+        loanProcessApprovalCommonService.checkOrderStatus(approval.getOrderId(), approval.getProcessId(), PROCESS_TYPE_LOAN_PROCESS_BRIDGE);
 
         // 操作日志
         loanProcessApprovalCommonService.log(approval);
@@ -87,7 +86,7 @@ public class LoanProcessBridgeServiceImpl implements LoanProcessBridgeService {
         LoanOrderDO loanOrderDO = loanProcessApprovalCommonService.getLoanOrder(approval.getOrderId());
 
         // 节点实时状态
-        LoanProcessBridgeDO loanProcessDO = getLoanProcess(approval.getOrderId());
+        LoanProcessBridgeDO loanProcessDO = getLoanProcess(approval.getProcessId());
 
         if (ACTION_ROLL_BACK.equals(approval.getAction())) {
             return loanProcessApprovalRollBackService.execRollBackTask(approval, loanOrderDO, loanProcessDO);
@@ -168,11 +167,11 @@ public class LoanProcessBridgeServiceImpl implements LoanProcessBridgeService {
     /**
      * 获取 订单流程节点 实时状态记录
      *
-     * @param orderId
+     * @param processId
      * @return
      */
-    private LoanProcessBridgeDO getLoanProcess(Long orderId) {
-        LoanProcessBridgeDO loanProcessDO = loanProcessBridgeDOMapper.selectByPrimaryKey(orderId);
+    private LoanProcessBridgeDO getLoanProcess(Long processId) {
+        LoanProcessBridgeDO loanProcessDO = loanProcessBridgeDOMapper.selectByPrimaryKey(processId);
         Preconditions.checkNotNull(loanProcessDO, "流程记录丢失");
 
         return loanProcessDO;
@@ -212,14 +211,15 @@ public class LoanProcessBridgeServiceImpl implements LoanProcessBridgeService {
 
         // 更新状态
         LoanProcessBridgeDO loanProcessDO = new LoanProcessBridgeDO();
+        loanProcessDO.setOrderId(approval.getProcessId());
         loanProcessDO.setOrderId(approval.getOrderId());
 
-//        // 如果弃单，则记录弃单节点
-//        if (ACTION_CANCEL.equals(approval.getAction())) {
-//            loanProcessDO.setOrderStatus(ORDER_STATUS_CANCEL);
-//            loanProcessDO.setCancelTaskDefKey(approval.getTaskDefinitionKey());
-//            updateCurrentTaskProcessStatus(loanProcessDO, approval.getTaskDefinitionKey(), TASK_PROCESS_CANCEL, approval);
-//        }
+        // 如果弃单，则记录弃单节点
+        if (ACTION_CANCEL.equals(approval.getAction())) {
+            loanProcessDO.setOrderStatus(ORDER_STATUS_CANCEL);
+            loanProcessDO.setCancelTaskDefKey(approval.getTaskDefinitionKey());
+            updateCurrentTaskProcessStatus(loanProcessDO, approval.getTaskDefinitionKey(), TASK_PROCESS_CANCEL, approval);
+        }
 
         // 更新当前执行的任务状态
         Byte taskProcessStatus = null;
