@@ -164,7 +164,7 @@ public class LoanProcessApprovalRollBackServiceImpl implements LoanProcessApprov
     private void doRollBackTask_BridgeRepayRecord(ApprovalParam approval, LoanOrderDO loanOrderDO, LoanProcessBridgeDO loanProcessDO) {
 
         // 被反审的节点列表
-        List<String> nextTaskKeys = Lists.newArrayList(BRIDGE_REPAY_RECORD.getCode());
+        List<String> nextTaskKeys = Lists.newArrayList(BRIDGE_INTEREST_RECORD.getCode());
 
         // 领取校验
         checkTaskDistribution(approval.getOrderId(), nextTaskKeys);
@@ -193,7 +193,7 @@ public class LoanProcessApprovalRollBackServiceImpl implements LoanProcessApprov
     private void doRollBackTask_BridgeHandle(ApprovalParam approval, LoanOrderDO loanOrderDO, LoanProcessBridgeDO loanProcessDO) {
 
         // 被反审的节点列表
-        List<String> nextTaskKeys = Lists.newArrayList(BRIDGE_INTEREST_RECORD.getCode());
+        List<String> nextTaskKeys = Lists.newArrayList(BRIDGE_REPAY_RECORD.getCode());
 
         // 领取校验
         checkTaskDistribution(approval.getOrderId(), nextTaskKeys);
