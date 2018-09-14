@@ -52,7 +52,7 @@
             vehicle.assess_use_year                   as vehicle_assess_use_year,
             car.car_category                          as car_category,
             bank_log.operate_name                     as operate_name,
-            bank_log.operate_date                     as operate_date,
+            DATE_FORMAT(bank_log.operate_date,'%Y-%m-%d %H:%i:%S')   as operate_date,
             current.usertask_remit_review_create_time    as remit_details_time
 
         from (select * from loan_order where id = #{orderId}) orders
