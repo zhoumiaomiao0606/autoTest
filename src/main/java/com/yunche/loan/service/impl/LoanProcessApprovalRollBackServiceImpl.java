@@ -76,7 +76,7 @@ public class LoanProcessApprovalRollBackServiceImpl implements LoanProcessApprov
     public ResultBean<Void> execRollBackTask(ApprovalParam approval, LoanOrderDO loanOrderDO, LoanProcessDO loanProcessDO) {
 
         // 先获取提交之前的待执行任务列表
-        List<String> currentTaskIdList = loanProcessApprovalCommonService.getCurrentTaskIdList(loanOrderDO.getProcessInstId());
+        List<String> startTaskIdList = loanProcessApprovalCommonService.getCurrentTaskIdList(loanOrderDO.getProcessInstId());
 
         String taskDefinitionKey = approval.getTaskDefinitionKey();
 
@@ -117,7 +117,7 @@ public class LoanProcessApprovalRollBackServiceImpl implements LoanProcessApprov
         }
 
         // [领取]完成
-        loanProcessApprovalCommonService.finishTask(approval, currentTaskIdList, loanOrderDO.getProcessInstId());
+        loanProcessApprovalCommonService.finishTask(approval, startTaskIdList, loanOrderDO.getProcessInstId());
 
         return ResultBean.ofSuccess(null, "[" + LoanProcessEnum.getNameByCode(taskDefinitionKey) + "-反审]发起成功");
     }

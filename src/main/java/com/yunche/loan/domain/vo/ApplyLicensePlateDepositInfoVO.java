@@ -24,4 +24,6 @@ public class ApplyLicensePlateDepositInfoVO {
     private String vehicle_identification_number;
     private BaseAreaDO hasApplyLicensePlateArea;
     private String car_category;
+    private String qualified_certificate_number;
+    private String engine_number;
 }
