@@ -124,14 +124,14 @@ public class LoanProcessBridgeServiceImpl implements LoanProcessBridgeService {
         ProcessInstance processInstance = activitiService.startProcessInstanceByKey(LOAN_PROCESS_BRIDGE_KEY);
 
         // 创建流程记录
-        LoanProcessBridgeDO loanProcessDO = new LoanProcessBridgeDO();
-        loanProcessDO.setOrderId(orderId);
-        loanProcessDO.setProcessInstId(processInstance.getProcessInstanceId());
-        loanProcessDO.setGmtCreate(new Date());
-        loanProcessDO.setGmtModify(new Date());
+        loanProcessBridgeDO = new LoanProcessBridgeDO();
+        loanProcessBridgeDO.setOrderId(orderId);
+        loanProcessBridgeDO.setProcessInstId(processInstance.getProcessInstanceId());
+        loanProcessBridgeDO.setGmtCreate(new Date());
+        loanProcessBridgeDO.setGmtModify(new Date());
 
         // insert
-        int count = loanProcessBridgeDOMapper.insertSelective(loanProcessDO);
+        int count = loanProcessBridgeDOMapper.insertSelective(loanProcessBridgeDO);
         Preconditions.checkArgument(count > 0, "流程记录失败");
 
         return loanProcessBridgeDO.getProcessInstId();
