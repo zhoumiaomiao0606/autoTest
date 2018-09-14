@@ -443,7 +443,7 @@ public class POIUtil {
     * @Date:
     * @Description:  复杂格式导出
     */
-    public static  String createComplexExcelFile(String fname, List<ExportCustomerInfoVO> list,Class<FamilyLinkManVO> clazz1,Class<GuarantorLinkManVO> clazz2, CompplexHeader compplexHeader,  OSSConfig ossConfig)
+    public static  String createComplexExcelFile(String fname, List<ExportCustomerInfoVO> list,Class<ExportCustomerInfoVO> class1,Class<FamilyLinkManVO> clazz1,Class<GuarantorLinkManVO> clazz2, CompplexHeader compplexHeader,  OSSConfig ossConfig)
     {
         StringBuilder fileName = new StringBuilder();
         String timestamp = new SimpleDateFormat("yyyyMMdd").format(new Date());
@@ -491,21 +491,14 @@ public class POIUtil {
             List<Method> getfMethods = new ArrayList();
             //获取担保人-共贷人客户方法
             List<Method> getlMethods = new ArrayList();
-            ExportCustomerInfoVO exportCustomer =null;
-            if (list.size() !=0)
-            {
-                exportCustomer = list.get(0);
-            }
-            if (exportCustomer !=null)
-            {
-                Class<? extends ExportCustomerInfoVO> pclazz = exportCustomer.getClass();
-                Field[] fields = pclazz.getDeclaredFields();
+
+                Field[] fields = class1.getDeclaredFields();
 
                 for (int i = 0; i < fields.length; i++)
                 {
                     Field field = fields[i];
                     // 此处应该判断beanObj,property不为null
-                    PropertyDescriptor pd = new PropertyDescriptor(field.getName(), pclazz);
+                    PropertyDescriptor pd = new PropertyDescriptor(field.getName(), class1);
                     getpMethods.add(pd.getReadMethod());
                 }
 
@@ -533,9 +526,6 @@ public class POIUtil {
                     }
 
 
-            }else{
-                throw new BizException("无数据");
-            }
 
 
             for (int i=0;i<list.size();i++)
