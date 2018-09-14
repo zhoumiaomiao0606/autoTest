@@ -679,6 +679,22 @@
         LEFT JOIN material_audit ON orders.material_audit_id = material_audit.id
 
         <where>
+            case when #{maxGroupLevel} = 0 then false
+            when #{maxGroupLevel} = 1 then
+            loan_base_info.salesman_id in
+            (
+            <choose>
+                <when test="juniorIds != null and juniorIds.size() > 0">
+                    <foreach item="item" index="index" collection="juniorIds" separator=",">
+                        #{item}
+                    </foreach>
+                </when>
+                <otherwise>
+                    select temp.id from (SELECT 1 as id) temp  where temp.id =2
+                </otherwise>
+            </choose>
+            )
+            else true end
             and loan_process.material_review != 0
             <if test="partnerList != null and partnerList.size() > 0">
                 and
@@ -782,6 +798,22 @@
         LEFT JOIN apply_license_plate_deposit_info a ON a.id = orders.apply_license_plate_deposit_info_id
 
         <where>
+            case when #{maxGroupLevel} = 0 then false
+            when #{maxGroupLevel} = 1 then
+            loanbaseinfo.salesman_id in
+            (
+            <choose>
+                <when test="juniorIds != null and juniorIds.size() > 0">
+                    <foreach item="item" index="index" collection="juniorIds" separator=",">
+                        #{item}
+                    </foreach>
+                </when>
+                <otherwise>
+                    select temp.id from (SELECT 1 as id) temp  where temp.id =2
+                </otherwise>
+            </choose>
+            )
+            else true end
             and process.apply_license_plate_deposit_info != 0  and bank_lend_record.lend_date between #{startDate} and #{endDate}
             <if test="partnerList != null and partnerList.size() > 0">
                 and
@@ -867,6 +899,23 @@
         LEFT JOIN employee saleman ON baseinfo.salesman_id = saleman.id
         LEFT JOIN department department ON saleman.department_id = department.id
         where 1=1
+        AND
+        case when #{maxGroupLevel} = 0 then false
+        when #{maxGroupLevel} = 1 then
+        baseinfo.salesman_id in
+        (
+        <choose>
+            <when test="juniorIds != null and juniorIds.size() > 0">
+                <foreach item="item" index="index" collection="juniorIds" separator=",">
+                    #{item}
+                </foreach>
+            </when>
+            <otherwise>
+                select temp.id from (SELECT 1 as id) temp  where temp.id =2
+            </otherwise>
+        </choose>
+        )
+        else true end
             <if test="partnerList != null and partnerList.size() > 0">
                 and
                 baseinfo.partner_id in
@@ -1361,6 +1410,23 @@
         LEFT JOIN car_brand ON car_model.brand_id = car_brand.id
         LEFT JOIN vehicle_information ON principal_orders.vehicle_information_id = vehicle_information.id
         LEFT JOIN loan_base_info ON  principal_orders.loan_base_info_id = loan_base_info.id
+        <where>
+            case when #{maxGroupLevel} = 0 then false
+            when #{maxGroupLevel} = 1 then
+            loan_base_info.salesman_id in
+            (
+            <choose>
+                <when test="juniorIds != null and juniorIds.size() > 0">
+                    <foreach item="item" index="index" collection="juniorIds" separator=",">
+                        #{item}
+                    </foreach>
+                </when>
+                <otherwise>
+                    select temp.id from (SELECT 1 as id) temp  where temp.id =2
+                </otherwise>
+            </choose>
+            )
+            else true end
         <if test="partnerList != null and partnerList.size() > 0">
             and
             loan_base_info.partner_id in
@@ -1386,6 +1452,7 @@
         <if test="endTime !=null" >
             AND  express_receive_date &lt;= #{endTime}
         </if>
+        </where>
     </select>
 
     <select id="exportFamilyLinkManList" parameterType="long" resultType="com.yunche.loan.domain.vo.FamilyLinkManVO">

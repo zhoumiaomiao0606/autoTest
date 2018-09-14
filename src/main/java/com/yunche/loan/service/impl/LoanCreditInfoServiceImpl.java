@@ -5,6 +5,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.yunche.loan.config.constant.IDict;
 import com.yunche.loan.config.result.ResultBean;
+import com.yunche.loan.config.util.StringUtil;
 import com.yunche.loan.domain.entity.LoanCreditInfoDO;
 import com.yunche.loan.domain.entity.LoanCustomerDO;
 import com.yunche.loan.domain.vo.BankInterfaceSerialReturnVO;
@@ -235,13 +236,16 @@ public class LoanCreditInfoServiceImpl implements LoanCreditInfoService {
        try{
            BankInterfaceSerialReturnVO returnVO = loanQueryService.selectLastBankInterfaceSerialByTransCode(creditRecord.getCustomerId(), IDict.K_TRANS_CODE.APPLYCREDIT);
            if(returnVO!=null){
-
-               String api_msg = returnVO.getApi_msg();
-               ObjectMapper objectMapper = new ObjectMapper();
-               Map map = objectMapper.readValue(api_msg, Map.class);
-               Map pub = (Map)map.get("pub");
-               String result = (String)pub.get("retmsg");
-               creditRecord.setBankCreditResponse(result);
+               if(StringUtil.isEmpty(returnVO.getReject_reason())){
+                   String api_msg = returnVO.getApi_msg();
+                   ObjectMapper objectMapper = new ObjectMapper();
+                   Map map = objectMapper.readValue(api_msg, Map.class);
+                   Map pub = (Map)map.get("pub");
+                   String result = (String)pub.get("retmsg");
+                   creditRecord.setBankCreditResponse(result);
+               }else{
+                   creditRecord.setBankCreditResponse(returnVO.getReject_reason());
+               }
            }
        }catch (IOException e){
            creditRecord.setBankCreditResponse("json解析异常,请联系管理员");

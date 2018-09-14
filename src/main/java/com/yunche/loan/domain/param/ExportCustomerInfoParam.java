@@ -1,8 +1,10 @@
 package com.yunche.loan.domain.param;
 
+import com.google.common.collect.Sets;
 import lombok.Data;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author: ZhongMingxiao
@@ -24,4 +26,8 @@ public class ExportCustomerInfoParam
     private String startTime;
 
     private String endTime;
+
+    private Long maxGroupLevel;
+
+    private Set<String> juniorIds = Sets.newHashSet();
 }

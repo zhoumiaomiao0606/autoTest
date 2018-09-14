@@ -127,6 +127,8 @@ public class LoanProcessBridgeServiceImpl implements LoanProcessBridgeService {
         loanProcessBridgeDO = new LoanProcessBridgeDO();
         loanProcessBridgeDO.setOrderId(orderId);
         loanProcessBridgeDO.setProcessInstId(processInstance.getProcessInstanceId());
+        loanProcessBridgeDO.setBridgeHandle(TASK_PROCESS_TODO);
+
         loanProcessBridgeDO.setGmtCreate(new Date());
         loanProcessBridgeDO.setGmtModify(new Date());
 
@@ -326,7 +328,7 @@ public class LoanProcessBridgeServiceImpl implements LoanProcessBridgeService {
         // 流程变量：action
         variables.put(PROCESS_VARIABLE_ACTION, approval.getAction());
 
-        fillOtherVariables(variables, approval);
+//        fillOtherVariables(variables, approval);
 
         return variables;
     }
@@ -340,26 +342,6 @@ public class LoanProcessBridgeServiceImpl implements LoanProcessBridgeService {
      */
     private void fillOtherVariables(Map<String, Object> variables, ApprovalParam approval) {
 
-        // [上门拖车]
-        if (VISIT_COLLECTION.getCode().equals(approval.getTaskDefinitionKey()) && ACTION_PASS.equals(approval.getAction())) {
-
-            // 催收结果
-            String visitResult = approval.getChoice();
-
-            // 1-拖车失败
-            if ("1".equals(visitResult)) {
-                variables.put(PROCESS_VARIABLE_TARGET, VISIT_COLLECTION.getCode());
-            }
-            // 2-车辆回收
-            else if ("2".equals(visitResult)) {
-                variables.put(PROCESS_VARIABLE_TARGET, CAR_HANDLE.getCode());
-            }
-            // 3-客户结清、4-客户还款
-            else if ("3".equals(visitResult) || "4".equals(visitResult)) {
-                variables.put(PROCESS_VARIABLE_TARGET, SETTLE_ORDER.getCode());
-            }
-
-        }
     }
 
 }
