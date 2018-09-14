@@ -246,6 +246,10 @@ public class ExportQueryServiceImpl implements ExportQueryService
     @Override
     public String exportCustomerInfo(ExportCustomerInfoParam exportCustomerInfoParam)
     {
+        Long loginUserId = SessionUtils.getLoginUser().getId();
+
+        exportCustomerInfoParam.setJuniorIds(employeeService.getSelfAndCascadeChildIdList(loginUserId));
+        exportCustomerInfoParam.setMaxGroupLevel(taskSchedulingDOMapper.selectMaxGroupLevel(loginUserId));
 
         //根据筛选条件  银行、合同资料公司至银行-确认接收时间、合伙人团队、主贷人姓名  过滤主贷人信息
         List<ExportCustomerInfoVO> list = loanStatementDOMapper.exportCustomerInfo(exportCustomerInfoParam);
