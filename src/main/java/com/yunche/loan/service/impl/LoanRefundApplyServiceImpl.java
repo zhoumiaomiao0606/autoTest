@@ -74,7 +74,8 @@ public class LoanRefundApplyServiceImpl implements LoanRefundApplyService {
     @Transactional
     public ResultBean<Long> update(LoanRefundApplyParam param) {
 
-        if (StringUtils.isBlank(param.getRefund_id())) {
+        // insert
+        if (null == param.getRefund_id()) {
 
             checkPreCondition(Long.valueOf(param.getOrder_id()));
 
@@ -90,11 +91,13 @@ public class LoanRefundApplyServiceImpl implements LoanRefundApplyService {
 
             return ResultBean.ofSuccess(DO.getId());
 
-        } else {
+        }
+        // update
+        else {
 
             LoanRefundApplyDO DO = BeanPlasticityUtills.copy(LoanRefundApplyDO.class, param);
+            DO.setId(param.getRefund_id());
             EmployeeDO employeeDO = SessionUtils.getLoginUser();
-            DO.setId(Long.valueOf(param.getRefund_id()));
             DO.setInitiator_id(employeeDO.getId());
             DO.setInitiator_name(employeeDO.getName());
             loanRefundApplyDOMapper.updateByPrimaryKeySelective(DO);

@@ -2,36 +2,30 @@ package com.yunche.loan.domain.param;
 
 import com.alibaba.fastjson.JSON;
 import lombok.Data;
-import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.util.CollectionUtils;
 
-import java.util.ArrayList;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @Data
 public class LoanRefundApplyParam {
 
-    private String refund_id;
+    private Long refund_id;
 
-    @NotBlank
-    private String order_id;
-    @NotBlank
+    @NotNull
+    private Long order_id;
+    @NotEmpty
     private String refund_amount;
-    @NotBlank
+    @NotEmpty
     private String refund_date;
-    @NotBlank
+    @NotEmpty
     private String refund_reason;
     /**
      * 退款账号ID
      */
-    @NotBlank
+    @NotNull
     private Long refund_apply_account_id;
-    @NotBlank
-    private String refund_pay_open_bank;
-    @NotBlank
-    private String refund_pay_account_name;
-    @NotBlank
-    private String refund_pay_account;
 
     private List<String> path;
 

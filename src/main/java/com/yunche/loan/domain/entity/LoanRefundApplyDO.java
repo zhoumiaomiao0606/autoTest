@@ -30,7 +30,7 @@ public class LoanRefundApplyDO {
     /**
      * 退款账号详情ID
      */
-    private String refund_apply_account_id;
+    private Long refund_apply_account_id;
 
     private Date start_time;
 
