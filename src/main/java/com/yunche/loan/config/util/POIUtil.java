@@ -21,6 +21,7 @@ import java.beans.PropertyDescriptor;
 import java.io.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -442,7 +443,7 @@ public class POIUtil {
     * @Date:
     * @Description:  复杂格式导出
     */
-    public static  String createComplexExcelFile(String fname, List<ExportCustomerInfoVO> list, CompplexHeader compplexHeader,  OSSConfig ossConfig)
+    public static  String createComplexExcelFile(String fname, List<ExportCustomerInfoVO> list,Class<FamilyLinkManVO> clazz1,Class<GuarantorLinkManVO> clazz2, CompplexHeader compplexHeader,  OSSConfig ossConfig)
     {
         StringBuilder fileName = new StringBuilder();
         String timestamp = new SimpleDateFormat("yyyyMMdd").format(new Date());
@@ -505,42 +506,33 @@ public class POIUtil {
                     getpMethods.add(pd.getReadMethod());
                 }
 
-                FamilyLinkManVO familyLinkManVO = exportCustomer.getFamilyLinkManList().get(0);
-                if (familyLinkManVO !=null)
-                {
-                    Class<? extends FamilyLinkManVO> aClass = familyLinkManVO.getClass();
-                    Field[] ffields = aClass.getDeclaredFields();
 
-                    for (int i = 0; i < ffields.length; i++)
-                    {
-                        Field field = ffields[i];
-                        // 此处应该判断beanObj,property不为null
-                        PropertyDescriptor pd = new PropertyDescriptor(field.getName(), aClass);
-                        getlMethods.add(pd.getReadMethod());
-                    }
-                }
+                        Field[] ffields = clazz1.getDeclaredFields();
 
-                GuarantorLinkManVO guarantorLinkManVO = exportCustomer.getGuarantorLinkManList().get(0);
-                if (guarantorLinkManVO !=null)
-                {
-                    Class<? extends GuarantorLinkManVO> gClass = guarantorLinkManVO.getClass();
-                    Field[] gfields = gClass.getDeclaredFields();
+                        for (int i = 0; i < ffields.length; i++)
+                        {
+                            Field field = ffields[i];
+                            // 此处应该判断beanObj,property不为null
+                            PropertyDescriptor pd = new PropertyDescriptor(field.getName(), clazz1);
+                            getfMethods.add(pd.getReadMethod());
+                        }
+
+
+
+                    Field[] gfields = clazz2.getDeclaredFields();
 
                     for (int i = 0; i < gfields.length; i++)
                     {
                         Field field = gfields[i];
                         // 此处应该判断beanObj,property不为null
-                        PropertyDescriptor pd = new PropertyDescriptor(field.getName(), gClass);
-                        getfMethods.add(pd.getReadMethod());
+                        PropertyDescriptor pd = new PropertyDescriptor(field.getName(), clazz2);
+                        getlMethods.add(pd.getReadMethod());
                     }
-                }
+
 
             }else{
                 throw new BizException("无数据");
             }
-
-
-
 
 
             for (int i=0;i<list.size();i++)
@@ -555,37 +547,77 @@ public class POIUtil {
                 for (int j = 0; j < getpMethods.size(); j++)
                 {
                     cell = row.createCell(j);
-                    cell.setCellValue((String) getpMethods.get(j).invoke(exportCustomerInfoVO));
+                    if (getpMethods.get(j).invoke(exportCustomerInfoVO) instanceof BigDecimal)
+                    {
+
+                        cell.setCellValue( ((BigDecimal)getpMethods.get(j).invoke(exportCustomerInfoVO)).toString());
+
+                    }else
+                        {
+                            cell.setCellValue((String) getpMethods.get(j).invoke(exportCustomerInfoVO));
+                        }
+
                     cellpoint++;
                 }
 
                 List<FamilyLinkManVO> familyLinkManList = exportCustomerInfoVO.getFamilyLinkManList();
-                for(int f=0;f<2;f++)
+                if(familyLinkManList !=null && familyLinkManList.size() !=0)
                 {
-                    FamilyLinkManVO familyLinkManVO = familyLinkManList.get(f);
-                    if (familyLinkManVO !=null)
-                    {
-                        for (int j = 0; j < getfMethods.size(); j++)
+                    for (int f = 0; f < familyLinkManList.size(); f++) {
+                        if (f < 2)
                         {
-                            cell = row.createCell(cellpoint);
-                            cell.setCellValue((String) getfMethods.get(j).invoke(familyLinkManVO));
-                            cellpoint++;
+
+                            if (familyLinkManList.get(f) != null)
+                            {
+                                FamilyLinkManVO familyLinkManVO = familyLinkManList.get(f);
+                                for (int j = 0; j < getfMethods.size(); j++)
+                                {
+                                    cell = row.createCell(cellpoint);
+                                    if (getfMethods.get(j).invoke(familyLinkManVO) instanceof BigDecimal)
+                                    {
+
+                                        cell.setCellValue(((BigDecimal) getfMethods.get(j).invoke(familyLinkManVO)).toString());
+
+                                    } else
+                                        {
+                                        cell.setCellValue((String) getfMethods.get(j).invoke(familyLinkManVO));
+                                    }
+
+                                    cellpoint++;
+                                }
+                            } else {
+                                cellpoint = cellpoint + 3;
+                            }
                         }
-                    }else
-                        {
-                            cellpoint = cellpoint+3;
+                        if (familyLinkManList.size() == 1) {
+                            cellpoint = cellpoint + 3;
+                        }
+
                     }
+
+                }else {
+                    cellpoint = cellpoint + 6;
                 }
+
                 List<GuarantorLinkManVO> guarantorLinkManList = exportCustomerInfoVO.getGuarantorLinkManList();
                 for(int g=0;g<guarantorLinkManList.size();g++)
                 {
-                    GuarantorLinkManVO guarantorLinkManVO = guarantorLinkManList.get(g);
-                    if (guarantorLinkManVO !=null)
+
+                    if (guarantorLinkManList.size()!=0 && guarantorLinkManList.get(g) !=null)
                     {
+                        GuarantorLinkManVO guarantorLinkManVO = guarantorLinkManList.get(g);
                         for(int j=0;j<getlMethods.size();j++)
                         {
                             cell = row.createCell(cellpoint);
-                            cell.setCellValue((String) getfMethods.get(j).invoke(guarantorLinkManVO));
+                            if (getlMethods.get(j).invoke(guarantorLinkManVO) instanceof BigDecimal)
+                            {
+
+                                cell.setCellValue( ((BigDecimal)getlMethods.get(j).invoke(guarantorLinkManVO)).toString());
+
+                            }else
+                            {
+                                cell.setCellValue((String)getlMethods.get(j).invoke(guarantorLinkManVO));
+                            }
                             cellpoint++;
                         }
                     }
@@ -609,6 +641,7 @@ public class POIUtil {
             OSSUnit.uploadObject2OSS(ossClient, file, bucketName, diskName + File.separator);
 
         } catch (Exception e) {
+            logger.error("输出excel异常",e);
             Preconditions.checkArgument(false, e.getMessage());
         } finally {
             try {

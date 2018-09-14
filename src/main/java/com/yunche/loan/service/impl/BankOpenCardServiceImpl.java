@@ -38,6 +38,7 @@ import static com.yunche.loan.config.constant.BaseConst.*;
 import static com.yunche.loan.config.constant.LoanCustomerConst.CUST_TYPE_EMERGENCY_CONTACT;
 import static com.yunche.loan.config.constant.LoanFileConst.UPLOAD_TYPE_NORMAL;
 import static com.yunche.loan.config.constant.LoanFileEnum.*;
+import static com.yunche.loan.config.constant.ProcessApprovalConst.ACTION_PASS;
 
 @Service
 public class BankOpenCardServiceImpl implements BankOpenCardService {
@@ -283,17 +284,33 @@ public class BankOpenCardServiceImpl implements BankOpenCardService {
                     bankInterfaceSerialDOMapper.updateByPrimaryKeySelective(bankInterfaceSerialDO);
                     return;
                 }
+                //如果卡号存在，则直接完成任务
+                LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(e.getOrderId());
+                LoanCustomerDO customerDO = loanCustomerDOMapper.selectByPrimaryKey(loanOrderDO.getLoanCustomerId(), null);
+                if(!StringUtil.isEmpty(customerDO.getLendCard())){
+                    //更新loan_process
+                    LoanProcessDO processDO = new LoanProcessDO();
+                    processDO.setOrderId(e.getOrderId());
+                    processDO.setBankOpenCard(ACTION_PASS);
+                    int count = loanProcessDOMapper.updateByPrimaryKeySelective(processDO);
+                    Preconditions.checkArgument(count>0,"任务更新失败");
+
+                    //更新bank_interface_serial
+                    BankInterfaceSerialDO bankInterfaceSerialDO = bankInterfaceSerialDOMapper.selectByCustomerIdAndTransCode(loanOrderDO.getLoanCustomerId(), IDict.K_TRANS_CODE.CREDITCARDAPPLY);
+                    bankInterfaceSerialDO.setStatus(IDict.K_JYZT.SUCCESS);
+                    int count2 = bankInterfaceSerialDOMapper.updateByPrimaryKeySelective(bankInterfaceSerialDO);
+                    Preconditions.checkArgument(count2>0,"更新银行流水失败");
+                }
                 if (!openCard.equals(LoanOrderProcessConst.TASK_PROCESS_DONE)) {
                     ApprovalParam approvalParam = new ApprovalParam();
                     approvalParam.setOrderId(e.getOrderId());
                     approvalParam.setTaskDefinitionKey(LoanProcessEnum.BANK_OPEN_CARD.getCode());
-                    approvalParam.setAction(ProcessApprovalConst.ACTION_PASS);
+                    approvalParam.setAction(ACTION_PASS);
                     approvalParam.setNeedLog(true);
                     approvalParam.setCheckPermission(false);
                     ResultBean<Void> approvalResultBean = loanProcessService.approval(approvalParam);
                     LOG.info(e.getOrderId() + approvalResultBean.getMsg());
 
-                    LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(e.getOrderId());
                     BankInterfaceSerialDO bankInterfaceSerialDO = bankInterfaceSerialDOMapper.selectByCustomerIdAndTransCode(loanOrderDO.getLoanCustomerId(), IDict.K_TRANS_CODE.CREDITCARDAPPLY);
                     bankInterfaceSerialDO.setStatus(IDict.K_JYZT.SUCCESS);
                     bankInterfaceSerialDOMapper.updateByPrimaryKeySelective(bankInterfaceSerialDO);

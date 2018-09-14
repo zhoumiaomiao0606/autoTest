@@ -20,8 +20,7 @@ public class ExpertController
     /**
      * EXCEl导出银行征信查询
      */
-   /* @PostMapping(value = "/exportBankCreditQuery")*/
-    @PostMapping(value = "/exportCustomerInfo")
+    @PostMapping(value = "/exportBankCreditQuery")
     public ResultBean exportBankCreditQuery(@RequestBody ExportBankCreditQueryVerifyParam exportBankCreditQueryVerifyParam)
     {
         return ResultBean.ofSuccess(exportQueryService.exportBankCreditQuery(exportBankCreditQueryVerifyParam));
@@ -92,8 +91,7 @@ public class ExpertController
     /**
      * 客户信息中新增客户信息导出功能
      */
-   /* @PostMapping(value = "/exportCustomerInfo")*/
-    @PostMapping(value = "/exportBankCreditQuery")
+    @PostMapping(value = "/exportCustomerInfo")
     public ResultBean exportCustomerInfo(@RequestBody ExportCustomerInfoParam exportCustomerInfoParam)
     {
         return ResultBean.ofSuccess(exportQueryService.exportCustomerInfo(exportCustomerInfoParam));

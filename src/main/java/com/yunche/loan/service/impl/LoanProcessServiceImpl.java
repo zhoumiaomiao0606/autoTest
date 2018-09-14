@@ -155,6 +155,9 @@ public class LoanProcessServiceImpl implements LoanProcessService {
     private BankSolutionService bankSolutionService;
 
     @Autowired
+    private LoanProcessBridgeService loanProcessBridgeService;
+
+    @Autowired
     private LoanProcessApprovalCommonService loanProcessApprovalCommonService;
 
     @Autowired
@@ -197,7 +200,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         LoanBaseInfoDO loanBaseInfoDO = getLoanBaseInfoDO(loanOrderDO.getLoanBaseInfoId());
 
         // 校验审核前提条件
-//        checkPreCondition(approval.getTaskDefinitionKey(), approval.getAction(), loanOrderDO, loanProcessDO);
+        checkPreCondition(approval.getTaskDefinitionKey(), approval.getAction(), loanOrderDO, loanProcessDO);
 
         // 日志
         loanProcessApprovalCommonService.log(approval);
@@ -267,7 +270,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         loanProcessApprovalCommonService.finishTask(approval, getTaskIdList(startTaskList), loanOrderDO.getProcessInstId());
 
         // 通过银行接口  ->  自动查询征信
-//        creditAutomaticCommit(approval);
+        creditAutomaticCommit(approval);
 
         // 异步打包文件
         asyncPackZipFile(approval.getTaskDefinitionKey(), approval.getAction(), loanProcessDO, 2);
@@ -1287,7 +1290,20 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             // PASS
             if (ACTION_PASS.equals(action)) {
 
-                // 前置校验
+                // 1、所有银行提交付款申请时，均要判断是否录入GPS
+                Byte installGpsStatus = loanProcessDO.getInstallGps();
+                Preconditions.checkArgument(TASK_PROCESS_DONE.equals(installGpsStatus), "请先提交[GPS安装]");
+
+                // 2、台州工行提交付款申请时，要判断是否提交视频面签
+                LoanBaseInfoDO loanBaseInfoDO = getLoanBaseInfoDO(loanOrderDO.getLoanBaseInfoId());
+                String bankName = loanBaseInfoDO.getBank();
+                if (BANK_NAME_ICBC_TaiZhou_LuQiao_Branch.equals(bankName)) {
+
+                    Byte loanInfoRecordStatus = loanProcessDO.getLoanInfoRecord();
+                    Preconditions.checkArgument(TASK_PROCESS_DONE.equals(loanInfoRecordStatus), "请先提交[视频面签登记]");
+                }
+
+                // 3、前置校验
                 boolean is_match_condition_bank = tel_verify_match_condition_bank(loanOrderDO.getLoanBaseInfoId());
 
                 if (is_match_condition_bank) {
@@ -3189,6 +3205,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
         if (REMIT_REVIEW.getCode().equals(approval.getTaskDefinitionKey()) && ACTION_PASS.equals(approval.getAction())) {
 
+            // 打款时间
             RemitDetailsDO remitDetailsDO = new RemitDetailsDO();
 
             remitDetailsDO.setId(remitDetailsId);
@@ -3196,6 +3213,9 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
             int count = remitDetailsDOMapper.updateByPrimaryKeySelective(remitDetailsDO);
             Preconditions.checkArgument(count > 0, "编辑失败");
+
+            // 自动启动流程 -> [第三方过桥资金]
+            loanProcessBridgeService.startProcess(approval.getOrderId());
         }
     }
 

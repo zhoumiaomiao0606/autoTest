@@ -266,14 +266,11 @@ public class ExportQueryServiceImpl implements ExportQueryService
                         //关联人要导出全部共贷人和银行担保
                         List<GuarantorLinkManVO> guarantorLinkManList = loanStatementDOMapper.exportGuarantorLinkManList(e.getPCustomerId());
                         //判断有效期-计算主贷人总资产
-                        BigDecimal totalAsset=new BigDecimal(0);
 
                         //去空
                         List<GuarantorLinkManVO> collect = guarantorLinkManList.stream()
                                 .filter(guarantorLinkManVO -> guarantorLinkManVO != null)
                                 .collect(Collectors.toList());
-                        System.out.println("!!!!!!!!!!!!"+collect.size());
-
                                  collect.forEach(guarantorLinkManVO -> {
                                     if (guarantorLinkManVO.getLinkManIdentityValidity()!=null && pattern.matcher(guarantorLinkManVO.getLinkManIdentityValidity()).find())
                                     {
@@ -283,18 +280,24 @@ public class ExportQueryServiceImpl implements ExportQueryService
                                     else{
                                         guarantorLinkManVO.setBooleanLongTerm("否");
                                     }
-                                    if (guarantorLinkManVO.getLinkManYearIncome() !=null)
-                                    {
-                                        totalAsset.multiply(guarantorLinkManVO.getLinkManYearIncome());
-                                    }
+
 
                                 });
 
                                  e.setGuarantorLinkManList(collect);
+                                 //计算主贷人总资产
+                        BigDecimal totalAsset=new BigDecimal(0);
+                        for (GuarantorLinkManVO guarantorLinkManVO: collect)
+                        {
+                            if (guarantorLinkManVO.getLinkManYearIncome() !=null)
+                            {
+                                totalAsset = totalAsset.add(guarantorLinkManVO.getLinkManYearIncome());
+                            }
+                        }
 
                                  if(e.getPYearIncome() !=null)
                                  {
-                                     totalAsset.multiply(e.getPYearIncome());
+                                     totalAsset = totalAsset.add(e.getPYearIncome());
                                  }
 
                                  e.setTotalAsset(totalAsset);
@@ -387,7 +390,7 @@ public class ExportQueryServiceImpl implements ExportQueryService
         compplexHeader.setCount(max);
 
         //特殊导出
-        String ossResultKey = POIUtil.createComplexExcelFile("客户信息",exportCustomerInfoVOList,compplexHeader,ossConfig);
+        String ossResultKey = POIUtil.createComplexExcelFile("customerInfo",exportCustomerInfoVOList,FamilyLinkManVO.class,GuarantorLinkManVO.class,compplexHeader,ossConfig);
 
         return ossResultKey;
     }

@@ -207,7 +207,7 @@
 
     ) orderdata ON orderdata.serial_no = serial.serial_no AND serial.trans_code = 'applyCredit'
 
-    WHERE serial.api_status != 200 OR serial.status NOT IN (1, 2)
+    WHERE serial.api_status != 200 OR serial.status NOT IN (1, 2, 0)
 
     ) tmp
 
