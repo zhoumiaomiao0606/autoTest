@@ -1347,7 +1347,8 @@
           vehicle_information.license_plate_number AS licensePlateNumber,
           vehicle_information.vehicle_identification_number AS vehicleIdentificationNumber,
           vehicle_information.engine_number AS engineNumber,
-          vehicle_information.apply_license_plate_area AS applyLicensePlateArea
+          vehicle_information.apply_license_plate_area AS applyLicensePlateArea,
+        ( SELECT loan_data_flow.express_receive_date FROM loan_data_flow WHERE principal_orders.id = loan_data_flow.order_id AND type = 4 ORDER BY id DESC LIMIT 1 ) AS express_receive_date
 
 
           FROM
@@ -1359,6 +1360,32 @@
         LEFT JOIN car_model ON car_detail.model_id = car_model.id
         LEFT JOIN car_brand ON car_model.brand_id = car_brand.id
         LEFT JOIN vehicle_information ON principal_orders.vehicle_information_id = vehicle_information.id
+        LEFT JOIN loan_base_info ON  principal_orders.loan_base_info_id = loan_base_info.id
+        <if test="partnerList != null and partnerList.size() > 0">
+            and
+            loan_base_info.partner_id in
+            <foreach item="item" index="index" collection="partnerList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="bankList != null and bankList.size() > 0">
+            and
+            loan_base_info.bank in
+            <foreach item="item" index="index" collection="bankList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="pname !=null" >
+            AND pName = #{pname}
+        </if>
+        <if test="startTime !=null" >
+            and
+            express_receive_date &gt;= #{endTime}
+        </if>
+
+        <if test="endTime !=null" >
+            AND  express_receive_date &lt;= #{endTime}
+        </if>
     </select>
 
     <select id="exportFamilyLinkManList" parameterType="long" resultType="com.yunche.loan.domain.vo.FamilyLinkManVO">
