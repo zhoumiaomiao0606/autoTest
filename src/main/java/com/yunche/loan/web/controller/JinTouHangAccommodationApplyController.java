@@ -24,6 +24,17 @@ public class JinTouHangAccommodationApplyController {
     //--------------------------金投行过桥处理------------------------
 
     /**
+     * 单条贷款
+     *
+     * @return
+     */
+    @PostMapping(value = "/applyLoan", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    ResultBean applyLoan(@RequestBody AccommodationApplyParam param) {
+        return accommodationApplyService.applyLoan(param);
+    }
+
+
+    /**
      * 批量贷款
      *
      * @return
@@ -96,7 +107,7 @@ public class JinTouHangAccommodationApplyController {
 
 
     @GetMapping("/detail")
-    ResultBean detail(@RequestParam("orderId") Long orderId) {
-        return accommodationApplyService.detail(orderId);
+    ResultBean detail(@RequestParam("bridgeProcessId") Long bridgeProcessId) {
+        return accommodationApplyService.detail(bridgeProcessId);
     }
 }
