@@ -111,4 +111,6 @@ public class RecombinationVO<T> {
     private CollectionNewInfoDO collectionNewInfoDO;
 
     private VisitDoorDO visitDoor;
+
+    private ThirdPartyFundBusinessDO partyFundBusinessVO;
 }

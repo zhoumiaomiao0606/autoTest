@@ -6,13 +6,13 @@ import java.util.List;
 
 public interface ThirdPartyFundBusinessDOMapper {
 
-    int deleteByPrimaryKey(Long orderId);
+    int deleteByPrimaryKey(Long bridgeProcecssId);
 
     int insert(ThirdPartyFundBusinessDO record);
 
     int insertSelective(ThirdPartyFundBusinessDO record);
 
-    ThirdPartyFundBusinessDO selectByPrimaryKey(Long orderId);
+    ThirdPartyFundBusinessDO selectByPrimaryKey(Long bridgeProcecssId);
 
     int updateByPrimaryKeySelective(ThirdPartyFundBusinessDO record);
 
