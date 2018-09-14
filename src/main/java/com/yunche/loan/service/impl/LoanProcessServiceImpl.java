@@ -5,7 +5,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.yunche.loan.config.constant.IDict;
 import com.yunche.loan.config.constant.LoanProcessEnum;
-import com.yunche.loan.config.constant.VideoFaceConst;
 import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.DateTimeFormatUtils;
@@ -37,21 +36,17 @@ import java.util.*;
 
 import static com.yunche.loan.config.constant.ApplyOrderStatusConst.*;
 import static com.yunche.loan.config.constant.BankConst.*;
-import static com.yunche.loan.config.constant.BaseConst.K_YORN_NO;
-import static com.yunche.loan.config.constant.BaseConst.K_YORN_YES;
-import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
+import static com.yunche.loan.config.constant.BaseConst.*;
 import static com.yunche.loan.config.constant.CarConst.CAR_KEY_FALSE;
-import static com.yunche.loan.config.constant.LoanCustomerConst.CREDIT_TYPE_SOCIAL;
-import static com.yunche.loan.config.constant.LoanCustomerConst.CUST_ID_CARD_EXPIRE_DATE;
-import static com.yunche.loan.config.constant.LoanCustomerConst.CUST_TYPE_EMERGENCY_CONTACT;
 import static com.yunche.loan.config.constant.LoanAmountConst.*;
+import static com.yunche.loan.config.constant.LoanCustomerConst.*;
 import static com.yunche.loan.config.constant.LoanOrderProcessConst.*;
 import static com.yunche.loan.config.constant.LoanProcessConst.APPROVAL_NOT_NEED_ORDER_ID_PROCESS_KEYS;
-import static com.yunche.loan.config.constant.ProcessApprovalConst.*;
 import static com.yunche.loan.config.constant.LoanProcessEnum.*;
 import static com.yunche.loan.config.constant.LoanProcessVariableConst.*;
 import static com.yunche.loan.config.constant.LoanRefundApplyConst.REFUND_REASON_3;
 import static com.yunche.loan.config.constant.LoanUserGroupConst.*;
+import static com.yunche.loan.config.constant.ProcessApprovalConst.*;
 import static com.yunche.loan.config.thread.ThreadPool.executorService;
 import static com.yunche.loan.service.impl.LoanRejectLogServiceImpl.getTaskStatus;
 import static java.util.stream.Collectors.toList;
@@ -3191,7 +3186,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
     private void doCurrentNodeAttachTask(ApprovalParam approval, LoanOrderDO loanOrderDO, LoanProcessDO loanProcessDO) {
 
         // 附带任务-[打款确认]
-        doAttachTask_RemitReview(approval, loanOrderDO.getRemitDetailsId());
+        doAttachTask_RemitReview(approval, loanOrderDO);
 
         // 附带任务-[金融方案修改-审核]
         doAttachTask_FinancialSchemeModifyApplyReview(approval, loanProcessDO);
@@ -3201,21 +3196,25 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      * 附带任务-[打款确认]
      *
      * @param approval
-     * @param remitDetailsId
+     * @param loanOrderDO
      */
-    private void doAttachTask_RemitReview(ApprovalParam approval, Long remitDetailsId) {
+    private void doAttachTask_RemitReview(ApprovalParam approval, LoanOrderDO loanOrderDO) {
 
         if (REMIT_REVIEW.getCode().equals(approval.getTaskDefinitionKey()) && ACTION_PASS.equals(approval.getAction())) {
 
             // 1、打款时间
             RemitDetailsDO remitDetailsDO = new RemitDetailsDO();
-            remitDetailsDO.setId(remitDetailsId);
+            remitDetailsDO.setId(loanOrderDO.getRemitDetailsId());
             remitDetailsDO.setRemit_time(new Date());
             int count = remitDetailsDOMapper.updateByPrimaryKeySelective(remitDetailsDO);
             Preconditions.checkArgument(count > 0, "编辑失败");
 
-            // 2、自动启动流程 -> [第三方过桥资金]
-            loanProcessBridgeService.startProcess(approval.getOrderId());
+            // 2、自动启动流程 -> [第三方过桥资金]   -杭州城站
+            LoanBaseInfoDO loanBaseInfoDO = getLoanBaseInfoDO(loanOrderDO.getLoanBaseInfoId());
+            if (BANK_NAME_ICBC_HangZhou_City_Station_Branch.equals(loanBaseInfoDO.getBank())) {
+
+                loanProcessBridgeService.startProcess(approval.getOrderId());
+            }
         }
     }
 
