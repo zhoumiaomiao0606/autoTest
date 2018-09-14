@@ -1913,6 +1913,7 @@
 
                   s.id                                      AS    supplementOrderId,
                   s.type                                    AS    type,
+                  useSupplementTypeTxt(s.type)              AS    typeText,
                   s.content                                 AS    content,
                   s.info                                    AS    info,
                   s.remark                                  AS    remark,

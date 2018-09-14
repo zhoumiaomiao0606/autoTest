@@ -13,7 +13,6 @@ import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.DictService;
 import com.yunche.loan.service.LoanQueryService;
-import com.yunche.loan.service.VideoFaceService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -295,9 +294,6 @@ public class LoanQueryServiceImpl implements LoanQueryService {
 
         Map<Long, UniversalInfoSupplementVO> idDetailMap = Maps.newHashMap();
 
-        // text - kvMap
-        Map<String, String> kvMap = dictService.getKVMap("infoSupplementType");
-
         infoSupplementVOList.stream()
                 .filter(Objects::nonNull)
                 .forEach(e -> {
@@ -325,10 +321,6 @@ public class LoanQueryServiceImpl implements LoanQueryService {
                         UniversalInfoSupplementVO infoSupplementVO = new UniversalInfoSupplementVO();
 
                         BeanUtils.copyProperties(e, infoSupplementVO);
-
-                        // type text
-                        String supplementTypeText = getInfoSupplementTypeText(e.getType(), kvMap);
-                        infoSupplementVO.setTypeText(supplementTypeText);
 
                         // files
                         FileVO2 fileVO = new FileVO2();
@@ -370,11 +362,12 @@ public class LoanQueryServiceImpl implements LoanQueryService {
     }
 
     /**
-     * 增补类型文本值
+     * 增补类型文本值      -用存储函数
      *
      * @param supplementType
      * @return
      */
+    @Deprecated
     public String getInfoSupplementTypeText(Byte supplementType) {
 
         Map<String, String> kvMap = dictService.getKVMap("infoSupplementType");
@@ -383,12 +376,13 @@ public class LoanQueryServiceImpl implements LoanQueryService {
     }
 
     /**
-     * 增补类型文本值
+     * 增补类型文本值      -用存储函数
      *
      * @param supplementType
      * @param kvMap
      * @return
      */
+    @Deprecated
     public String getInfoSupplementTypeText(Byte supplementType, Map<String, String> kvMap) {
 
         if (CollectionUtils.isEmpty(kvMap)) {
