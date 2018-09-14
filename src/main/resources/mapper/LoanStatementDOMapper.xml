@@ -1345,7 +1345,7 @@
         NULL END
         AS pEducation,
           pcustomer.mobile AS pMobile,
-        CONCAT_WS(pcustomer.hprovince,pcustomer.hcity,pcustomer.hcounty,pcustomer.address)
+        CONCAT_WS('',pcustomer.hprovince,pcustomer.hcity,pcustomer.hcounty,pcustomer.address)
            AS pAddress,
           pcustomer.mobile AS pHomeMobile,
           pcustomer.postcode AS pPostcode ,
@@ -1373,7 +1373,7 @@
         NULL
         END AS pHouseFeature,
           pcustomer.income_certificate_company_name AS pIncomeCertificateCompanyName,
-        CONCAT_WS(pcustomer.cprovince,pcustomer.ccity,pcustomer.ccounty,pcustomer.income_certificate_company_address)
+        CONCAT_WS('',pcustomer.cprovince,pcustomer.ccity,pcustomer.ccounty,pcustomer.income_certificate_company_address)
            AS pIncomeCertificateCompanyAddress,
           pcustomer.company_postcode AS pCompanyPostcode,
           pcustomer.company_phone AS pCompanyPhone,
@@ -1646,9 +1646,11 @@
         NULL
         END AS linkManREapplyPerson,
         month_income*12 AS linkManYearIncome,
-        address AS linkManAddress,
+         CONCAT_WS('',hprovince,hcity,hcounty,address)
+         AS linkManAddress,
         income_certificate_company_name AS linkManIncomeCertificateCompanyName,
-        income_certificate_company_address AS linkManIncomeCertificateCompanyAddress,
+         CONCAT_WS('',cprovince,ccity,ccounty,income_certificate_company_address)
+        AS linkManIncomeCertificateCompanyAddress,
         mobile AS linkManMobile
         FROM
         loan_customer

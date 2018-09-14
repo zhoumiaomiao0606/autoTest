@@ -173,15 +173,18 @@ public class EmployeeCache {
 
         JSONObject jsonObj = JSON.parseObject(allEmployeeJsonStr);
 
+        //设置第一级parentid
         Set<String> set = Sets.newHashSet();
+        set.add(String.valueOf(parentId));
         Set<String> tempSet = Sets.newHashSet();
 
-        set.add(String.valueOf(parentId));
+
 
         int i = 0;
         while (true) {
 
             i++;
+            //迭代所有的员工，取出所有parentID为第一级的子员工
             Iterator it = jsonObj.entrySet().iterator();
 
             while (it.hasNext()) {
