@@ -428,6 +428,7 @@
             remit.application_date                                                                  AS remit_application_date,
             process.apply_license_plate_deposit_info                                                AS process_apply_license_plate_deposit_info,
             process.bank_lend_record                                                                AS process_bank_lend_record,
+            process.video_review                                                                    AS process_video_review,
             bank.repay_date                                                                         AS bank_repay_date,
             bank.billing_date                                                                       AS bank_billing_date,
             car.car_category                                                                        AS car_category,
@@ -1912,6 +1913,7 @@
 
                   s.id                                      AS    supplementOrderId,
                   s.type                                    AS    type,
+                  useSupplementTypeTxt(s.type)              AS    typeText,
                   s.content                                 AS    content,
                   s.info                                    AS    info,
                   s.remark                                  AS    remark,
