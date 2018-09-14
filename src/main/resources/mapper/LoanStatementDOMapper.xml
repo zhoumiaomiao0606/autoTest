@@ -1442,16 +1442,12 @@
             </foreach>
         </if>
         <if test="pname !=null" >
-            AND pName = #{pname}
+            AND pcustomer.`name` = #{pname}
         </if>
-        <if test="startTime !=null" >
-            and
-            express_receive_date &gt;= #{endTime}
+        <if test="startTime !=null and endTime !=null" >
+            having express_receive_date between #{startDate} and #{endDate}
         </if>
 
-        <if test="endTime !=null" >
-            AND  express_receive_date &lt;= #{endTime}
-        </if>
         </where>
     </select>
 
