@@ -3,6 +3,7 @@ package com.yunche.loan.service.impl;
 
 import com.google.common.collect.Lists;
 import com.yunche.loan.config.common.OSSConfig;
+import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.util.POIUtil;
 import com.yunche.loan.config.util.SessionUtils;
 import com.yunche.loan.domain.param.*;
@@ -262,6 +263,10 @@ public class ExportQueryServiceImpl implements ExportQueryService
         //根据筛选条件  银行、合同资料公司至银行-确认接收时间、合伙人团队、主贷人姓名  过滤主贷人信息
         List<ExportCustomerInfoVO> list = loanStatementDOMapper.exportCustomerInfo(exportCustomerInfoParam);
 
+        if (list.size() == 0)
+        {
+            throw new BizException("无数据");
+        }
 
         //去空
         List<ExportCustomerInfoVO> exportCustomerInfoVOList = list.stream()

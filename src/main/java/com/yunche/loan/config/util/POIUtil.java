@@ -491,8 +491,11 @@ public class POIUtil {
             List<Method> getfMethods = new ArrayList();
             //获取担保人-共贷人客户方法
             List<Method> getlMethods = new ArrayList();
-
-            ExportCustomerInfoVO exportCustomer = list.get(0);
+            ExportCustomerInfoVO exportCustomer =null;
+            if (list.size() !=0)
+            {
+                exportCustomer = list.get(0);
+            }
             if (exportCustomer !=null)
             {
                 Class<? extends ExportCustomerInfoVO> pclazz = exportCustomer.getClass();

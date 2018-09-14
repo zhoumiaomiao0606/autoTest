@@ -1444,8 +1444,8 @@
         <if test="pname !=null" >
             AND pcustomer.`name` = #{pname}
         </if>
-        <if test="startTime !=null and endTime !=null" >
-            having express_receive_date between #{startDate} and #{endDate}
+        <if test="startTime !=null and endTime !=null and startTime !='' and endTime !=''" >
+            having express_receive_date between #{startTime} and #{endTime}
         </if>
 
         </where>
