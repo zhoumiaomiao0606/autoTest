@@ -255,22 +255,23 @@ public class LoanProcessApprovalCommonServiceImpl implements LoanProcessApproval
 //            }
 //        }
 
-        //  PASS
-        if (ACTION_PASS.equals(action)) {
+        // 1、currentTask
 
-            // 当前有taskId，处理当前任务
-            if (null != approval.getTaskId()) {
+        // 当前有taskId，且为：PASS    -->  处理当前任务
+        if (null != approval.getTaskId() && ACTION_PASS.equals(action)) {
 
-                // pass-当前task
-                taskDistributionService.finish(approval.getTaskId(), approval.getOrderId(), approval.getTaskDefinitionKey());
-            }
-
-            // open-新产生的任务    如果新任务是：过去已存在(被打回过)，一律OPEN
-            List<String> newTaskKeyList = getNewTaskKeyList(processInstId, startTaskIdList);
-
-            // open-被打回过的Tasks
-            taskDistributionService.rejectFinish(approval.getTaskId(), approval.getOrderId(), newTaskKeyList);
+            // pass-当前task
+            taskDistributionService.finish(approval.getTaskId(), approval.getOrderId(), approval.getTaskDefinitionKey());
         }
+
+
+        // 2、newTasks
+
+        // open -> 新产生的任务    (如果新任务是：过去已存在(即被打回过)，一律OPEN)
+        List<String> newTaskKeyList = getNewTaskKeyList(processInstId, startTaskIdList);
+
+        // open -> 被打回过的Tasks
+        taskDistributionService.rejectFinish(approval.getTaskId(), approval.getOrderId(), newTaskKeyList);
     }
 
     /**
