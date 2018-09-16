@@ -47,7 +47,7 @@ public class SqlTimeInterceptor implements Interceptor {
         returnValue = invocation.proceed();
         long end = System.currentTimeMillis();
         long time = (end - start);
-        if (time > 1000) {
+        if (time > 1500) {
             String sql = getSql(configuration, boundSql, sqlId, time);
             log.info(sql);
         }
