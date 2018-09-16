@@ -89,7 +89,6 @@ public class BankCreditRecordScheduledTask {
             approval.setNeedPush(true);
 
             bankInterfaceSerialDOS.parallelStream()
-                    .filter(bankInterfaceSerialDO -> BaseConst.K_YORN_NO.equals(bankInterfaceSerialDO.getAutoReject()))
                     .forEach(bankInterfaceSerialDO -> {
 
                         Long orderId = bankInterfaceSerialDO.getOrderId();
