@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 
-# F_002
-HOSTS[0]="118.31.39.192"
-# G_001
-HOSTS[1]="47.98.242.21"
+# F_002-内网
+HOSTS[0]="172.16.186.81"
+# G_001-内网
+HOSTS[1]="172.16.1.178"
 
 USERNAME="root"
 PASSWORD="yunche@2018"
