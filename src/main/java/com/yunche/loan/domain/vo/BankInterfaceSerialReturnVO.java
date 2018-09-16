@@ -4,6 +4,7 @@ import lombok.Data;
 
 @Data
 public class BankInterfaceSerialReturnVO {
+
     private String api_status;
 
     private String api_msg;
@@ -20,4 +21,5 @@ public class BankInterfaceSerialReturnVO {
 
     private String trans_code;
 
+    private String auto_reject;
 }

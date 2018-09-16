@@ -29,4 +29,8 @@ public class BankInterfaceSerialDO {
 
     private Integer fileNum;
 
+    /**
+     * 当前记录，是否已经自动打回过：0-否;1-是;
+     */
+    private Byte autoReject;
 }

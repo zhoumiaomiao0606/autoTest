@@ -2,6 +2,7 @@ package com.yunche.loan.config.task;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.google.common.base.Preconditions;
 import com.yunche.loan.config.anno.DistributedLock;
 import com.yunche.loan.config.constant.BaseConst;
 import com.yunche.loan.config.result.ResultBean;
@@ -88,27 +89,31 @@ public class BankCreditRecordScheduledTask {
             approval.setNeedPush(true);
 
             bankInterfaceSerialDOS.parallelStream()
+                    .filter(bankInterfaceSerialDO -> BaseConst.K_YORN_NO.equals(bankInterfaceSerialDO.getAutoReject()))
                     .forEach(bankInterfaceSerialDO -> {
 
                         Long orderId = bankInterfaceSerialDO.getOrderId();
+                        String rejectReason = bankInterfaceSerialDO.getRejectReason();
 
                         approval.setOrderId(orderId);
 
-                        Byte status = bankInterfaceSerialDO.getStatus();
+                        LoanCustomerDO customerDO = loanCustomerDOMapper.selectByPrimaryKey(bankInterfaceSerialDO.getCustomerId(), null);
 
-                        LoanCustomerDO customerDO = loanCustomerDOMapper.selectByPrimaryKey(bankInterfaceSerialDO.getCustomerId(), BaseConst.VALID_STATUS);
                         // {"ICBC_API_RETMSG":"success","ICBC_API_TIMESTAMP":"2018-08-27 08:23:52","pub":{"retcode":"22094","retmsg":"该客户为灰名单客户"},"ICBC_API_RETCODE":0}
                         String apiMsg = bankInterfaceSerialDO.getApiMsg();
 
-                        if(StringUtils.isNotBlank(bankInterfaceSerialDO.getRejectReason())){
-                            approval.setInfo(customerDO.getName()+":"+bankInterfaceSerialDO.getRejectReason());
-                        }else if (StringUtils.isNotBlank(apiMsg)) {
+                        if (StringUtils.isNotBlank(rejectReason)) {
+
+                            approval.setInfo(customerDO.getName() + ":" + rejectReason);
+
+                        } else if (StringUtils.isNotBlank(apiMsg)) {
+
                             JSONObject jsonObject = JSON.parseObject(apiMsg);
                             JSONObject pub = jsonObject.getJSONObject("pub");
 
                             if (!CollectionUtils.isEmpty(pub)) {
                                 String retmsg = pub.getString("retmsg");
-                                approval.setInfo(customerDO.getName()+":"+retmsg);
+                                approval.setInfo(customerDO.getName() + ":" + retmsg);
                             }
                         }
 
@@ -120,6 +125,11 @@ public class BankCreditRecordScheduledTask {
                             if (approvalResult.getSuccess()) {
 
                                 logger.info("自动打回成功  >>>  orderId : {} , info : {} ", orderId, approval.getInfo());
+
+                                // 更新：auto_reject --> 1-是;
+                                bankInterfaceSerialDO.setAutoReject(BaseConst.K_YORN_YES);
+                                int count = bankInterfaceSerialDOMapper.updateByPrimaryKeySelective(bankInterfaceSerialDO);
+                                Preconditions.checkArgument(count > 0, "更新auto_reject失败");
 
                             } else {
 

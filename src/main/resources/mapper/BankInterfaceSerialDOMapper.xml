@@ -1,43 +1,46 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.yunche.loan.mapper.BankInterfaceSerialDOMapper">
     <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.BankInterfaceSerialDO">
-        <id column="serial_no" jdbcType="VARCHAR" property="serialNo"/>
-        <result column="order_id" jdbcType="BIGINT" property="orderId"/>
-        <result column="customer_id" jdbcType="BIGINT" property="customerId"/>
-        <result column="status" jdbcType="TINYINT" property="status"/>
-        <result column="request_time" jdbcType="TIMESTAMP" property="requestTime"/>
-        <result column="callback_time" jdbcType="TIMESTAMP" property="callbackTime"/>
-        <result column="reject_reason" jdbcType="VARCHAR" property="rejectReason"/>
-        <result column="trans_code" jdbcType="VARCHAR" property="transCode"/>
-        <result column="api_status" jdbcType="INTEGER" property="apiStatus"/>
-        <result column="api_msg" jdbcType="VARCHAR" property="apiMsg"/>
-        <result column="file_num" jdbcType="INTEGER" property="fileNum"/>
+        <id column="serial_no" property="serialNo" jdbcType="VARCHAR"/>
+        <result column="order_id" property="orderId" jdbcType="BIGINT"/>
+        <result column="customer_id" property="customerId" jdbcType="BIGINT"/>
+        <result column="status" property="status" jdbcType="TINYINT"/>
+        <result column="request_time" property="requestTime" jdbcType="TIMESTAMP"/>
+        <result column="callback_time" property="callbackTime" jdbcType="TIMESTAMP"/>
+        <result column="reject_reason" property="rejectReason" jdbcType="VARCHAR"/>
+        <result column="trans_code" property="transCode" jdbcType="VARCHAR"/>
+        <result column="api_status" property="apiStatus" jdbcType="INTEGER"/>
+        <result column="api_msg" property="apiMsg" jdbcType="VARCHAR"/>
+        <result column="file_num" property="fileNum" jdbcType="INTEGER"/>
+        <result column="auto_reject" property="autoReject" jdbcType="TINYINT"/>
     </resultMap>
     <sql id="Base_Column_List">
-    serial_no, order_id, customer_id, status, request_time, callback_time, reject_reason, 
-    trans_code, api_status, api_msg, file_num
-  </sql>
-    <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+        serial_no, order_id, customer_id, status, request_time, callback_time, reject_reason,
+        trans_code, api_status, api_msg, file_num, auto_reject
+    </sql>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String">
         select
         <include refid="Base_Column_List"/>
         from bank_interface_serial
         where serial_no = #{serialNo,jdbcType=VARCHAR}
     </select>
     <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
-    delete from bank_interface_serial
-    where serial_no = #{serialNo,jdbcType=VARCHAR}
-  </delete>
+        delete from bank_interface_serial
+        where serial_no = #{serialNo,jdbcType=VARCHAR}
+    </delete>
     <insert id="insert" parameterType="com.yunche.loan.domain.entity.BankInterfaceSerialDO">
-    insert into bank_interface_serial (serial_no, order_id, customer_id, 
-      status, request_time, callback_time, 
-      reject_reason, trans_code, api_status, 
-      api_msg, file_num)
-    values (#{serialNo,jdbcType=VARCHAR}, #{orderId,jdbcType=BIGINT}, #{customerId,jdbcType=BIGINT}, 
-      #{status,jdbcType=TINYINT}, #{requestTime,jdbcType=TIMESTAMP}, #{callbackTime,jdbcType=TIMESTAMP}, 
-      #{rejectReason,jdbcType=VARCHAR}, #{transCode,jdbcType=VARCHAR}, #{apiStatus,jdbcType=INTEGER}, 
-      #{apiMsg,jdbcType=VARCHAR}, #{fileNum,jdbcType=INTEGER})
-  </insert>
+        insert into bank_interface_serial (serial_no, order_id, customer_id,
+        status, request_time, callback_time,
+        reject_reason, trans_code, api_status,
+        api_msg, file_num, auto_reject
+        )
+        values (#{serialNo,jdbcType=VARCHAR}, #{orderId,jdbcType=BIGINT}, #{customerId,jdbcType=BIGINT},
+        #{status,jdbcType=TINYINT}, #{requestTime,jdbcType=TIMESTAMP}, #{callbackTime,jdbcType=TIMESTAMP},
+        #{rejectReason,jdbcType=VARCHAR}, #{transCode,jdbcType=VARCHAR}, #{apiStatus,jdbcType=INTEGER},
+        #{apiMsg,jdbcType=VARCHAR}, #{fileNum,jdbcType=INTEGER}, #{autoReject,jdbcType=TINYINT}
+        )
+    </insert>
     <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.BankInterfaceSerialDO">
         insert into bank_interface_serial
         <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -74,6 +77,9 @@
             <if test="fileNum != null">
                 file_num,
             </if>
+            <if test="autoReject != null">
+                auto_reject,
+            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="serialNo != null">
@@ -108,6 +114,9 @@
             </if>
             <if test="fileNum != null">
                 #{fileNum,jdbcType=INTEGER},
+            </if>
+            <if test="autoReject != null">
+                #{autoReject,jdbcType=TINYINT},
             </if>
         </trim>
     </insert>
@@ -144,23 +153,28 @@
             <if test="fileNum != null">
                 file_num = #{fileNum,jdbcType=INTEGER},
             </if>
+            <if test="autoReject != null">
+                auto_reject = #{autoReject,jdbcType=TINYINT},
+            </if>
         </set>
         where serial_no = #{serialNo,jdbcType=VARCHAR}
     </update>
     <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.BankInterfaceSerialDO">
-    update bank_interface_serial
-    set order_id = #{orderId,jdbcType=BIGINT},
-      customer_id = #{customerId,jdbcType=BIGINT},
-      status = #{status,jdbcType=TINYINT},
-      request_time = #{requestTime,jdbcType=TIMESTAMP},
-      callback_time = #{callbackTime,jdbcType=TIMESTAMP},
-      reject_reason = #{rejectReason,jdbcType=VARCHAR},
-      trans_code = #{transCode,jdbcType=VARCHAR},
-      api_status = #{apiStatus,jdbcType=INTEGER},
-      api_msg = #{apiMsg,jdbcType=VARCHAR},
-      file_num = #{fileNum,jdbcType=INTEGER}
-    where serial_no = #{serialNo,jdbcType=VARCHAR}
-  </update>
+        update bank_interface_serial
+        set order_id = #{orderId,jdbcType=BIGINT},
+        customer_id = #{customerId,jdbcType=BIGINT},
+        status = #{status,jdbcType=TINYINT},
+        request_time = #{requestTime,jdbcType=TIMESTAMP},
+        callback_time = #{callbackTime,jdbcType=TIMESTAMP},
+        reject_reason = #{rejectReason,jdbcType=VARCHAR},
+        trans_code = #{transCode,jdbcType=VARCHAR},
+        api_status = #{apiStatus,jdbcType=INTEGER},
+        api_msg = #{apiMsg,jdbcType=VARCHAR},
+        file_num = #{fileNum,jdbcType=INTEGER},
+        auto_reject = #{autoReject,jdbcType=TINYINT}
+        where serial_no = #{serialNo,jdbcType=VARCHAR}
+    </update>
+
 
     <select id="selectByCustomerIdAndTransCode" resultMap="BaseResultMap">
         select
@@ -208,7 +222,7 @@
 
                             ) orderdata ON orderdata.serial_no = serial.serial_no AND serial.trans_code = 'applyCredit'
 
-                    WHERE serial.api_status != 200 OR serial.status NOT IN (1, 2, 0)
+                    WHERE serial.api_status != 200 OR serial.status NOT IN (1, 2, 0) AND serial.auto_reject = 0
 
             ) tmp
 
@@ -219,4 +233,5 @@
     AND       p.bank_credit_record = 2 OR p.bank_credit_record = 3
 
   </select>
+    
 </mapper>
