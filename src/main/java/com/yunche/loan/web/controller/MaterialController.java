@@ -72,7 +72,7 @@ public class MaterialController {
      */
     @GetMapping(value = "/down2oss")
     public ResultBean<String> down2OSS(@RequestParam Long orderId) {
-        return materialService.downloadFiles2OSS(orderId, true);
+        return materialService.downloadFiles2OSS(orderId, false);
     }
 
     @GetMapping(value = "/downcar2oss")
