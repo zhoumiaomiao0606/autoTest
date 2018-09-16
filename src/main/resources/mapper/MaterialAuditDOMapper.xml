@@ -58,6 +58,8 @@
         FALSE
         END
 
+        order by c.cust_type
+
     </select>
 
     <!--selectDownloadMaterial-->
