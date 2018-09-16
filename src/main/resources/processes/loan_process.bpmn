@@ -428,8 +428,8 @@
     </sequenceFlow>
     <exclusiveGateway id="exclusivegateway39" name="Exclusive Gateway"></exclusiveGateway>
     <sequenceFlow id="flow277" sourceRef="exclusivegateway39" targetRef="parallelgateway5"></sequenceFlow>
-    <userTask id="usertask_outworker_cost_apply" name="外勤费用申报"></userTask>
-    <userTask id="usertask_outworker_cost_apply_review" name="财务报销"></userTask>
+    <userTask id="usertask_outworker_cost_apply" name="外勤费用申报" activiti:candidateGroups="管理员,总经理,培训经理,业务内勤"></userTask>
+    <userTask id="usertask_outworker_cost_apply_review" name="财务报销" activiti:candidateGroups="管理员,总经理,培训经理,,财务经理,财务助理"></userTask>
     <sequenceFlow id="flow278" name="电审反审" sourceRef="exclusivegateway38" targetRef="usertask_telephone_verify">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 5}]]></conditionExpression>
     </sequenceFlow>
