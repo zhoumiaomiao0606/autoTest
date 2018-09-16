@@ -222,7 +222,7 @@
 
                             ) orderdata ON orderdata.serial_no = serial.serial_no AND serial.trans_code = 'applyCredit'
 
-                    WHERE serial.api_status != 200 OR serial.status NOT IN (1, 2, 0) AND serial.auto_reject = 0
+                    WHERE   serial.auto_reject = 0  AND serial.api_status != 200 OR serial.status NOT IN (1, 2, 0)
 
             ) tmp
 
@@ -233,5 +233,5 @@
     AND       p.bank_credit_record = 2 OR p.bank_credit_record = 3
 
   </select>
-    
+
 </mapper>
