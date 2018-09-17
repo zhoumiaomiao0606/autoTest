@@ -31,13 +31,13 @@ public class AppLoanOrderController {
     /**
      * 征信申请单  -新建（保存主贷人客户时，新建业务单）
      *
-     * @param appCustomerParam
+     * @param customerParam
      * @return
      */
     @Limiter
     @PostMapping(value = "/creditapply/create", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultBean<AppCreditApplyVO> createCreditApplyOrder(@RequestBody AppCustomerParam appCustomerParam) {
-        return appLoanOrderService.createCreditApplyOrder(appCustomerParam);
+    public ResultBean<AppCreditApplyVO> createCreditApplyOrder(@RequestBody CustomerParam customerParam) {
+        return appLoanOrderService.createCreditApplyOrder(customerParam);
     }
 
 
@@ -62,10 +62,8 @@ public class AppLoanOrderController {
      * 众安接口详情
      */
     @GetMapping(value = "/zhongandetail")
-    // public ResultBean zhongAnDetail(@RequestParam (value = "idcard",required = false) String idcard,@RequestParam (value = "customername",required = false) String customername){
     public ResultBean zhongAnDetail(@RequestParam(value = "orderid", required = false) String orderId) {
         return ResultBean.ofSuccess(appLoanOrderService.zhongAnDetail(Long.valueOf(orderId)));
-
     }
 
     /**
@@ -129,7 +127,7 @@ public class AppLoanOrderController {
      * @return
      */
     @PostMapping(value = "/customer/update", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultBean<Void> updateCustomer(@RequestBody AppCustomerParam param) {
+    public ResultBean<Void> updateCustomer(@RequestBody CustomerParam param) {
         return appLoanOrderService.updateCustomer(param);
     }
 
@@ -141,7 +139,7 @@ public class AppLoanOrderController {
      */
     @Limiter
     @PostMapping(value = "/customer/addrela", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultBean<Long> addRelaCustomer(@RequestBody AppCustomerParam param) {
+    public ResultBean<Long> addRelaCustomer(@RequestBody CustomerParam param) {
         return appLoanOrderService.addRelaCustomer(param);
     }
 

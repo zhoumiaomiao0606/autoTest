@@ -32,7 +32,6 @@ import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.yunche.loan.config.constant.BaseConst.INVALID_STATUS;
 import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
 import static com.yunche.loan.config.constant.CarConst.CAR_DETAIL;
 import static com.yunche.loan.config.constant.CarConst.CAR_TYPE_MAP;
@@ -322,7 +321,7 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
 
     @Override
     @Transactional
-    public ResultBean<AppCreditApplyVO> createCreditApplyOrder(AppCustomerParam customerParam) {
+    public ResultBean<AppCreditApplyVO> createCreditApplyOrder(CustomerParam customerParam) {
         Preconditions.checkArgument(StringUtils.isNotBlank(customerParam.getName()), "姓名不能为空");
         Preconditions.checkArgument(StringUtils.isNotBlank(customerParam.getIdCard()), "身份证号不能为空");
         Preconditions.checkArgument(StringUtils.isNotBlank(customerParam.getMobile()), "手机号码不能为空");
@@ -379,7 +378,7 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
 
     @Override
     @Transactional
-    public ResultBean<Void> updateCustomer(AppCustomerParam param) {
+    public ResultBean<Void> updateCustomer(CustomerParam param) {
         Preconditions.checkNotNull(param, "客户信息不能为空");
 
         LoanCustomerDO loanCustomerDO = new LoanCustomerDO();
@@ -751,10 +750,10 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
             VehicleInformationDO vehicleInformationDO = vehicleInformationDOMapper.selectByPrimaryKey(vid);
 
             String tmpApplyLicensePlateArea = null;
-            if (vehicleInformationDO.getApply_license_plate_area()!=null) {
+            if (vehicleInformationDO.getApply_license_plate_area() != null) {
                 BaseAreaDO baseAreaDO = baseAreaDOMapper.selectByPrimaryKey(Long.valueOf(vehicleInformationDO.getApply_license_plate_area()), VALID_STATUS);
                 //（个性化）如果上牌地是区县一级，则返回形式为 省+区
-                if("3".equals(String.valueOf(baseAreaDO.getLevel()))){
+                if ("3".equals(String.valueOf(baseAreaDO.getLevel()))) {
                     Long parentAreaId = baseAreaDO.getParentAreaId();
                     BaseAreaDO cityDO = baseAreaDOMapper.selectByPrimaryKey(parentAreaId, null);
                     baseAreaDO.setParentAreaId(cityDO.getParentAreaId());
@@ -1065,43 +1064,26 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
     @Override
     @Transactional
     public ResultBean<Void> updateBaseInfo(AppLoanBaseInfoDetailParam param) {
+
         LoanBaseInfoDO loanBaseInfoDO = new LoanBaseInfoDO();
         convertLoanBaseInfo(param, loanBaseInfoDO);
 
         ResultBean<Void> resultBean = loanBaseInfoService.update(loanBaseInfoDO);
-
         return resultBean;
     }
 
     @Override
     @Transactional
-    public ResultBean<Long> addRelaCustomer(AppCustomerParam customerParam) {
-        // convert
-        LoanCustomerDO loanCustomerDO = new LoanCustomerDO();
-        convertLoanCustomer(customerParam, loanCustomerDO);
+    public ResultBean<Long> addRelaCustomer(CustomerParam customerParam) {
 
-        ResultBean<Long> resultBean = loanCustomerService.create(loanCustomerDO);
-        Preconditions.checkArgument(resultBean.getSuccess(), resultBean.getMsg());
-
-        // 文件保存
-        ResultBean<Void> fileResultBean = loanFileService.updateOrInsertByCustomerIdAndUploadType(resultBean.getData(), customerParam.getFiles(), UPLOAD_TYPE_NORMAL);
-        Preconditions.checkArgument(fileResultBean.getSuccess(), fileResultBean.getMsg());
-
-        return ResultBean.ofSuccess(resultBean.getData(), "创建关联人成功");
+        return loanCustomerService.addRelaCustomer(customerParam);
     }
 
     @Override
     @Transactional
     public ResultBean<Long> delRelaCustomer(Long customerId) {
-        Preconditions.checkNotNull(customerId, "客户ID不能为空");
 
-        LoanCustomerDO loanCustomerDO = new LoanCustomerDO();
-        loanCustomerDO.setId(customerId);
-        loanCustomerDO.setStatus(INVALID_STATUS);
-        ResultBean<Void> resultBean = loanCustomerService.update(loanCustomerDO);
-        Preconditions.checkArgument(resultBean.getSuccess(), resultBean.getMsg());
-
-        return ResultBean.ofSuccess(null, "删除关联人成功");
+        return loanCustomerService.delRelaCustomer(customerId);
     }
 
     @Override
@@ -1221,10 +1203,10 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
         loanCarInfoVO.setApplyLicensePlateArea(tmpApplyLicensePlateArea);*/
 
         String tmpApplyLicensePlateArea = null;
-        if (loanBaseInfoDO.getAreaId()!=null) {
+        if (loanBaseInfoDO.getAreaId() != null) {
             BaseAreaDO baseAreaDO = baseAreaDOMapper.selectByPrimaryKey(loanBaseInfoDO.getAreaId(), VALID_STATUS);
             //（个性化）如果上牌地是区县一级，则返回形式为 省+区
-            if("3".equals(String.valueOf(baseAreaDO.getLevel()))){
+            if ("3".equals(String.valueOf(baseAreaDO.getLevel()))) {
                 Long parentAreaId = baseAreaDO.getParentAreaId();
                 BaseAreaDO cityDO = baseAreaDOMapper.selectByPrimaryKey(parentAreaId, null);
                 baseAreaDO.setParentAreaId(cityDO.getParentAreaId());
@@ -1317,7 +1299,7 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
         }
     }
 
-    private void convertLoanCustomer(AppCustomerParam customerParam, LoanCustomerDO loanCustomerDO) {
+    private void convertLoanCustomer(CustomerParam customerParam, LoanCustomerDO loanCustomerDO) {
         if (null != customerParam) {
             BeanUtils.copyProperties(customerParam, loanCustomerDO);
         }
@@ -1363,7 +1345,7 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
      * @param customerParam
      * @return
      */
-    private Long createLoanCustomer(AppCustomerParam customerParam) {
+    private Long createLoanCustomer(CustomerParam customerParam) {
         // convert
         LoanCustomerDO loanCustomerDO = new LoanCustomerDO();
         convertLoanCustomer(customerParam, loanCustomerDO);

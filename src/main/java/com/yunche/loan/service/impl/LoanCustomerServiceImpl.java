@@ -60,7 +60,7 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
     private LoanQueryDOMapper loanQueryDOMapper;
 
     @Autowired
-    private  LoanFileDOMapper loanFileDOMapper;
+    private LoanFileDOMapper loanFileDOMapper;
 
     @Autowired
     private OSSConfig ossConfig;
@@ -295,6 +295,23 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
     @Override
     @Transactional
     public ResultBean<Long> addRelaCustomer(CustomerParam customerParam) {
+        Preconditions.checkNotNull(customerParam, "客户信息不能为空");
+
+        // check
+        if (StringUtils.isNotBlank(customerParam.getIdCard())) {
+
+            List<LoanCustomerDO> loanCustomerDOS = loanCustomerDOMapper.listByPrincipalCustIdAndType(customerParam.getPrincipalCustId(), null, VALID_STATUS);
+            if (!CollectionUtils.isEmpty(loanCustomerDOS)) {
+
+                loanCustomerDOS.stream()
+                        .forEach(e -> {
+
+                            Preconditions.checkArgument(customerParam.getIdCard().equals(e.getIdCard()), "不可重复添加相同关联人");
+                        });
+            }
+        }
+
+
         // convert
         LoanCustomerDO loanCustomerDO = new LoanCustomerDO();
         convertLoanCustomer(customerParam, loanCustomerDO);
@@ -317,6 +334,7 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
         LoanCustomerDO loanCustomerDO = new LoanCustomerDO();
         loanCustomerDO.setId(customerId);
         loanCustomerDO.setStatus(INVALID_STATUS);
+
         ResultBean<Void> resultBean = update(loanCustomerDO);
         Preconditions.checkArgument(resultBean.getSuccess(), resultBean.getMsg());
 
@@ -327,32 +345,32 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
     public BankAndSocietyResultVO bankPicExport(List<Long> list) {
         BankAndSocietyResultVO bankAndSocietyResultVO = new BankAndSocietyResultVO();
         List<String> filePathString = new ArrayList<>();
-        if(list !=null){
-            if(list.size()!=0){
+        if (list != null) {
+            if (list.size() != 0) {
                 List<BankAndSocietyPicVO> fileList = loanFileDOMapper.selectFileInfoByCusId(list);
-                if(fileList !=null){
-                    for(BankAndSocietyPicVO bankAndSocietyPicVO:fileList){
+                if (fileList != null) {
+                    for (BankAndSocietyPicVO bankAndSocietyPicVO : fileList) {
                         List<String> picPath = new ArrayList<>();
-                       String[] total = bankAndSocietyPicVO.getPath().replace("\"","").replace("[","").replace("]","").split(",");
-                       for(String s:total){
-                           if(s!=null&&!"".equals(s)){
-                               picPath.add(s);
-                           }
-                       }
-                       LoanCustomerDO loanCustomerDO = loanCustomerDOMapper.selectByPrimaryKey(bankAndSocietyPicVO.getCustomerId(),null);
-                       if(loanCustomerDO !=null &&picPath.size()!=0) {
-                           String fileName = loanCustomerDO.getName() + loanCustomerDO.getId()+".jpg";
-                           String retPath = ImageUtil.mergeImage2Pic(fileName, picPath);
-                           File file = new File(retPath);
-                           //上传OSS
-                           OSSClient ossClient = OSSUnit.getOSSClient();
-                           String bucketName = ossConfig.getBucketName();
-                           String diskName = "img"+File.separator+"bank";
-                           OSSUnit.deleteFile(ossClient, bucketName, diskName + File.separator, fileName.toString());
-                           OSSUnit.uploadObject2OSS(ossClient, file, bucketName, diskName + File.separator);
-                           retPath = retPath.substring(4);
-                           filePathString.add(diskName + retPath);
-                       }
+                        String[] total = bankAndSocietyPicVO.getPath().replace("\"", "").replace("[", "").replace("]", "").split(",");
+                        for (String s : total) {
+                            if (s != null && !"".equals(s)) {
+                                picPath.add(s);
+                            }
+                        }
+                        LoanCustomerDO loanCustomerDO = loanCustomerDOMapper.selectByPrimaryKey(bankAndSocietyPicVO.getCustomerId(), null);
+                        if (loanCustomerDO != null && picPath.size() != 0) {
+                            String fileName = loanCustomerDO.getName() + loanCustomerDO.getId() + ".jpg";
+                            String retPath = ImageUtil.mergeImage2Pic(fileName, picPath);
+                            File file = new File(retPath);
+                            //上传OSS
+                            OSSClient ossClient = OSSUnit.getOSSClient();
+                            String bucketName = ossConfig.getBucketName();
+                            String diskName = "img" + File.separator + "bank";
+                            OSSUnit.deleteFile(ossClient, bucketName, diskName + File.separator, fileName.toString());
+                            OSSUnit.uploadObject2OSS(ossClient, file, bucketName, diskName + File.separator);
+                            retPath = retPath.substring(4);
+                            filePathString.add(diskName + retPath);
+                        }
                     }
                 }
             }
@@ -365,27 +383,28 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
     public BankAndSocietyResultVO societyPicExport(List<Long> list) {
         BankAndSocietyResultVO bankAndSocietyResultVO = new BankAndSocietyResultVO();
         List<String> filePathString = new ArrayList<>();
-        if(list !=null){
-            if(list.size()!=0){
+        if (list != null) {
+            if (list.size() != 0) {
                 List<BankAndSocietyPicVO> fileList = loanFileDOMapper.selectSocFileInfoByCusId(list);
-                if(fileList !=null){
-                    for(BankAndSocietyPicVO bankAndSocietyPicVO:fileList){ List<String> picPath = new ArrayList<>();
-                        String[] total = bankAndSocietyPicVO.getPath().replace("\"","").replace("[","").replace("]","").split(",");
-                        for(String s:total){
-                            if(s!=null&&!"".equals(s)){
+                if (fileList != null) {
+                    for (BankAndSocietyPicVO bankAndSocietyPicVO : fileList) {
+                        List<String> picPath = new ArrayList<>();
+                        String[] total = bankAndSocietyPicVO.getPath().replace("\"", "").replace("[", "").replace("]", "").split(",");
+                        for (String s : total) {
+                            if (s != null && !"".equals(s)) {
                                 picPath.add(s);
                             }
                         }
-                        LoanCustomerDO loanCustomerDO = loanCustomerDOMapper.selectByPrimaryKey(bankAndSocietyPicVO.getCustomerId(),null);
-                        if(loanCustomerDO !=null &&picPath.size()!=0) {
-                            String fileName = loanCustomerDO.getName() + loanCustomerDO.getId()+".jpg";
+                        LoanCustomerDO loanCustomerDO = loanCustomerDOMapper.selectByPrimaryKey(bankAndSocietyPicVO.getCustomerId(), null);
+                        if (loanCustomerDO != null && picPath.size() != 0) {
+                            String fileName = loanCustomerDO.getName() + loanCustomerDO.getId() + ".jpg";
                             String retPath = ImageUtil.mergeImage2Pic(fileName, picPath);
 
                             File file = new File(retPath);
                             //上传OSS
                             OSSClient ossClient = OSSUnit.getOSSClient();
                             String bucketName = ossConfig.getBucketName();
-                            String diskName = "img"+File.separator+"society";
+                            String diskName = "img" + File.separator + "society";
                             OSSUnit.deleteFile(ossClient, bucketName, diskName + File.separator, fileName.toString());
                             OSSUnit.uploadObject2OSS(ossClient, file, bucketName, diskName + File.separator);
                             retPath = retPath.substring(4);
@@ -585,7 +604,6 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
      * @return
      */
     private Long createLoanCustomer(CustomerParam customerParam) {
-
 
 
         LoanCustomerDO loanCustomerDO = new LoanCustomerDO();

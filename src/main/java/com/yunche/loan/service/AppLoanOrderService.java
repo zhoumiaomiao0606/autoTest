@@ -19,7 +19,7 @@ public interface AppLoanOrderService {
 
     ResultBean<AppCreditApplyOrderVO> creditApplyOrderDetail(Long orderId);
 
-    ResultBean<AppCreditApplyVO> createCreditApplyOrder(AppCustomerParam creditApplyOrderVO);
+    ResultBean<AppCreditApplyVO> createCreditApplyOrder(CustomerParam customerParam);
 
     ResultBean<CustDetailVO> customerDetail(Long orderId);
 
@@ -35,9 +35,9 @@ public interface AppLoanOrderService {
 
     ResultBean<Void> updateBaseInfo(AppLoanBaseInfoDetailParam param);
 
-    ResultBean<Long> addRelaCustomer(AppCustomerParam param);
+    ResultBean<Long> addRelaCustomer(CustomerParam param);
 
-    ResultBean<Void> updateCustomer(AppCustomerParam param);
+    ResultBean<Void> updateCustomer(CustomerParam param);
 
     ResultBean<Long> delRelaCustomer(Long customerId);
 

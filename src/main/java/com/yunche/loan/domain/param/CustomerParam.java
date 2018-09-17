@@ -172,4 +172,12 @@ public class CustomerParam {
 
     private String occupation;
 
+
+    private Byte bankCreditStatus;
+
+    private String bankCreditDetail;
+
+    private Byte socialCreditStatus;
+
+    private String socialCreditDetail;
 }
