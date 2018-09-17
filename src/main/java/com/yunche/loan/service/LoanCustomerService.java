@@ -20,7 +20,7 @@ public interface LoanCustomerService {
 
     ResultBean<CustDetailVO> detailAll(Long orderId, Byte fileUploadType);
 
-    ResultBean<Long> updateAll(AllCustDetailParam allCustDetailParam);
+    ResultBean<Void> updateAll(AllCustDetailParam allCustDetailParam);
 
     ResultBean<Long> create(LoanCustomerDO loanCustomerDO);
 
@@ -31,8 +31,6 @@ public interface LoanCustomerService {
     ResultBean<LoanRepeatVO> checkRepeat(String idCard, Long orderId);
 
     ResultBean<CustDetailVO> customerDetail(Long orderId);
-
-    ResultBean<Void> updateCustomer(AllCustDetailParam allCustDetailParam);
 
     ResultBean<Long> addRelaCustomer(CustomerParam param);
 

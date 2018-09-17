@@ -45,7 +45,7 @@ public class LoanCustomerController {
      */
     @PostMapping(value = "/update", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean<Void> updateCustomer(@RequestBody AllCustDetailParam allCustDetailParam) {
-        return loanCustomerService.updateCustomer(allCustDetailParam);
+        return loanCustomerService.updateAll(allCustDetailParam);
     }
 
     /**
