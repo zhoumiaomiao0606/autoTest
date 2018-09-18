@@ -2,6 +2,8 @@ package com.yunche.loan.domain.vo;
 
 import lombok.Data;
 
+import java.util.Date;
+
 /**
  * @author: ZhongMingxiao
  * @create: 2018-09-07 10:48
@@ -28,22 +30,22 @@ public class MaterialReviewChartVO
     private String bank;
 
     //申请征信时间
-    private String credit_apply_time;
+    private Date credit_apply_time;
 
     //银行分期本金
     private String bank_period_principal;
 
     //垫款日期
-    private String remitdate;
+    private Date remitdate;
 
     //资料接收日期
-    private String express_receive_date;
+    private Date express_receive_date;
 
     //资料齐全日期
-    private String complete_material_date;
+    private Date complete_material_date;
 
     //资料审核提交日期
-    private String materialReviewSubmit;
+    private Date materialReviewSubmit;
 
     //资料审核状态
     private String material_review;
@@ -55,13 +57,13 @@ public class MaterialReviewChartVO
     private String supplementContent;
 
     //提车资料提交时间
-    private String carMaterialCreateTime;
+    private Date carMaterialCreateTime;
 
     //资料增补时间
-    private String supplementTime;
+    private Date supplementTime;
 
     //合同上交银行日期
-    private String express_sendbank_date;
+    private Date express_sendbank_date;
 
     //垫款超期天数
     private String remitOverdueTime;

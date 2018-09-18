@@ -2,6 +2,8 @@ package com.yunche.loan.domain.vo;
 
 import lombok.Data;
 
+import java.util.Date;
+
 /**
  * @author: ZhongMingxiao
  * @create: 2018-09-06 18:07
@@ -49,10 +51,10 @@ public class SocialCreditChartVO
     private String credit_result;
 
     //征信申请时间
-    private String credit_apply_time;
+    private Date credit_apply_time;
 
     //征信提交时间
-    private String credit_query_time;
+    private Date credit_query_time;
 
     //提交人
     private String gmt_user;
