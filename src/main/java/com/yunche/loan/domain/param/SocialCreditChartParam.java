@@ -13,15 +13,20 @@ import java.util.List;
 @Data
 public class SocialCreditChartParam extends BaseQuery
 {
-    private  String startDate;
-    private  String endDate;
+  /*  private  String startDate;
+    private  String endDate;*/
 
     //征信申请时间
-    private String startCreditGmtCreate;
-    private String endCreditGmtCreate;
+  /*  private String startCreditGmtCreate;
+    private String endCreditGmtCreate;*/
+
+    //大区
+    private Long biz_areaId;
 
     //合伙人团队列表
     private List<Long> partnerList;
     //贷款银行列表
     private List<String> bankList;
+    //征信申请时间-排序
+    private byte orderBy;
 }

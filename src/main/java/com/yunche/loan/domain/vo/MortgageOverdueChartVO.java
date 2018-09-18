@@ -10,6 +10,8 @@ import lombok.Data;
 @Data
 public class MortgageOverdueChartVO
 {
+    //大区
+    private String biz_area;
     //业务区域
     private String area_name;
 
@@ -24,6 +26,9 @@ public class MortgageOverdueChartVO
 
     //手机号
     private String customer_mobile;
+
+    //申请征信时间
+    private String credit_apply_time;
 
     //贷款银行
     private String bank;

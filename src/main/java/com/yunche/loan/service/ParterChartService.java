@@ -3,6 +3,7 @@ package com.yunche.loan.service;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.param.CreditApplyCustomerByMonthChartParam;
 import com.yunche.loan.domain.param.LoanApplyOrdersByMonthChartParam;
+import com.yunche.loan.domain.param.LoanApplyOrdersByMonthRemitDetailChartParam;
 
 /**
  * @author: ZhongMingxiao
@@ -14,4 +15,6 @@ public interface ParterChartService
     ResultBean getCreditApplyCustomerByMonthChart(CreditApplyCustomerByMonthChartParam param);
 
     ResultBean getLoanApplyOrdersByMonthChart(LoanApplyOrdersByMonthChartParam param);
+
+    ResultBean getLoanApplyOrdersByMonthRemitDetailChart(LoanApplyOrdersByMonthRemitDetailChartParam param);
 }

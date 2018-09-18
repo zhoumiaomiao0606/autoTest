@@ -1,18 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.yunche.loan.mapper.ParterChartDOMapper">
+
     <!--=======================================按月查询征信申请查询客户数=========================================-->
     <select id="selectCreditApplyCustomerCount" parameterType="com.yunche.loan.domain.param.CreditApplyCustomerByMonthChartParam"  resultType="long" >
+           SELECT COUNT(1) FROM
+                  (
+          SELECT id
+          FROM
+          loan_customer WHERE
+          principal_cust_id IN
+          (
+          SELECT loan_customer_id
+          FROM loan_order
+          WHERE id IN(
+                   SELECT
+                   DISTINCT
+                   order_id
+                   FROM
+                   loan_process_log
+                   WHERE task_definition_key = 'usertask_credit_apply' AND action = 1
+                  )
+          )
+          ) ids
+    </select>
 
-        SELECT COUNT(1) FROM
-        (
-         SELECT
-         DISTINCT
-         order_id,task_definition_key
-         FROM
-         loan_process_log
-         WHERE task_definition_key = 'usertask_visit_verify' AND action = 1 AND create_time >= '2018-05-04'
-        ) orders
+    <select id="selectLoanApplyOrdersByMonth" parameterType="com.yunche.loan.domain.param.LoanApplyOrdersByMonthChartParam"  resultType="com.yunche.loan.domain.vo.LoanApplyOrdersVO" >
+          SELECT
+             order_id,task_definition_key
+             FROM
+             loan_process_log
+             WHERE order_id in(
+             SELECT DISTINCT
+             order_id
+             FROM
+             loan_process_log
+             WHERE action =1 AND task_definition_key = 'usertask_loan_apply' AND create_time BETWEEN '2016-10' AND '2019-01-01'
+             )  AND create_time BETWEEN '2016-10' AND '2019-01-01' AND action =1
     </select>
 
 
