@@ -56,4 +56,12 @@ public interface TaskSchedulingDOMapper {
     Long selectRefundApplyLevel(Long employeeId);
 
     Long selectMaterialSupplementLevel(Long employeeId);
+
+    /**
+     * 查询 弃单列表
+     *
+     * @param taskListQuery
+     * @return
+     */
+    List<TaskListVO> selectCancelTaskList(TaskListQuery taskListQuery);
 }

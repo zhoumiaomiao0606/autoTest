@@ -2368,4 +2368,153 @@
             and base.partner_id = #{partnerId}
         </if>
     </select>
+
+    <!--selectCancelTaskList-->
+    <select id="selectCancelTaskList" parameterType="com.yunche.loan.domain.query.TaskListQuery" resultType="com.yunche.loan.domain.vo.TaskListVO">
+
+        SELECT
+
+                      main.id                                      AS id,
+                      join_e.id                                    AS salesmanId,
+                      join_p.id                                    AS partnerId,
+                      join_b.area_id                               AS bizAreaId,
+                      join_c.id                                    AS customerId,
+                      join_c.name                                  AS customer,
+                      DATE_FORMAT(main.gmt_create,'%Y-%m-%d %H:%i:%S')
+                                                                   AS orderGmtCreate,
+                      join_c.id_card                               AS idCard,
+                      join_c.mobile                                AS mobile,
+                      join_e.name                                  AS salesman,
+                      join_b.bank                                  AS bank,
+                      join_d.name                                  AS departmentName,
+                      join_f.loan_amount                           AS loanAmount,
+                      join_f.bank_period_principal                 AS bankPeriodPrincipal,
+                      join_f.sign_rate                             AS signRate,
+                      join_i.car_type                              AS carType,
+                      join_h.license_plate_number                  AS licensePlateNumber,
+                      join_p.name                                  AS partner,
+                      join_f.loan_time                             AS loanTime,
+                      join_f.down_payment_money                    AS downPaymentMoney,
+                      0                                            AS overdueNum,
+                      DATE_FORMAT(join_r.lend_date,'%Y-%m-%d %H:%i:%S') AS lendDate,
+                      deputy.order_status                          AS orderStatus,
+                      join_f.financial_product_name                AS financial_product_name,
+                      join_f.car_price                             AS car_price,
+                      join_f.each_month_repay                      AS each_month_repay,
+                      DATE_FORMAT(join_bp.gmt_create,'%Y-%m-%d %H:%i:%S')
+                                                                   AS paymentGtCreate,
+                      deputy.telephone_verify                      AS telephoneVerifyStatus,
+                      join_c.open_card_order                       AS openCardOrder,
+                      useGetSmallCarName(join_i.car_detail_id)     AS carName,
+                      join_i.gps_num                               AS carGpsNum,
+                      join_bp.remit_amount                         AS remitAmount,
+
+                      DATE_FORMAT(deputy_log.create_time ,'%Y-%m-%d %H:%i:%S')
+                                                                   AS    cancelGmtCreate,
+
+                      complex_log.usertask_credit_apply_gmt_user_name
+                                                                   AS creditMan,
+                      DATE_FORMAT(complex_log.usertask_credit_apply_create_time, '%Y-%m-%d %H:%i:%S' )
+                                                                   AS creditDate,
+                      DATE_FORMAT(complex_log.usertask_bank_credit_record_create_time, '%Y-%m-%d %H:%i:%S' )
+                                                                   AS bankCreditDate,
+                      DATE_FORMAT(complex_log.usertask_social_credit_record_create_time, '%Y-%m-%d %H:%i:%S' )
+                                                                   AS socialCreditDate,
+                      DATE_FORMAT(complex_log.usertask_remit_review_create_time,'%Y-%m-%d %H:%i:%S')
+                                                                   AS remitGmtCreate,
+                      DATE_FORMAT(complex_log.usertask_loan_apply_create_time,'%Y-%m-%d %H:%i:%S')
+                                                                   AS loanGmtCreate,
+                      DATE_FORMAT(complex_log.usertask_telephone_verify_create_time,'%Y-%m-%d %H:%i:%S')
+                                                                   AS telephoneGmtCreate,
+                      DATE_FORMAT(complex_log.usertask_material_print_review_create_time,'%Y-%m-%d %H:%i:%S')
+                                                                   AS printGmtCreate,
+                      DATE_FORMAT(complex_log.usertask_visit_verify_create_time,'%Y-%m-%d %H:%i:%S')
+                                                                   AS visitGmtCreate
+
+              from  loan_order main
+              inner join loan_process deputy               on main.id               = deputy.order_id
+              left  join loan_customer join_c              on join_c.id             = main.loan_customer_id
+              left  join loan_base_info join_b             on join_b.id             = main.loan_base_info_id
+              left  join loan_financial_plan join_f        on join_f.id             = main.loan_financial_plan_id
+              left  join loan_car_info join_i              on join_i.id             = main.loan_car_info_id
+              left  join partner join_p                    on join_p.id             = join_b.partner_id
+              left  join employee join_e                   on join_e.id             = join_b.salesman_id
+              left  join department join_d                 on join_d.id             = join_p.department_id
+              left  join vehicle_information join_h        on join_h.id             = main.vehicle_information_id
+              left  join bank_lend_record join_r           on join_r.id             = main.bank_lend_record_id
+              left  join remit_details join_bp             on join_bp.id            = main.remit_details_id
+              left  join loan_process_log     deputy_log   on deputy_log.order_id   = main.id
+              left  join current_node_manager complex_log  on complex_log.order_id  = main.id
+
+        WHERE       deputy.order_status = 3
+
+        AND         deputy_log.action   = 2
+
+        AND         deputy.cancel_task_def_key  = deputy_log.task_definition_key
+
+        <if test="orderId != null">
+            AND main.id = #{orderId}
+        </if>
+        <if test="customer != null and customer != ''">
+            AND join_c.customer LIKE CONCAT('%', #{customer} ,'%')
+        </if>
+        <if test="mobile != null">
+            AND join_b.mobile = #{mobile}
+        </if>
+        <if test="idCard != null">
+            AND join_c.idCard = #{idCard}
+        </if>
+        <if test="salesmanId != null">
+            AND join_b.salesmanId = #{salesmanId}
+        </if>
+        <if test="bizAreaId != null">
+            AND
+            case
+            when (select level from base_area where area_id = #{bizAreaId}) = 0 then 1=1
+            when (select level from base_area where area_id = #{bizAreaId}) = 1 then join_b.bizAreaId in (select area_id from base_area where parent_area_id = #{bizAreaId})
+            when (select level from base_area where area_id = #{bizAreaId}) = 2 then join_b.bizAreaId = #{bizAreaId}
+            else 1=2
+            end
+        </if>
+        <if test="loanBank != null">
+            AND join_b.bank = #{loanBank}
+        </if>
+        <if test="loanAmountType != null">
+            <if test="loanAmountType == 1">
+                AND join_b.loanAmount = 1
+            </if>
+            <if test="loanAmountType == 2">
+                AND join_b.loanAmount = 2
+            </if>
+            <if test="loanAmountType == 3">
+                AND join_b.loanAmount = 3
+            </if>
+        </if>
+        <if test="startLoanGmtCreate != null">
+            AND TO_DAYS(complex_log.usertask_loan_apply_create_time) &gt;= TO_DAYS(#{startLoanGmtCreate})
+        </if>
+        <if test="endLoanGmtCreate != null">
+            AND TO_DAYS(complex_log.usertask_loan_apply_create_time) &lt;= TO_DAYS(#{endLoanGmtCreate})
+        </if>
+        <if test="startCreditGmtCreate != null">
+            AND TO_DAYS(complex_log.usertask_credit_apply_create_time) &gt;= TO_DAYS(#{startCreditGmtCreate})
+        </if>
+        <if test="endCreditGmtCreate != null">
+            AND TO_DAYS(complex_log.usertask_credit_apply_create_time) &lt;= TO_DAYS(#{endCreditGmtCreate})
+        </if>
+        <if test="startPrintGmtCreate != null">
+            AND TO_DAYS(complex_log.usertask_material_print_review_create_time) &gt;= TO_DAYS(#{startPrintGmtCreate})
+        </if>
+        <if test="endPrintGmtCreate != null">
+            AND TO_DAYS(complex_log.usertask_material_print_review_create_time) &lt;= TO_DAYS(#{endPrintGmtCreate})
+        </if>
+        <if test="startRemitGmtCreate != null">
+            AND TO_DAYS(complex_log.usertask_remit_review_create_time) &gt;= TO_DAYS(#{startRemitGmtCreate})
+        </if>
+        <if test="endRemitGmtCreate != null">
+            AND TO_DAYS(complex_log.usertask_remit_review_create_time) &lt;= TO_DAYS(#{endRemitGmtCreate})
+        </if>
+
+    </select>
+
 </mapper>

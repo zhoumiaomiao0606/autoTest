@@ -41,7 +41,6 @@ public class TaskListQuery {
 
     Set<String> juniorIds = Sets.newHashSet();
 
-    @NotBlank
     private String taskDefinitionKey;
 
     /**
@@ -60,6 +59,11 @@ public class TaskListQuery {
     @NotNull
     private Integer taskStatus;
     private Integer taskStatus_;
+
+    /**
+     * 订单总状态
+     */
+    private Integer orderStatus;
 
     private String transCode;
 

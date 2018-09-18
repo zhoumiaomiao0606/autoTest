@@ -9,6 +9,7 @@ public class TaskListVO {
     private String processId;
     private String taskId;
     private String taskKey;
+    private String cancelTaskKey;
 
     private String overdueAmount;
     private String taskDisStatus;
@@ -28,10 +29,11 @@ public class TaskListVO {
     private String orderGmtCreate;
     private String idCard;
     private String mobile;
+    private String departmentId;
+    private String departmentName;
     private String remitGmtCreate;
     private String bankId;
     private String bank;
-    private String departmentName;
     private String loanAmount;
     private String bankPeriodPrincipal;
     private String signRate;
@@ -88,6 +90,7 @@ public class TaskListVO {
     private String dataFlowType;
     private String dataFlowTypeText;
     private String visitDoorId;
+    private String cancelGmtCreate;
 
     //////////////////////////[金融方案修改申请单]/////////////////////////
     /**

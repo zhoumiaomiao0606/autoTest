@@ -35,8 +35,9 @@ public class TaskSchedulingController {
     @Resource
     private LoanQueryService loanQueryService;
 
+
     /**
-     * 领取
+     * -
      */
     @GetMapping(value = "/appCount")
     public ResultBean<Map> appCount() {
@@ -44,7 +45,7 @@ public class TaskSchedulingController {
     }
 
     /**
-     * 领取
+     * -
      */
     @PostMapping(value = "/flowOperationMsgList")
     public ResultBean<List<FlowOperationMsgListVO>> flowOperationMsgList(@RequestBody @Validated FlowOperationMsgParam param) {
@@ -52,7 +53,7 @@ public class TaskSchedulingController {
     }
 
     /**
-     * 领取
+     * -
      */
     @PostMapping(value = "/zhonganList")
     public ResultBean<List<ZhonganListVO>> zhonganList(@RequestBody @Validated ZhonganListQuery param) {
@@ -60,8 +61,9 @@ public class TaskSchedulingController {
     }
 
     /**
-     * 是否属于银行单子
+     * 能否修改金融方案
      */
+    @Deprecated
     @GetMapping(value = "/canUpdateLoanApply")
     public ResultBean<Boolean> canUpdateLoanApply(@RequestParam Long orderId) {
         return ResultBean.ofSuccess(taskSchedulingService.selectRejectTask(orderId));
@@ -127,6 +129,16 @@ public class TaskSchedulingController {
         return taskSchedulingService.countScheduletasklist();
     }
 
+    /**
+     * 查询弃单订单
+     *
+     * @param taskListQuery
+     * @return
+     */
+    @PostMapping(value = "/queryCancelTaskList")
+    public ResultBean<List<TaskListVO>> queryCancelTaskList(@RequestBody @Validated TaskListQuery taskListQuery) {
+        return taskSchedulingService.queryCancelTaskList(taskListQuery);
+    }
 
     /**
      * 查询接口
@@ -138,7 +150,7 @@ public class TaskSchedulingController {
     }
 
     /**
-     * 查询接口
+     * 统计接口
      */
     @Limiter(2)
     @PostMapping(value = "/countQueryTaskList")
@@ -147,7 +159,7 @@ public class TaskSchedulingController {
     }
 
     /**
-     * 查询接口
+     * APP查询接口
      */
     @Limiter(2)
     @PostMapping(value = "/queryAppTaskList")

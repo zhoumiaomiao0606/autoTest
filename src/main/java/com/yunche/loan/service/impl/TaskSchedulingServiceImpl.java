@@ -226,9 +226,20 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         return ResultBean.ofSuccess(count);
     }
 
+    @Override
+    public ResultBean<List<TaskListVO>> queryCancelTaskList(TaskListQuery taskListQuery) {
+
+        PageHelper.startPage(taskListQuery.getPageIndex(), taskListQuery.getPageSize(), true);
+        List<TaskListVO> list = taskSchedulingDOMapper.selectCancelTaskList(taskListQuery);
+        PageInfo<TaskListVO> pageInfo = new PageInfo<>(list);
+
+        return ResultBean.ofSuccess(list, new Long(pageInfo.getTotal()).intValue(), pageInfo.getPageNum(), pageInfo.getPageSize());
+    }
 
     @Override
     public ResultBean<List<TaskListVO>> queryTaskList(TaskListQuery taskListQuery) {
+        Preconditions.checkArgument(StringUtils.isNotBlank(taskListQuery.getTaskDefinitionKey()),
+                "taskDefinitionKey不能为空");
 
         // 资料流转
         if (DATA_FLOW.getCode().equals(taskListQuery.getTaskDefinitionKey())) {
@@ -277,6 +288,8 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
 
     @Override
     public ResultBean<Long> countQueryTaskList(TaskListQuery taskListQuery) {
+        Preconditions.checkArgument(StringUtils.isNotBlank(taskListQuery.getTaskDefinitionKey()),
+                "taskDefinitionKey不能为空");
 
         if (!LoanProcessEnum.havingCode(taskListQuery.getTaskDefinitionKey())) {
             throw new BizException("错误的任务节点key");
