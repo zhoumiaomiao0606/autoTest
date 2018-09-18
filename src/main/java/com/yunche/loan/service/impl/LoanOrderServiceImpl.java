@@ -166,7 +166,7 @@ public class LoanOrderServiceImpl implements LoanOrderService {
      */
     private void checkBankInterfaceSerial(CreditApplyOrderParam param) {
         //主贷人校验
-        if (param.getPrincipalLender() != null && param.getPrincipalLender().getId() == null) {
+        if (param.getPrincipalLender() != null) {
             String idCard = param.getPrincipalLender().getIdCard();
 
             bankCredit(idCard,param.getPrincipalLender().getName(),param.getLoanBaseInfo().getBank());
@@ -175,7 +175,7 @@ public class LoanOrderServiceImpl implements LoanOrderService {
         }
         //共待人校验
         if (param.getCommonLenderList() != null) {
-            param.getCommonLenderList().stream().filter(e -> e.getId() == null).forEach(e -> {
+            param.getCommonLenderList().stream().forEach(e -> {
                 String idCard = e.getIdCard();
                 String name = e.getName();
                 bankCredit(idCard,name,param.getLoanBaseInfo().getBank());
@@ -185,7 +185,7 @@ public class LoanOrderServiceImpl implements LoanOrderService {
 
         //担保人校验
         if (param.getGuarantorList() != null) {
-            param.getGuarantorList().stream().filter(e -> e.getId() == null).forEach(e -> {
+            param.getGuarantorList().stream().forEach(e -> {
                 String idCard = e.getIdCard();
                 String name = e.getName();
 

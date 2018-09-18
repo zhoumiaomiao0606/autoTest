@@ -649,7 +649,7 @@ public class MaterialServiceImpl implements MaterialService {
             ossClient = OSSUnit.getOSSClient();
             String fileName = null;
             if (downloadParams != null) {
-                fileName = downloadParams.get(0).getName() + "_" + downloadParams.get(0).getIdCard() + ".zip";
+                fileName = downloadParams.get(0).getName() + "_" + orderId + ".zip";
 //                fileName = downloadParams.get(0).getName() +".zip";
             }
             // 创建临时文件
