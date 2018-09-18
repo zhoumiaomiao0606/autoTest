@@ -110,9 +110,6 @@
         LEFT JOIN loan_process ON principal_orders.id = loan_process.order_id
         <where>
             and (credit_info.type = 2 OR credit_info.type is NULL) AND loan_process.social_credit_record IN (1,2)
-            <if test="startDate !=null and endDate !=null">
-                and credit_info.gmt_modify between #{startDate} and #{endDate}
-            </if>
             <if test="partnerList != null and partnerList.size() > 0">
                 and
                 principal_base.partner_id in
@@ -129,13 +126,14 @@
             </if>
             AND customer.cust_type  in  (1,2,3) and customer.status = 0
         </where>
-        <if test="startCreditGmtCreate != null and endCreditGmtCreate != null">
-            having(
-            TO_DAYS(credit_apply_time) &gt;= TO_DAYS(#{startCreditGmtCreate})
-            AND TO_DAYS(credit_apply_time) &lt;= TO_DAYS(#{endCreditGmtCreate})
-            )
-        </if>
-        order by credit_info.gmt_modify desc
+    <if test="orderBy == 1" >
+        order by credit_apply_time desc
+    </if>
+
+   <if test="orderBy == 2  or orderBy == null  or orderBy ==''" >
+       order by credit_apply_time ASC
+   </if>
+
     </select>
 
     <!--=======================================报表银行征信查询明细=========================================-->
@@ -248,9 +246,6 @@
 
         <where>
             and (credit_info.type = 1 OR credit_info.type is NULL) AND loan_process.bank_credit_record IN (1,2)
-            <if test="startDate !=null and endDate !=null">
-                and credit_info.gmt_modify between #{startDate} and #{endDate}
-            </if>
 
             <if test="partnerList != null and partnerList.size() > 0">
                 and
@@ -268,13 +263,13 @@
             </if>
             AND customer.cust_type  in  (1,2,3) and customer.status = 0
         </where>
-        <if test="startCreditGmtCreate != null and endCreditGmtCreate != null">
-            having(
-            TO_DAYS(credit_apply_time) &gt;= TO_DAYS(#{startCreditGmtCreate})
-            AND TO_DAYS(credit_apply_time) &lt;= TO_DAYS(#{endCreditGmtCreate})
-            )
+        <if test="orderBy == 1" >
+            order by credit_apply_time desc
         </if>
-        order by credit_info.gmt_modify desc
+
+        <if test="orderBy == 2  or orderBy == null  or orderBy ==''" >
+            order by credit_apply_time ASC
+        </if>
     </select>
 
     <!--=======================================报表 财务垫款明细查询=========================================-->
@@ -297,7 +292,18 @@
         loan_financial_plan.down_payment_money,
         loan_financial_plan.bank_period_principal,
         remit_details.remit_amount,
-        orders.gmt_create,
+        (
+        SELECT
+        create_time
+        FROM
+        loan_process_log
+        WHERE
+        task_definition_key = 'usertask_credit_apply'
+        AND order_id = orders.id
+        ORDER BY
+        create_time
+        LIMIT 1
+        ) AS gmt_create,
         (
         SELECT
         loan_process_log.create_time
@@ -368,16 +374,22 @@
                 #{item}
             </foreach>
         </if>
-        <if test="startRemitAmount !=null" >
-            and
-            remit_details.remit_amount &gt;= #{startRemitAmount}
+        <if test="startDate !=null or endDate !=null"  >
+            having
+            <if test="startDate !=null" >
+                gmt_create &gt;= #{startDate}
+            </if>
+
+            <if test="startDate !=null and endDate !=null" >
+                AND
+            </if>
+
+            <if test="endDate !=null" >
+                gmt_create &lt;= #{endDate}
+            </if>
+
         </if>
 
-        <if test="endRemitAmount !=null" >
-            AND  remit_details.remit_amount &lt;= #{endRemitAmount}
-        </if>
-
-        having submitTime between #{startDate} and #{endDate}
         order by submitTime desc
 
     </select>
@@ -390,6 +402,18 @@
         customer.NAME AS customer_name,
         customer.id_card,
         customer.mobile AS customer_mobile,
+        (
+        SELECT
+        create_time
+        FROM
+        loan_process_log
+        WHERE
+        task_definition_key = 'usertask_credit_apply'
+        AND order_id = orders.id
+        ORDER BY
+        create_time
+        LIMIT 1
+        ) AS credit_apply_time,
         loanbaseinfo.bank,
         CASE
 
@@ -452,7 +476,7 @@
         LEFT JOIN apply_license_plate_deposit_info a ON a.id = orders.apply_license_plate_deposit_info_id
 
         <where>
-            and process.apply_license_plate_deposit_info != 0  and bank_lend_record.lend_date between #{startDate} and #{endDate}
+            and process.apply_license_plate_deposit_info != 0
             <if test="partnerList != null and partnerList.size() > 0">
                 and
                 base.partner_id in
@@ -468,6 +492,22 @@
                 </foreach>
             </if>
         </where>
+        <if test="startDate !=null or endDate !=null"  >
+            having
+            <if test="startDate !=null" >
+                credit_apply_time &gt;= #{startDate}
+            </if>
+
+            <if test="startDate !=null and endDate !=null" >
+                AND
+            </if>
+
+            <if test="endDate !=null" >
+                credit_apply_time &lt;= #{endDate}
+            </if>
+
+        </if>
+
         order by bank_lend_record.lend_date desc
     </select>
 
@@ -502,9 +542,21 @@
         customer.NAME AS customer_name,
         customer.id_card,
         loan_base_info.bank,
+        (
+        SELECT
+        create_time
+        FROM
+        loan_process_log
+        WHERE
+        task_definition_key = 'usertask_credit_apply'
+        AND order_id = orders.id
+        ORDER BY
+        create_time
+        LIMIT 1
+        ) AS credit_apply_time,
         loan_financial_plan.bank_period_principal,
         ( SELECT create_time FROM loan_process_log WHERE orders.id = loan_process_log.order_id AND loan_process_log.task_definition_key = 'usertask_remit_review' ORDER BY id DESC LIMIT 1 ) AS remitdate,
-        ( SELECT loan_data_flow.express_receive_date FROM loan_data_flow WHERE orders.id = loan_data_flow.order_id AND type = 2 ) AS express_receive_date,
+        ( SELECT loan_data_flow.express_receive_date FROM loan_data_flow WHERE orders.id = loan_data_flow.order_id AND type = 2 ORDER BY loan_data_flow.id DESC LIMIT 1 ) AS express_receive_date,
         material_audit.complete_material_date,
         ( SELECT create_time FROM loan_process_log WHERE orders.id = loan_process_log.order_id AND loan_process_log.task_definition_key = 'usertask_material_review' ORDER BY id DESC LIMIT 1 ) AS materialReviewSubmit,
         CASE
@@ -558,18 +610,13 @@
             </if>
 
         </where>
-        ) t where remitdate between #{startDate} and #{endDate}
-        <if test="startDate1 != null">
-            AND TO_DAYS(t.express_receive_date) &lt;= TO_DAYS(#{startDate1})
+        ) t
+        where 1=1
+        <if test="startDate != null">
+            AND TO_DAYS(t.credit_apply_time) &lt;= TO_DAYS(#{startDate})
         </if>
-        <if test="endDate1 != null">
-            AND TO_DAYS(t.express_receive_date) &lt;= TO_DAYS(#{endDate1})
-        </if>
-        <if test="startDate2 != null">
-            AND TO_DAYS(t.materialReviewSubmit) &lt;= TO_DAYS(#{startDate2})
-        </if>
-        <if test="endDate2 != null">
-            AND TO_DAYS(t.materialReviewSubmit) &lt;= TO_DAYS(#{endDate2})
+        <if test="endDate != null">
+            AND TO_DAYS(t.credit_apply_time) &lt;= TO_DAYS(#{endDate})
         </if>
         order by t.express_receive_date desc
     </select>
@@ -600,7 +647,7 @@
         LEFT JOIN employee employee ON base.salesman_id = employee.id
         LEFT JOIN partner partner ON partner.id = base.partner_id
         where 1=1
-        and process.usertask_business_review = 1
+        and process.business_review = 1
 
     </select>
 
@@ -664,14 +711,6 @@
         LEFT JOIN partner partner ON partner.id = base.partner_id
         where 1=1
         and process.remit_review = 1
-        <if test="startRemitAmount !=null" >
-            and
-            remit_details.remit_amount &gt;= #{startRemitAmount}
-        </if>
-
-        <if test="endRemitAmount !=null" >
-            AND  remit_details.remit_amount &lt;= #{endRemitAmount}
-        </if>
 
     </select>
 

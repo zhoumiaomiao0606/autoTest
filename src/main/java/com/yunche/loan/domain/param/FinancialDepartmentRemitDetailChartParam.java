@@ -16,6 +16,10 @@ import java.util.Set;
 @Data
 public class FinancialDepartmentRemitDetailChartParam extends BaseQuery
 {
+    //大区
+    private Long biz_areaId;
+
+    //征信创建时间
     private  String startDate;
     private  String endDate;
 
@@ -23,8 +27,8 @@ public class FinancialDepartmentRemitDetailChartParam extends BaseQuery
     private  String endRemitDate;*/
 
 
-    private BigDecimal startRemitAmount;
-    private  BigDecimal endRemitAmount;
+/*    private BigDecimal startRemitAmount;
+    private  BigDecimal endRemitAmount;*/
 
 
 

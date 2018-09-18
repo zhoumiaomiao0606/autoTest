@@ -24,4 +24,6 @@ public class SocialCreditChartParam extends BaseQuery
     private List<Long> partnerList;
     //贷款银行列表
     private List<String> bankList;
+    //征信申请时间-排序
+    private byte orderBy;
 }

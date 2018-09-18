@@ -13,6 +13,10 @@ import java.util.List;
 @Data
 public class MortgageOverdueParam  extends BaseQuery
 {
+    //大区
+    private Long biz_areaId;
+
+    //申请征信时间
     private  String startDate;
     private  String endDate;
 

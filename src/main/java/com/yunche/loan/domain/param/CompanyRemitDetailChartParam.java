@@ -14,7 +14,5 @@ import java.util.Set;
  **/
 public class CompanyRemitDetailChartParam  extends BaseQuery
 {
-    private  String startDate;
-    private  String endDate;
 
 }

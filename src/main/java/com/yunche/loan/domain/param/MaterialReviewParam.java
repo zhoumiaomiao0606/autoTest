@@ -13,17 +13,23 @@ import java.util.List;
 @Data
 public class MaterialReviewParam extends BaseQuery
 {
+    //大区
+    private Long biz_areaId;
+
+    //申请征信时间
     private  String startDate;
     private  String endDate;
 
-    private  String startDate1;
-    private  String endDate1;
+    //资料接收日期
+   /* private  String startDate1;
+    private  String endDate1;*/
 
-    private  String startDate2;
-    private  String endDate2;
 
     //合伙人团队列表
     private List<Long> partnerList;
     //贷款银行列表
     private List<String> bankList;
+
+    //资料审核状态  1.已通过   2.未提交
+  /*  private Byte state;*/
 }

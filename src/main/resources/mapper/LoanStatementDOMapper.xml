@@ -642,7 +642,7 @@
         loan_base_info.bank,
         loan_financial_plan.bank_period_principal,
         ( SELECT create_time FROM loan_process_log WHERE orders.id = loan_process_log.order_id AND loan_process_log.task_definition_key = 'usertask_remit_review' ORDER BY id DESC LIMIT 1 ) AS remitdate,
-        ( SELECT loan_data_flow.express_receive_date FROM loan_data_flow WHERE orders.id = loan_data_flow.order_id AND type = 2 ) AS express_receive_date,
+        ( SELECT loan_data_flow.express_receive_date FROM loan_data_flow WHERE orders.id = loan_data_flow.order_id AND type = 2 ORDER BY loan_data_flow.id DESC LIMIT 1  ) AS express_receive_date,
         material_audit.complete_material_date,
         ( SELECT create_time FROM loan_process_log WHERE orders.id = loan_process_log.order_id AND loan_process_log.task_definition_key = 'usertask_material_review' ORDER BY id DESC LIMIT 1 ) AS materialReviewSubmit,
         CASE

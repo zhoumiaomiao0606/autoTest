@@ -31,8 +31,6 @@ public class ChartController
     @PostMapping(value = "/socialCreditChart", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean socialCreditChart(@RequestBody @Validated SocialCreditChartParam param)
     {
-
-
       return chartService.getSocialCreditChart(param);
     }
 
@@ -46,8 +44,6 @@ public class ChartController
     @PostMapping(value = "/bankCreditChart", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean bankCreditChart(@RequestBody @Validated BankCreditChartParam param)
     {
-
-
         return chartService.getBankCreditChart(param);
     }
 
@@ -62,7 +58,6 @@ public class ChartController
     @PostMapping(value = "/financialDepartmentRemitDetailChart", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean financialDepartmentRemitDetailChart(@RequestBody @Validated FinancialDepartmentRemitDetailChartParam param)
     {
-
         return chartService.getFinancialDepartmentRemitDetailChart(param);
     }
 
@@ -77,7 +72,6 @@ public class ChartController
     @PostMapping(value = "/mortgageOverdueChart", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean mortgageOverdueChart(@RequestBody @Validated MortgageOverdueParam param)
     {
-
         return chartService.getMortgageOverdueChart(param);
     }
 
@@ -92,7 +86,6 @@ public class ChartController
     @PostMapping(value = "/materialReviewChart", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean materialReviewChart(@RequestBody @Validated MaterialReviewParam param)
     {
-
         return chartService.getMaterialReviewChart(param);
     }
 
@@ -106,7 +99,6 @@ public class ChartController
     @PostMapping(value = "/awaitRemitDetailChart", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean awaitRemitDetailChart(@RequestBody @Validated AwaitRemitDetailChartParam param)
     {
-
         return chartService.getAwaitRemitDetailChart(param);
     }
 
@@ -120,7 +112,6 @@ public class ChartController
     @PostMapping(value = "/companyRemitDetailChart", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean companyRemitDetailChart(@RequestBody @Validated CompanyRemitDetailChartParam param)
     {
-
         return chartService.getCompanyRemitDetailChart(param);
     }
 }
