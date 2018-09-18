@@ -57,7 +57,7 @@ public class MortgageOverdueChartVO
     private Date lend_date;
 
     //抵押资料公司寄合伙人
-    private String sendMaterialToParter_date;
+    private Date sendMaterialToParter_date;
 
     //抵押资料合伙人接收时间
     private Date ParterReceiveMaterial_date;
