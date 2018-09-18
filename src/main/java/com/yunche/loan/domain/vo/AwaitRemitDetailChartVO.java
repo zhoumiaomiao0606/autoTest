@@ -2,6 +2,8 @@ package com.yunche.loan.domain.vo;
 
 import lombok.Data;
 
+import java.util.Date;
+
 /**
  * @author: ZhongMingxiao
  * @create: 2018-09-07 11:14
@@ -25,8 +27,9 @@ public class AwaitRemitDetailChartVO
     private String salesman_name;
 
     //经办人
+    private String operationUser;
     //经办时间
-
+    private Date operationDate;
     //执行利率
     private String sign_rate;
 

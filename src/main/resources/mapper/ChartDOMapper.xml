@@ -637,6 +637,30 @@
         loan_financial_plan.sign_rate,
         loan_financial_plan.loan_amount,
         loan_financial_plan.bank_period_principal,
+         (
+        SELECT
+        loan_process_log.create_time
+        FROM
+        loan_process_log
+        WHERE
+        order_id = orders.id
+        AND task_definition_key = 'usertask_business_review'
+        ORDER BY
+        create_time DESC
+        LIMIT 1
+        ) as operationDate,
+           (
+        SELECT
+        loan_process_log.user_name
+        FROM
+        loan_process_log
+        WHERE
+        order_id = orders.id
+        AND task_definition_key = 'usertask_business_review'
+        ORDER BY
+        create_time DESC
+        LIMIT 1
+        ) as operationUser,
         remit_details.remit_amount
         FROM
         loan_order orders
@@ -660,8 +684,8 @@
     <select id="selectCompanyRemitDetailChartVO" parameterType="com.yunche.loan.domain.param.CompanyRemitDetailChartParam"  resultType="com.yunche.loan.domain.vo.CompanyRemitDetailChartVO" >
 
         SELECT
-        base_area.area_name,
-        customer. NAME AS customer_name,
+        orders.id AS orderId,
+        customer.NAME AS customer_name,
         customer.id_card AS customer_id_card,
         customer.mobile AS customer_mobile,
         loaninfo.bank,
@@ -676,7 +700,12 @@
         loan_financial_plan.down_payment_money,
         loan_financial_plan.bank_period_principal,
         remit_details.remit_amount,
-        orders.gmt_create,
+        CASE
+        WHEN parea.parent_area_id = '' OR parea.parent_area_id = NULL THEN
+        CONCAT(area.parent_area_name,area.area_name)
+        ELSE
+        CONCAT(parea.parent_area_name,area.area_name) END
+        AS apply_license_plate_area,
         (
         SELECT
         loan_process_log.create_time
@@ -714,6 +743,10 @@
         LEFT JOIN loan_base_info base ON orders.loan_base_info_id = base.id
         LEFT JOIN employee employee ON base.salesman_id = employee.id
         LEFT JOIN partner partner ON partner.id = base.partner_id
+
+        LEFT JOIN vehicle_information ON orders.vehicle_information_id = vehicle_information.id
+        LEFT JOIN base_area area on vehicle_information.apply_license_plate_area = area.area_id
+        LEFT JOIN base_area parea ON area.parent_area_id = parea.area_id
         where 1=1
         and process.remit_review = 1
 
