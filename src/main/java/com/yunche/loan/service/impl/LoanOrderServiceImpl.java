@@ -2,6 +2,8 @@ package com.yunche.loan.service.impl;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import com.yunche.loan.config.constant.IDict;
+import com.yunche.loan.config.constant.LoanProcessEnum;
 import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.entity.*;
@@ -23,9 +25,7 @@ import java.util.stream.Collectors;
 import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
 import static com.yunche.loan.config.constant.GuaranteeRelaConst.GUARANTOR_PERSONAL;
 import static com.yunche.loan.config.constant.LoanCustomerConst.*;
-import static com.yunche.loan.config.constant.LoanCustomerEnum.*;
 import static com.yunche.loan.config.constant.LoanFileConst.UPLOAD_TYPE_NORMAL;
-import static com.yunche.loan.config.constant.LoanProcessEnum.CREDIT_APPLY;
 
 /**
  * Created by zhouguoliang on 2018/2/5.
@@ -105,9 +105,6 @@ public class LoanOrderServiceImpl implements LoanOrderService {
     @Autowired
     private BankInterfaceSerialDOMapper bankInterfaceSerialDOMapper;
 
-    @Autowired
-    private LoanProcessLogService loanProcessLogService;
-
 
     @Override
     public ResultBean<CreditApplyOrderVO> creditApplyOrderDetail(Long orderId) {
@@ -138,7 +135,7 @@ public class LoanOrderServiceImpl implements LoanOrderService {
         Preconditions.checkNotNull(param, "不能为空");
 
         // 权限校验
-        permissionService.checkTaskPermission(CREDIT_APPLY.getCode());
+        permissionService.checkTaskPermission(LoanProcessEnum.CREDIT_APPLY.getCode());
 
         // 校验客户是否在系统之前已经查过征信，如果已经查过了，则不允许再添加
         //根据身份证号校验
@@ -161,80 +158,59 @@ public class LoanOrderServiceImpl implements LoanOrderService {
 
     /**
      * 校验征信是否查询
+     *
      * @param param
      */
     private void checkBankInterfaceSerial(CreditApplyOrderParam param) {
         //主贷人校验
-        if(param.getPrincipalLender()!=null && param.getPrincipalLender().getId()==null){
+        if (param.getPrincipalLender() != null && param.getPrincipalLender().getId() == null) {
             String idCard = param.getPrincipalLender().getIdCard();
-            bankCredit(idCard,param.getPrincipalLender().getName(),param.getLoanBaseInfo().getBank());
+            bankCredit(idCard, param.getPrincipalLender().getName());
         }
         //共待人校验
-        if(param.getCommonLenderList()!=null){
-            param.getCommonLenderList().stream().filter(e-> e.getId()==null).forEach(e->{
+        if (param.getCommonLenderList() != null) {
+            param.getCommonLenderList().stream().filter(e -> e.getId() == null).forEach(e -> {
                 String idCard = e.getIdCard();
                 String name = e.getName();
-
-                bankCredit(idCard,name,param.getLoanBaseInfo().getBank());
+                bankCredit(idCard, name);
             });
         }
 
         //担保人校验
-        if(param.getGuarantorList()!=null){
-            param.getGuarantorList().stream().filter(e-> e.getId()==null).forEach(e->{
+        if (param.getGuarantorList() != null) {
+            param.getGuarantorList().stream().filter(e -> e.getId() == null).forEach(e -> {
                 String idCard = e.getIdCard();
                 String name = e.getName();
-                bankCredit(idCard,name,param.getLoanBaseInfo().getBank());
+                bankCredit(idCard, name);
             });
         }
 
     }
 
-    private  void bankCredit(String idCard,String name,String bankName){
+    private void bankCredit(String idCard, String name) {
 
-        if(StringUtils.isNotBlank(idCard)){
+        if (StringUtils.isNotBlank(idCard)) {
 
             List<LoanCustomerDO> loanCustomerDOS = loanCustomerDOMapper.selectByIdCard(idCard);
 
-            List<LoanOrderDO> collect = Lists.newArrayList();
-
-           loanCustomerDOS.stream().filter(Objects::nonNull).forEach(e -> {
-                LoanOrderDO loanOrderDO =null;
-                //主贷人
-                if(PRINCIPAL_LENDER.getType().equals(e.getCustType())){
-
-                    loanOrderDO = loanOrderDOMapper.selectByCustomerId(e.getId());
-
-                }else
-                    //共待人 || 担保人
-                    if(COMMON_LENDER.getType().equals(e.getCustType()) ||
-                        GUARANTOR.getType().equals(e.getCustType())){
-                    loanOrderDO = loanOrderDOMapper.selectByCustomerId(e.getPrincipalCustId());
-                }
-
-
-                if(loanOrderDO !=null){
-                    LoanBaseInfoDO loanBaseInfoDO = loanBaseInfoDOMapper.selectByPrimaryKey(loanOrderDO.getLoanBaseInfoId());
-                    //同一个贷款银行需要校验征信
-                    if(bankName.equals(loanBaseInfoDO.getBank())){
-                        //如果征信申请日志不为NULL
-                        LoanProcessLogDO loanProcessLog = loanProcessLogService.getLoanProcessLog(loanOrderDO.getId(), CREDIT_APPLY.getCode());
-                        if(loanProcessLog!=null){
-                            Date createTime = loanProcessLog.getCreateTime();
-                            Date currDate = new Date();
-                            int days = (int) ((currDate.getTime() - createTime.getTime()) / (1000*3600*24));
-                            if(days<=14){
-                                collect.add(loanOrderDO);
-                                return;
-                            }
-                        }
+            List<BankInterfaceSerialDO> collect = loanCustomerDOS.stream().filter(Objects::nonNull).map(e -> {
+                BankInterfaceSerialDO bankInterfaceSerialDO = bankInterfaceSerialDOMapper.selectByCustomerIdAndTransCode(e.getId(), IDict.K_TRANS_CODE.APPLYCREDIT);
+                if (bankInterfaceSerialDO != null) {
+                    Date requestTime = bankInterfaceSerialDO.getRequestTime();
+                    Date currDate = new Date();
+                    int days = (int) ((currDate.getTime() - requestTime.getTime()) / (1000 * 3600 * 24));
+                    if (days <= 14) {
+                        return bankInterfaceSerialDO;
+                    } else {
+                        return null;
                     }
+                } else {
+                    return null;
                 }
+            }).filter(Objects::nonNull).collect(Collectors.toList());
 
-            });
-
-            if(collect!=null && collect.size()>0){
-                throw new BizException(name+":征信14天内已经发起征信申请，对应订单号【"+collect.get(0).getId()+"】");
+            if (collect != null && collect.size() > 0) {
+                throw new BizException(name + ":征信14天内已经查询");
             }
 
 
@@ -524,10 +500,10 @@ public class LoanOrderServiceImpl implements LoanOrderService {
             loanCarInfoVO.setColor(vehicleInformationDO.getColor());
         }
         String tmpApplyLicensePlateArea = null;
-        if (loanBaseInfoDO.getAreaId()!=null) {
+        if (loanBaseInfoDO.getAreaId() != null) {
             BaseAreaDO baseAreaDO = baseAreaDOMapper.selectByPrimaryKey(loanBaseInfoDO.getAreaId(), VALID_STATUS);
             //（个性化）如果上牌地是区县一级，则返回形式为 省+区
-            if("3".equals(String.valueOf(baseAreaDO.getLevel()))){
+            if ("3".equals(String.valueOf(baseAreaDO.getLevel()))) {
                 Long parentAreaId = baseAreaDO.getParentAreaId();
                 BaseAreaDO cityDO = baseAreaDOMapper.selectByPrimaryKey(parentAreaId, null);
                 baseAreaDO.setParentAreaId(cityDO.getParentAreaId());
@@ -761,7 +737,7 @@ public class LoanOrderServiceImpl implements LoanOrderService {
     private void updateOrInsertLoanCustomer(CreditApplyOrderParam param) {
         AllCustDetailParam allCustDetailParam = new AllCustDetailParam();
         BeanUtils.copyProperties(param, allCustDetailParam);
-        ResultBean<Long> resultBean = loanCustomerService.updateAll(allCustDetailParam);
+        ResultBean<Void> resultBean = loanCustomerService.updateAll(allCustDetailParam);
         Preconditions.checkArgument(resultBean.getSuccess(), resultBean.getMsg());
 
         CustomerParam principalLender = param.getPrincipalLender();

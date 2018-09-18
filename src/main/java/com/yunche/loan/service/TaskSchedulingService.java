@@ -22,6 +22,8 @@ public interface TaskSchedulingService {
 
     boolean selectRejectTask(Long orderId);
 
+    ResultBean<List<TaskListVO>> queryCancelTaskList(TaskListQuery taskListQuery);
+
     ResultBean<List<ScheduleTaskVO>> scheduleTaskList(String key,Integer pageIndex, Integer pageSize);
 
     ResultBean<List<TaskListVO>> queryTaskList(TaskListQuery taskListQuery);

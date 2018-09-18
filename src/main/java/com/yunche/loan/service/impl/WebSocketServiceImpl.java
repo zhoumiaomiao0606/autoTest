@@ -237,8 +237,8 @@ public class WebSocketServiceImpl implements WebSocketService {
             return doMachineFace(webSocketParam, wsSessionId);
         }
 
-        // b、若银行分期本金大于等于10万且小于30万，进入人工面签，人工面签等待1min后，若无应答，自动转入机器面签
-        else if (bankPeriodPrincipal >= 100000 && bankPeriodPrincipal < 300000) {
+        // b、10万及以上人工面签等待一分钟，若无人接听转入机器面签
+        else if (bankPeriodPrincipal >= 100000) {
 
             // 排队时间
             Long startWaitTime = videoFaceQueue.getWaitTime(webSocketParam.getBankId(), webSocketParam.getUserId(), webSocketParam.getType(),
@@ -258,12 +258,12 @@ public class WebSocketServiceImpl implements WebSocketService {
             }
         }
 
-        // c、若银行分期本金大于30万，进入人工面签，若无人应答，一直处于排队中
-        if (bankPeriodPrincipal >= 300000) {
-
-            // nothing  -> 正常排队
-            return true;
-        }
+//        // c、若银行分期本金大于30万，进入人工面签，若无人应答，一直处于排队中
+//        if (bankPeriodPrincipal >= 300000) {
+//
+//            // nothing  -> 正常排队
+//            return true;
+//        }
 
         // nothing  -> 正常排队
         return true;

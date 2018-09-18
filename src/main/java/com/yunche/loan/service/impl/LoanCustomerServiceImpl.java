@@ -156,8 +156,10 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
 
     @Override
     @Transactional
-    public ResultBean<Long> updateAll(AllCustDetailParam allCustDetailParam) {
+    public ResultBean<Void> updateAll(AllCustDetailParam allCustDetailParam) {
         Preconditions.checkNotNull(allCustDetailParam, "客户信息不能为空");
+
+        checkIdCard(allCustDetailParam);
 
         updateOrInsertLoanCustomer(allCustDetailParam);
 
@@ -284,33 +286,11 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
 
     @Override
     @Transactional
-    public ResultBean<Void> updateCustomer(AllCustDetailParam allCustDetailParam) {
-        Preconditions.checkNotNull(allCustDetailParam, "客户信息不能为空");
-
-        updateAll(allCustDetailParam);
-
-        return ResultBean.ofSuccess(null, "客户信息编辑成功");
-    }
-
-    @Override
-    @Transactional
     public ResultBean<Long> addRelaCustomer(CustomerParam customerParam) {
         Preconditions.checkNotNull(customerParam, "客户信息不能为空");
 
         // check
-        if (StringUtils.isNotBlank(customerParam.getIdCard())) {
-
-            List<LoanCustomerDO> loanCustomerDOS = loanCustomerDOMapper.listByPrincipalCustIdAndType(customerParam.getPrincipalCustId(), null, VALID_STATUS);
-            if (!CollectionUtils.isEmpty(loanCustomerDOS)) {
-
-                loanCustomerDOS.stream()
-                        .forEach(e -> {
-
-                            Preconditions.checkArgument(customerParam.getIdCard().equals(e.getIdCard()), "不可重复添加相同关联人");
-                        });
-            }
-        }
-
+        checkIdCard(customerParam.getPrincipalCustId(), customerParam.getIdCard());
 
         // convert
         LoanCustomerDO loanCustomerDO = new LoanCustomerDO();
@@ -618,5 +598,113 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
 
         // 返回客户ID
         return createCustomerResult.getData();
+    }
+
+    /**
+     * 身份证重复校验
+     *
+     * @param principalCustId
+     * @param idCard
+     */
+    private void checkIdCard(Long principalCustId, String idCard) {
+
+        List<LoanCustomerDO> loanCustomerDOS = loanCustomerDOMapper.listByPrincipalCustIdAndType(principalCustId, null, VALID_STATUS);
+        if (!CollectionUtils.isEmpty(loanCustomerDOS)) {
+
+            if (StringUtils.isNotBlank(idCard)) {
+
+                String trimIdCard = idCard.trim();
+                loanCustomerDOS.stream()
+                        .forEach(e -> {
+
+                            if (StringUtils.isNotBlank(e.getIdCard())) {
+
+                                Preconditions.checkArgument(trimIdCard.equals(e.getIdCard().trim()),
+                                        "有身份证号码重复，请先检查再提交");
+                            }
+                        });
+            }
+        }
+    }
+
+
+    /**
+     * 身份证重复校验
+     *
+     * @param allCustDetailParam
+     */
+    private void checkIdCard(AllCustDetailParam allCustDetailParam) {
+
+        CustomerParam principalLender = allCustDetailParam.getPrincipalLender();
+        Preconditions.checkNotNull(principalLender, "主贷人不能为空");
+
+        Long principalCustId = principalLender.getId();
+        Preconditions.checkNotNull(principalCustId, "主贷人Id不能为空");
+
+        List<String> idCardList = Lists.newArrayList();
+
+        // 已保存过的
+        List<LoanCustomerDO> loanCustomerDOS = loanCustomerDOMapper.listByPrincipalCustIdAndType(principalCustId, null, VALID_STATUS);
+        if (!CollectionUtils.isEmpty(loanCustomerDOS)) {
+
+            loanCustomerDOS.stream()
+                    .forEach(e -> {
+
+                        String idCard = e.getIdCard();
+                        if (StringUtils.isNotBlank(idCard)) {
+                            idCardList.add(idCard.trim());
+                        }
+                    });
+        }
+
+
+        List<CustomerParam> guarantorList = allCustDetailParam.getGuarantorList();
+        if (!CollectionUtils.isEmpty(guarantorList)) {
+
+            guarantorList.stream()
+                    .forEach(e -> {
+
+                        String idCard = e.getIdCard();
+                        if (StringUtils.isNotBlank(idCard)) {
+
+                            idCard = idCard.trim();
+                            Preconditions.checkArgument(idCardList.contains(idCard), "有身份证号码重复，请先检查再提交");
+                            idCardList.add(idCard);
+                        }
+                    });
+        }
+
+        List<CustomerParam> emergencyContactList = allCustDetailParam.getEmergencyContactList();
+        if (!CollectionUtils.isEmpty(emergencyContactList)) {
+
+            emergencyContactList.stream()
+                    .forEach(e -> {
+
+                        String idCard = e.getIdCard();
+                        if (StringUtils.isNotBlank(idCard)) {
+
+                            idCard = idCard.trim();
+                            Preconditions.checkArgument(idCardList.contains(idCard), "有身份证号码重复，请先检查再提交");
+                            idCardList.add(idCard);
+                        }
+                    });
+        }
+
+        List<CustomerParam> commonLenderList = allCustDetailParam.getCommonLenderList();
+        if (!CollectionUtils.isEmpty(commonLenderList)) {
+
+            commonLenderList.stream()
+                    .forEach(e -> {
+
+                        String idCard = e.getIdCard();
+                        if (StringUtils.isNotBlank(idCard)) {
+
+                            idCard = idCard.trim();
+                            Preconditions.checkArgument(idCardList.contains(idCard), "有身份证号码重复，请先检查再提交");
+                            idCardList.add(idCard);
+                        }
+                    });
+        }
+
     }
 }
