@@ -13,8 +13,10 @@ import com.yunche.loan.service.LoanApplyService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import static com.yunche.loan.config.constant.LoanCustomerConst.CUST_TYPE_GUARANTOR;
@@ -58,47 +60,49 @@ public class LoanApplyServiceImpl implements LoanApplyService {
 
     @Override
     public void relaOrderCustomer(RelaOrderCustomerParam relaOrderCustomerParam) {
-        Preconditions.checkNotNull(relaOrderCustomerParam, "relaCustomerId不能为空");
-        Preconditions.checkNotNull(relaOrderCustomerParam.getRelaCustomerId(), "relaCustomerId不能为空");
-        Preconditions.checkNotNull(relaOrderCustomerParam.getRelaCustType(), "relaCustType不能为空");
+        Preconditions.checkNotNull(relaOrderCustomerParam, "principalCustId不能为空");
+        Preconditions.checkNotNull(relaOrderCustomerParam.getPrincipalCustId(), "principalCustId不能为空");
+
+        List<RelaOrderCustomerParam.Rela> relaList = relaOrderCustomerParam.getRelaList();
+        if (!CollectionUtils.isEmpty(relaList)) {
+
+            relaList.stream()
+                    .filter(Objects::nonNull)
+                    .forEach(e -> {
+
+                        doRela(relaOrderCustomerParam.getPrincipalCustId(), e);
+                    });
+        }
+    }
+
+    /**
+     * 执行关联
+     *
+     * @param principalCustId
+     * @param rela
+     */
+    private void doRela(Long principalCustId, RelaOrderCustomerParam.Rela rela) {
+        Preconditions.checkNotNull(rela.getRelaCustType(), "relaCustType不能为空");
+        Preconditions.checkNotNull(rela.getRelaCustRelation(), "relaCustRelation不能为空");
         // 关联的类型为：担保人时，需要选择担保类型
-        if (CUST_TYPE_GUARANTOR.equals(relaOrderCustomerParam.getRelaCustType())) {
-            Preconditions.checkNotNull(relaOrderCustomerParam.getRelaGuaranteeType(), "请选择担保类型");
+        if (CUST_TYPE_GUARANTOR.equals(rela.getRelaCustType())) {
+            Preconditions.checkNotNull(rela.getRelaGuaranteeType(), "请选择担保类型");
         }
 
         // rela  -->  迁移
         LoanCustomerDO relaLoanCustomerDO = new LoanCustomerDO();
-        relaLoanCustomerDO.setId(relaOrderCustomerParam.getRelaCustomerId());
+        relaLoanCustomerDO.setId(rela.getRelaCustomerId());
 
         // 主贷人
-        relaLoanCustomerDO.setPrincipalCustId(relaOrderCustomerParam.getPrincipalCustId());
+        relaLoanCustomerDO.setPrincipalCustId(principalCustId);
         // 关联人类型
-        relaLoanCustomerDO.setCustType(relaOrderCustomerParam.getRelaCustType());
+        relaLoanCustomerDO.setCustType(rela.getRelaCustType());
         // 与主贷人关系
-        relaLoanCustomerDO.setCustRelation(relaOrderCustomerParam.getRelaCustRelation());
+        relaLoanCustomerDO.setCustRelation(rela.getRelaCustRelation());
         // 担保类型
-        relaLoanCustomerDO.setGuaranteeType(relaOrderCustomerParam.getRelaGuaranteeType());
+        relaLoanCustomerDO.setGuaranteeType(rela.getRelaGuaranteeType());
 
         int count = loanCustomerDOMapper.updateByPrimaryKeySelective(relaLoanCustomerDO);
         Preconditions.checkArgument(count > 0, "关联失败");
-
-
-//        // copy
-//        LoanCustomerDO relaLoanCustomerDO = new LoanCustomerDO();
-//        BeanUtils.copyProperties(loanCustomerDO, relaLoanCustomerDO);
-//
-//        relaLoanCustomerDO.setId(null);
-//
-//        // 主贷人
-//        relaLoanCustomerDO.setPrincipalCustId(relaOrderCustomerParam.getPrincipalCustId());
-//        // 关联人类型
-//        relaLoanCustomerDO.setCustType(relaOrderCustomerParam.getCustType());
-//        // 与主贷人关系
-//        relaLoanCustomerDO.setCustRelation(relaOrderCustomerParam.getCustRelation());
-//        // 担保类型
-//        relaLoanCustomerDO.setGuaranteeType(relaOrderCustomerParam.getGuaranteeType());
-//
-//        int count = loanCustomerDOMapper.insertSelective(loanCustomerDO);
-//        Preconditions.checkArgument(count > 0, "关联成功");
     }
 }

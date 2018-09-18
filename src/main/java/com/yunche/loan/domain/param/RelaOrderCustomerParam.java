@@ -2,6 +2,8 @@ package com.yunche.loan.domain.param;
 
 import lombok.Data;
 
+import java.util.List;
+
 /**
  * @author liuzhe
  * @date 2018/9/18
@@ -11,11 +13,18 @@ public class RelaOrderCustomerParam {
 
     private Long principalCustId;
 
-    private Long relaCustomerId;
+    private List<Rela> relaList;
 
-    private Byte relaCustType;
 
-    private Byte relaCustRelation;
+    @Data
+    public static class Rela {
 
-    private Byte relaGuaranteeType;
+        private Long relaCustomerId;
+
+        private Byte relaCustType;
+
+        private Byte relaCustRelation;
+
+        private Byte relaGuaranteeType;
+    }
 }
