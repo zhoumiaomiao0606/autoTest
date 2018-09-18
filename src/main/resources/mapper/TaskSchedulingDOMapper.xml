@@ -2396,7 +2396,8 @@
                       join_f.loan_time                             AS loanTime,
                       join_f.down_payment_money                    AS downPaymentMoney,
                       0                                            AS overdueNum,
-                      DATE_FORMAT(join_r.lend_date,'%Y-%m-%d %H:%i:%S') AS lendDate,
+                      DATE_FORMAT(join_r.lend_date,'%Y-%m-%d %H:%i:%S')
+                                                                   AS lendDate,
                       deputy.order_status                          AS orderStatus,
                       join_f.financial_product_name                AS financial_product_name,
                       join_f.car_price                             AS car_price,
@@ -2448,9 +2449,23 @@
 
         WHERE       deputy.order_status = 3
 
+        <!-- 弃单 -->
         AND         deputy_log.action   = 2
 
         AND         deputy.cancel_task_def_key  = deputy_log.task_definition_key
+
+        <!-- 弃单时间 -->
+        <if test = "startCancelGmtCreate != null">
+            AND     TO_DAYS(deputy_log.create_time) &gt;= TO_DAYS(#{startCancelGmtCreate})
+        </if>
+        <if test = "endCancelGmtCreate != null">
+            AND     TO_DAYS(deputy_log.create_time) &lt;= TO_DAYS(#{endCancelGmtCreate})
+        </if>
+
+        <!-- 弃单节点 -->
+        <if test = "taskDefinitionKey != null and taskDefinitionKey != '' ">
+            AND      deputy.cancel_task_def_key  = #{taskDefinitionKey}
+        </if>
 
         <if test="orderId != null">
             AND main.id = #{orderId}
