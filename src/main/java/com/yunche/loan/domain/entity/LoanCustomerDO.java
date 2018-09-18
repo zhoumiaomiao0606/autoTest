@@ -58,10 +58,16 @@ public class LoanCustomerDO {
 
     private String info;
 
+    /**
+     * 客户类型: 1-主贷人;2-共贷人;3-担保人;4-紧急联系人;
+     */
     private Byte custType;
 
     private Long principalCustId;
 
+    /**
+     * 与主贷人关系：0-本人;1-配偶;2-父母;3-子女;4-兄弟姐妹;5-亲戚;6-朋友;7-同学;8-同事;9-其它;
+     */
     private Byte custRelation;
 
     private Byte status;

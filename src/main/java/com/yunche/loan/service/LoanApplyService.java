@@ -1,5 +1,6 @@
 package com.yunche.loan.service;
 
+import com.yunche.loan.domain.param.RelaOrderCustomerParam;
 import com.yunche.loan.domain.vo.UniversalCustomerOrderVO;
 
 import java.util.List;
@@ -11,4 +12,6 @@ import java.util.List;
 public interface LoanApplyService {
 
     List<UniversalCustomerOrderVO> queryLoanApplyCustomerOrder(String name);
+
+    void relaOrderCustomer(RelaOrderCustomerParam relaOrderCustomerParam);
 }
