@@ -198,40 +198,53 @@
     </select>
 
     <!--======================================通用=========================================================-->
+
+    <!-- commonSql_customerOrder_getSelfAndChild -->
+    <sql id="commonSql_customerOrder_getSelfAndChild">
+        AND
+            CASE
+                WHEN #{maxGroupLevel}  = 0
+                    THEN FALSE
+                WHEN  #{maxGroupLevel} = 1
+                    THEN
+                        b.salesman_id IN
+                        <foreach item="item" collection="juniorIds" open="(" separator="," close=")">
+                            #{item}
+                        </foreach>
+                ELSE
+                    TRUE
+            END
+    </sql>
+
     <select id="selectUniversalModifyCustomerOrder" resultType="com.yunche.loan.domain.vo.UniversalCustomerOrderVO">
         select
         o.id AS order_id,
         c.name AS customer_name,
         c.id_card AS customer_id_card
         from loan_order o
-        left join loan_customer c on c.id = o.loan_customer_id
-        left join loan_process p on o.id = p.order_id
-        left join loan_base_info b on o.loan_base_info_id = b.id
+        left join loan_process   p   on p.order_id = o.id
+        left join loan_customer  c   on c.id = o.loan_customer_id
+        left join loan_base_info b   on b.id = o.loan_base_info_id
         where
         (
         (p.telephone_verify = 1 and p.loan_review != 1)
         or
         p.remit_review = 21
         )
-        <if test="name!=null">
-            and c.name like concat(concat('%',#{name}),'%')
+        <if test="name != null and name != '' ">
+            and c.name like concat('%',#{name},'%')
         </if>
 
-        AND CASE WHEN #{maxGroupLevel}  = 0 THEN false
-        when  #{maxGroupLevel} = 1 then
-        b.salesman_id in
-        <foreach item="item" index="index" collection="juniorIds" open="(" separator="," close=")">
-            #{item}
-        </foreach>
-        else true end
+        <include refid="commonSql_customerOrder_getSelfAndChild"/>
+
     </select>
 
     <select id="selectUniversalRefundCustomerOrder" resultType="com.yunche.loan.domain.vo.UniversalCustomerOrderVO">
         SELECT
                     o.id                         AS  order_id,
+                    c.id                         AS  customer_id,
                     c.name                       AS  customer_name,
                     c.id_card                    AS  customer_id_card,
-                    c.name                       AS  customer_name,
                     c.mobile                     AS  customer_mobile,
                     e.id                         AS  salesman_id,
                     e.name                       AS  salesman_name,
@@ -265,21 +278,35 @@
                 AND c.name LIKE CONCAT('%', #{name}, '%')
             </if>
 
-            AND
+            <include refid="commonSql_customerOrder_getSelfAndChild"/>
 
-                CASE
+    </select>
 
-                    WHEN #{maxGroupLevel}  = 0
-                        THEN FALSE
-                    WHEN  #{maxGroupLevel} = 1
-                        THEN
-                        b.salesman_id IN
-                        <foreach item="item" collection="juniorIds" open="(" separator="," close=")">
-                            #{item}
-                        </foreach>
-                    ELSE
-                        TRUE
-                END
+    <select id="selectUniversalLoanApplyCustomerOrder" resultType="com.yunche.loan.domain.vo.UniversalCustomerOrderVO">
+
+        SELECT
+                o.id                         AS  order_id,
+                c.id                         AS  customer_id,
+                c.name                       AS  customer_name,
+                c.id_card                    AS  customer_id_card
+
+
+        FROM        loan_order          o
+        LEFT JOIN   loan_process        pc       ON  o.id = pc.order_id
+        LEFT JOIN   loan_customer       c        ON  c.id = o.loan_customer_id
+        LEFT JOIN   loan_base_info      b        ON  b.id = o.loan_base_info_id
+
+        WHERE       pc.order_status = 1
+
+        <!-- 银行征信已提交，且未流转到电审的订单 -->
+        AND     pc.bank_credit_record = 1   AND     pc.telephone_verify = 0
+
+        <if test="name != null and name != '' ">
+            AND c.name LIKE CONCAT('%', #{name} ,'%')
+        </if>
+
+        <include refid="commonSql_customerOrder_getSelfAndChild"/>
+
     </select>
 
 
@@ -382,6 +409,7 @@
             salesman.name                                                                           AS salesman_name,
             salesman.mobile                                                                         AS salesman_mobile,
             car.cooperation_dealer                                                                  AS car_cooperation_dealer,
+            car.car_detail_id                                                                       AS car_detail_id,
             useGetCarName(car.car_detail_id)                                                        AS car_name,
             car.car_type                                                                            AS car_type,
             car.gps_num                                                                             AS car_gps_num,

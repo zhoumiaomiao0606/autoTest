@@ -25,7 +25,6 @@ public class LoanCustomerController {
     private LoanCustomerService loanCustomerService;
 
 
-
     /**
      * 获取贷款客户信息详情(主贷人/共贷人/担保人/紧急联系人)
      *
@@ -101,7 +100,6 @@ public class LoanCustomerController {
 
     /**
      * 客户银行图片导出
-     *
      */
     @Limiter
     @PostMapping(value = "/bankpicexport")
@@ -111,7 +109,6 @@ public class LoanCustomerController {
 
     /**
      * 客户社会图片导出
-     *
      */
     @Limiter
     @PostMapping(value = "/societypicexport")

@@ -21,6 +21,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import java.math.BigDecimal;
 import java.time.LocalTime;
 import java.util.*;
 
@@ -45,6 +46,9 @@ public class WebSocketServiceImpl implements WebSocketService {
 
     @Autowired
     private LoanCustomerService loanCustomerService;
+
+    @Autowired
+    private LoanQueryDOMapper loanQueryDOMapper;
 
     @Autowired
     private BankCache bankCache;
@@ -481,6 +485,7 @@ public class WebSocketServiceImpl implements WebSocketService {
      * @return
      */
     private VideoFaceCustomerVO setAndGetVideoFaceCustomerVO(Long bankId, Long orderId, Long anyChatUserId) {
+
         VideoFaceCustomerVO videoFaceCustomerVO = new VideoFaceCustomerVO();
 
         // 担保公司
@@ -496,34 +501,55 @@ public class WebSocketServiceImpl implements WebSocketService {
         // anyChatUserId
         videoFaceCustomerVO.setAnyChatUserId(anyChatUserId);
 
-        // order
-        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
-        Preconditions.checkNotNull(loanOrderDO, "业务单不存在");
+        // info
+        UniversalInfoVO universalInfoVO = loanQueryDOMapper.selectUniversalInfo(orderId);
+        if (null != universalInfoVO) {
 
-        // customer info
-        CustomerVO customerVO = loanCustomerService.getById(loanOrderDO.getLoanCustomerId());
-        if (null != customerVO) {
-            videoFaceCustomerVO.setId(customerVO.getId());
-            videoFaceCustomerVO.setName(customerVO.getName());
-            videoFaceCustomerVO.setIdCard(customerVO.getIdCard());
-        }
+            // customer
+            videoFaceCustomerVO.setId(Long.valueOf(universalInfoVO.getCustomer_id()));
+            videoFaceCustomerVO.setName(universalInfoVO.getCustomer_name());
+            videoFaceCustomerVO.setIdCard(universalInfoVO.getCustomer_id_card());
 
-        // financial plan
-        LoanFinancialPlanDO loanFinancialPlanDO = loanFinancialPlanDOMapper.selectByPrimaryKey(loanOrderDO.getLoanFinancialPlanId());
-        if (null != loanFinancialPlanDO) {
             // carPrice
-            videoFaceCustomerVO.setCarPrice(loanFinancialPlanDO.getCarPrice());
+            videoFaceCustomerVO.setCarPrice(new BigDecimal(universalInfoVO.getFinancial_car_price()));
             // 意向贷款金额    -> 银行分期本金
-            videoFaceCustomerVO.setExpectLoanAmount(loanFinancialPlanDO.getBankPeriodPrincipal());
-        }
+            videoFaceCustomerVO.setExpectLoanAmount(new BigDecimal(universalInfoVO.getFinancial_bank_period_principal()));
 
-        // carInfo
-        LoanCarInfoDO loanCarInfoDO = loanCarInfoDOMapper.selectByPrimaryKey(loanOrderDO.getLoanCarInfoId());
-        if (null != loanCarInfoDO) {
-            videoFaceCustomerVO.setCarDetailId(loanCarInfoDO.getCarDetailId());
-            String carName = carService.getName(loanCarInfoDO.getCarDetailId(), CAR_DETAIL, CAR_MODEL);
+            // partner
+            videoFaceCustomerVO.setPartnerId(universalInfoVO.getPartner_id());
+            videoFaceCustomerVO.setPartnerName(universalInfoVO.getPartner_name());
+
+            // carInfo
+            videoFaceCustomerVO.setCarDetailId(Long.valueOf(universalInfoVO.getCar_detail_id()));
+            // carName 特殊处理
+            String carName = carService.getName(Long.valueOf(universalInfoVO.getCar_detail_id()), CAR_DETAIL, CAR_MODEL);
             videoFaceCustomerVO.setCarName(carName);
         }
+
+//        // customer info
+//        CustomerVO customerVO = loanCustomerService.getById(loanOrderDO.getLoanCustomerId());
+//        if (null != customerVO) {
+//            videoFaceCustomerVO.setId(customerVO.getId());
+//            videoFaceCustomerVO.setName(customerVO.getName());
+//            videoFaceCustomerVO.setIdCard(customerVO.getIdCard());
+//        }
+//
+//        // financial plan
+//        LoanFinancialPlanDO loanFinancialPlanDO = loanFinancialPlanDOMapper.selectByPrimaryKey(loanOrderDO.getLoanFinancialPlanId());
+//        if (null != loanFinancialPlanDO) {
+//            // carPrice
+//            videoFaceCustomerVO.setCarPrice(loanFinancialPlanDO.getCarPrice());
+//            // 意向贷款金额    -> 银行分期本金
+//            videoFaceCustomerVO.setExpectLoanAmount(loanFinancialPlanDO.getBankPeriodPrincipal());
+//        }
+//
+//        // carInfo
+//        LoanCarInfoDO loanCarInfoDO = loanCarInfoDOMapper.selectByPrimaryKey(loanOrderDO.getLoanCarInfoId());
+//        if (null != loanCarInfoDO) {
+//            videoFaceCustomerVO.setCarDetailId(loanCarInfoDO.getCarDetailId());
+//            String carName = carService.getName(loanCarInfoDO.getCarDetailId(), CAR_DETAIL, CAR_MODEL);
+//            videoFaceCustomerVO.setCarName(carName);
+//        }
 
         return videoFaceCustomerVO;
     }

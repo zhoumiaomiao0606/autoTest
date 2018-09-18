@@ -54,6 +54,7 @@ public class UniversalInfoVO {
     private String salesman_name;
     private String salesman_mobile;
     private String car_cooperation_dealer;
+    private String car_detail_id;
     private String car_name;
     private String car_type;
     private String car_gps_num;

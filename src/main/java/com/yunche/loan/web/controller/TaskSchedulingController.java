@@ -135,6 +135,7 @@ public class TaskSchedulingController {
      * @param taskListQuery
      * @return
      */
+    @Limiter
     @PostMapping(value = "/queryCancelTaskList")
     public ResultBean<List<TaskListVO>> queryCancelTaskList(@RequestBody @Validated TaskListQuery taskListQuery) {
         return taskSchedulingService.queryCancelTaskList(taskListQuery);

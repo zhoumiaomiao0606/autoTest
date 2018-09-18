@@ -60,6 +60,11 @@ public interface LoanQueryDOMapper {
                                                                       @Param("maxGroupLevel") Long maxGroupLevel,
                                                                       @Param("juniorIds") Set<String> juniorIds);
 
+    List<UniversalCustomerOrderVO> selectUniversalLoanApplyCustomerOrder(@Param("employeeId") Long employeeId,
+                                                                         @Param("name") String name,
+                                                                         @Param("maxGroupLevel") Long maxGroupLevel,
+                                                                         @Param("juniorIds") Set<String> juniorIds);
+
     /**
      * 资料流转-新增 客户列表
      *
@@ -320,4 +325,6 @@ public interface LoanQueryDOMapper {
      * @Description: 模糊查询
      */
     List<CustomerOrderVO> selectCustomerOrder(@Param("name") String name);
+
+    List<CustomerOrderVO> xx(@Param("name") String name);
 }

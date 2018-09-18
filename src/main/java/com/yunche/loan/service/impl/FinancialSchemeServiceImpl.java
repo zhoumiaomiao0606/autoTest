@@ -75,10 +75,10 @@ public class FinancialSchemeServiceImpl implements FinancialSchemeService {
 
         LoanBaseInfoDO loanBaseInfoDO = loanBaseInfoDOMapper.getTotalInfoByOrderId(orderId);
         String tmpApplyLicensePlateArea = null;
-        if (loanBaseInfoDO.getAreaId()!=null) {
+        if (loanBaseInfoDO.getAreaId() != null) {
             BaseAreaDO baseAreaDO = baseAreaDOMapper.selectByPrimaryKey(loanBaseInfoDO.getAreaId(), VALID_STATUS);
             //（个性化）如果上牌地是区县一级，则返回形式为 省+区
-            if("3".equals(String.valueOf(baseAreaDO.getLevel()))){
+            if ("3".equals(String.valueOf(baseAreaDO.getLevel()))) {
                 Long parentAreaId = baseAreaDO.getParentAreaId();
                 BaseAreaDO cityDO = baseAreaDOMapper.selectByPrimaryKey(parentAreaId, null);
                 baseAreaDO.setParentAreaId(cityDO.getParentAreaId());
@@ -215,10 +215,19 @@ public class FinancialSchemeServiceImpl implements FinancialSchemeService {
 
     @Override
     public List<UniversalCustomerOrderVO> queryModifyCustomerOrder(String name) {
+
         Long loginUserId = SessionUtils.getLoginUser().getId();
         Set<String> juniorIds = employeeService.getSelfAndCascadeChildIdList(loginUserId);
         Long maxGroupLevel = taskSchedulingDOMapper.selectMaxGroupLevel(loginUserId);
-        return loanQueryDOMapper.selectUniversalModifyCustomerOrder(SessionUtils.getLoginUser().getId(), StringUtils.isBlank(name) ? null : name, maxGroupLevel == null ? new Long(0) : maxGroupLevel, juniorIds);
+
+        List<UniversalCustomerOrderVO> universalCustomerOrderVOS = loanQueryDOMapper.selectUniversalModifyCustomerOrder(
+                loginUserId,
+                StringUtils.isBlank(name) ? null : name.trim(),
+                maxGroupLevel == null ? 0 : maxGroupLevel,
+                juniorIds
+        );
+
+        return universalCustomerOrderVOS;
     }
 
     /**

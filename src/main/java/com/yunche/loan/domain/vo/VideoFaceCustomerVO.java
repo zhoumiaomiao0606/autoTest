@@ -76,5 +76,9 @@ public class VideoFaceCustomerVO {
      * 位置
      */
     private String address;
-
+    /**
+     * 合伙人
+     */
+    private String partnerId;
+    private String partnerName;
 }

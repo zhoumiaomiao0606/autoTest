@@ -108,10 +108,19 @@ public class LoanRefundApplyServiceImpl implements LoanRefundApplyService {
 
     @Override
     public List<UniversalCustomerOrderVO> queryRefundCustomerOrder(String name) {
+
         Long loginUserId = SessionUtils.getLoginUser().getId();
         Set<String> juniorIds = employeeService.getSelfAndCascadeChildIdList(loginUserId);
         Long maxGroupLevel = taskSchedulingDOMapper.selectMaxGroupLevel(loginUserId);
-        return loanQueryDOMapper.selectUniversalRefundCustomerOrder(SessionUtils.getLoginUser().getId(), StringUtils.isBlank(name) ? null : name, maxGroupLevel == null ? new Long(0) : maxGroupLevel, juniorIds);
+
+        List<UniversalCustomerOrderVO> universalCustomerOrderVOS = loanQueryDOMapper.selectUniversalRefundCustomerOrder(
+                loginUserId,
+                StringUtils.isBlank(name) ? null : name.trim(),
+                maxGroupLevel == null ? 0 : maxGroupLevel,
+                juniorIds
+        );
+
+        return universalCustomerOrderVOS;
     }
 
     /**
