@@ -4,6 +4,7 @@
     <!--=======================================报表社会征信查询明细=========================================-->
     <select id="selectSocialCreditChartVO" parameterType="com.yunche.loan.domain.param.SocialCreditChartParam"  resultType="com.yunche.loan.domain.vo.SocialCreditChartVO">
         SELECT
+        (SELECT biz_area.name FROM  biz_area_rela_partner LEFT JOIN biz_area ON biz_area_rela_partner.biz_area_id = biz_area.id WHERE biz_area_rela_partner.partner_id = principal_partner.id ORDER BY biz_area_rela_partner.gmt_create limit 1 ) AS biz_area,
         principal_area.area_name,
         -- 客户类型: 1-主贷人;2-共贷人;3-担保人;4-紧急联系人;
         CASE
@@ -139,6 +140,7 @@
     <!--=======================================报表银行征信查询明细=========================================-->
     <select id="selectBankCreditChartVO" parameterType="com.yunche.loan.domain.param.BankCreditChartParam"  resultType="com.yunche.loan.domain.vo.BankCreditChartVO">
         SELECT
+        (SELECT biz_area.name FROM  biz_area_rela_partner LEFT JOIN biz_area ON biz_area_rela_partner.biz_area_id = biz_area.id WHERE biz_area_rela_partner.partner_id = principal_partner.id ORDER BY biz_area_rela_partner.gmt_create limit 1 ) AS biz_area,
         principal_area.area_name,
         -- 客户类型: 1-主贷人;2-共贷人;3-担保人;4-紧急联系人;
         CASE
@@ -276,6 +278,7 @@
     <select id="selectFinancialDepartmentRemitDetailChartVO" parameterType="com.yunche.loan.domain.param.FinancialDepartmentRemitDetailChartParam"  resultType="com.yunche.loan.domain.vo.FinancialDepartmentRemitDetailChartVO" >
 
         SELECT
+        (SELECT biz_area.name FROM  biz_area_rela_partner LEFT JOIN biz_area ON biz_area_rela_partner.biz_area_id = biz_area.id WHERE biz_area_rela_partner.partner_id = partner.id ORDER BY biz_area_rela_partner.gmt_create limit 1 ) AS biz_area,
         base_area.area_name,
         customer. NAME AS customer_name,
         customer.id_card AS customer_id_card,
@@ -397,6 +400,7 @@
     <!--=======================================报表 抵押超期=========================================-->
     <select id="selectMortgageOverdueChartVO" parameterType="com.yunche.loan.domain.param.MortgageOverdueParam"  resultType="com.yunche.loan.domain.vo.MortgageOverdueChartVO" >
         SELECT
+        (SELECT biz_area.name FROM  biz_area_rela_partner LEFT JOIN biz_area ON biz_area_rela_partner.biz_area_id = biz_area.id WHERE biz_area_rela_partner.partner_id = partner.id ORDER BY biz_area_rela_partner.gmt_create limit 1 ) AS biz_area,
         base_area.area_name,
         partner.NAME AS partner_name,
         customer.NAME AS customer_name,
@@ -537,6 +541,7 @@
         FROM
         (
         SELECT
+        (SELECT biz_area.name FROM  biz_area_rela_partner LEFT JOIN biz_area ON biz_area_rela_partner.biz_area_id = biz_area.id WHERE biz_area_rela_partner.partner_id = partner.id ORDER BY biz_area_rela_partner.gmt_create limit 1 ) AS biz_area,
         base_area.area_name,
         partner.NAME AS partner_name,
         customer.NAME AS customer_name,

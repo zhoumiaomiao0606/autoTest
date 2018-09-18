@@ -10,6 +10,8 @@ import lombok.Data;
 @Data
 public class SocialCreditChartVO
 {
+    //大区
+    private String biz_area;
     //业务区域
     private String area_name;
 
