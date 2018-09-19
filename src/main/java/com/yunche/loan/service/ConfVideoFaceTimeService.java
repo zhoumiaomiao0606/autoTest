@@ -1,6 +1,6 @@
 package com.yunche.loan.service;
 
-import com.yunche.loan.domain.entity.ConfVideoFaceTimeDO;
+import com.yunche.loan.domain.vo.ConfVideoFaceTimeVO;
 
 import java.util.List;
 
@@ -10,5 +10,7 @@ import java.util.List;
  */
 public interface ConfVideoFaceTimeService {
 
-    void save(List<ConfVideoFaceTimeDO> confVideoFaceTimeDO);
+    void save(List<ConfVideoFaceTimeVO> confVideoFaceTimeDO);
+
+    List<ConfVideoFaceTimeVO> listAll();
 }

@@ -3,6 +3,8 @@ package com.yunche.loan.mapper;
 import com.yunche.loan.domain.entity.ConfVideoFaceTimeDO;
 import org.apache.ibatis.annotations.Delete;
 
+import java.util.List;
+
 public interface ConfVideoFaceTimeDOMapper {
 
     int deleteByPrimaryKey(Long id);
@@ -19,4 +21,6 @@ public interface ConfVideoFaceTimeDOMapper {
 
     @Delete("DELETE FROM `conf_video_face_time`")
     void deleteAll();
+
+    List<ConfVideoFaceTimeDO> listAll();
 }
