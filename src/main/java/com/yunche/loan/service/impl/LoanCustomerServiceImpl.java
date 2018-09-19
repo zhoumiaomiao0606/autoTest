@@ -339,8 +339,8 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
                         }
                         LoanCustomerDO loanCustomerDO = loanCustomerDOMapper.selectByPrimaryKey(bankAndSocietyPicVO.getCustomerId(), null);
                         if (loanCustomerDO != null && picPath.size() != 0) {
-                            String fileName = loanCustomerDO.getName() + loanCustomerDO.getId() + ".jpg";
-                            String retPath = ImageUtil.mergeImage2Pic(fileName, picPath);
+                            String fileName = loanCustomerDO.getId()+loanCustomerDO.getName()+ loanCustomerDO.getIdCard()+".jpg";
+                            String retPath = ImageUtil.mergeImage2Pic_NO_COMPROCESS(fileName, picPath);
                             File file = new File(retPath);
                             //上传OSS
                             OSSClient ossClient = OSSUnit.getOSSClient();
@@ -377,8 +377,8 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
                         }
                         LoanCustomerDO loanCustomerDO = loanCustomerDOMapper.selectByPrimaryKey(bankAndSocietyPicVO.getCustomerId(), null);
                         if (loanCustomerDO != null && picPath.size() != 0) {
-                            String fileName = loanCustomerDO.getName() + loanCustomerDO.getId() + ".jpg";
-                            String retPath = ImageUtil.mergeImage2Pic(fileName, picPath);
+                            String fileName =  loanCustomerDO.getId()+loanCustomerDO.getName()+ loanCustomerDO.getIdCard()+".jpg";
+                            String retPath = ImageUtil.mergeImage2Pic_NO_COMPROCESS(fileName, picPath);
 
                             File file = new File(retPath);
                             //上传OSS

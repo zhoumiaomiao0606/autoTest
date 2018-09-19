@@ -139,6 +139,93 @@ public class ImageUtil {
         return downLoadBasepath+File.separator+name;
     }
 
+    /**
+     * 图片合并成jpg(不进行压缩)
+     * @param imageList
+     */
+    public static final  String  mergeImage2Pic_NO_COMPROCESS(String name,List<String> imageList){
+
+
+
+        FileOutputStream out = null;
+        String fileName=null;//临时文件名
+        try{
+            //创建文件对象
+            List<Image> images = imageList.stream().map(pic->{
+                Image src =null;
+                try {
+                    src = ImageIO.read(OSSUnit.getOSS2InputStream(pic));
+                } catch (IOException e) {
+                    Preconditions.checkArgument(false,"读图片异常");
+                }
+                return src;
+            }).collect(Collectors.toList());
+            //获取待合并图片中最大宽度 & 图片总高度之和
+            int maxWidth = 0;
+            int maxHeight = 0;
+            int totalHeight = 0;
+
+            for(int i=0;i<images.size();i++){
+
+                int width = images.get(i).getWidth(null);
+
+                int height = images.get(i).getHeight(null);
+
+                Double rate = (double) DEFAULT_WIDTH / (double)width;
+                if(rate.intValue()<=0){
+                    rate =1.0;
+                }
+                int rateHeight = rate.intValue()*height;
+                if(width>maxWidth){
+                    maxWidth = width;
+                }
+                if(height>maxHeight){
+                    maxHeight = height;
+                }
+                totalHeight += rateHeight;
+            }
+            //构造一个类型为预定义图像类型之一的 BufferedImage。 高度为各个图片高度之和
+            BufferedImage tag = new BufferedImage(DEFAULT_WIDTH, totalHeight, BufferedImage.TYPE_INT_RGB);
+            //创建输出流
+
+            fileName = downLoadBasepath+File.separator+name;
+            out = new FileOutputStream(fileName);
+            //绘制合成图像
+//            Graphics graphics = tag.getGraphics();
+            Graphics graphics = tag.createGraphics();
+            int tmpHeight=0;
+            for(int i=0;i<images.size();i++){
+                Image image = images.get(i);
+                Double rate = (double) DEFAULT_WIDTH / (double)image.getWidth(null);
+                if(rate.intValue()<=0){
+                    rate =1.0;
+                }
+                int rateHeight = rate.intValue()*image.getHeight(null);
+                Image scaledInstance = image.getScaledInstance(DEFAULT_WIDTH, rateHeight, Image.SCALE_SMOOTH);
+                graphics.drawImage(scaledInstance, 0, tmpHeight, DEFAULT_WIDTH, rateHeight, null);
+//                graphics.drawImage(scaledInstance, 0, tmpHeight, null);
+                tmpHeight+=rateHeight;
+            }
+            // 释放此图形的上下文以及它使用的所有系统资源。
+            graphics.dispose();
+            //将绘制的图像生成至输出流
+            boolean write = ImageIO.write(tag, FORMATNAME, out);
+            //压缩
+//            ImageUtil.compress(fileName,downLoadBasepath+File.separator+name);
+        }catch(Exception e){
+            throw new BizException(e.getMessage());
+        }finally {
+            //关闭输出流
+            try {
+                if(out!=null){
+                    out.close();
+                }
+            } catch (IOException e) {
+                Preconditions.checkArgument(false,e.getMessage());
+            }
+        }
+        return fileName;
+    }
 //    /**
 //     * 图片合成word文档
 //     * @param imageList
