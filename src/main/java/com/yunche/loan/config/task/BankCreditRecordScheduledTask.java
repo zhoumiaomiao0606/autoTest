@@ -87,6 +87,7 @@ public class BankCreditRecordScheduledTask {
             approval.setCheckPermission(false);
             approval.setNeedLog(true);
             approval.setNeedPush(true);
+            approval.setAutoTask(true);
 
             bankInterfaceSerialDOS.parallelStream()
                     .forEach(bankInterfaceSerialDO -> {

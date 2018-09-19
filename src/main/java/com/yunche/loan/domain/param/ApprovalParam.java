@@ -39,9 +39,9 @@ public class ApprovalParam {
      */
     private String info;
     /**
-     * 目标节点
+     * 是否为自动任务
      */
-//    private String target;
+    private boolean autoTask = false;
 
 
     ///////////////////////////////////////////////////// Boolean //////////////////////////////////////////////////////

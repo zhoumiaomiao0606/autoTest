@@ -119,11 +119,9 @@ public class LoanProcessApprovalCommonServiceImpl implements LoanProcessApproval
         EmployeeDO loginUser = null;
 
         // 自动任务
-        if (ACTION_REJECT_AUTO.equals(approval.getAction())) {
-
+        if (approval.isAutoTask()) {
             loanProcessLogDO.setUserId(AUTO_EMPLOYEE_ID);
             loanProcessLogDO.setUserName(AUTO_EMPLOYEE_NAME);
-
         }
         // 正常人为操作
         else {

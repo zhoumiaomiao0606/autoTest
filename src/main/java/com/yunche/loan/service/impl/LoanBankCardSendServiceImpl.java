@@ -3,6 +3,7 @@ package com.yunche.loan.service.impl;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.yunche.loan.config.constant.BaseConst;
+import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.DateTimeFormatUtils;
 import com.yunche.loan.config.util.POIUtil;
@@ -40,6 +41,7 @@ public class LoanBankCardSendServiceImpl implements LoanBankCardSendService {
 
     @Autowired
     private LoanOrderDOMapper loanOrderDOMapper;
+
     @Autowired
     private LoanCustomerDOMapper loanCustomerDOMapper;
 
@@ -50,7 +52,7 @@ public class LoanBankCardSendServiceImpl implements LoanBankCardSendService {
 
 
         LoanOrderDO orderDO = loanOrderDOMapper.selectByPrimaryKey(loanBankCardSendDO.getOrderId());
-        if(orderDO!=null){
+        if (orderDO != null) {
             LoanCustomerDO customerDO = loanCustomerDOMapper.selectByPrimaryKey(orderDO.getLoanCustomerId(), BaseConst.VALID_STATUS);
             customerDO.setBankCardTransmitAddress(loanBankCardSendDO.getExpressSendAddress());
             loanCustomerDOMapper.updateByPrimaryKeySelective(customerDO);
@@ -90,31 +92,91 @@ public class LoanBankCardSendServiceImpl implements LoanBankCardSendService {
         List<LoanBankCardSendDO> loanBankCardSendDOList = Lists.newArrayList();
 
         try {
+
             // readFile
             List<String[]> rowList = POIUtil.readExcelFromOSS(0, 1, ossKey);
 
-            if (!CollectionUtils.isEmpty(rowList)) {
-                // parse
-                rowList.stream()
-                        .filter(ArrayUtils::isNotEmpty)
-                        .forEach(row -> {
 
-                            LoanBankCardSendDO loanBankCardSendDO = new LoanBankCardSendDO();
+            for (int i = 0; i < rowList.size(); i++) {
 
-                            loanBankCardSendDO.setOrderId(Long.valueOf(row[0]));
-                            loanBankCardSendDO.setCardholderName(row[1]);
-                            loanBankCardSendDO.setCardholderPhone(row[2]);
-                            loanBankCardSendDO.setCardholderAddress(row[3]);
-                            loanBankCardSendDO.setRepayCardNum(row[4]);
-                            loanBankCardSendDO.setExpressSendAddress(row[5]);
-                            loanBankCardSendDO.setExpressSendNum(row[6]);
-                            loanBankCardSendDO.setExpressSendDate(DateTimeFormatUtils.convertStrToDate_yyyyMMdd(row[7]));
+                // 当前行数
+                int rowNum = i + 1;
 
-                            loanBankCardSendDO.setGmtCreate(new Date());
-                            loanBankCardSendDO.setGmtModify(new Date());
+                // 当前行数据
+                String[] row = rowList.get(i);
 
-                            loanBankCardSendDOList.add(loanBankCardSendDO);
-                        });
+                // 空行跳过
+                if (ArrayUtils.isEmpty(row)) {
+                    continue;
+                }
+
+                // 列
+                int line = 0;
+                // 当前行，具体列val
+                String rowVal = "";
+
+                LoanBankCardSendDO loanBankCardSendDO = new LoanBankCardSendDO();
+
+                try {
+                    rowVal = row[line++];
+                    loanBankCardSendDO.setOrderId(Long.valueOf(rowVal));
+                } catch (Exception e) {
+                    throw new BizException("第" + rowNum + "行，第" + (line) + "列格式有误：" + rowVal);
+                }
+
+                try {
+                    rowVal = row[line++];
+                    loanBankCardSendDO.setCardholderName(rowVal);
+                } catch (Exception e) {
+                    throw new BizException("第" + rowNum + "行，第" + (line) + "列格式有误：" + rowVal);
+                }
+
+                try {
+                    rowVal = row[line++];
+                    loanBankCardSendDO.setCardholderPhone(rowVal);
+                } catch (Exception e) {
+                    throw new BizException("第" + rowNum + "行，第" + (line) + "列格式有误：" + rowVal);
+                }
+
+                try {
+                    rowVal = row[line++];
+                    loanBankCardSendDO.setCardholderAddress(rowVal);
+                } catch (Exception e) {
+                    throw new BizException("第" + rowNum + "行，第" + (line) + "列格式有误：" + rowVal);
+                }
+
+                try {
+                    rowVal = row[line++];
+                    loanBankCardSendDO.setRepayCardNum(rowVal);
+                } catch (Exception e) {
+                    throw new BizException("第" + rowNum + "行，第" + (line) + "列格式有误：" + rowVal);
+                }
+
+                try {
+                    rowVal = row[line++];
+                    loanBankCardSendDO.setExpressSendAddress(rowVal);
+                } catch (Exception e) {
+                    throw new BizException("第" + rowNum + "行，第" + (line) + "列格式有误：" + rowVal);
+                }
+
+                try {
+                    rowVal = row[line++];
+                    loanBankCardSendDO.setExpressSendNum(rowVal);
+                } catch (Exception e) {
+                    throw new BizException("第" + rowNum + "行，第" + (line) + "列格式有误：" + rowVal);
+                }
+
+                try {
+                    rowVal = row[line++];
+                    loanBankCardSendDO.setExpressSendDate(DateTimeFormatUtils.convertStrToDate_yyyyMMdd(rowVal));
+                } catch (Exception e) {
+                    throw new BizException("第" + rowNum + "行，第" + (line) + "列格式有误：" + rowVal);
+                }
+
+                loanBankCardSendDO.setGmtCreate(new Date());
+                loanBankCardSendDO.setGmtModify(new Date());
+
+                loanBankCardSendDOList.add(loanBankCardSendDO);
             }
 
         } catch (IOException e) {

@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yunche.loan.mapper.ConfVideoFaceTimeDOMapper">
+    <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.ConfVideoFaceTimeDO">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="bank_id" property="bankId" jdbcType="BIGINT"/>
+        <result column="start_loan_amount" property="startLoanAmount" jdbcType="DECIMAL"/>
+        <result column="end_loan_amount" property="endLoanAmount" jdbcType="DECIMAL"/>
+        <result column="start_time" property="startTime" jdbcType="VARCHAR"/>
+        <result column="end_time" property="endTime" jdbcType="VARCHAR"/>
+        <result column="type" property="type" jdbcType="TINYINT"/>
+        <result column="gmt_create" property="gmtCreate" jdbcType="TIMESTAMP"/>
+        <result column="gmt_modify" property="gmtModify" jdbcType="TIMESTAMP"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+    id, bank_id, start_loan_amount, end_loan_amount, start_time, end_time, type, gmt_create, 
+    gmt_modify
+  </sql>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        select
+        <include refid="Base_Column_List"/>
+        from conf_video_face_time
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from conf_video_face_time
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+    <insert id="insert" parameterType="com.yunche.loan.domain.entity.ConfVideoFaceTimeDO"
+            useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+    insert into conf_video_face_time (id, bank_id, start_loan_amount, 
+      end_loan_amount, start_time, end_time, 
+      type, gmt_create, gmt_modify
+      )
+    values (#{id,jdbcType=BIGINT}, #{bankId,jdbcType=BIGINT}, #{startLoanAmount,jdbcType=DECIMAL}, 
+      #{endLoanAmount,jdbcType=DECIMAL}, #{startTime,jdbcType=VARCHAR}, #{endTime,jdbcType=VARCHAR}, 
+      #{type,jdbcType=TINYINT}, #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModify,jdbcType=TIMESTAMP}
+      )
+  </insert>
+    <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.ConfVideoFaceTimeDO"
+            useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+        insert into conf_video_face_time
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="bankId != null">
+                bank_id,
+            </if>
+            <if test="startLoanAmount != null">
+                start_loan_amount,
+            </if>
+            <if test="endLoanAmount != null">
+                end_loan_amount,
+            </if>
+            <if test="startTime != null">
+                start_time,
+            </if>
+            <if test="endTime != null">
+                end_time,
+            </if>
+            <if test="type != null">
+                type,
+            </if>
+            <if test="gmtCreate != null">
+                gmt_create,
+            </if>
+            <if test="gmtModify != null">
+                gmt_modify,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=BIGINT},
+            </if>
+            <if test="bankId != null">
+                #{bankId,jdbcType=BIGINT},
+            </if>
+            <if test="startLoanAmount != null">
+                #{startLoanAmount,jdbcType=DECIMAL},
+            </if>
+            <if test="endLoanAmount != null">
+                #{endLoanAmount,jdbcType=DECIMAL},
+            </if>
+            <if test="startTime != null">
+                #{startTime,jdbcType=VARCHAR},
+            </if>
+            <if test="endTime != null">
+                #{endTime,jdbcType=VARCHAR},
+            </if>
+            <if test="type != null">
+                #{type,jdbcType=TINYINT},
+            </if>
+            <if test="gmtCreate != null">
+                #{gmtCreate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="gmtModify != null">
+                #{gmtModify,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.ConfVideoFaceTimeDO">
+        update conf_video_face_time
+        <set>
+            <if test="bankId != null">
+                bank_id = #{bankId,jdbcType=BIGINT},
+            </if>
+            <if test="startLoanAmount != null">
+                start_loan_amount = #{startLoanAmount,jdbcType=DECIMAL},
+            </if>
+            <if test="endLoanAmount != null">
+                end_loan_amount = #{endLoanAmount,jdbcType=DECIMAL},
+            </if>
+            <if test="startTime != null">
+                start_time = #{startTime,jdbcType=VARCHAR},
+            </if>
+            <if test="endTime != null">
+                end_time = #{endTime,jdbcType=VARCHAR},
+            </if>
+            <if test="type != null">
+                type = #{type,jdbcType=TINYINT},
+            </if>
+            <if test="gmtCreate != null">
+                gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="gmtModify != null">
+                gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.ConfVideoFaceTimeDO">
+    update conf_video_face_time
+    set bank_id = #{bankId,jdbcType=BIGINT},
+      start_loan_amount = #{startLoanAmount,jdbcType=DECIMAL},
+      end_loan_amount = #{endLoanAmount,jdbcType=DECIMAL},
+      start_time = #{startTime,jdbcType=VARCHAR},
+      end_time = #{endTime,jdbcType=VARCHAR},
+      type = #{type,jdbcType=TINYINT},
+      gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+      gmt_modify = #{gmtModify,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>
