@@ -1,9 +1,11 @@
 package com.yunche.loan.web.controller;
 
 
+import com.google.common.collect.Lists;
 import com.yunche.loan.config.cache.DictMapCache;
 import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.result.ResultBean;
+import com.yunche.loan.config.thread.ThreadPool;
 import com.yunche.loan.config.util.FtpUtil;
 import com.yunche.loan.domain.entity.PartnerDO;
 import com.yunche.loan.mapper.PartnerDOMapper;
@@ -14,6 +16,8 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.io.UnsupportedEncodingException;
+import java.util.List;
 
 @CrossOrigin
 @RestController
@@ -73,4 +77,36 @@ public class UniversalController {
        return  materialService.downSupplementFiles2OSS(Long.valueOf("1809051406599576357"), true, Long.valueOf("193"));
     }
 
+    @Autowired
+
+    // 文件下载
+    @RequestMapping("/downreport")
+    public String downreport() throws UnsupportedEncodingException {
+
+
+        List<Long> orderLists = Lists.newArrayList();
+        orderLists.add(1806151541217761225l);
+        orderLists.add(1806221600152528006l);
+        orderLists.add(1807041505471350219l);
+        orderLists.add(1807041514375640555l);
+        for(int i=0;i<orderLists.size();i++){
+            System.out.println(i+"："+System.currentTimeMillis());
+            ThreadPool.executorService.execute(() -> {
+
+
+                try {
+                    Thread.sleep(2000l);
+                    System.out.println(Thread.currentThread()+":"+orderLists.get(0));
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            });
+            System.out.println(i+"："+System.currentTimeMillis());
+        }
+
+
+
+        return "";
+
+    }
 }
