@@ -2375,6 +2375,7 @@
         SELECT
 
                       main.id                                      AS id,
+                      main.id                                      AS taskId,
                       join_e.id                                    AS salesmanId,
                       join_p.id                                    AS partnerId,
                       join_b.area_id                               AS bizAreaId,
