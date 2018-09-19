@@ -7,7 +7,9 @@ public interface ChartService
 {
     ResultBean getSocialCreditChart(SocialCreditChartParam param);
 
+
     ResultBean getBankCreditChart(BankCreditChartParam param);
+
 
     ResultBean getFinancialDepartmentRemitDetailChart(FinancialDepartmentRemitDetailChartParam param);
 
@@ -18,4 +20,13 @@ public interface ChartService
     ResultBean getAwaitRemitDetailChart(AwaitRemitDetailChartParam param);
 
     ResultBean getCompanyRemitDetailChart(CompanyRemitDetailChartParam param);
+
+
+    ResultBean financialDepartmentRemitDetailChartShortcutStatistics();
+
+    ResultBean mortgageOverdueQueryForChartShortcutStatistics();
+
+    ResultBean awaitRemitDetailChartShortcutStatistics();
+
+    ResultBean companyRemitDetailChartShortcutStatistics();
 }

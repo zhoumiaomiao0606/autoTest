@@ -20,8 +20,8 @@ public class BankCreditChartParam  extends BaseQuery
 
     private List<Long> bizAreaList;
     //银行审核时间
-/*    private  String startDate;
-    private  String endDate;*/
+    private  String startDate;
+    private  String endDate;
 
     //征信申请时间
 /*    private String startCreditGmtCreate;
@@ -33,7 +33,7 @@ public class BankCreditChartParam  extends BaseQuery
     private List<String> bankList;
 
     //征信申请时间-排序
-    private byte orderBy;
+    private byte orderBy =2;
 
     //权限过滤
     Long maxGroupLevel;

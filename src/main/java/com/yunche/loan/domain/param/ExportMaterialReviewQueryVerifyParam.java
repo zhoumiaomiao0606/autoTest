@@ -10,6 +10,11 @@ import java.util.Set;
 @Data
 public class ExportMaterialReviewQueryVerifyParam
 {
+
+    //大区
+    private Long biz_areaId;
+
+    private List<Long> bizAreaList;
     private  String startDate;
     private  String endDate;
 

@@ -2,6 +2,7 @@ package com.yunche.loan.domain.vo;
 
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 /**
@@ -45,10 +46,10 @@ public class MortgageOverdueChartVO
     private String price;
 
     //贷款金融
-    private String loan_amount;
+    private BigDecimal loan_amount;
 
     //银行分期本金
-    private String bank_period_principal;
+    private BigDecimal bank_period_principal;
 
     //垫款日期
     private Date remitdate;

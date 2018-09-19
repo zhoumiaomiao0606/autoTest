@@ -2,6 +2,7 @@ package com.yunche.loan.domain.vo;
 
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 /**
@@ -48,13 +49,13 @@ public class FinancialDepartmentRemitDetailChartVO
     private String down_payment_money;
 
     //贷款金额
-    private String loan_amount;
+    private BigDecimal loan_amount;
 
     //银行分期本金
-    private String bank_period_principal;
+    private BigDecimal bank_period_principal;
 
     //打款金额
-    private String remit_amount;
+    private BigDecimal remit_amount;
 
     //创建时间
     private Date gmt_create;

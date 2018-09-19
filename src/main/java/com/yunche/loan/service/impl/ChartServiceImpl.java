@@ -2,7 +2,10 @@ package com.yunche.loan.service.impl;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.google.common.collect.Lists;
+import com.yunche.loan.config.common.OSSConfig;
 import com.yunche.loan.config.result.ResultBean;
+import com.yunche.loan.config.util.POIUtil;
 import com.yunche.loan.config.util.SessionUtils;
 import com.yunche.loan.domain.entity.BizAreaDO;
 import com.yunche.loan.domain.param.*;
@@ -14,10 +17,14 @@ import com.yunche.loan.service.ChartService;
 import com.yunche.loan.service.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
@@ -28,10 +35,15 @@ import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
  * @description: 报表统一实现类
  **/
 @Service
+@Transactional
 public class ChartServiceImpl implements ChartService
+
 {
     @Autowired
     private ChartDOMapper chartDOMapper;
+
+    @Autowired
+    private OSSConfig ossConfig;
 
     @Autowired
     private BizAreaDOMapper bizAreaDOMapper;
@@ -89,7 +101,6 @@ public class ChartServiceImpl implements ChartService
         PageInfo<BankCreditChartVO> pageInfo = new PageInfo<>(list);
         return ResultBean.ofSuccess(pageInfo);
     }
-
     @Override
     public ResultBean getFinancialDepartmentRemitDetailChart(FinancialDepartmentRemitDetailChartParam param)
     {
@@ -190,6 +201,120 @@ public class ChartServiceImpl implements ChartService
         // 取分页信息
         PageInfo<CompanyRemitDetailChartVO> pageInfo = new PageInfo<>(list);
         return ResultBean.ofSuccess(pageInfo);
+    }
+
+    @Override
+    public ResultBean financialDepartmentRemitDetailChartShortcutStatistics()
+    {
+        FinancialDepartmentRemitDetailChartParam param =new FinancialDepartmentRemitDetailChartParam();
+        List<FinancialDepartmentRemitDetailChartVO> list = chartDOMapper.selectFinancialDepartmentRemitDetailChartVO(param);
+        //计算统计数据====判空
+        ShortcutStatisticsVO shortcutStatisticsVO =new ShortcutStatisticsVO();
+        if(list !=null && list.size()>0 )
+        {
+            Optional<BigDecimal> totalLoanAcount = list.stream()
+                    .filter(financialDepartmentRemitDetailChartVO -> financialDepartmentRemitDetailChartVO.getLoan_amount()!=null)
+                    .map(financialDepartmentRemitDetailChartVO -> financialDepartmentRemitDetailChartVO.getLoan_amount())
+                    .reduce((x, y) -> x.add(y));
+
+            Optional<BigDecimal> totalRemitAmount = list.stream()
+                    .filter(financialDepartmentRemitDetailChartVO -> financialDepartmentRemitDetailChartVO.getLoan_amount()!=null)
+                    .map(financialDepartmentRemitDetailChartVO -> financialDepartmentRemitDetailChartVO.getRemit_amount())
+                    .reduce((x, y) -> x.add(y));
+
+            Optional<BigDecimal> totalBankPeriodPrincipal = list.stream()
+                    .filter(financialDepartmentRemitDetailChartVO -> financialDepartmentRemitDetailChartVO.getLoan_amount()!=null)
+                    .map(financialDepartmentRemitDetailChartVO -> financialDepartmentRemitDetailChartVO.getBank_period_principal())
+                    .reduce((x, y) -> x.add(y));
+
+            shortcutStatisticsVO.setTotalBankPeriodPrincipal(totalBankPeriodPrincipal.get());
+            shortcutStatisticsVO.setTotalLoanAcount(totalLoanAcount.get());
+            shortcutStatisticsVO.setTotalRemitAmount(totalRemitAmount.get());
+        }
+        return ResultBean.ofSuccess(shortcutStatisticsVO);
+    }
+
+    @Override
+    public ResultBean mortgageOverdueQueryForChartShortcutStatistics()
+    {
+        MortgageOverdueParam param =new MortgageOverdueParam();
+        List<MortgageOverdueChartVO> list = chartDOMapper.selectMortgageOverdueChartVO(param);
+        //计算统计数据
+        ShortcutStatisticsVO shortcutStatisticsVO =new ShortcutStatisticsVO();
+        //计算统计数据====判空
+        if(list !=null && list.size()>0 )
+        {
+            Optional<BigDecimal> totalLoanAcount = list.stream()
+                    .filter(f -> f.getLoan_amount()!=null)
+                    .map(financialDepartmentRemitDetailChartVO -> financialDepartmentRemitDetailChartVO.getLoan_amount())
+                    .reduce((x, y) -> x.add(y));
+
+            Optional<BigDecimal> totalBankPeriodPrincipal = list.stream()
+                    .filter(f -> f.getLoan_amount()!=null)
+                    .map(financialDepartmentRemitDetailChartVO -> financialDepartmentRemitDetailChartVO.getBank_period_principal())
+                    .reduce((x, y) -> x.add(y));
+            shortcutStatisticsVO.setTotalBankPeriodPrincipal(totalBankPeriodPrincipal.get());
+            shortcutStatisticsVO.setTotalLoanAcount(totalLoanAcount.get());
+
+        }
+        return ResultBean.ofSuccess(shortcutStatisticsVO);
+    }
+
+    @Override
+    public ResultBean awaitRemitDetailChartShortcutStatistics()
+    {
+        AwaitRemitDetailChartParam param =new AwaitRemitDetailChartParam();
+        List<AwaitRemitDetailChartVO> list = chartDOMapper.selectAwaitRemitDetailChartVO(param);
+        //计算统计数据
+        ShortcutStatisticsVO shortcutStatisticsVO =new ShortcutStatisticsVO();
+        //计算统计数据====判空
+        if(list !=null && list.size()>0 )
+        {
+            Optional<BigDecimal> totalLoanAcount = list.stream()
+                    .filter(f -> f.getLoan_amount()!=null)
+                    .map(financialDepartmentRemitDetailChartVO -> financialDepartmentRemitDetailChartVO.getLoan_amount())
+                    .reduce((x, y) -> x.add(y));
+
+            Optional<BigDecimal> totalRemitAmount = list.stream()
+                    .filter(f -> f.getLoan_amount()!=null)
+                    .map(f -> f.getRemit_amount())
+                    .reduce((x, y) -> x.add(y));
+
+            Optional<BigDecimal> totalBankPeriodPrincipal = list.stream()
+                    .filter(f -> f.getLoan_amount()!=null)
+                    .map(financialDepartmentRemitDetailChartVO -> financialDepartmentRemitDetailChartVO.getBank_period_principal())
+                    .reduce((x, y) -> x.add(y));
+            shortcutStatisticsVO.setTotalBankPeriodPrincipal(totalBankPeriodPrincipal.get());
+            shortcutStatisticsVO.setTotalLoanAcount(totalLoanAcount.get());
+            shortcutStatisticsVO.setTotalRemitAmount(totalRemitAmount.get());
+        }
+        return ResultBean.ofSuccess(shortcutStatisticsVO);
+    }
+
+    @Override
+    public ResultBean companyRemitDetailChartShortcutStatistics()
+    {
+        CompanyRemitDetailChartParam param =new CompanyRemitDetailChartParam();
+        List<CompanyRemitDetailChartVO> list = chartDOMapper.selectCompanyRemitDetailChartVO(param);
+        //计算统计数据
+        ShortcutStatisticsVO shortcutStatisticsVO =new ShortcutStatisticsVO();
+        //计算统计数据====判空
+        if(list !=null && list.size()>0 )
+        {
+            Optional<BigDecimal> totalRemitAmount = list.stream()
+                    .filter(f -> f.getLoan_amount()!=null)
+                    .map(f -> f.getRemit_amount())
+                    .reduce((x, y) -> x.add(y));
+
+            Optional<BigDecimal> totalBankPeriodPrincipal = list.stream()
+                    .filter(f -> f.getLoan_amount()!=null)
+                    .map(financialDepartmentRemitDetailChartVO -> financialDepartmentRemitDetailChartVO.getBank_period_principal())
+                    .reduce((x, y) -> x.add(y));
+            shortcutStatisticsVO.setTotalBankPeriodPrincipal(totalBankPeriodPrincipal.get());
+
+            shortcutStatisticsVO.setTotalRemitAmount(totalRemitAmount.get());
+        }
+        return ResultBean.ofSuccess(shortcutStatisticsVO);
     }
 
 
