@@ -325,6 +325,4 @@ public interface LoanQueryDOMapper {
      * @Description: 模糊查询
      */
     List<CustomerOrderVO> selectCustomerOrder(@Param("name") String name);
-
-    List<CustomerOrderVO> xx(@Param("name") String name);
 }

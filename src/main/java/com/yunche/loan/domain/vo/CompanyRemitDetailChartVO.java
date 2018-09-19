@@ -10,8 +10,8 @@ import lombok.Data;
 @Data
 public class CompanyRemitDetailChartVO
 {
-   //客户编号
-
+    //客户编号
+    private String orderId;
     //客户姓名
     private String customer_name;
 
@@ -29,7 +29,10 @@ public class CompanyRemitDetailChartVO
     private String salesman_name;
 
     //大区
-    //省份
+    private String biz_area;
+
+    //省份---上牌地
+    private String apply_license_plate_area;
 
     //车型
     private String car_type;
@@ -49,9 +52,6 @@ public class CompanyRemitDetailChartVO
 
     //打款金额
     private String remit_amount;
-
-    //创建时间
-    private String gmt_create;
 
     //提交时间
     private String submitTime;

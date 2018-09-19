@@ -2,6 +2,8 @@ package com.yunche.loan.domain.vo;
 
 import lombok.Data;
 
+import java.util.Date;
+
 /**
  * @author: ZhongMingxiao
  * @create: 2018-09-07 10:06
@@ -28,7 +30,7 @@ public class MortgageOverdueChartVO
     private String customer_mobile;
 
     //申请征信时间
-    private String credit_apply_time;
+    private Date credit_apply_time;
 
     //贷款银行
     private String bank;
@@ -49,22 +51,22 @@ public class MortgageOverdueChartVO
     private String bank_period_principal;
 
     //垫款日期
-    private String remitdate;
+    private Date remitdate;
 
     //银行放款日期
-    private String lend_date;
+    private Date lend_date;
 
     //抵押资料公司寄合伙人
-    private String sendMaterialToParter_date;
+    private Date sendMaterialToParter_date;
 
     //抵押资料合伙人接收时间
-    private String ParterReceiveMaterial_date;
+    private Date ParterReceiveMaterial_date;
 
     //抵押状态
     private String apply_license_plate_deposit_info;
 
     //抵押日期
-    private String depositTime;
+    private Date depositTime;
 
     //抵押超期天数
     private String depositOverdueTime;

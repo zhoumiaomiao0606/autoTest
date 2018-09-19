@@ -4,8 +4,8 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.validator.constraints.NotBlank;
 
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Set;
@@ -41,6 +41,7 @@ public class TaskListQuery {
 
     Set<String> juniorIds = Sets.newHashSet();
 
+    @NotEmpty
     private String taskDefinitionKey;
 
     /**
@@ -56,7 +57,6 @@ public class TaskListQuery {
      * 1-已提交;  [2-未提交 ===拆分为===>（21-待邮寄;  22-待接收;）]   3-已打回;     0-全部;
      * ----------------------------------------------------------------------------------
      */
-    @NotNull
     private Integer taskStatus;
     private Integer taskStatus_;
 
@@ -120,6 +120,9 @@ public class TaskListQuery {
     private String startRemitGmtCreate;
 
     private String endRemitGmtCreate;
+    // 弃单时间
+    private String startCancelGmtCreate;
+    private String endCancelGmtCreate;
 
     private String minRemitAmount;
 

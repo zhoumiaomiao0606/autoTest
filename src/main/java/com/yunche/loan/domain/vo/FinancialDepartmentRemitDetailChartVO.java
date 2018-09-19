@@ -2,6 +2,8 @@ package com.yunche.loan.domain.vo;
 
 import lombok.Data;
 
+import java.util.Date;
+
 /**
  * @author: ZhongMingxiao
  * @create: 2018-09-07 09:51
@@ -10,6 +12,8 @@ import lombok.Data;
 @Data
 public class FinancialDepartmentRemitDetailChartVO
 {
+    //大区
+    private String biz_area;
     //业务区域
     private String area_name;
 
@@ -53,7 +57,7 @@ public class FinancialDepartmentRemitDetailChartVO
     private String remit_amount;
 
     //创建时间
-    private String gmt_create;
+    private Date gmt_create;
 
     //提交时间
     private String submitTime;

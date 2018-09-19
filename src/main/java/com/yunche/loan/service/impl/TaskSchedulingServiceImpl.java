@@ -26,6 +26,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -34,6 +36,8 @@ import static com.yunche.loan.config.constant.ListQueryTaskStatusConst.*;
 import static com.yunche.loan.config.constant.LoanDataFlowConst.DATA_FLOW_TASK_KEY_REVIEW_SUFFIX;
 import static com.yunche.loan.config.constant.LoanOrderProcessConst.*;
 import static com.yunche.loan.config.constant.LoanProcessEnum.DATA_FLOW;
+import static com.yunche.loan.config.util.DateTimeFormatUtils.formatter_yyyyMMdd;
+import static com.yunche.loan.config.util.DateTimeFormatUtils.formatter_yyyyMMdd_HHmmss;
 
 @Service
 public class TaskSchedulingServiceImpl implements TaskSchedulingService {
@@ -229,6 +233,14 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
     @Override
     public ResultBean<List<TaskListVO>> queryCancelTaskList(TaskListQuery taskListQuery) {
 
+        // 节点校验
+        Preconditions.checkArgument(LoanProcessEnum.havingCode(taskListQuery.getTaskDefinitionKey()),
+                "错误的任务节点key");
+
+        // 2年前
+        LocalDateTime _2_years_ago = LocalDate.now().minusYears(2).atTime(0, 0, 0);
+        taskListQuery.setStartCancelGmtCreate(_2_years_ago.format(formatter_yyyyMMdd_HHmmss));
+
         PageHelper.startPage(taskListQuery.getPageIndex(), taskListQuery.getPageSize(), true);
         List<TaskListVO> list = taskSchedulingDOMapper.selectCancelTaskList(taskListQuery);
         PageInfo<TaskListVO> pageInfo = new PageInfo<>(list);
@@ -238,8 +250,7 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
 
     @Override
     public ResultBean<List<TaskListVO>> queryTaskList(TaskListQuery taskListQuery) {
-        Preconditions.checkArgument(StringUtils.isNotBlank(taskListQuery.getTaskDefinitionKey()),
-                "taskDefinitionKey不能为空");
+        Preconditions.checkNotNull(taskListQuery.getTaskStatus(), "taskStatus不能为空");
 
         // 资料流转
         if (DATA_FLOW.getCode().equals(taskListQuery.getTaskDefinitionKey())) {
@@ -288,8 +299,7 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
 
     @Override
     public ResultBean<Long> countQueryTaskList(TaskListQuery taskListQuery) {
-        Preconditions.checkArgument(StringUtils.isNotBlank(taskListQuery.getTaskDefinitionKey()),
-                "taskDefinitionKey不能为空");
+        Preconditions.checkNotNull(taskListQuery.getTaskStatus(), "taskStatus不能为空");
 
         if (!LoanProcessEnum.havingCode(taskListQuery.getTaskDefinitionKey())) {
             throw new BizException("错误的任务节点key");
@@ -729,4 +739,12 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         return empBizAreaPartnerIds;
     }
 
+    public static void main(String[] args) {
+
+        LocalDate _2_years_ago = LocalDate.now().minusYears(2);
+
+        LocalDateTime localDateTime = _2_years_ago.atTime(0, 0, 0);
+        String format = localDateTime.format(formatter_yyyyMMdd);
+        System.out.println(format);
+    }
 }
