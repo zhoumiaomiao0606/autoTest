@@ -90,7 +90,12 @@ public class TaskListVO {
     private String dataFlowType;
     private String dataFlowTypeText;
     private String visitDoorId;
-    private String cancelGmtCreate;
+
+    // 审核人
+    private String approvalUserId;
+    private String approvalUserName;
+    // 审核时间
+    private String approvalGmtCreate;
 
     //////////////////////////[金融方案修改申请单]/////////////////////////
     /**

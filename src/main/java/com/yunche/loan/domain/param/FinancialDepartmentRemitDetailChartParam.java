@@ -19,6 +19,8 @@ public class FinancialDepartmentRemitDetailChartParam extends BaseQuery
     //大区
     private Long biz_areaId;
 
+    private List<Long> bizAreaList;
+
     //征信创建时间
     private  String startDate;
     private  String endDate;
@@ -40,4 +42,6 @@ public class FinancialDepartmentRemitDetailChartParam extends BaseQuery
     Long maxGroupLevel;
 
     Set<String> juniorIds = Sets.newHashSet();
+
+
 }

@@ -171,6 +171,68 @@ public class AuxiliaryServiceImpl implements AuxiliaryService {
                         logger.error("车贷管家系统通讯异常", e);
                         throw new BizException(e.getMessage());
                     }
+                }else if("All".equals(param.getGpsCompany())){
+                    try {
+                        boolean flag = CarLoanHttpUtil.getGpsStatus(obj.getGps_number());
+                        if (flag) {
+                            PartnerCusInfoVO partnerCusInfoVO = installGpsDOMapper.selectPartnerAndCusByOrderId(Long.valueOf(param.getOrder_id()));
+                            boolean cusFlag = CarLoanHttpUtil.modifyCustomer(String.valueOf(partnerCusInfoVO.getPId()),String.valueOf(partnerCusInfoVO.getCusId()),param.getDriverName(),param.getVehicleName().replaceAll(" ",""));
+                            if(cusFlag){
+                                boolean gpsFlag = CarLoanHttpUtil.bindGps(obj.getGps_number(),String.valueOf(partnerCusInfoVO.getCusId()));
+                                if(!gpsFlag){
+                                    throw new BizException("该GPS:" + obj.getGps_number() + "绑定失败");
+                                }
+                                param.setGpsCompany("CARLOAN");
+                            }else{
+                                throw new BizException("该客户:" + param.getDriverName() + "无法登记");
+                            }
+                        } else {
+                            try {
+                                String accToken = getAccToken();
+                                boolean falg = false;
+                                List<Map<String, Object>> list = OpenApiUtil.getGpsDetailInfo(accToken, obj.getGps_number());
+                                if (list.size() > 0) {
+                                    while ("1004".equals((String) list.get(0).get("code"))) {
+                                        list = OpenApiUtil.getGpsDetailInfo(getAccToken(), obj.getGps_number());
+                                    }
+                                }
+                                for (Map<String, Object> map1 : list) {
+                                    if ((map1.get("activationTime") != null || !"".equals(map1.get("activationTime")))
+                                            && (map1.get("vehicleName") == null || "".equals(map1.get("vehicleName")))
+                                            && (map1.get("driverName") == null || "".equals(map1.get("driverName")))) {
+                                        String account = (String)map1.get("account");
+                                        if(account != null && !"".equals(account)){
+                                            if(partnerDO.getGpsAccount().trim().equals(account.trim())){
+                                                falg = true;
+                                            } else {
+                                                throw new BizException("第三方该gps所属人与本地合伙人不符");
+                                            }
+                                        } else {
+                                            throw new BizException("第三方该gps不属于该合伙人");
+                                        }
+
+                                    } else {
+                                        throw new BizException("第三方该gps信息以绑定用户");
+                                    }
+                                }
+                                if (falg) {
+                                    String result = OpenApiUtil.updateGpsInfo(accToken, obj.getGps_number(), param.getVehicleName(), param.getDriverName());
+                                    while ("1004".equals(result)) {
+                                        result = OpenApiUtil.updateGpsInfo(getAccToken(), obj.getGps_number(), param.getVehicleName(), param.getDriverName());
+                                    }
+                                } else {
+                                    throw new BizException("第三方该gps信息不存在");
+                                }
+                                param.setGpsCompany("JIMI");
+                            } catch (Exception e) {
+                                logger.error(e.getMessage(), e);
+                                throw new BizException(e.getMessage());
+                            }
+                        }
+                    } catch (Exception e) {
+                        logger.error("GPS系统通讯异常", e);
+                        throw new BizException(e.getMessage());
+                    }
                 }
                 InstallGpsDO T = BeanPlasticityUtills.copy(InstallGpsDO.class, obj);
                 T.setOrder_id(Long.valueOf(param.getOrder_id()));

@@ -1,9 +1,11 @@
 package com.yunche.loan.domain.param;
 
+import com.google.common.collect.Sets;
 import com.yunche.loan.domain.query.BaseQuery;
 import lombok.Data;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author: ZhongMingxiao
@@ -16,6 +18,8 @@ public class MortgageOverdueParam  extends BaseQuery
     //大区
     private Long biz_areaId;
 
+    private List<Long> bizAreaList;
+
     //申请征信时间
     private  String startDate;
     private  String endDate;
@@ -24,4 +28,9 @@ public class MortgageOverdueParam  extends BaseQuery
     private List<Long> partnerList;
     //贷款银行列表
     private List<String> bankList;
+
+    //权限过滤
+    Long maxGroupLevel;
+
+    Set<String> juniorIds = Sets.newHashSet();
 }

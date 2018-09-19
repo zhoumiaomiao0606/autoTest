@@ -1,9 +1,11 @@
 package com.yunche.loan.domain.param;
 
+import com.google.common.collect.Sets;
 import com.yunche.loan.domain.query.BaseQuery;
 import lombok.Data;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author: ZhongMingxiao
@@ -15,6 +17,8 @@ public class MaterialReviewParam extends BaseQuery
 {
     //大区
     private Long biz_areaId;
+
+    private List<Long> bizAreaList;
 
     //申请征信时间
     private  String startDate;
@@ -32,4 +36,9 @@ public class MaterialReviewParam extends BaseQuery
 
     //资料审核状态  1.已通过   2.未提交
   /*  private Byte state;*/
+
+    //权限过滤
+    Long maxGroupLevel;
+
+    Set<String> juniorIds = Sets.newHashSet();
 }

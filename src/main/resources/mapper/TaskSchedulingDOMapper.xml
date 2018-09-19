@@ -2375,6 +2375,7 @@
         SELECT
 
                       main.id                                      AS id,
+                      main.id                                      AS taskId,
                       join_e.id                                    AS salesmanId,
                       join_p.id                                    AS partnerId,
                       join_b.area_id                               AS bizAreaId,
@@ -2410,8 +2411,10 @@
                       join_i.gps_num                               AS carGpsNum,
                       join_bp.remit_amount                         AS remitAmount,
 
+                      deputy_log.user_id                           AS  approvalUserId,
+                      deputy_log.user_name                         AS  approvalUserName,
                       DATE_FORMAT(deputy_log.create_time ,'%Y-%m-%d %H:%i:%S')
-                                                                   AS    cancelGmtCreate,
+                                                                   AS  approvalGmtCreate,
 
                       complex_log.usertask_credit_apply_gmt_user_name
                                                                    AS creditMan,

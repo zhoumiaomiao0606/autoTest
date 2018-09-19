@@ -9,7 +9,6 @@ import com.yunche.loan.config.queue.VideoFaceQueue;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.MapSortUtils;
 import com.yunche.loan.config.util.SessionUtils;
-import com.yunche.loan.domain.entity.*;
 import com.yunche.loan.domain.param.WebSocketParam;
 import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.mapper.*;

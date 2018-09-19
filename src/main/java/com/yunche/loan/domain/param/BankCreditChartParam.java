@@ -1,9 +1,11 @@
 package com.yunche.loan.domain.param;
 
+import com.google.common.collect.Sets;
 import com.yunche.loan.domain.query.BaseQuery;
 import lombok.Data;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author: ZhongMingxiao
@@ -15,6 +17,8 @@ public class BankCreditChartParam  extends BaseQuery
 {
     //大区id
     private Long biz_areaId;
+
+    private List<Long> bizAreaList;
     //银行审核时间
 /*    private  String startDate;
     private  String endDate;*/
@@ -30,4 +34,9 @@ public class BankCreditChartParam  extends BaseQuery
 
     //征信申请时间-排序
     private byte orderBy;
+
+    //权限过滤
+    Long maxGroupLevel;
+
+    Set<String> juniorIds = Sets.newHashSet();
 }
