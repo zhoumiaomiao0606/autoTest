@@ -8,6 +8,7 @@ import com.google.zxing.common.BitMatrix;
 import com.yunche.loan.config.cache.AppVersionCache;
 import com.yunche.loan.config.common.OSSConfig;
 import com.yunche.loan.config.constant.QrConst;
+import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.entity.AppVersionDO;
 import com.yunche.loan.service.LoadQrService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,5 +51,20 @@ public class LoadQrServiceImpl implements LoadQrService {
         MatrixToImageWriter.writeToStream(bitMatrix, QrConst.QR_FILE_TYPE, os);//写入文件刷新
         os.flush();
         os.close();//关闭输出流
+    }
+
+
+    @Override
+    public ResultBean apkDownload(){
+        AppVersionDO latestVersion = appVersionCache.getLatestVersion(TERMINAL_TYPE_ANDROID);
+        String endPoint = ossConfig.getEndpoint();
+        String bucketNameAndroid =ossConfig.getBucketName_android();
+        String downUrl;
+        if(latestVersion == null || endPoint.isEmpty()|| bucketNameAndroid.isEmpty()){
+            downUrl="APP版本维护中，请稍后重试";
+        }else{
+            downUrl ="https://"+bucketNameAndroid+"."+endPoint+ File.separator+latestVersion.getDownloadUrl();
+        }
+        return ResultBean.ofSuccess(downUrl);
     }
 }
