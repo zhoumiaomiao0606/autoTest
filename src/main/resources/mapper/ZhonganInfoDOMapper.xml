@@ -399,11 +399,11 @@
     WHERE
     a.business_review = 1
     AND a.order_status = 1
-    <if test = "gmtCreateStart != null">
-      AND h.create_time >= #{gmtCreateStart,jdbcType=VARCHAR}
+    <if test = "gmtCreateStart1 != null">
+      <![CDATA[ AND h.create_time >= #{gmtCreateStart1}]]>
     </if>
-    <if test = "gmtCreateEnd != null">
-      AND h.create_time >= #{gmtCreateEnd,jdbcType=VARCHAR}
+    <if test = "gmtCreateEnd1 != null">
+      <![CDATA[ AND h.create_time <= #{gmtCreateEnd1} ]]>
     </if>
     order by h.create_time
     limit #{startRow}, #{pageSize}
@@ -432,11 +432,11 @@
     WHERE
     a.business_review = 1
     AND a.order_status = 1
-    <if test = "gmtCreateStart != null">
-      AND h.create_time >= #{gmtCreateStart,jdbcType=VARCHAR}
+    <if test = "gmtCreateStart1 != null">
+      <![CDATA[ AND h.create_time >= #{gmtCreateStart1}]]>
     </if>
-    <if test = "gmtCreateEnd != null">
-      AND h.create_time >= #{gmtCreateEnd,jdbcType=VARCHAR}
+    <if test = "gmtCreateEnd1 != null">
+      <![CDATA[ AND h.create_time <= #{gmtCreateEnd1} ]]>
     </if>
     order by h.create_time
   </select>
@@ -473,11 +473,11 @@
     WHERE
     a.business_review = 1
     AND a.order_status = 1
-    <if test = "gmtCreateStart != null">
-      AND h.create_time >= #{gmtCreateStart,jdbcType=VARCHAR}
+    <if test = "gmtCreateStart1 != null">
+      <![CDATA[ AND h.create_time >= #{gmtCreateStart1}]]>
     </if>
-    <if test = "gmtCreateEnd != null">
-      AND h.create_time >= #{gmtCreateEnd,jdbcType=VARCHAR}
+    <if test = "gmtCreateEnd1 != null">
+      <![CDATA[ AND h.create_time <= #{gmtCreateEnd1} ]]>
     </if>
     order by h.create_time
   </select>
@@ -508,20 +508,19 @@
     WHERE
         material_print_review = 1
         AND order_status = 1
-    <if test = "bank != null">
+    <if test = "bank != null and bank !=''">
       and base.bank = #{bank,jdbcType=VARCHAR}
     </if>
-    <if test = "userId != null">
+    <if test = "userId != null and userId !=''">
       AND log.user_id = #{userId,jdbcType=VARCHAR}
     </if>
-    <if test = "gmtCreateStart != null">
-      AND log.create_time >= #{gmtCreateStart,jdbcType=VARCHAR}
+    <if test = "gmtCreateStart1 != null and gmtCreateStart1 !=''">
+      <![CDATA[ AND log.create_time >= #{gmtCreateStart1}]]>
     </if>
-    <if test = "gmtCreateEnd != null">
-      AND log.create_time >= #{gmtCreateEnd,jdbcType=VARCHAR}
+    <if test = "gmtCreateEnd1 != null and gmtCreateEnd1 !=''">
+      <![CDATA[ AND log.create_time <= #{gmtCreateEnd1} ]]>
     </if>
     order by log.create_time
-    limit #{startRow}, #{pageSize}
   </select>
   <select id="contractSetTotal" parameterType="com.yunche.loan.domain.query.ContractSetQuery" resultType="com.yunche.loan.domain.vo.ContractSetReportTotalVO">
     SELECT
@@ -543,17 +542,17 @@
     WHERE
     material_print_review = 1
     AND order_status = 1
-    <if test = "bank != null">
+    <if test = "bank != null and bank !=''">
       and base.bank = #{bank,jdbcType=VARCHAR}
     </if>
-    <if test = "userId != null">
+    <if test = "userId != null and userId !=''">
       AND log.user_id = #{userId,jdbcType=VARCHAR}
     </if>
-    <if test = "gmtCreateStart != null">
-      AND log.create_time >= #{gmtCreateStart,jdbcType=VARCHAR}
+    <if test = "gmtCreateStart1 != null and gmtCreateStart1 !=''">
+      <![CDATA[ AND log.create_time >= #{gmtCreateStart1}]]>
     </if>
-    <if test = "gmtCreateEnd != null">
-      AND log.create_time >= #{gmtCreateEnd,jdbcType=VARCHAR}
+    <if test = "gmtCreateEnd1 != null and gmtCreateEnd1 !=''">
+      <![CDATA[ AND log.create_time <= #{gmtCreateEnd1} ]]>
     </if>
   </select>
   <select id="contractSetExport" parameterType="com.yunche.loan.domain.query.ContractSetQuery" resultType="com.yunche.loan.domain.vo.ContractSetReportVO">
@@ -583,18 +582,447 @@
     WHERE
     material_print_review = 1
     AND order_status = 1
-    <if test = "bank != null">
+    <if test = "bank != null and bank !=''">
       and base.bank = #{bank,jdbcType=VARCHAR}
     </if>
-    <if test = "userId != null">
+    <if test = "userId != null and userId !=''">
       AND log.user_id = #{userId,jdbcType=VARCHAR}
     </if>
-    <if test = "gmtCreateStart != null">
-      AND log.create_time >= #{gmtCreateStart,jdbcType=VARCHAR}
+    <if test = "gmtCreateStart1 != null and gmtCreateStart1 !=''">
+      <![CDATA[ AND log.create_time >= #{gmtCreateStart1}]]>
     </if>
-    <if test = "gmtCreateEnd != null">
-      AND log.create_time >= #{gmtCreateEnd,jdbcType=VARCHAR}
+    <if test = "gmtCreateEnd1 != null and gmtCreateEnd1 !=''">
+      <![CDATA[ AND log.create_time <= #{gmtCreateEnd1} ]]>
     </if>
     order by log.create_time
   </select>
+
+  <select id="bankCreditPrincipal" parameterType="com.yunche.loan.domain.query.BankCreditPrincipalQuery" resultType="com.yunche.loan.domain.vo.BankCreditPrincipalVO">
+    SELECT
+	a.order_id							AS orderId,
+	c.bank									AS bank,
+	DATE_FORMAT( log.create_time, '%Y/%m/%d' ) AS createTime,
+	d.name									AS cName,
+    d.id_card                               AS idCard,
+	e.name									AS eName,
+	f.name									AS pName,
+	'车贷'  									AS businessVariety,
+	'鑫宝行'									AS submitOrganization
+    from
+	loan_process a
+	LEFT JOIN loan_order b ON a.order_id = b.id
+	LEFT JOIN loan_base_info c ON b.loan_base_info_id = c.id
+	left join loan_customer d on b.loan_customer_id = d.id
+	left join employee e on c.salesman_id = e.id
+	left join partner f on c.partner_id = f.id
+	LEFT JOIN (
+    SELECT DISTINCT
+        z.*
+    FROM
+        loan_process_log z
+        INNER JOIN ( SELECT SUBSTRING_INDEX( GROUP_CONCAT( id ORDER BY create_time DESC SEPARATOR ',' ), ',', 1 ) AS id FROM loan_process_log WHERE
+      task_definition_key = "usertask_bank_credit_record"
+
+    GROUP BY order_id ) d ON d.id = z.id
+        ) log ON log.order_id = b.id
+    WHERE
+     a.order_status !=3 and d.cust_type = 1
+      and a.bank_credit_record = 1
+    <if test = "bank != null and bank !=''">
+      and c.bank = #{bank,jdbcType=VARCHAR}
+    </if>
+    <if test = "partnerId != null and partnerId != ''">
+      and c.partner_id = #{partnerId,jdbcType=BIGINT}
+    </if>
+    <if test = "gmtCreateStart1 != null and gmtCreateStart1 != ''">
+      <![CDATA[ AND log.create_time >= #{gmtCreateStart1}]]>
+    </if>
+    <if test = "gmtCreateEnd1 != null and gmtCreateEnd1 != ''">
+      <![CDATA[ AND log.create_time <= #{gmtCreateEnd1} ]]>
+    </if>
+    order by a.order_id
+  </select>
+
+  <select id="bankCreditPrincipalTotal" parameterType="com.yunche.loan.domain.query.BankCreditPrincipalQuery" resultType="com.yunche.loan.domain.vo.ContractSetReportTotalVO">
+    SELECT
+    count(a.order_id)  AS cusTotal
+    from
+    loan_process a
+    LEFT JOIN loan_order b ON a.order_id = b.id
+    LEFT JOIN loan_base_info c ON b.loan_base_info_id = c.id
+    left join loan_customer d on b.loan_customer_id = d.id
+    left join employee e on c.salesman_id = e.id
+    left join partner f on c.partner_id = f.id
+    LEFT JOIN (
+    SELECT DISTINCT
+    z.*
+    FROM
+    loan_process_log z
+    INNER JOIN ( SELECT SUBSTRING_INDEX( GROUP_CONCAT( id ORDER BY create_time DESC SEPARATOR ',' ), ',', 1 ) AS id FROM loan_process_log WHERE
+      task_definition_key = "usertask_bank_credit_record"
+    GROUP BY order_id ) d ON d.id = z.id
+    ) log ON log.order_id = b.id
+    WHERE
+    a.order_status !=3 and d.cust_type = 1
+      and a.bank_credit_record = 1
+    <if test = "bank != null and bank !=''">
+      and c.bank = #{bank,jdbcType=VARCHAR}
+    </if>
+    <if test = "partnerId != null and partnerId != ''">
+      and c.partner_id = #{partnerId,jdbcType=BIGINT}
+    </if>
+    <if test = "gmtCreateStart1 != null and gmtCreateStart1 != ''">
+      <![CDATA[ AND log.create_time >= #{gmtCreateStart1}]]>
+    </if>
+    <if test = "gmtCreateEnd1 != null and gmtCreateEnd1 != ''">
+      <![CDATA[ AND log.create_time <= #{gmtCreateEnd1} ]]>
+    </if>
+  </select>
+
+  <select id="bankCreditPrincipalExport" parameterType="com.yunche.loan.domain.query.BankCreditPrincipalQuery" resultType="com.yunche.loan.domain.vo.BankCreditPrincipalVO">
+    SELECT
+    a.order_id							AS orderId,
+    c.bank									AS bank,
+    DATE_FORMAT( log.create_time, '%Y/%m/%d' ) AS createTime,
+    d.name									AS cName,
+    d.id_card                               AS idCard,
+    e.name									AS eName,
+    f.name									AS pName,
+    '车贷'  									AS businessVariety,
+    '鑫宝行'									AS submitOrganization
+    from
+    loan_process a
+    LEFT JOIN loan_order b ON a.order_id = b.id
+    LEFT JOIN loan_base_info c ON b.loan_base_info_id = c.id
+    left join loan_customer d on b.loan_customer_id = d.id
+    left join employee e on c.salesman_id = e.id
+    left join partner f on c.partner_id = f.id
+    LEFT JOIN (
+    SELECT DISTINCT
+    z.*
+    FROM
+    loan_process_log z
+    INNER JOIN ( SELECT SUBSTRING_INDEX( GROUP_CONCAT( id ORDER BY create_time DESC SEPARATOR ',' ), ',', 1 ) AS id FROM loan_process_log WHERE
+      task_definition_key = "usertask_bank_credit_record"
+    GROUP BY order_id ) d ON d.id = z.id
+    ) log ON log.order_id = b.id
+    WHERE
+    a.order_status !=3 and d.cust_type = 1
+      and a.bank_credit_record = 1
+    <if test = "bank != null and bank !=''">
+      and c.bank = #{bank,jdbcType=VARCHAR}
+    </if>
+    <if test = "partnerId != null and partnerId != ''">
+      and c.partner_id = #{partnerId,jdbcType=BIGINT}
+    </if>
+    <if test = "gmtCreateStart1 != null and gmtCreateStart1 != ''">
+      <![CDATA[ AND log.create_time >= #{gmtCreateStart1}]]>
+    </if>
+    <if test = "gmtCreateEnd1 != null and gmtCreateEnd1 != ''">
+      <![CDATA[ AND log.create_time <= #{gmtCreateEnd1} ]]>
+    </if>
+    order by a.order_id
+  </select>
+
+  <select id="bankCreditAll" parameterType="com.yunche.loan.domain.query.BankCreditPrincipalQuery" resultType="com.yunche.loan.domain.vo.BankCreditPrincipalVO">
+    SELECT
+	b.id										AS orderId,
+	c.bank									AS bank,
+	DATE_FORMAT( log.create_time, '%Y/%m/%d' ) AS createTime,
+	a.name									AS cName,
+	e.name									AS eName,
+	f.name									AS pName,
+	'车贷'  									AS businessVariety,
+	'鑫宝行'									AS submitOrganization
+  FROM
+      loan_customer a
+      LEFT JOIN loan_order b ON b.loan_customer_id = a.principal_cust_id
+      LEFT JOIN loan_base_info c ON b.loan_base_info_id = c.id
+      LEFT JOIN loan_process d ON d.order_id = b.id
+      LEFT JOIN employee e ON c.salesman_id = e.id
+      LEFT JOIN partner f ON c.partner_id = f.id
+      LEFT JOIN (
+  SELECT DISTINCT
+      z.*
+  FROM
+      loan_process_log z
+      INNER JOIN ( SELECT SUBSTRING_INDEX( GROUP_CONCAT( id ORDER BY create_time DESC SEPARATOR ',' ), ',', 1 ) AS id FROM loan_process_log WHERE
+      task_definition_key = "usertask_bank_credit_record"
+      GROUP BY order_id ) d ON d.id = z.id
+      ) log ON log.order_id = b.id
+  WHERE
+      d.order_status != 3
+      and d.bank_credit_record = 1
+    <if test = "bank != null and bank !=''">
+      and c.bank = #{bank,jdbcType=VARCHAR}
+    </if>
+    <if test = "partnerId != null and partnerId != ''">
+      and c.partner_id = #{partnerId,jdbcType=BIGINT}
+    </if>
+    <if test = "gmtCreateStart1 != null and gmtCreateStart1 != ''">
+      <![CDATA[ AND log.create_time >= #{gmtCreateStart1}]]>
+    </if>
+    <if test = "gmtCreateEnd1 != null and gmtCreateEnd1 != ''">
+      <![CDATA[ AND log.create_time <= #{gmtCreateEnd1} ]]>
+    </if>
+  ORDER BY b.id
+  </select>
+  <select id="bankCreditAllTotal" parameterType="com.yunche.loan.domain.query.BankCreditPrincipalQuery" resultType="com.yunche.loan.domain.vo.ContractSetReportTotalVO">
+    SELECT
+    count(b.id)  AS cusTotal
+    FROM
+    loan_customer a
+    LEFT JOIN loan_order b ON b.loan_customer_id = a.principal_cust_id
+    LEFT JOIN loan_base_info c ON b.loan_base_info_id = c.id
+    LEFT JOIN loan_process d ON d.order_id = b.id
+    LEFT JOIN employee e ON c.salesman_id = e.id
+    LEFT JOIN partner f ON c.partner_id = f.id
+    LEFT JOIN (
+    SELECT DISTINCT
+    z.*
+    FROM
+    loan_process_log z
+    INNER JOIN ( SELECT SUBSTRING_INDEX( GROUP_CONCAT( id ORDER BY create_time DESC SEPARATOR ',' ), ',', 1 ) AS id FROM loan_process_log WHERE
+      task_definition_key = "usertask_bank_credit_record"
+    GROUP BY order_id ) d ON d.id = z.id
+    ) log ON log.order_id = b.id
+    WHERE
+    d.order_status != 3
+      and d.bank_credit_record = 1
+    <if test = "bank != null and bank !=''">
+      and c.bank = #{bank,jdbcType=VARCHAR}
+    </if>
+    <if test = "partnerId != null and partnerId != ''">
+      and c.partner_id = #{partnerId,jdbcType=BIGINT}
+    </if>
+    <if test = "gmtCreateStart1 != null and gmtCreateStart1 != ''">
+      <![CDATA[ AND log.create_time >= #{gmtCreateStart1}]]>
+    </if>
+    <if test = "gmtCreateEnd1 != null and gmtCreateEnd1 != ''">
+      <![CDATA[ AND log.create_time <= #{gmtCreateEnd1} ]]>
+    </if>
+  </select>
+  <select id="bankCreditAllExport" parameterType="com.yunche.loan.domain.query.BankCreditPrincipalQuery" resultType="com.yunche.loan.domain.vo.BankCreditPrincipalVO">
+    SELECT
+    b.id										AS orderId,
+    c.bank									AS bank,
+    DATE_FORMAT( log.create_time, '%Y/%m/%d' ) AS createTime,
+    a.name									AS cName,
+    e.name									AS eName,
+    f.name									AS pName,
+    '车贷'  									AS businessVariety,
+    '鑫宝行'									AS submitOrganization
+    FROM
+    loan_customer a
+    LEFT JOIN loan_order b ON b.loan_customer_id = a.principal_cust_id
+    LEFT JOIN loan_base_info c ON b.loan_base_info_id = c.id
+    LEFT JOIN loan_process d ON d.order_id = b.id
+    LEFT JOIN employee e ON c.salesman_id = e.id
+    LEFT JOIN partner f ON c.partner_id = f.id
+    LEFT JOIN (
+    SELECT DISTINCT
+    z.*
+    FROM
+    loan_process_log z
+    INNER JOIN ( SELECT SUBSTRING_INDEX( GROUP_CONCAT( id ORDER BY create_time DESC SEPARATOR ',' ), ',', 1 ) AS id FROM loan_process_log WHERE
+      task_definition_key = "usertask_bank_credit_record"
+    GROUP BY order_id ) d ON d.id = z.id
+    ) log ON log.order_id = b.id
+    WHERE
+    d.order_status != 3
+      and d.bank_credit_record = 1
+    <if test = "bank != null and bank !=''">
+      and c.bank = #{bank,jdbcType=VARCHAR}
+    </if>
+    <if test = "partnerId != null and partnerId != ''">
+      and c.partner_id = #{partnerId,jdbcType=BIGINT}
+    </if>
+    <if test = "gmtCreateStart1 != null and gmtCreateStart1 != ''">
+      <![CDATA[ AND log.create_time >= #{gmtCreateStart1}]]>
+    </if>
+    <if test = "gmtCreateEnd1 != null and gmtCreateEnd1 != ''">
+      <![CDATA[ AND log.create_time <= #{gmtCreateEnd1} ]]>
+    </if>
+    ORDER BY b.id
+  </select>
+
+  <select id="telBankCount" parameterType="com.yunche.loan.domain.query.BankCreditPrincipalQuery" resultType="com.yunche.loan.domain.vo.TelBankCountVO">
+    SELECT
+    c.partner_id  AS partnerId,
+    area.`name`		AS areaName,
+    par.`name`		AS partnerName,
+        COUNT( CASE WHEN ( c.bank = '中国工商银行哈尔滨顾乡支行' ) THEN 1 END ) AS HEB,
+        COUNT( CASE WHEN ( c.bank = '中国工商银行杭州城站支行' ) THEN 1 END ) AS HZ,
+        COUNT( CASE WHEN ( c.bank = '中国工商银行南京江宁支行' ) THEN 1 END ) AS NJ,
+        COUNT( CASE WHEN ( c.bank = '中国工商银行台州路桥支行' ) THEN 1 END ) AS TZ,
+        COUNT( CASE WHEN ( c.bank = '中国工商银行哈尔滨顾乡支行' || c.bank = '中国工商银行杭州城站支行' || c.bank = '中国工商银行南京江宁支行' ||c.bank = '中国工商银行台州路桥支行') THEN 1 END ) AS total
+    FROM
+        loan_process_log a
+    left join loan_order b on b.id = a.order_id
+    left join loan_base_info c on b.loan_base_info_id = c.id
+    left join partner par on par.id = c.partner_id
+    left join biz_area_rela_partner biz on biz.partner_id = par.id
+    left join biz_area area on area.id = biz.biz_area_id
+    where a.task_definition_key = 'usertask_telephone_verify' and a.action =1
+    <if test = "gmtCreateStart1 != null and gmtCreateStart1 != ''">
+      <![CDATA[ AND a.create_time >= #{gmtCreateStart1}]]>
+    </if>
+    <if test = "gmtCreateEnd1 != null and gmtCreateEnd1 != ''">
+      <![CDATA[ AND a.create_time <= #{gmtCreateEnd1} ]]>
+    </if>
+    group by c.partner_id
+  </select>
+  <select id="telUserCount" parameterType="com.yunche.loan.domain.query.BankCreditPrincipalQuery" resultType="com.yunche.loan.domain.vo.TelUserCountVO">
+      SELECT
+      r.user_id AS userId,
+      r.user_name AS userName,
+      COUNT( CASE WHEN ( r.action = 0 ) THEN 1 END ) AS repulse,
+      TRUNCATE(COUNT( CASE WHEN ( r.action = 0 ) THEN 1 END ) / COUNT( CASE WHEN ( r.action != 4 AND r.action != 5 ) THEN 1 END )*100,2) AS repulseRatio,
+      COUNT( CASE WHEN ( r.action = 1 ) THEN 1 END ) AS pass,
+      TRUNCATE(COUNT( CASE WHEN ( r.action = 1 ) THEN 1 END ) / COUNT( CASE WHEN ( r.action != 4 AND r.action != 5 ) THEN 1 END )*100,2) AS passRatio,
+      COUNT( CASE WHEN ( r.action = 2 ) THEN 1 END ) AS chanel,
+      TRUNCATE(COUNT( CASE WHEN ( r.action = 2 ) THEN 1 END ) / COUNT( CASE WHEN ( r.action != 4 AND r.action != 5 ) THEN 1 END )*100,2) AS chanelRatio,
+      COUNT( CASE WHEN ( r.action = 3 ) THEN 1 END ) AS supplement,
+      TRUNCATE(COUNT( CASE WHEN ( r.action = 3 ) THEN 1 END ) / COUNT( CASE WHEN ( r.action != 4 AND r.action != 5 ) THEN 1 END )*100,2) AS supplementRatio,
+      COUNT( CASE WHEN ( r.action != 4 AND r.action != 5 ) THEN 1 END ) AS total,
+      '1' AS totalRatio
+     FROM
+      (
+      SELECT DISTINCT
+          z.*
+      FROM
+          loan_process_log z
+          INNER JOIN (
+          SELECT
+              SUBSTRING_INDEX( GROUP_CONCAT( id ORDER BY create_time DESC SEPARATOR ',' ), ',', 1 ) AS id
+          FROM
+              loan_process_log
+          WHERE
+              task_definition_key = 'usertask_telephone_verify'
+          GROUP BY
+              order_id,
+              action
+          ) c ON z.id = c.id
+      ) r left join loan_order loan on loan.id = r.order_id
+    left join loan_base_info base on base.id = loan.loan_base_info_id
+    left join biz_area_rela_partner biz on biz.partner_id = base.partner_id
+    left join biz_area area on area.id = biz.biz_area_id
+      where 1 =1
+    <if test = "gmtCreateStart1 != null and gmtCreateStart1 != ''">
+      <![CDATA[ AND r.create_time >= #{gmtCreateStart1}]]>
+    </if>
+    <if test = "gmtCreateEnd1 != null and gmtCreateEnd1 != ''">
+      <![CDATA[ AND r.create_time <= #{gmtCreateEnd1} ]]>
+    </if>
+    <if test = "bizAreaId != null and bizAreaId != ''">
+        biz.biz_area_id = #{bizAreaId}
+    </if>
+    <if test = "partnerId != null and partnerId != ''">
+      base.partner_id = #{partnerId}
+    </if>
+  GROUP BY
+      r.user_id
+    ORDER BY area.id
+  </select>
+    <select id="telPartnerCount" parameterType="com.yunche.loan.domain.query.BankCreditPrincipalQuery" resultType="com.yunche.loan.domain.vo.TelPartnerCountVO">
+        SELECT
+	area.NAME   AS aName,
+    base.partner_id AS pId,
+	par.NAME		AS pName,
+	COUNT( CASE WHEN ( r.action = 0 ) THEN 1 END ) AS repulse,
+      TRUNCATE(COUNT( CASE WHEN ( r.action = 0 ) THEN 1 END ) / COUNT( CASE WHEN ( r.action != 4 AND r.action != 5 ) THEN 1 END )*100,2) AS repulseRatio,
+      COUNT( CASE WHEN ( r.action = 1 ) THEN 1 END ) AS pass,
+      TRUNCATE(COUNT( CASE WHEN ( r.action = 1 ) THEN 1 END ) / COUNT( CASE WHEN ( r.action != 4 AND r.action != 5 ) THEN 1 END )*100,2) AS passRatio,
+      COUNT( CASE WHEN ( r.action = 2 ) THEN 1 END ) AS chanel,
+      TRUNCATE(COUNT( CASE WHEN ( r.action = 2 ) THEN 1 END ) / COUNT( CASE WHEN ( r.action != 4 AND r.action != 5 ) THEN 1 END )*100,2) AS chanelRatio,
+      COUNT( CASE WHEN ( r.action = 3 ) THEN 1 END ) AS supplement,
+      TRUNCATE(COUNT( CASE WHEN ( r.action = 3 ) THEN 1 END ) / COUNT( CASE WHEN ( r.action != 4 AND r.action != 5 ) THEN 1 END )*100,2) AS supplementRatio,
+      COUNT( CASE WHEN ( r.action != 4 AND r.action != 5 ) THEN 1 END ) AS total,
+      '1' AS totalRatio
+    FROM
+        (
+        SELECT DISTINCT
+            z.*
+        FROM
+            loan_process_log z
+            INNER JOIN (
+            SELECT
+                SUBSTRING_INDEX( GROUP_CONCAT( id ORDER BY create_time DESC SEPARATOR ',' ), ',', 1 ) AS id
+            FROM
+                loan_process_log
+            WHERE
+                task_definition_key = 'usertask_telephone_verify'
+            GROUP BY
+                order_id,
+                action
+            ) c ON z.id = c.id
+        ) r
+        LEFT JOIN loan_order loan ON loan.id = r.order_id
+        LEFT JOIN loan_base_info base ON base.id = loan.loan_base_info_id
+        LEFT JOIN biz_area_rela_partner biz ON biz.partner_id = base.partner_id
+        LEFT JOIN biz_area area ON area.id = biz.biz_area_id
+        LEFT JOIN partner par ON par.id = base.partner_id
+        where 1=1
+        <if test = "gmtCreateStart1 != null and gmtCreateStart1 != ''">
+            <![CDATA[ AND r.create_time >= #{gmtCreateStart1}]]>
+        </if>
+        <if test = "gmtCreateEnd1 != null and gmtCreateEnd1 != ''">
+            <![CDATA[ AND r.create_time <= #{gmtCreateEnd1} ]]>
+        </if>
+        <if test = "bizAreaId != null and bizAreaId != ''">
+            biz.biz_area_id = #{bizAreaId}
+        </if>
+        <if test = "partnerId != null and partnerId != ''">
+            base.partner_id = #{partnerId}
+        </if>
+        GROUP BY
+        base.partner_id
+      ORDER BY area.id
+
+    </select>
+    <select id="selectActionParMoney" resultType="com.yunche.loan.domain.vo.ActionParMoneyVO">
+        SELECT
+	base.partner_id			AS parId,
+	sum(plan.loan_amount)   AS loanAmount
+    FROM
+        (
+        SELECT DISTINCT
+            z.*
+        FROM
+            loan_process_log z
+            INNER JOIN (
+            SELECT
+                SUBSTRING_INDEX( GROUP_CONCAT( id ORDER BY create_time DESC SEPARATOR ',' ), ',', 1 ) AS id
+            FROM
+                loan_process_log
+            WHERE
+                task_definition_key = 'usertask_telephone_verify'
+            GROUP BY
+                order_id,
+                action
+            ) c ON z.id = c.id
+        ) r
+        LEFT JOIN loan_order loan ON loan.id = r.order_id
+        LEFT JOIN loan_base_info base ON base.id = loan.loan_base_info_id
+        LEFT JOIN partner par ON par.id = base.partner_id
+        left join loan_financial_plan plan on plan.id = loan.loan_financial_plan_id
+        where r.action in
+        <foreach item="item" index="index" collection="actionIds" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        <if test = "gmtCreateStart1 != null and gmtCreateStart1 != ''">
+          <![CDATA[ AND r.create_time >= #{gmtCreateStart1}]]>
+        </if>
+        <if test = "gmtCreateEnd1 != null and gmtCreateEnd1 != ''">
+          <![CDATA[ AND r.create_time <= #{gmtCreateEnd1} ]]>
+        </if>
+        <if test = "bizAreaId != null and bizAreaId != ''">
+          biz.biz_area_id = #{bizAreaId}
+        </if>
+        <if test = "partnerId != null and partnerId != ''">
+          base.partner_id = #{partnerId}
+        </if>
+    GROUP BY
+        base.partner_id
+    </select>
 </mapper>
