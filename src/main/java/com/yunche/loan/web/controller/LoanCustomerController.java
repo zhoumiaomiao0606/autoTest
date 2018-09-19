@@ -101,7 +101,7 @@ public class LoanCustomerController {
     /**
      * 客户银行图片导出
      */
-    @Limiter
+//    @Limiter
     @PostMapping(value = "/bankpicexport")
     public ResultBean bankPicExport(@RequestBody BankAndSocietyExportVO bankAndSocietyExport) {
         return ResultBean.ofSuccess(loanCustomerService.bankPicExport(bankAndSocietyExport.getCusList()));

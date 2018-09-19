@@ -23,7 +23,7 @@ public class OSSUnit {
     private static final OSSClient ossClient = null;
 
     // 阿里云API的内或外网域名
-    private static String ENDPOINT = "oss-cn-hangzhou.aliyuncs.com";
+    private static String ENDPOINT = "oss-cn-hangzhou-internal.aliyuncs.com";
     // 阿里云API的密钥Access Key ID
     private static String ACCESS_KEY_ID = "LTAIet7Gwv5j98m4";
     // 阿里云API的密钥Access Key Secret
@@ -31,7 +31,7 @@ public class OSSUnit {
     // bucketName
     public static String BUCKET_NAME = "yunche-2018";
 
-    //    //init static datas
+    // init static datas
     static {
         ResourceBundle bundle = PropertyResourceBundle.getBundle("oss");
         ENDPOINT = bundle.containsKey("endpoint") == false ? "" : bundle.getString("endpoint");

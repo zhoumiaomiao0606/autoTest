@@ -30,7 +30,7 @@ public class PostObjectPolicy extends HttpServlet {
 
     private static final String secretAccessKey = "UlIzIv8Mp30OQkhOatRufB5bBwQVRN";
 
-    private static final String endpoint = "http://oss-cn-hangzhou.aliyuncs.com";
+    private static final String endpoint = "http://oss-cn-hangzhou-internal.aliyuncs.com";
 
     private static final String bucketName = "yunche-2018";
     /**
