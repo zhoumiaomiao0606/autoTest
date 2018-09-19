@@ -3,8 +3,15 @@
 <mapper namespace="com.yunche.loan.mapper.ChartDOMapper">
     <!--=======================================报表社会征信查询明细=========================================-->
     <select id="selectSocialCreditChartVO" parameterType="com.yunche.loan.domain.param.SocialCreditChartParam"  resultType="com.yunche.loan.domain.vo.SocialCreditChartVO">
+        select tab.*
+        from
+        (
         SELECT
-        (SELECT biz_area.name FROM  biz_area_rela_partner LEFT JOIN biz_area ON biz_area_rela_partner.biz_area_id = biz_area.id WHERE biz_area_rela_partner.partner_id = principal_partner.id ORDER BY biz_area_rela_partner.gmt_create limit 1 ) AS biz_area,
+        (SELECT biz_area.name FROM biz_area_rela_partner LEFT JOIN biz_area ON biz_area_rela_partner.biz_area_id =
+        biz_area.id WHERE biz_area_rela_partner.partner_id = principal_partner.id ORDER BY
+        biz_area_rela_partner.gmt_create limit 1 ) AS biz_area,
+        (SELECT biz_area.id FROM  biz_area_rela_partner LEFT JOIN biz_area ON biz_area_rela_partner.biz_area_id = biz_area.id WHERE biz_area_rela_partner.partner_id = principal_partner.id ORDER BY biz_area_rela_partner.gmt_create limit 1 ) AS biz_area_id,
+
         principal_area.area_name,
         -- 客户类型: 1-主贷人;2-共贷人;3-担保人;4-紧急联系人;
         CASE
@@ -73,7 +80,7 @@
         '内部担保'
         ELSE
         NULL
-        END  AS guaranteeType,
+        END AS guaranteeType,
         (
         SELECT
         create_time
@@ -111,6 +118,23 @@
         LEFT JOIN loan_process ON principal_orders.id = loan_process.order_id
         <where>
             and (credit_info.type = 2 OR credit_info.type is NULL) AND loan_process.social_credit_record IN (1,2)
+            and
+            case when #{maxGroupLevel} = 0 then false
+            when #{maxGroupLevel} = 1 then
+            principal_base.salesman_id in
+            (
+            <choose>
+                <when test="juniorIds != null and juniorIds.size() > 0">
+                    <foreach item="item" index="index" collection="juniorIds" separator=",">
+                        #{item}
+                    </foreach>
+                </when>
+                <otherwise>
+                    select temp.id from (SELECT 1 as id) temp where temp.id =2
+                </otherwise>
+            </choose>
+            )
+            else true end
             <if test="partnerList != null and partnerList.size() > 0">
                 and
                 principal_base.partner_id in
@@ -125,22 +149,38 @@
                     #{item}
                 </foreach>
             </if>
-            AND customer.cust_type  in  (1,2,3) and customer.status = 0
+            AND customer.cust_type in (1,2,3) and customer.status = 0
         </where>
-    <if test="orderBy == 1" >
-        order by credit_apply_time desc
-    </if>
+        ) tab
+        <where>
+            <if test="bizAreaList !=null and bizAreaList.size() > 0" >
+                and tab.biz_area_id in
+                <foreach item="item" index="index" collection="bizAreaList" separator=","  open="(" close=")">
+                    #{item}
+                </foreach>
+            </if>
 
-   <if test="orderBy == 2  or orderBy == null  or orderBy ==''" >
-       order by credit_apply_time ASC
-   </if>
+        </where>
+        <if test="orderBy == 1">
+            order by credit_apply_time desc
+        </if>
+
+        <if test="orderBy == 2  or orderBy == null  or orderBy ==''" >
+            order by credit_apply_time ASC
+        </if>
+
 
     </select>
 
     <!--=======================================报表银行征信查询明细=========================================-->
     <select id="selectBankCreditChartVO" parameterType="com.yunche.loan.domain.param.BankCreditChartParam"  resultType="com.yunche.loan.domain.vo.BankCreditChartVO">
+        select tab.*
+        from
+        (
         SELECT
         (SELECT biz_area.name FROM  biz_area_rela_partner LEFT JOIN biz_area ON biz_area_rela_partner.biz_area_id = biz_area.id WHERE biz_area_rela_partner.partner_id = principal_partner.id ORDER BY biz_area_rela_partner.gmt_create limit 1 ) AS biz_area,
+        (SELECT biz_area.id FROM  biz_area_rela_partner LEFT JOIN biz_area ON biz_area_rela_partner.biz_area_id = biz_area.id WHERE biz_area_rela_partner.partner_id = principal_partner.id ORDER BY biz_area_rela_partner.gmt_create limit 1 ) AS biz_area_id,
+
         principal_area.area_name,
         -- 客户类型: 1-主贷人;2-共贷人;3-担保人;4-紧急联系人;
         CASE
@@ -248,6 +288,23 @@
 
         <where>
             and (credit_info.type = 1 OR credit_info.type is NULL) AND loan_process.bank_credit_record IN (1,2)
+            and
+            case when #{maxGroupLevel} = 0 then false
+            when #{maxGroupLevel} = 1 then
+            principal_base.salesman_id in
+            (
+            <choose>
+                <when test="juniorIds != null and juniorIds.size() > 0">
+                    <foreach item="item" index="index" collection="juniorIds" separator=",">
+                        #{item}
+                    </foreach>
+                </when>
+                <otherwise>
+                    select temp.id from (SELECT 1 as id) temp  where temp.id =2
+                </otherwise>
+            </choose>
+            )
+            else true end
 
             <if test="partnerList != null and partnerList.size() > 0">
                 and
@@ -265,6 +322,15 @@
             </if>
             AND customer.cust_type  in  (1,2,3) and customer.status = 0
         </where>
+        ) tab
+        <where>
+            <if test="bizAreaList !=null and bizAreaList.size() > 0" >
+                tab.biz_area_id in
+                <foreach item="item" index="index" collection="bizAreaList" separator="," open="(" close=")">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
         <if test="orderBy == 1" >
             order by credit_apply_time desc
         </if>
@@ -276,9 +342,13 @@
 
     <!--=======================================报表 财务垫款明细查询=========================================-->
     <select id="selectFinancialDepartmentRemitDetailChartVO" parameterType="com.yunche.loan.domain.param.FinancialDepartmentRemitDetailChartParam"  resultType="com.yunche.loan.domain.vo.FinancialDepartmentRemitDetailChartVO" >
-
+        select tab.*
+        from
+        (
         SELECT
         (SELECT biz_area.name FROM  biz_area_rela_partner LEFT JOIN biz_area ON biz_area_rela_partner.biz_area_id = biz_area.id WHERE biz_area_rela_partner.partner_id = partner.id ORDER BY biz_area_rela_partner.gmt_create limit 1 ) AS biz_area,
+        (SELECT biz_area.id FROM  biz_area_rela_partner LEFT JOIN biz_area ON biz_area_rela_partner.biz_area_id = biz_area.id WHERE biz_area_rela_partner.partner_id = partner.id ORDER BY biz_area_rela_partner.gmt_create limit 1 ) AS biz_area_id,
+
         base_area.area_name,
         customer. NAME AS customer_name,
         customer.id_card AS customer_id_card,
@@ -394,13 +464,27 @@
         </if>
 
         order by submitTime desc
+        ) tab
+        <where>
+            <if test="bizAreaList !=null and bizAreaList.size() > 0" >
+                tab.biz_area_id in
+                <foreach item="item" index="index" collection="bizAreaList" separator="," open="(" close=")">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
 
     </select>
 
     <!--=======================================报表 抵押超期=========================================-->
     <select id="selectMortgageOverdueChartVO" parameterType="com.yunche.loan.domain.param.MortgageOverdueParam"  resultType="com.yunche.loan.domain.vo.MortgageOverdueChartVO" >
+        select tab.*
+        from
+        (
         SELECT
         (SELECT biz_area.name FROM  biz_area_rela_partner LEFT JOIN biz_area ON biz_area_rela_partner.biz_area_id = biz_area.id WHERE biz_area_rela_partner.partner_id = partner.id ORDER BY biz_area_rela_partner.gmt_create limit 1 ) AS biz_area,
+        (SELECT biz_area.id FROM  biz_area_rela_partner LEFT JOIN biz_area ON biz_area_rela_partner.biz_area_id = biz_area.id WHERE biz_area_rela_partner.partner_id = partner.id ORDER BY biz_area_rela_partner.gmt_create limit 1 ) AS biz_area_id,
+
         base_area.area_name,
         partner.NAME AS partner_name,
         customer.NAME AS customer_name,
@@ -481,6 +565,23 @@
 
         <where>
             and process.apply_license_plate_deposit_info != 0
+            and
+            case when #{maxGroupLevel} = 0 then false
+            when #{maxGroupLevel} = 1 then
+            base.salesman_id in
+            (
+            <choose>
+                <when test="juniorIds != null and juniorIds.size() > 0">
+                    <foreach item="item" index="index" collection="juniorIds" separator=",">
+                        #{item}
+                    </foreach>
+                </when>
+                <otherwise>
+                    select temp.id from (SELECT 1 as id) temp  where temp.id =2
+                </otherwise>
+            </choose>
+            )
+            else true end
             <if test="partnerList != null and partnerList.size() > 0">
                 and
                 base.partner_id in
@@ -513,6 +614,15 @@
         </if>
 
         order by bank_lend_record.lend_date desc
+        ) tab
+        <where>
+            <if test="bizAreaList !=null and bizAreaList.size() > 0" >
+                tab.biz_area_id in
+                <foreach item="item" index="index" collection="bizAreaList" separator="," open="(" close=")">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
     </select>
 
 
@@ -542,6 +652,8 @@
         (
         SELECT
         (SELECT biz_area.name FROM  biz_area_rela_partner LEFT JOIN biz_area ON biz_area_rela_partner.biz_area_id = biz_area.id WHERE biz_area_rela_partner.partner_id = partner.id ORDER BY biz_area_rela_partner.gmt_create limit 1 ) AS biz_area,
+        (SELECT biz_area.id FROM  biz_area_rela_partner LEFT JOIN biz_area ON biz_area_rela_partner.biz_area_id = biz_area.id WHERE biz_area_rela_partner.partner_id = partner.id ORDER BY biz_area_rela_partner.gmt_create limit 1 ) AS biz_area_id,
+
         base_area.area_name,
         partner.NAME AS partner_name,
         customer.NAME AS customer_name,
@@ -599,6 +711,23 @@
 
         <where>
             and loan_process.material_review != 0
+            and
+            case when #{maxGroupLevel} = 0 then false
+            when #{maxGroupLevel} = 1 then
+            base.salesman_id in
+            (
+            <choose>
+                <when test="juniorIds != null and juniorIds.size() > 0">
+                    <foreach item="item" index="index" collection="juniorIds" separator=",">
+                        #{item}
+                    </foreach>
+                </when>
+                <otherwise>
+                    select temp.id from (SELECT 1 as id) temp  where temp.id =2
+                </otherwise>
+            </choose>
+            )
+            else true end
             <if test="partnerList != null and partnerList.size() > 0">
                 and
                 base.partner_id in
@@ -617,6 +746,12 @@
         </where>
         ) t
         where 1=1
+        <if test="bizAreaList !=null and bizAreaList.size() > 0" >
+            and t.biz_area_id in
+            <foreach item="item" index="index" collection="bizAreaList" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
         <if test="startDate != null">
             AND TO_DAYS(t.credit_apply_time) &lt;= TO_DAYS(#{startDate})
         </if>
@@ -677,6 +812,23 @@
         LEFT JOIN partner partner ON partner.id = base.partner_id
         where 1=1
         and process.business_review = 1
+        and
+        case when #{maxGroupLevel} = 0 then false
+        when #{maxGroupLevel} = 1 then
+        base.salesman_id in
+        (
+        <choose>
+            <when test="juniorIds != null and juniorIds.size() > 0">
+                <foreach item="item" index="index" collection="juniorIds" separator=",">
+                    #{item}
+                </foreach>
+            </when>
+            <otherwise>
+                select temp.id from (SELECT 1 as id) temp  where temp.id =2
+            </otherwise>
+        </choose>
+        )
+        else true end
 
     </select>
 
@@ -749,6 +901,23 @@
         LEFT JOIN base_area parea ON area.parent_area_id = parea.area_id
         where 1=1
         and process.remit_review = 1
+        and
+        case when #{maxGroupLevel} = 0 then false
+        when #{maxGroupLevel} = 1 then
+        base.salesman_id in
+        (
+        <choose>
+            <when test="juniorIds != null and juniorIds.size() > 0">
+                <foreach item="item" index="index" collection="juniorIds" separator=",">
+                    #{item}
+                </foreach>
+            </when>
+            <otherwise>
+                select temp.id from (SELECT 1 as id) temp  where temp.id =2
+            </otherwise>
+        </choose>
+        )
+        else true end
 
     </select>
 

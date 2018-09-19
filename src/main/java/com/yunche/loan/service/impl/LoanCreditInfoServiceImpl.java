@@ -26,7 +26,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
-import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -247,7 +246,7 @@ public class LoanCreditInfoServiceImpl implements LoanCreditInfoService {
                    creditRecord.setBankCreditResponse(returnVO.getReject_reason());
                }
            }
-       }catch (IOException e){
+       }catch (Exception e){
            creditRecord.setBankCreditResponse("json解析异常,请联系管理员");
        }
 

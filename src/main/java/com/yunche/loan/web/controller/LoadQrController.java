@@ -1,6 +1,7 @@
 package com.yunche.loan.web.controller;
 
 import com.google.zxing.WriterException;
+import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.service.LoadQrService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -23,5 +24,10 @@ public class LoadQrController {
     @GetMapping(value = "/query")
     public void downloadQr(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws IOException, WriterException {
         loadQrService.downloadQr(httpServletRequest, httpServletResponse);
+    }
+
+    @GetMapping(value = "/apk")
+    public ResultBean apkDownload(){
+        return loadQrService.apkDownload();
     }
 }
