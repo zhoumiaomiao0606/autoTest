@@ -1,7 +1,10 @@
 package com.yunche.loan.domain.param;
 
+import com.google.common.collect.Sets;
 import com.yunche.loan.domain.query.BaseQuery;
 import lombok.Data;
+
+import java.util.Set;
 
 /**
  * @author: ZhongMingxiao
@@ -9,5 +12,10 @@ import lombok.Data;
  * @description:
  **/
 @Data
-public class AwaitRemitDetailChartParam extends BaseQuery {
+public class AwaitRemitDetailChartParam extends BaseQuery
+{
+    //权限过滤
+    Long maxGroupLevel;
+
+    Set<String> juniorIds = Sets.newHashSet();
 }
