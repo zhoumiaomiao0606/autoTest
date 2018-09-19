@@ -508,8 +508,12 @@
     WHERE
         material_print_review = 1
         AND order_status = 1
-    <if test = "bank != null and bank !=''">
-      and base.bank = #{bank,jdbcType=VARCHAR}
+    <if test="bankList != null and bankList.size() > 0">
+      and
+      base.bank in
+      <foreach item="item" index="index" collection="bankList" open="(" separator="," close=")">
+        #{item}
+      </foreach>
     </if>
     <if test = "userId != null and userId !=''">
       AND log.user_id = #{userId,jdbcType=VARCHAR}
@@ -542,8 +546,12 @@
     WHERE
     material_print_review = 1
     AND order_status = 1
-    <if test = "bank != null and bank !=''">
-      and base.bank = #{bank,jdbcType=VARCHAR}
+    <if test="bankList != null and bankList.size() > 0">
+      and
+      base.bank in
+      <foreach item="item" index="index" collection="bankList" open="(" separator="," close=")">
+        #{item}
+      </foreach>
     </if>
     <if test = "userId != null and userId !=''">
       AND log.user_id = #{userId,jdbcType=VARCHAR}
@@ -582,8 +590,12 @@
     WHERE
     material_print_review = 1
     AND order_status = 1
-    <if test = "bank != null and bank !=''">
-      and base.bank = #{bank,jdbcType=VARCHAR}
+    <if test="bankList != null and bankList.size() > 0">
+      and
+      base.bank in
+      <foreach item="item" index="index" collection="bankList" open="(" separator="," close=")">
+        #{item}
+      </foreach>
     </if>
     <if test = "userId != null and userId !=''">
       AND log.user_id = #{userId,jdbcType=VARCHAR}
@@ -628,11 +640,19 @@
     WHERE
      a.order_status !=3 and d.cust_type = 1
       and a.bank_credit_record = 1
-    <if test = "bank != null and bank !=''">
-      and c.bank = #{bank,jdbcType=VARCHAR}
+    <if test="partnerList != null and partnerList.size() > 0">
+      and
+      c.partner_id in
+      <foreach item="item" index="index" collection="partnerList" open="(" separator="," close=")">
+        #{item}
+      </foreach>
     </if>
-    <if test = "partnerId != null and partnerId != ''">
-      and c.partner_id = #{partnerId,jdbcType=BIGINT}
+    <if test="bankList != null and bankList.size() > 0">
+      and
+      c.bank in
+      <foreach item="item" index="index" collection="bankList" open="(" separator="," close=")">
+        #{item}
+      </foreach>
     </if>
     <if test = "gmtCreateStart1 != null and gmtCreateStart1 != ''">
       <![CDATA[ AND log.create_time >= #{gmtCreateStart1}]]>
@@ -665,11 +685,19 @@
     WHERE
     a.order_status !=3 and d.cust_type = 1
       and a.bank_credit_record = 1
-    <if test = "bank != null and bank !=''">
-      and c.bank = #{bank,jdbcType=VARCHAR}
+    <if test="partnerList != null and partnerList.size() > 0">
+      and
+      c.partner_id in
+      <foreach item="item" index="index" collection="partnerList" open="(" separator="," close=")">
+        #{item}
+      </foreach>
     </if>
-    <if test = "partnerId != null and partnerId != ''">
-      and c.partner_id = #{partnerId,jdbcType=BIGINT}
+    <if test="bankList != null and bankList.size() > 0">
+      and
+      c.bank in
+      <foreach item="item" index="index" collection="bankList" open="(" separator="," close=")">
+        #{item}
+      </foreach>
     </if>
     <if test = "gmtCreateStart1 != null and gmtCreateStart1 != ''">
       <![CDATA[ AND log.create_time >= #{gmtCreateStart1}]]>
@@ -709,11 +737,19 @@
     WHERE
     a.order_status !=3 and d.cust_type = 1
       and a.bank_credit_record = 1
-    <if test = "bank != null and bank !=''">
-      and c.bank = #{bank,jdbcType=VARCHAR}
+    <if test="partnerList != null and partnerList.size() > 0">
+      and
+      c.partner_id in
+      <foreach item="item" index="index" collection="partnerList" open="(" separator="," close=")">
+        #{item}
+      </foreach>
     </if>
-    <if test = "partnerId != null and partnerId != ''">
-      and c.partner_id = #{partnerId,jdbcType=BIGINT}
+    <if test="bankList != null and bankList.size() > 0">
+      and
+      c.bank in
+      <foreach item="item" index="index" collection="bankList" open="(" separator="," close=")">
+        #{item}
+      </foreach>
     </if>
     <if test = "gmtCreateStart1 != null and gmtCreateStart1 != ''">
       <![CDATA[ AND log.create_time >= #{gmtCreateStart1}]]>
@@ -729,6 +765,7 @@
 	b.id										AS orderId,
 	c.bank									AS bank,
 	DATE_FORMAT( log.create_time, '%Y/%m/%d' ) AS createTime,
+    a.id_card                               AS idCard,
 	a.name									AS cName,
 	e.name									AS eName,
 	f.name									AS pName,
@@ -753,11 +790,19 @@
   WHERE
       d.order_status != 3
       and d.bank_credit_record = 1
-    <if test = "bank != null and bank !=''">
-      and c.bank = #{bank,jdbcType=VARCHAR}
+    <if test="partnerList != null and partnerList.size() > 0">
+      and
+      c.partner_id in
+      <foreach item="item" index="index" collection="partnerList" open="(" separator="," close=")">
+        #{item}
+      </foreach>
     </if>
-    <if test = "partnerId != null and partnerId != ''">
-      and c.partner_id = #{partnerId,jdbcType=BIGINT}
+    <if test="bankList != null and bankList.size() > 0">
+      and
+      c.bank in
+      <foreach item="item" index="index" collection="bankList" open="(" separator="," close=")">
+        #{item}
+      </foreach>
     </if>
     <if test = "gmtCreateStart1 != null and gmtCreateStart1 != ''">
       <![CDATA[ AND log.create_time >= #{gmtCreateStart1}]]>
@@ -789,11 +834,19 @@
     WHERE
     d.order_status != 3
       and d.bank_credit_record = 1
-    <if test = "bank != null and bank !=''">
-      and c.bank = #{bank,jdbcType=VARCHAR}
+    <if test="partnerList != null and partnerList.size() > 0">
+      and
+      c.partner_id in
+      <foreach item="item" index="index" collection="partnerList" open="(" separator="," close=")">
+        #{item}
+      </foreach>
     </if>
-    <if test = "partnerId != null and partnerId != ''">
-      and c.partner_id = #{partnerId,jdbcType=BIGINT}
+    <if test="bankList != null and bankList.size() > 0">
+      and
+      c.bank in
+      <foreach item="item" index="index" collection="bankList" open="(" separator="," close=")">
+        #{item}
+      </foreach>
     </if>
     <if test = "gmtCreateStart1 != null and gmtCreateStart1 != ''">
       <![CDATA[ AND log.create_time >= #{gmtCreateStart1}]]>
@@ -807,6 +860,7 @@
     b.id										AS orderId,
     c.bank									AS bank,
     DATE_FORMAT( log.create_time, '%Y/%m/%d' ) AS createTime,
+    a.id_card                               AS idCard,
     a.name									AS cName,
     e.name									AS eName,
     f.name									AS pName,
@@ -831,11 +885,19 @@
     WHERE
     d.order_status != 3
       and d.bank_credit_record = 1
-    <if test = "bank != null and bank !=''">
-      and c.bank = #{bank,jdbcType=VARCHAR}
+    <if test="partnerList != null and partnerList.size() > 0">
+      and
+      c.partner_id in
+      <foreach item="item" index="index" collection="partnerList" open="(" separator="," close=")">
+        #{item}
+      </foreach>
     </if>
-    <if test = "partnerId != null and partnerId != ''">
-      and c.partner_id = #{partnerId,jdbcType=BIGINT}
+    <if test="bankList != null and bankList.size() > 0">
+      and
+      c.bank in
+      <foreach item="item" index="index" collection="bankList" open="(" separator="," close=")">
+        #{item}
+      </foreach>
     </if>
     <if test = "gmtCreateStart1 != null and gmtCreateStart1 != ''">
       <![CDATA[ AND log.create_time >= #{gmtCreateStart1}]]>
