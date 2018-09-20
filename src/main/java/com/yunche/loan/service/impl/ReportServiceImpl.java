@@ -10,12 +10,15 @@ import com.yunche.loan.config.constant.CarTypeEnum;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.OSSUnit;
 import com.yunche.loan.config.util.SessionUtils;
+import com.yunche.loan.domain.entity.BankDO;
 import com.yunche.loan.domain.param.TelephoneVerifyParam;
 import com.yunche.loan.domain.query.BankCreditPrincipalQuery;
 import com.yunche.loan.domain.query.BaseQuery;
 import com.yunche.loan.domain.query.ContractSetQuery;
 import com.yunche.loan.domain.vo.*;
+import com.yunche.loan.mapper.TaskSchedulingDOMapper;
 import com.yunche.loan.mapper.ZhonganInfoDOMapper;
+import com.yunche.loan.service.EmployeeService;
 import com.yunche.loan.service.ReportService;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFCell;
@@ -26,11 +29,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.Resource;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Transactional
 @Service
@@ -40,6 +45,12 @@ public class ReportServiceImpl implements ReportService {
 
     @Autowired
     private OSSConfig ossConfig;
+
+    @Resource
+    private EmployeeService employeeService;
+
+    @Resource
+    private TaskSchedulingDOMapper taskSchedulingDOMapper;
 
     //待垫款客户业务审批明细list
     @Override
@@ -66,6 +77,24 @@ public class ReportServiceImpl implements ReportService {
     //合同套打list
     @Override
     public ResultBean<List<ContractSetReportVO>> contractSet(ContractSetQuery query) {
+        Long loginUserId = SessionUtils.getLoginUser().getId();
+        List<String> banks = zhonganInfoDOMapper.selectBankByUserId(loginUserId);
+        List<String> bankList = query.getBankList();
+        List<String> nullList = new ArrayList<>();
+        nullList.add("ZX");
+        if(banks !=null&&bankList!=null){
+            banks.removeAll(Collections.singleton(null));
+            banks = banks.stream().distinct().collect(Collectors.toList());
+            banks.retainAll(bankList);
+            if(banks.size()>0){
+                query.setBankList(banks);
+            }else{
+                query.setBankList(nullList);
+            }
+        }else{
+            query.setBankList(nullList);
+        }
+
         PageHelper.startPage(query.getPageIndex(), query.getPageSize(), true);
         List<ContractSetReportVO> list = zhonganInfoDOMapper.contractSet(query);
         PageInfo<ContractSetReportVO> pageInfo = new PageInfo<>(list);
@@ -76,17 +105,68 @@ public class ReportServiceImpl implements ReportService {
 
     @Override
     public ContractSetReportTotalVO contractSetTotal(ContractSetQuery query) {
+        Long loginUserId = SessionUtils.getLoginUser().getId();
+        List<String> banks = zhonganInfoDOMapper.selectBankByUserId(loginUserId);
+        List<String> bankList = query.getBankList();
+        List<String> nullList = new ArrayList<>();
+        nullList.add("ZX");
+        if(banks !=null&&bankList!=null){
+            banks.removeAll(Collections.singleton(null));
+            banks = banks.stream().distinct().collect(Collectors.toList());
+            banks.retainAll(bankList);
+            if(banks.size()>0){
+                query.setBankList(banks);
+            }else{
+                query.setBankList(nullList);
+            }
+        }else{
+            query.setBankList(nullList);
+        }
         return zhonganInfoDOMapper.contractSetTotal(query);
     }
 
     @Override
     public String contractSetExport(ContractSetQuery query) {
+        Long loginUserId = SessionUtils.getLoginUser().getId();
+        List<String> banks = zhonganInfoDOMapper.selectBankByUserId(loginUserId);
+        List<String> bankList = query.getBankList();
+        List<String> nullList = new ArrayList<>();
+        nullList.add("ZX");
+        if(banks !=null&&bankList!=null){
+            banks.removeAll(Collections.singleton(null));
+            banks = banks.stream().distinct().collect(Collectors.toList());
+            banks.retainAll(bankList);
+            if(banks.size()>0){
+                query.setBankList(banks);
+            }else{
+                query.setBankList(nullList);
+            }
+        }else{
+            query.setBankList(nullList);
+        }
         List<ContractSetReportVO> list = zhonganInfoDOMapper.contractSetExport(query);
         return createContractExcelFile(list);
     }
 
     @Override
     public ResultBean<List<BankCreditPrincipalVO>> bankCreditPrincipal(BankCreditPrincipalQuery query) {
+        Long loginUserId = SessionUtils.getLoginUser().getId();
+        List<String> banks = zhonganInfoDOMapper.selectBankByUserId(loginUserId);
+        List<String> bankList = query.getBankList();
+        List<String> nullList = new ArrayList<>();
+        nullList.add("ZX");
+        if(banks !=null&&bankList!=null){
+            banks.removeAll(Collections.singleton(null));
+            banks = banks.stream().distinct().collect(Collectors.toList());
+            banks.retainAll(bankList);
+            if(banks.size()>0){
+                query.setBankList(banks);
+            }else{
+                query.setBankList(nullList);
+            }
+        }else{
+            query.setBankList(nullList);
+        }
         PageHelper.startPage(query.getPageIndex(), query.getPageSize(), true);
         List<BankCreditPrincipalVO> list = zhonganInfoDOMapper.bankCreditPrincipal(query);
         PageInfo<BankCreditPrincipalVO> pageInfo = new PageInfo<>(list);
@@ -97,17 +177,68 @@ public class ReportServiceImpl implements ReportService {
 
     @Override
     public ContractSetReportTotalVO bankCreditPrincipalTotal(BankCreditPrincipalQuery query) {
+        Long loginUserId = SessionUtils.getLoginUser().getId();
+        List<String> banks = zhonganInfoDOMapper.selectBankByUserId(loginUserId);
+        List<String> bankList = query.getBankList();
+        List<String> nullList = new ArrayList<>();
+        nullList.add("ZX");
+        if(banks !=null&&bankList!=null){
+            banks.removeAll(Collections.singleton(null));
+            banks = banks.stream().distinct().collect(Collectors.toList());
+            banks.retainAll(bankList);
+            if(banks.size()>0){
+                query.setBankList(banks);
+            }else{
+                query.setBankList(nullList);
+            }
+        }else{
+            query.setBankList(nullList);
+        }
         return zhonganInfoDOMapper.bankCreditPrincipalTotal(query);
     }
 
     @Override
     public String bankCreditPrincipalExport(BankCreditPrincipalQuery query) {
+        Long loginUserId = SessionUtils.getLoginUser().getId();
+        List<String> banks = zhonganInfoDOMapper.selectBankByUserId(loginUserId);
+        List<String> bankList = query.getBankList();
+        List<String> nullList = new ArrayList<>();
+        nullList.add("ZX");
+        if(banks !=null&&bankList!=null){
+            banks.removeAll(Collections.singleton(null));
+            banks = banks.stream().distinct().collect(Collectors.toList());
+            banks.retainAll(bankList);
+            if(banks.size()>0){
+                query.setBankList(banks);
+            }else{
+                query.setBankList(nullList);
+            }
+        }else{
+            query.setBankList(nullList);
+        }
         List<BankCreditPrincipalVO> list = zhonganInfoDOMapper.bankCreditPrincipalExport(query);
         return createBankCreditPrincipalExcelFile(list);
     }
 
     @Override
     public ResultBean<List<BankCreditPrincipalVO>> bankCreditAll(BankCreditPrincipalQuery query) {
+        Long loginUserId = SessionUtils.getLoginUser().getId();
+        List<String> banks = zhonganInfoDOMapper.selectBankByUserId(loginUserId);
+        List<String> bankList = query.getBankList();
+        List<String> nullList = new ArrayList<>();
+        nullList.add("ZX");
+        if(banks !=null&&bankList!=null){
+            banks.removeAll(Collections.singleton(null));
+            banks = banks.stream().distinct().collect(Collectors.toList());
+            banks.retainAll(bankList);
+            if(banks.size()>0){
+                query.setBankList(banks);
+            }else{
+                query.setBankList(nullList);
+            }
+        }else{
+            query.setBankList(nullList);
+        }
         PageHelper.startPage(query.getPageIndex(), query.getPageSize(), true);
         List<BankCreditPrincipalVO> list = zhonganInfoDOMapper.bankCreditAll(query);
         PageInfo<BankCreditPrincipalVO> pageInfo = new PageInfo<>(list);
@@ -118,17 +249,56 @@ public class ReportServiceImpl implements ReportService {
 
     @Override
     public ContractSetReportTotalVO bankCreditAllTotal(BankCreditPrincipalQuery query) {
+        Long loginUserId = SessionUtils.getLoginUser().getId();
+        List<String> banks = zhonganInfoDOMapper.selectBankByUserId(loginUserId);
+        List<String> bankList = query.getBankList();
+        List<String> nullList = new ArrayList<>();
+        nullList.add("ZX");
+        if(banks !=null&&bankList!=null){
+            banks.removeAll(Collections.singleton(null));
+            banks = banks.stream().distinct().collect(Collectors.toList());
+            banks.retainAll(bankList);
+            if(banks.size()>0){
+                query.setBankList(banks);
+            }else{
+                query.setBankList(nullList);
+            }
+        }else{
+            query.setBankList(nullList);
+        }
         return zhonganInfoDOMapper.bankCreditAllTotal(query);
     }
 
     @Override
     public String bankCreditAllExport(BankCreditPrincipalQuery query) {
+        Long loginUserId = SessionUtils.getLoginUser().getId();
+        List<String> banks = zhonganInfoDOMapper.selectBankByUserId(loginUserId);
+        List<String> bankList = query.getBankList();
+        List<String> nullList = new ArrayList<>();
+        nullList.add("ZX");
+        if(banks !=null&&bankList!=null){
+            banks.removeAll(Collections.singleton(null));
+            banks = banks.stream().distinct().collect(Collectors.toList());
+            banks.retainAll(bankList);
+            if(banks.size()>0){
+                query.setBankList(banks);
+            }else{
+                query.setBankList(nullList);
+            }
+        }else{
+            query.setBankList(nullList);
+        }
         List<BankCreditPrincipalVO> list = zhonganInfoDOMapper.bankCreditAllExport(query);
         return createBankCreditPrincipalExcelFile(list);
     }
 
     @Override
     public ResultBean<List<TelBankCountVO>> telBankCount(BankCreditPrincipalQuery query) {
+        Long loginUserId = SessionUtils.getLoginUser().getId();
+
+        query.setJuniorIds(employeeService.getSelfAndCascadeChildIdList(loginUserId));
+        query.setMaxGroupLevel(taskSchedulingDOMapper.selectMaxGroupLevel(loginUserId));
+
         PageHelper.startPage(query.getPageIndex(), query.getPageSize(), true);
         List<TelBankCountVO> list = zhonganInfoDOMapper.telBankCount(query);
         PageInfo<TelBankCountVO> pageInfo = new PageInfo<>(list);
@@ -139,12 +309,20 @@ public class ReportServiceImpl implements ReportService {
 
     @Override
     public String telBankCountExport(BankCreditPrincipalQuery query) {
+        Long loginUserId = SessionUtils.getLoginUser().getId();
+
+        query.setJuniorIds(employeeService.getSelfAndCascadeChildIdList(loginUserId));
+        query.setMaxGroupLevel(taskSchedulingDOMapper.selectMaxGroupLevel(loginUserId));
         List<TelBankCountVO> list = zhonganInfoDOMapper.telBankCount(query);
         return createTelBankExcelFile(list);
     }
 
     @Override
     public ResultBean<List<TelUserCountVO>> telUserCount(BankCreditPrincipalQuery query) {
+        Long loginUserId = SessionUtils.getLoginUser().getId();
+
+        query.setJuniorIds(employeeService.getSelfAndCascadeChildIdList(loginUserId));
+        query.setMaxGroupLevel(taskSchedulingDOMapper.selectMaxGroupLevel(loginUserId));
         PageHelper.startPage(query.getPageIndex(), query.getPageSize(), true);
         List<TelUserCountVO> list = zhonganInfoDOMapper.telUserCount(query);
         PageInfo<TelUserCountVO> pageInfo = new PageInfo<>(list);
@@ -155,34 +333,43 @@ public class ReportServiceImpl implements ReportService {
 
     @Override
     public String telUserCountExport(BankCreditPrincipalQuery query) {
+        Long loginUserId = SessionUtils.getLoginUser().getId();
+
+        query.setJuniorIds(employeeService.getSelfAndCascadeChildIdList(loginUserId));
+        query.setMaxGroupLevel(taskSchedulingDOMapper.selectMaxGroupLevel(loginUserId));
         List<TelUserCountVO> list = zhonganInfoDOMapper.telUserCount(query);
         return createTelUserExcelFile(list);
     }
 
     @Override
     public ResultBean<List<TelPartnerCountVO>> telPartnerCount(BankCreditPrincipalQuery query) {
+        Long loginUserId = SessionUtils.getLoginUser().getId();
+
+        Set<String> j = employeeService.getSelfAndCascadeChildIdList(loginUserId);
+        Long maxGroupLevel = taskSchedulingDOMapper.selectMaxGroupLevel(loginUserId);
+
         PageHelper.startPage(query.getPageIndex(), query.getPageSize(), true);
         List<TelPartnerCountVO> list = zhonganInfoDOMapper.telPartnerCount(query);
         PageInfo<TelPartnerCountVO> pageInfo = new PageInfo<>(list);
         Set<String> action0 = new HashSet();
         action0.add("0");
         List<ActionParMoneyVO> list0 = zhonganInfoDOMapper.selectActionParMoney(action0,query.getGmtCreateStart1(),
-                query.getGmtCreateEnd1(),query.getBizAreaId(),query.getPartnerId());
+                query.getGmtCreateEnd1(),query.getBizAreaId(),query.getPartnerId(),j,maxGroupLevel);
 
         Set<String> action1 = new HashSet();
         action1.add("1");
         List<ActionParMoneyVO> list1 = zhonganInfoDOMapper.selectActionParMoney(action1,query.getGmtCreateStart1(),
-                query.getGmtCreateEnd1(),query.getBizAreaId(),query.getPartnerId());
+                query.getGmtCreateEnd1(),query.getBizAreaId(),query.getPartnerId(),j,maxGroupLevel);
 
         Set<String> action2 = new HashSet();
         action2.add("2");
         List<ActionParMoneyVO> list2 = zhonganInfoDOMapper.selectActionParMoney(action2,query.getGmtCreateStart1(),
-                query.getGmtCreateEnd1(),query.getBizAreaId(),query.getPartnerId());
+                query.getGmtCreateEnd1(),query.getBizAreaId(),query.getPartnerId(),j,maxGroupLevel);
 
         Set<String> action3 = new HashSet();
         action3.add("3");
         List<ActionParMoneyVO> list3 = zhonganInfoDOMapper.selectActionParMoney(action3,query.getGmtCreateStart1(),
-                query.getGmtCreateEnd1(),query.getBizAreaId(),query.getPartnerId());
+                query.getGmtCreateEnd1(),query.getBizAreaId(),query.getPartnerId(),j,maxGroupLevel);
 
         Set<String> actionTotal = new HashSet();
         actionTotal.add("3");
@@ -190,7 +377,7 @@ public class ReportServiceImpl implements ReportService {
         actionTotal.add("1");
         actionTotal.add("0");
         List<ActionParMoneyVO> listTotal = zhonganInfoDOMapper.selectActionParMoney(actionTotal,query.getGmtCreateStart1(),
-                query.getGmtCreateEnd1(),query.getBizAreaId(),query.getPartnerId());
+                query.getGmtCreateEnd1(),query.getBizAreaId(),query.getPartnerId(),j,maxGroupLevel);
         for(TelPartnerCountVO telPartnerCountVO:list){
             for(ActionParMoneyVO actionParMoneyVO:list0){
                 if(actionParMoneyVO !=null) {
@@ -247,26 +434,30 @@ public class ReportServiceImpl implements ReportService {
 
     @Override
     public String telPartnerCountExport(BankCreditPrincipalQuery query) {
+        Long loginUserId = SessionUtils.getLoginUser().getId();
+
+        Set<String> juniorIds = employeeService.getSelfAndCascadeChildIdList(loginUserId);
+        Long maxGroupLevel = taskSchedulingDOMapper.selectMaxGroupLevel(loginUserId);
         List<TelPartnerCountVO> list = zhonganInfoDOMapper.telPartnerCount(query);
         Set<String> action0 = new HashSet();
         action0.add("0");
         List<ActionParMoneyVO> list0 = zhonganInfoDOMapper.selectActionParMoney(action0,query.getGmtCreateStart1(),
-                query.getGmtCreateEnd1(),query.getBizAreaId(),query.getPartnerId());
+                query.getGmtCreateEnd1(),query.getBizAreaId(),query.getPartnerId(),juniorIds,maxGroupLevel);
 
         Set<String> action1 = new HashSet();
         action1.add("1");
         List<ActionParMoneyVO> list1 = zhonganInfoDOMapper.selectActionParMoney(action1,query.getGmtCreateStart1(),
-                query.getGmtCreateEnd1(),query.getBizAreaId(),query.getPartnerId());
+                query.getGmtCreateEnd1(),query.getBizAreaId(),query.getPartnerId(),juniorIds,maxGroupLevel);
 
         Set<String> action2 = new HashSet();
         action2.add("2");
         List<ActionParMoneyVO> list2 = zhonganInfoDOMapper.selectActionParMoney(action2,query.getGmtCreateStart1(),
-                query.getGmtCreateEnd1(),query.getBizAreaId(),query.getPartnerId());
+                query.getGmtCreateEnd1(),query.getBizAreaId(),query.getPartnerId(),juniorIds,maxGroupLevel);
 
         Set<String> action3 = new HashSet();
         action3.add("3");
         List<ActionParMoneyVO> list3 = zhonganInfoDOMapper.selectActionParMoney(action3,query.getGmtCreateStart1(),
-                query.getGmtCreateEnd1(),query.getBizAreaId(),query.getPartnerId());
+                query.getGmtCreateEnd1(),query.getBizAreaId(),query.getPartnerId(),juniorIds,maxGroupLevel);
 
         Set<String> actionTotal = new HashSet();
         actionTotal.add("3");
@@ -274,7 +465,7 @@ public class ReportServiceImpl implements ReportService {
         actionTotal.add("1");
         actionTotal.add("0");
         List<ActionParMoneyVO> listTotal = zhonganInfoDOMapper.selectActionParMoney(actionTotal,query.getGmtCreateStart1(),
-                query.getGmtCreateEnd1(),query.getBizAreaId(),query.getPartnerId());
+                query.getGmtCreateEnd1(),query.getBizAreaId(),query.getPartnerId(),juniorIds,maxGroupLevel);
         for(TelPartnerCountVO telPartnerCountVO:list){
             for(ActionParMoneyVO actionParMoneyVO:list0){
                 if(actionParMoneyVO !=null) {
@@ -327,7 +518,7 @@ public class ReportServiceImpl implements ReportService {
     private String createTelPartnerExcelFile(List<TelPartnerCountVO> list) {
         String timestamp = new SimpleDateFormat("yyyyMMdd").format(new Date());
         Long id = SessionUtils.getLoginUser().getId();
-        String fileName = "TelPartner"+timestamp + id + ".xlsx";
+        String fileName = "电审合伙人"+timestamp + id + ".xlsx";
         //创建workbook
         File file = new File(ossConfig.getDownLoadBasepath() + File.separator + fileName);
         FileOutputStream out = null;
@@ -471,7 +662,7 @@ public class ReportServiceImpl implements ReportService {
     private String createTelUserExcelFile(List<TelUserCountVO> list) {
         String timestamp = new SimpleDateFormat("yyyyMMdd").format(new Date());
         Long id = SessionUtils.getLoginUser().getId();
-        String fileName = "TelUser"+timestamp + id + ".xlsx";
+        String fileName = "电审经办人"+timestamp + id + ".xlsx";
         //创建workbook
         File file = new File(ossConfig.getDownLoadBasepath() + File.separator + fileName);
         FileOutputStream out = null;
@@ -590,7 +781,7 @@ public class ReportServiceImpl implements ReportService {
     private String createTelBankExcelFile(List<TelBankCountVO> list) {
         String timestamp = new SimpleDateFormat("yyyyMMdd").format(new Date());
         Long id = SessionUtils.getLoginUser().getId();
-        String fileName = "TelBank"+timestamp + id + ".xlsx";
+        String fileName = "电审银行"+timestamp + id + ".xlsx";
         //创建workbook
         File file = new File(ossConfig.getDownLoadBasepath() + File.separator + fileName);
         FileOutputStream out = null;
@@ -676,7 +867,7 @@ public class ReportServiceImpl implements ReportService {
     private String createBankCreditPrincipalExcelFile(List<BankCreditPrincipalVO> list) {
         String timestamp = new SimpleDateFormat("yyyyMMdd").format(new Date());
         Long id = SessionUtils.getLoginUser().getId();
-        String fileName = "BankCreditPrincipal"+timestamp + id + ".xlsx";
+        String fileName = "客户征信"+timestamp + id + ".xlsx";
         //创建workbook
         File file = new File(ossConfig.getDownLoadBasepath() + File.separator + fileName);
         FileOutputStream out = null;
@@ -878,7 +1069,7 @@ public class ReportServiceImpl implements ReportService {
     private String createContractExcelFile(List<ContractSetReportVO> list) {
         String timestamp = new SimpleDateFormat("yyyyMMdd").format(new Date());
         Long id = SessionUtils.getLoginUser().getId();
-        String fileName = timestamp + id + ".xlsx";
+        String fileName = "合同套打"+timestamp + id + ".xlsx";
         //创建workbook
         File file = new File(ossConfig.getDownLoadBasepath() + File.separator + fileName);
         FileOutputStream out = null;

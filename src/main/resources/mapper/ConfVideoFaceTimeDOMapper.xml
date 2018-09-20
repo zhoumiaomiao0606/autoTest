@@ -142,11 +142,19 @@
     where id = #{id,jdbcType=BIGINT}
   </update>
 
+    <!--listByBankId-->
+    <select id="listByBankId" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM conf_video_face_time
+        WHERE bank_id = #{bankId,jdbcType=BIGINT}
+    </select>
+
     <!--listAll-->
     <select id="listAll" resultMap="BaseResultMap">
-        select
+        SELECT
         <include refid="Base_Column_List"/>
-        from conf_video_face_time
+        FROM conf_video_face_time
     </select>
 
 </mapper>

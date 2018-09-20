@@ -3,6 +3,8 @@ package com.yunche.loan.service.impl;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.yunche.loan.config.cache.BankCache;
+import com.yunche.loan.config.util.SessionUtils;
 import com.yunche.loan.domain.entity.ConfVideoFaceTimeDO;
 import com.yunche.loan.domain.vo.ConfVideoFaceTimeVO;
 import com.yunche.loan.mapper.ConfVideoFaceTimeDOMapper;
@@ -27,25 +29,40 @@ public class ConfVideoFaceTimeServiceImpl implements ConfVideoFaceTimeService {
     @Autowired
     private ConfVideoFaceTimeDOMapper confVideoFaceTimeDOMapper;
 
+    @Autowired
+    private BankCache bankCache;
+
 
     @Override
     @Transactional
     public void save(List<ConfVideoFaceTimeVO> confVideoFaceTimeVOS) {
 
+        Long videoFaceBankId = SessionUtils.getLoginUser().getBankId();
+        Preconditions.checkNotNull(videoFaceBankId, "您无权操作[视频面签]");
+
         // del ALL
-        confVideoFaceTimeDOMapper.deleteAll();
+        deleteAllConfByBankId(videoFaceBankId);
 
-        // insert
-        if (!CollectionUtils.isEmpty(confVideoFaceTimeVOS)) {
-
-            doSave(confVideoFaceTimeVOS);
-        }
+        // save
+        doSave(videoFaceBankId, confVideoFaceTimeVOS);
     }
 
     @Override
     public List<ConfVideoFaceTimeVO> listAll() {
 
-        List<ConfVideoFaceTimeDO> confVideoFaceTimeDOS = confVideoFaceTimeDOMapper.listAll();
+        Long videoFaceBankId = SessionUtils.getLoginUser().getBankId();
+        Preconditions.checkNotNull(videoFaceBankId, "您无权操作[视频面签]");
+
+        List<ConfVideoFaceTimeDO> confVideoFaceTimeDOS = null;
+
+        // 管理员
+        if (videoFaceBankId == -1L) {
+
+            confVideoFaceTimeDOS = confVideoFaceTimeDOMapper.listAll();
+        } else {
+
+            confVideoFaceTimeDOS = confVideoFaceTimeDOMapper.listByBankId(videoFaceBankId);
+        }
 
         if (!CollectionUtils.isEmpty(confVideoFaceTimeDOS)) {
 
@@ -70,8 +87,7 @@ public class ConfVideoFaceTimeServiceImpl implements ConfVideoFaceTimeService {
 
                     });
 
-            List<ConfVideoFaceTimeVO> confVideoFaceTimeVOList = Lists.newArrayList(bankId_Obj_map.values());
-            return confVideoFaceTimeVOList;
+            return Lists.newArrayList(bankId_Obj_map.values());
         }
 
         return Collections.EMPTY_LIST;
@@ -173,27 +189,54 @@ public class ConfVideoFaceTimeServiceImpl implements ConfVideoFaceTimeService {
         bankId_Obj_map.put(bankId, confVideoFaceTimeVO);
     }
 
+    /**
+     * del All
+     *
+     * @param videoFaceBankId
+     */
+    private void deleteAllConfByBankId(Long videoFaceBankId) {
+
+        // 管理员
+        if (videoFaceBankId == -1L) {
+
+            confVideoFaceTimeDOMapper.deleteAll();
+        } else {
+
+            confVideoFaceTimeDOMapper.deleteAllByBankId(videoFaceBankId);
+        }
+    }
 
     /**
      * 保存
      *
+     * @param videoFaceBankId
      * @param confVideoFaceTimeVOS
      */
-    private void doSave(List<ConfVideoFaceTimeVO> confVideoFaceTimeVOS) {
+    private void doSave(Long videoFaceBankId, List<ConfVideoFaceTimeVO> confVideoFaceTimeVOS) {
 
-        // insert
-        confVideoFaceTimeVOS.stream()
-                .filter(Objects::nonNull)
-                .forEach(e -> {
+        if (!CollectionUtils.isEmpty(confVideoFaceTimeVOS)) {
 
-                    Preconditions.checkNotNull(e.getBankId(), "bankId不能为空");
+            // insert
+            confVideoFaceTimeVOS.stream()
+                    .filter(Objects::nonNull)
+                    .forEach(e -> {
 
-                    List<ConfVideoFaceTimeVO.Detail> detailList = e.getDetailList();
-                    if (!CollectionUtils.isEmpty(detailList)) {
+                        Long bankId = e.getBankId();
 
-                        doInsert_detail(detailList, e.getBankId());
-                    }
-                });
+                        Preconditions.checkNotNull(bankId, "bankId不能为空");
+                        if (!(videoFaceBankId == -1L)) {
+                            Preconditions.checkArgument(videoFaceBankId.equals(bankId),
+                                    "您无权操作当前银行：" + bankCache.getNameById(bankId));
+                        }
+
+                        List<ConfVideoFaceTimeVO.Detail> detailList = e.getDetailList();
+                        if (!CollectionUtils.isEmpty(detailList)) {
+
+                            doInsert_detail(detailList, bankId);
+                        }
+                    });
+        }
+
     }
 
     /**

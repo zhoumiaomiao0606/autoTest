@@ -27,12 +27,13 @@
     <result column="customer_type" property="customerType" jdbcType="VARCHAR" />
     <result column="result_message" property="resultMessage" jdbcType="VARCHAR" />
     <result column="tel" property="tel" jdbcType="VARCHAR" />
+    <result column="rsp_gong_an" property="rspGongAn" jdbcType="VARCHAR" />
   </resultMap>
   <sql id="Base_Column_List" >
     id, id_card, age, gender, mobile_city, mobile_comm_duration, mobile_comm_sts, phoneid_name_check,
     high_risk_behavior, rsn_high_risk, rsn_long_overdue, rsn_multi_loan, rsn_policy_restrict, 
     rsn_risk_rec, rsp_lawsuit_alllist, rsp_speclist_inblacklist, rsp_speclist_maxdftlevel, 
-    rsp_watchlist_detail, high_risk_record, customer_name ,create_date,order_id,customer_type,result_message,tel
+    rsp_watchlist_detail, high_risk_record, customer_name ,create_date,order_id,customer_type,result_message,tel,rsp_gong_an
   </sql>
   <select id="selectByOrderId" resultMap="BaseResultMap">
     select
@@ -58,7 +59,7 @@
       rsn_high_risk, rsn_long_overdue, rsn_multi_loan, 
       rsn_policy_restrict, rsn_risk_rec, rsp_lawsuit_alllist, 
       rsp_speclist_inblacklist, rsp_speclist_maxdftlevel, 
-      rsp_watchlist_detail, high_risk_record, customer_name,create_date,order_id,customer_type,result_message,tel
+      rsp_watchlist_detail, high_risk_record, customer_name,create_date,order_id,customer_type,result_message,tel,rsp_gong_an
       )
     values (#{id,jdbcType=BIGINT}, #{idCard,jdbcType=BIGINT}, #{age,jdbcType=VARCHAR},
       #{gender,jdbcType=VARCHAR}, #{mobileCity,jdbcType=VARCHAR}, #{mobileCommDuration,jdbcType=VARCHAR}, 
@@ -68,7 +69,7 @@
       #{rspSpeclistInblacklist,jdbcType=VARCHAR}, #{rspSpeclistMaxdftlevel,jdbcType=VARCHAR}, 
       #{rspWatchlistDetail,jdbcType=VARCHAR}, #{highRiskRecord,jdbcType=VARCHAR}, #{customerName,jdbcType=VARCHAR},
       #{createDate,jdbcType=TIMESTAMP},#{orderId,jdbcType=BIGINT},#{customerType,jdbcType=VARCHAR},#{resultMessage,jdbcType=VARCHAR}
-      ,#{tel,jdbcType=VARCHAR})
+      ,#{tel,jdbcType=VARCHAR},#{rspGongAn,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.ZhonganInfoDO" useGeneratedKeys="true" keyProperty="id">
     insert into zhongan_info
@@ -148,6 +149,9 @@
       <if test="tel != null" >
         tel,
       </if>
+      <if test="rspGongAn != null" >
+        rsp_gong_an,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="id != null" >
@@ -224,6 +228,9 @@
       </if>
       <if test="tel != null" >
         #{tel,jdbcType=VARCHAR},
+      </if>
+      <if test="rspGongAn != null" >
+        #{rspGongAn,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
@@ -302,6 +309,9 @@
       <if test="tel != null" >
         tel = #{tel,jdbcType=VARCHAR},
       </if>
+      <if test="rspGongAn != null" >
+        rsp_gong_an = #{rspGongAn,jdbcType=VARCHAR},
+      </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
@@ -330,7 +340,8 @@
       order_id = #{orderId,jdbcType=BIGINT},
       customer_type = #{customerType,jdbcType=VARCHAR},
       result_message = #{resultMessage,jdbcType=VARCHAR},
-      tel = #{tel,jdbcType=VARCHAR}
+      tel = #{tel,jdbcType=VARCHAR},
+      rsp_gong_an = #{rspGongAn,jdbcType=VARCHAR}
     where id = #{id,jdbcType=BIGINT}
   </update>
   <select id="selectZNByOrderIdAndIdcard" resultMap="BaseResultMap">
@@ -932,6 +943,21 @@
     <if test = "gmtCreateEnd1 != null and gmtCreateEnd1 != ''">
       <![CDATA[ AND a.create_time <= #{gmtCreateEnd1} ]]>
     </if>
+    and
+    case when #{maxGroupLevel} = 0 then false
+    when #{maxGroupLevel} = 1 then
+    <choose>
+      <when test="juniorIds != null and juniorIds.size() > 0">
+        a.user_id in
+        <foreach item="item" index="index" collection="juniorIds" open="(" separator="," close=")">
+          #{item}
+        </foreach>
+      </when>
+      <otherwise>
+        false
+      </otherwise>
+    </choose>
+    else true end
     group by c.partner_id
   </select>
   <select id="telUserCount" parameterType="com.yunche.loan.domain.query.BankCreditPrincipalQuery" resultType="com.yunche.loan.domain.vo.TelUserCountVO">
@@ -947,7 +973,7 @@
       COUNT( CASE WHEN ( r.action = 3 ) THEN 1 END ) AS supplement,
       TRUNCATE(COUNT( CASE WHEN ( r.action = 3 ) THEN 1 END ) / COUNT( CASE WHEN ( r.action != 4 AND r.action != 5 ) THEN 1 END )*100,2) AS supplementRatio,
       COUNT( CASE WHEN ( r.action != 4 AND r.action != 5 ) THEN 1 END ) AS total,
-      '1' AS totalRatio
+      '100' AS totalRatio
      FROM
       (
       SELECT DISTINCT
@@ -977,11 +1003,26 @@
       <![CDATA[ AND r.create_time <= #{gmtCreateEnd1} ]]>
     </if>
     <if test = "bizAreaId != null and bizAreaId != ''">
-        biz.biz_area_id = #{bizAreaId}
+      AND  biz.biz_area_id = #{bizAreaId}
     </if>
     <if test = "partnerId != null and partnerId != ''">
-      base.partner_id = #{partnerId}
+      AND base.partner_id = #{partnerId}
     </if>
+    and
+    case when #{maxGroupLevel} = 0 then false
+    when #{maxGroupLevel} = 1 then
+    <choose>
+      <when test="juniorIds != null and juniorIds.size() > 0">
+        r.user_id in
+        <foreach item="item" index="index" collection="juniorIds" open="(" separator="," close=")">
+          #{item}
+        </foreach>
+      </when>
+      <otherwise>
+        false
+      </otherwise>
+    </choose>
+    else true end
   GROUP BY
       r.user_id
     ORDER BY area.id
@@ -1000,7 +1041,7 @@
       COUNT( CASE WHEN ( r.action = 3 ) THEN 1 END ) AS supplement,
       TRUNCATE(COUNT( CASE WHEN ( r.action = 3 ) THEN 1 END ) / COUNT( CASE WHEN ( r.action != 4 AND r.action != 5 ) THEN 1 END )*100,2) AS supplementRatio,
       COUNT( CASE WHEN ( r.action != 4 AND r.action != 5 ) THEN 1 END ) AS total,
-      '1' AS totalRatio
+      '100' AS totalRatio
     FROM
         (
         SELECT DISTINCT
@@ -1032,11 +1073,26 @@
             <![CDATA[ AND r.create_time <= #{gmtCreateEnd1} ]]>
         </if>
         <if test = "bizAreaId != null and bizAreaId != ''">
-            biz.biz_area_id = #{bizAreaId}
+           AND biz.biz_area_id = #{bizAreaId}
         </if>
         <if test = "partnerId != null and partnerId != ''">
-            base.partner_id = #{partnerId}
+           AND base.partner_id = #{partnerId}
         </if>
+      and
+      case when #{maxGroupLevel} = 0 then false
+      when #{maxGroupLevel} = 1 then
+      <choose>
+        <when test="juniorIds != null and juniorIds.size() > 0">
+          r.user_id in
+          <foreach item="item" index="index" collection="juniorIds" open="(" separator="," close=")">
+            #{item}
+          </foreach>
+        </when>
+        <otherwise>
+          false
+        </otherwise>
+      </choose>
+      else true end
         GROUP BY
         base.partner_id
       ORDER BY area.id
@@ -1079,12 +1135,33 @@
           <![CDATA[ AND r.create_time <= #{gmtCreateEnd1} ]]>
         </if>
         <if test = "bizAreaId != null and bizAreaId != ''">
-          biz.biz_area_id = #{bizAreaId}
+         AND biz.biz_area_id = #{bizAreaId}
         </if>
         <if test = "partnerId != null and partnerId != ''">
-          base.partner_id = #{partnerId}
+          AND  base.partner_id = #{partnerId}
         </if>
+      and
+      case when #{maxGroupLevel} = 0 then false
+      when #{maxGroupLevel} = 1 then
+      <choose>
+        <when test="juniorIds != null and juniorIds.size() > 0">
+          r.user_id in
+          <foreach item="item" index="index" collection="juniorIds" open="(" separator="," close=")">
+            #{item}
+          </foreach>
+        </when>
+        <otherwise>
+          false
+        </otherwise>
+      </choose>
+      else true end
     GROUP BY
         base.partner_id
     </select>
+  <select id="selectBankByUserId" resultType="java.lang.String">
+      select c.name from employee_rela_user_group  a
+      left join user_group_rela_bank b on b.user_group_id = a.user_group_id
+      left join bank c on c.id = b.bank_id
+      where a.employee_id =#{UserId,jdbcType=BIGINT}
+  </select>
 </mapper>

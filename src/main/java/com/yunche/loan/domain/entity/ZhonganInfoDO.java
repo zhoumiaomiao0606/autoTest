@@ -60,4 +60,6 @@ public class ZhonganInfoDO {
     private List<ZhonganOverdueDO> overDueList = Lists.newArrayList();
     private List<RspCreditDO> creditList = Lists.newArrayList();
     private List<RspLawsuitDO> lawSuitList = Lists.newArrayList();
+
+    private String rspGongAn;
 }
