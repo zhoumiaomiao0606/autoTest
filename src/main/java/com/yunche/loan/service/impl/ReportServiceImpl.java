@@ -185,36 +185,56 @@ public class ReportServiceImpl implements ReportService {
                 query.getGmtCreateEnd1(),query.getBizAreaId(),query.getPartnerId());
 
         Set<String> actionTotal = new HashSet();
-        action3.add("3");
-        action3.add("2");
-        action3.add("1");
-        action3.add("0");
+        actionTotal.add("3");
+        actionTotal.add("2");
+        actionTotal.add("1");
+        actionTotal.add("0");
         List<ActionParMoneyVO> listTotal = zhonganInfoDOMapper.selectActionParMoney(actionTotal,query.getGmtCreateStart1(),
                 query.getGmtCreateEnd1(),query.getBizAreaId(),query.getPartnerId());
         for(TelPartnerCountVO telPartnerCountVO:list){
             for(ActionParMoneyVO actionParMoneyVO:list0){
-                if(actionParMoneyVO.getParId().equals(telPartnerCountVO.getPId())){
-                    telPartnerCountVO.setRepulseMoney(actionParMoneyVO.getLoanAmount());
+                if(actionParMoneyVO !=null) {
+                    if (actionParMoneyVO.getParId() != null) {
+                        if (actionParMoneyVO.getParId().equals(telPartnerCountVO.getPId())) {
+                            telPartnerCountVO.setRepulseMoney(actionParMoneyVO.getLoanAmount());
+                        }
+                    }
                 }
             }
             for(ActionParMoneyVO actionParMoneyVO:list1){
-                if(actionParMoneyVO.getParId().equals(telPartnerCountVO.getPId())){
-                    telPartnerCountVO.setPassMoney(actionParMoneyVO.getLoanAmount());
+                if(actionParMoneyVO !=null) {
+                    if (actionParMoneyVO.getParId() != null) {
+                        if (actionParMoneyVO.getParId().equals(telPartnerCountVO.getPId())) {
+                            telPartnerCountVO.setPassMoney(actionParMoneyVO.getLoanAmount());
+                        }
+                    }
                 }
             }
             for(ActionParMoneyVO actionParMoneyVO:list2){
-                if(actionParMoneyVO.getParId().equals(telPartnerCountVO.getPId())){
-                    telPartnerCountVO.setChanelMoney(actionParMoneyVO.getLoanAmount());
+                if(actionParMoneyVO !=null) {
+                    if (actionParMoneyVO.getParId() != null) {
+                        if (actionParMoneyVO.getParId().equals(telPartnerCountVO.getPId())) {
+                            telPartnerCountVO.setChanelMoney(actionParMoneyVO.getLoanAmount());
+                        }
+                    }
                 }
             }
             for(ActionParMoneyVO actionParMoneyVO:list3){
-                if(actionParMoneyVO.getParId().equals(telPartnerCountVO.getPId())){
-                    telPartnerCountVO.setSupplementMoney(actionParMoneyVO.getLoanAmount());
+                if(actionParMoneyVO !=null) {
+                    if (actionParMoneyVO.getParId() != null) {
+                        if (actionParMoneyVO.getParId().equals(telPartnerCountVO.getPId())) {
+                            telPartnerCountVO.setSupplementMoney(actionParMoneyVO.getLoanAmount());
+                        }
+                    }
                 }
             }
             for(ActionParMoneyVO actionParMoneyVO:listTotal){
-                if(actionParMoneyVO.getParId().equals(telPartnerCountVO.getPId())){
-                    telPartnerCountVO.setTotalMoney(actionParMoneyVO.getLoanAmount());
+                if(actionParMoneyVO !=null) {
+                    if (actionParMoneyVO.getParId() != null) {
+                        if (actionParMoneyVO.getParId().equals(telPartnerCountVO.getPId())) {
+                            telPartnerCountVO.setTotalMoney(actionParMoneyVO.getLoanAmount());
+                        }
+                    }
                 }
             }
         }
@@ -249,36 +269,56 @@ public class ReportServiceImpl implements ReportService {
                 query.getGmtCreateEnd1(),query.getBizAreaId(),query.getPartnerId());
 
         Set<String> actionTotal = new HashSet();
-        action3.add("3");
-        action3.add("2");
-        action3.add("1");
-        action3.add("0");
+        actionTotal.add("3");
+        actionTotal.add("2");
+        actionTotal.add("1");
+        actionTotal.add("0");
         List<ActionParMoneyVO> listTotal = zhonganInfoDOMapper.selectActionParMoney(actionTotal,query.getGmtCreateStart1(),
                 query.getGmtCreateEnd1(),query.getBizAreaId(),query.getPartnerId());
         for(TelPartnerCountVO telPartnerCountVO:list){
             for(ActionParMoneyVO actionParMoneyVO:list0){
-                if(actionParMoneyVO.getParId().equals(telPartnerCountVO.getPId())){
-                    telPartnerCountVO.setRepulseMoney(actionParMoneyVO.getLoanAmount());
+                if(actionParMoneyVO !=null) {
+                    if (actionParMoneyVO.getParId() != null) {
+                        if (actionParMoneyVO.getParId().equals(telPartnerCountVO.getPId())) {
+                            telPartnerCountVO.setRepulseMoney(actionParMoneyVO.getLoanAmount());
+                        }
+                    }
                 }
             }
             for(ActionParMoneyVO actionParMoneyVO:list1){
-                if(actionParMoneyVO.getParId().equals(telPartnerCountVO.getPId())){
-                    telPartnerCountVO.setPassMoney(actionParMoneyVO.getLoanAmount());
+                if(actionParMoneyVO !=null) {
+                    if (actionParMoneyVO.getParId() != null) {
+                        if (actionParMoneyVO.getParId().equals(telPartnerCountVO.getPId())) {
+                            telPartnerCountVO.setPassMoney(actionParMoneyVO.getLoanAmount());
+                        }
+                    }
                 }
             }
             for(ActionParMoneyVO actionParMoneyVO:list2){
-                if(actionParMoneyVO.getParId().equals(telPartnerCountVO.getPId())){
-                    telPartnerCountVO.setChanelMoney(actionParMoneyVO.getLoanAmount());
+                if(actionParMoneyVO !=null) {
+                    if (actionParMoneyVO.getParId() != null) {
+                        if (actionParMoneyVO.getParId().equals(telPartnerCountVO.getPId())) {
+                            telPartnerCountVO.setChanelMoney(actionParMoneyVO.getLoanAmount());
+                        }
+                    }
                 }
             }
             for(ActionParMoneyVO actionParMoneyVO:list3){
-                if(actionParMoneyVO.getParId().equals(telPartnerCountVO.getPId())){
-                    telPartnerCountVO.setSupplementMoney(actionParMoneyVO.getLoanAmount());
+                if(actionParMoneyVO !=null) {
+                    if (actionParMoneyVO.getParId() != null) {
+                        if (actionParMoneyVO.getParId().equals(telPartnerCountVO.getPId())) {
+                            telPartnerCountVO.setSupplementMoney(actionParMoneyVO.getLoanAmount());
+                        }
+                    }
                 }
             }
             for(ActionParMoneyVO actionParMoneyVO:listTotal){
-                if(actionParMoneyVO.getParId().equals(telPartnerCountVO.getPId())){
-                    telPartnerCountVO.setTotalMoney(actionParMoneyVO.getLoanAmount());
+                if(actionParMoneyVO !=null) {
+                    if (actionParMoneyVO.getParId() != null) {
+                        if (actionParMoneyVO.getParId().equals(telPartnerCountVO.getPId())) {
+                            telPartnerCountVO.setTotalMoney(actionParMoneyVO.getLoanAmount());
+                        }
+                    }
                 }
             }
         }
