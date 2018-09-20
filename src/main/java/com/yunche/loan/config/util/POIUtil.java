@@ -410,7 +410,21 @@ public class POIUtil {
                 for (int j = 0; j < getMethods.size(); j++)
                 {
                     cell = row.createCell(j);
-                    cell.setCellValue((String) getMethods.get(j).invoke(data));
+                    //判断----将Date特殊处理
+                    if(getMethods.get(j).invoke(data) instanceof Date)
+                    {
+                        cell.setCellValue((Date) getMethods.get(j).invoke(data));
+                    }
+                    else if (getMethods.get(j).invoke(data) instanceof BigDecimal)
+                        {
+
+                            cell.setCellValue( ((BigDecimal)getMethods.get(j).invoke(data)).toString());
+
+                        }
+                    else{
+                        cell.setCellValue((String) getMethods.get(j).invoke(data));
+                    }
+
                 }
 
             }

@@ -478,7 +478,9 @@
     </sequenceFlow>
     <sequenceFlow id="flow297" sourceRef="parallelgateway3" targetRef="usertask_video_review"></sequenceFlow>
     <userTask id="filter_video_review" name="拦截"></userTask>
-    <sequenceFlow id="flow298" sourceRef="usertask_video_review" targetRef="filter_video_review"></sequenceFlow>
+    <sequenceFlow id="flow298" name="提交" sourceRef="usertask_video_review" targetRef="filter_video_review">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1}]]></conditionExpression>
+    </sequenceFlow>
     <exclusiveGateway id="exclusivegateway44" name="Exclusive Gateway"></exclusiveGateway>
     <sequenceFlow id="flow299" sourceRef="filter_video_review" targetRef="exclusivegateway44"></sequenceFlow>
     <sequenceFlow id="flow300" name="反审 || 自动打回" sourceRef="exclusivegateway44" targetRef="usertask_video_review">
@@ -1792,6 +1794,9 @@
       <bpmndi:BPMNEdge bpmnElement="flow298" id="BPMNEdge_flow298">
         <omgdi:waypoint x="3837.0" y="2387.0"></omgdi:waypoint>
         <omgdi:waypoint x="3946.0" y="2387.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="16.0" width="100.0" x="3837.0" y="2387.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="flow299" id="BPMNEdge_flow299">
         <omgdi:waypoint x="4051.0" y="2387.0"></omgdi:waypoint>

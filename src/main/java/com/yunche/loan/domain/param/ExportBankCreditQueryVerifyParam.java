@@ -10,6 +10,12 @@ import java.util.Set;
 @Data
 public class ExportBankCreditQueryVerifyParam
 {
+
+    //大区
+    private Long biz_areaId;
+
+    private List<Long> bizAreaList;
+
     //银行审核时间
     private  String startDate;
     private  String endDate;

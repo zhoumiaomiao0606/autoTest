@@ -4,16 +4,21 @@ package com.yunche.loan;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Sets;
 import com.yunche.loan.config.feign.response.ApplyStatusResponse;
+import com.yunche.loan.domain.param.BankCreditChartParam;
 import com.yunche.loan.domain.param.ICBCApiCallbackParam;
+import com.yunche.loan.domain.vo.BankCreditChartVO;
+import com.yunche.loan.mapper.ChartDOMapper;
 import com.yunche.loan.mapper.LoanCustomerDOMapper;
 import com.yunche.loan.mapper.LoanStatementDOMapper;
 import com.yunche.loan.service.BankSolutionProcessService;
 import com.yunche.loan.service.BankSolutionService;
 import com.yunche.loan.service.CollectionService;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.Resource;
 import java.io.IOException;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -29,6 +34,9 @@ public class Test extends BaseTest {
 
     @Resource
     private BankSolutionProcessService bankSolutionProcessService;
+
+    @Autowired
+    private ChartDOMapper chartDOMapper;
 
     @org.junit.Test
     public void test() throws IOException {
@@ -97,6 +105,11 @@ public class Test extends BaseTest {
 
     }
 
-
+    @org.junit.Test
+public void  excelTest(){
+    BankCreditChartParam bankCreditChartParam =new BankCreditChartParam();
+    List<BankCreditChartVO> bankCreditChartVOS = chartDOMapper.selectBankCreditChartVO(bankCreditChartParam);
+    System.out.println(bankCreditChartVOS.size());
+}
 
 }

@@ -20,4 +20,8 @@ public class CompanyRemitDetailChartParam  extends BaseQuery
     private Long maxGroupLevel;
 
     private Set<String> juniorIds = Sets.newHashSet();
+
+    private String startTime;
+
+    private String endTime;
 }

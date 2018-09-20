@@ -1,13 +1,17 @@
 package com.yunche.loan.service.impl;
 
 
+import com.github.pagehelper.PageHelper;
 import com.google.common.collect.Lists;
 import com.yunche.loan.config.common.OSSConfig;
 import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.util.POIUtil;
 import com.yunche.loan.config.util.SessionUtils;
+import com.yunche.loan.domain.entity.BizAreaDO;
 import com.yunche.loan.domain.param.*;
 import com.yunche.loan.domain.vo.*;
+import com.yunche.loan.mapper.BizAreaDOMapper;
+import com.yunche.loan.mapper.ChartDOMapper;
 import com.yunche.loan.mapper.LoanStatementDOMapper;
 import com.yunche.loan.mapper.TaskSchedulingDOMapper;
 import com.yunche.loan.service.EmployeeService;
@@ -24,6 +28,8 @@ import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
+
 @Service
 @Transactional
 public class ExportQueryServiceImpl implements ExportQueryService
@@ -34,6 +40,9 @@ public class ExportQueryServiceImpl implements ExportQueryService
     private OSSConfig ossConfig;
 
     @Autowired
+    private ChartDOMapper chartDOMapper;
+
+    @Autowired
     private LoanStatementDOMapper loanStatementDOMapper;
 
     @Resource
@@ -41,6 +50,9 @@ public class ExportQueryServiceImpl implements ExportQueryService
 
     @Resource
     private TaskSchedulingDOMapper taskSchedulingDOMapper;
+
+    @Autowired
+    private BizAreaDOMapper bizAreaDOMapper;
 
     /**
      * 导出 EXCEL 银行征信查询
@@ -50,6 +62,15 @@ public class ExportQueryServiceImpl implements ExportQueryService
     @Override
     public String exportBankCreditQuery(ExportBankCreditQueryVerifyParam exportBankCreditQueryVerifyParam)
     {
+        //大区
+        if (exportBankCreditQueryVerifyParam.getBiz_areaId() !=null)
+        {
+            List<Long> selfAndChildBiz_area = getSelfAndChildBiz_area(exportBankCreditQueryVerifyParam.getBiz_areaId());
+            selfAndChildBiz_area.add(exportBankCreditQueryVerifyParam.getBiz_areaId());
+            exportBankCreditQueryVerifyParam.setBizAreaList(selfAndChildBiz_area);
+
+        }
+
         Long loginUserId = SessionUtils.getLoginUser().getId();
 
         exportBankCreditQueryVerifyParam.setJuniorIds(employeeService.getSelfAndCascadeChildIdList(loginUserId));
@@ -66,13 +87,50 @@ public class ExportQueryServiceImpl implements ExportQueryService
         return ossResultKey;
     }
 
+    //导出
+    public String exportBankCreditQueryForChart(BankCreditChartParam param)
+    {
+        //大区
+        if (param.getBiz_areaId() !=null)
+        {
+            List<Long> selfAndChildBiz_area = getSelfAndChildBiz_area(param.getBiz_areaId());
+            selfAndChildBiz_area.add(param.getBiz_areaId());
+            param.setBizAreaList(selfAndChildBiz_area);
+
+        }
+
+        Long loginUserId = SessionUtils.getLoginUser().getId();
+
+        param.setJuniorIds(employeeService.getSelfAndCascadeChildIdList(loginUserId));
+        param.setMaxGroupLevel(taskSchedulingDOMapper.selectMaxGroupLevel(loginUserId));
+        System.out.println("=========");
+        List<BankCreditChartVO> list = chartDOMapper.selectBankCreditChartVO(param);
+        System.out.println("=========");
+        ArrayList<String> header = Lists.newArrayList("大区","业务区域", "业务关系", "客户姓名", "身份证号",
+                "手机号", "贷款银行", "业务团队", "业务员", "主贷人姓名", "与主贷人关系", "征信结果", "征信申请时间", "征信查询时间", "提交人"
+        );
+
+
+        String ossResultKey = POIUtil.createExcelFile("BankCredit",list,header,BankCreditChartVO.class,ossConfig);
+        return ossResultKey;
+    }
+
     /**
      * 导出 EXCEL 社会征信查询
      *
      * @return
      */
     @Override
-    public String expertSocialCreditQuery(ExportSocialCreditQueryVerifyParam exportSocialCreditQueryVerifyParam) {
+    public String expertSocialCreditQuery(ExportSocialCreditQueryVerifyParam exportSocialCreditQueryVerifyParam)
+    {
+        //大区
+        if (exportSocialCreditQueryVerifyParam.getBiz_areaId() !=null)
+        {
+            List<Long> selfAndChildBiz_area = getSelfAndChildBiz_area(exportSocialCreditQueryVerifyParam.getBiz_areaId());
+            selfAndChildBiz_area.add(exportSocialCreditQueryVerifyParam.getBiz_areaId());
+            exportSocialCreditQueryVerifyParam.setBizAreaList(selfAndChildBiz_area);
+
+        }
         Long loginUserId = SessionUtils.getLoginUser().getId();
 
         exportSocialCreditQueryVerifyParam.setJuniorIds(employeeService.getSelfAndCascadeChildIdList(loginUserId));
@@ -89,13 +147,48 @@ public class ExportQueryServiceImpl implements ExportQueryService
         return ossResultKey;
     }
 
+    @Override
+    public String expertSocialCreditQueryForChart(SocialCreditChartParam param) {
+        //大区
+        if (param.getBiz_areaId() !=null)
+        {
+            List<Long> selfAndChildBiz_area = getSelfAndChildBiz_area(param.getBiz_areaId());
+            selfAndChildBiz_area.add(param.getBiz_areaId());
+            param.setBizAreaList(selfAndChildBiz_area);
+
+        }
+        Long loginUserId = SessionUtils.getLoginUser().getId();
+
+        param.setJuniorIds(employeeService.getSelfAndCascadeChildIdList(loginUserId));
+        param.setMaxGroupLevel(taskSchedulingDOMapper.selectMaxGroupLevel(loginUserId));
+
+        List list = chartDOMapper.selectSocialCreditChartVO(param);
+
+        ArrayList<String> header = Lists.newArrayList("大区","业务区域", "业务关系", "客户姓名", "身份证号",
+                "手机号", "贷款银行", "业务团队", "业务员", "主贷人姓名", "与主贷人关系", "征信结果", "征信申请时间", "征信查询时间", "提交人"
+        );
+
+
+        String ossResultKey = POIUtil.createExcelFile("SocialCredit",list,header,SocialCreditChartVO.class,ossConfig);
+        return ossResultKey;
+    }
+
     /**
      * 导出 EXCEL 财务垫款明细查询
      *
      * @return
      */
     @Override
-    public String expertRemitDetailQuery(ExportRemitDetailQueryVerifyParam exportRemitDetailQueryVerifyParam) {
+    public String expertRemitDetailQuery(ExportRemitDetailQueryVerifyParam exportRemitDetailQueryVerifyParam)
+    {
+        //大区
+        if (exportRemitDetailQueryVerifyParam.getBiz_areaId() !=null)
+        {
+            List<Long> selfAndChildBiz_area = getSelfAndChildBiz_area(exportRemitDetailQueryVerifyParam.getBiz_areaId());
+            selfAndChildBiz_area.add(exportRemitDetailQueryVerifyParam.getBiz_areaId());
+            exportRemitDetailQueryVerifyParam.setBizAreaList(selfAndChildBiz_area);
+
+        }
         Long loginUserId = SessionUtils.getLoginUser().getId();
 
         exportRemitDetailQueryVerifyParam.setJuniorIds(employeeService.getSelfAndCascadeChildIdList(loginUserId));
@@ -112,13 +205,49 @@ public class ExportQueryServiceImpl implements ExportQueryService
         return ossResultKey;
     }
 
+    @Override
+    public String expertRemitDetailQueryForChart(FinancialDepartmentRemitDetailChartParam param) {
+        //大区
+        if (param.getBiz_areaId() !=null)
+        {
+            List<Long> selfAndChildBiz_area = getSelfAndChildBiz_area(param.getBiz_areaId());
+            selfAndChildBiz_area.add(param.getBiz_areaId());
+            param.setBizAreaList(selfAndChildBiz_area);
+
+        }
+        Long loginUserId = SessionUtils.getLoginUser().getId();
+
+        param.setJuniorIds(employeeService.getSelfAndCascadeChildIdList(loginUserId));
+        param.setMaxGroupLevel(taskSchedulingDOMapper.selectMaxGroupLevel(loginUserId));
+
+        List list = chartDOMapper.selectFinancialDepartmentRemitDetailChartVO(param);
+        ArrayList<String> header = Lists.newArrayList("大区","业务区域","客户姓名", "身份证号",
+                "手机号", "贷款银行", "业务团队", "业务员", "车型", "车价", "执行利率", "首付款", "贷款金额", "银行分期本金", "打款金额",
+                "创建时间","垫款时间","提交人"
+        );
+
+
+        String ossResultKey = POIUtil.createExcelFile("RemitDetail",list,header,FinancialDepartmentRemitDetailChartVO.class,ossConfig);
+        return ossResultKey;
+    }
+
     /**
      * 导出 EXCEL 资料审核明细查询
      *
      * @return
      */
     @Override
-    public String expertMaterialReviewQuery(ExportMaterialReviewQueryVerifyParam exportMaterialReviewQueryVerifyParam) {
+    public String expertMaterialReviewQuery(ExportMaterialReviewQueryVerifyParam exportMaterialReviewQueryVerifyParam)
+    {
+        //大区
+        if (exportMaterialReviewQueryVerifyParam.getBiz_areaId() !=null)
+        {
+            List<Long> selfAndChildBiz_area = getSelfAndChildBiz_area(exportMaterialReviewQueryVerifyParam.getBiz_areaId());
+            selfAndChildBiz_area.add(exportMaterialReviewQueryVerifyParam.getBiz_areaId());
+            exportMaterialReviewQueryVerifyParam.setBizAreaList(selfAndChildBiz_area);
+
+        }
+
         Long loginUserId = SessionUtils.getLoginUser().getId();
 
         exportMaterialReviewQueryVerifyParam.setJuniorIds(employeeService.getSelfAndCascadeChildIdList(loginUserId));
@@ -136,13 +265,49 @@ public class ExportQueryServiceImpl implements ExportQueryService
         return ossResultKey;
     }
 
+    @Override
+    public String expertMaterialReviewQueryForChart(MaterialReviewParam param) {
+        //大区
+        if (param.getBiz_areaId() !=null)
+        {
+            List<Long> selfAndChildBiz_area = getSelfAndChildBiz_area(param.getBiz_areaId());
+            selfAndChildBiz_area.add(param.getBiz_areaId());
+            param.setBizAreaList(selfAndChildBiz_area);
+
+        }
+        Long loginUserId = SessionUtils.getLoginUser().getId();
+
+        param.setJuniorIds(employeeService.getSelfAndCascadeChildIdList(loginUserId));
+        param.setMaxGroupLevel(taskSchedulingDOMapper.selectMaxGroupLevel(loginUserId));
+
+        List list = chartDOMapper.selectMaterialReviewChartVO(param);
+        ArrayList<String> header = Lists.newArrayList("大区","业务区域", "业务团队", "客户姓名", "身份证号",
+                "贷款银行", "银行分期本金", "垫款日期", "资料接收日期", "资料齐全日期", "资料审核提交日期", "资料审核状态", "资料增补次数", "资料增补内容",
+                "提车资料提交时间","资料增补时间","合同上交银行日期","垫款超期天数","纸审超期天数","备注"
+        );
+
+
+        String ossResultKey = POIUtil.createExcelFile("MaterialReview",list,header,MaterialReviewChartVO.class,ossConfig);
+        return ossResultKey;
+    }
+
     /**
      * 导出 EXCEL 抵押超期
      *
      * @return
      */
     @Override
-    public String expertMortgageOverdueQuery(ExportMortgageOverdueQueryVerifyParam exportMortgageOverdueQueryVerifyParam) {
+    public String expertMortgageOverdueQuery(ExportMortgageOverdueQueryVerifyParam exportMortgageOverdueQueryVerifyParam)
+    {
+        //大区
+        if (exportMortgageOverdueQueryVerifyParam.getBiz_areaId() !=null)
+        {
+            List<Long> selfAndChildBiz_area = getSelfAndChildBiz_area(exportMortgageOverdueQueryVerifyParam.getBiz_areaId());
+            selfAndChildBiz_area.add(exportMortgageOverdueQueryVerifyParam.getBiz_areaId());
+            exportMortgageOverdueQueryVerifyParam.setBizAreaList(selfAndChildBiz_area);
+
+        }
+
         Long loginUserId = SessionUtils.getLoginUser().getId();
 
         exportMortgageOverdueQueryVerifyParam.setJuniorIds(employeeService.getSelfAndCascadeChildIdList(loginUserId));
@@ -157,6 +322,32 @@ public class ExportQueryServiceImpl implements ExportQueryService
 
 
         String ossResultKey = POIUtil.createExcelFile("MortgageOverdue",list,header,ExportMortgageOverdueQueryVO.class,ossConfig);
+        return ossResultKey;
+    }
+
+    @Override
+    public String expertMortgageOverdueQueryForChart(MortgageOverdueParam param) {
+        //大区
+        if (param.getBiz_areaId() !=null)
+        {
+            List<Long> selfAndChildBiz_area = getSelfAndChildBiz_area(param.getBiz_areaId());
+            selfAndChildBiz_area.add(param.getBiz_areaId());
+            param.setBizAreaList(selfAndChildBiz_area);
+
+        }
+        Long loginUserId = SessionUtils.getLoginUser().getId();
+
+        param.setJuniorIds(employeeService.getSelfAndCascadeChildIdList(loginUserId));
+        param.setMaxGroupLevel(taskSchedulingDOMapper.selectMaxGroupLevel(loginUserId));
+
+        List list = chartDOMapper.selectMortgageOverdueChartVO(param);
+        ArrayList<String> header = Lists.newArrayList("业务区域", "业务团队", "客户姓名", "身份证号","手机号",
+                "贷款银行", "车辆型号", "车牌号", "车价", "贷款金融", "银行分期本金", "垫款日期", "银行放款日期", "抵押资料公司寄合伙人",
+                "抵押资料合伙人接收时间","抵押状态","抵押日期","抵押超期天数","提交人"
+        );
+
+
+        String ossResultKey = POIUtil.createExcelFile("MortgageOverdue",list,header,MortgageOverdueChartVO.class,ossConfig);
         return ossResultKey;
     }
 
@@ -410,5 +601,54 @@ public class ExportQueryServiceImpl implements ExportQueryService
         String ossResultKey = POIUtil.createComplexExcelFile("customerInfo",exportCustomerInfoVOList,ExportCustomerInfoVO.class,FamilyLinkManVO.class,GuarantorLinkManVO.class,compplexHeader,ossConfig);
 
         return ossResultKey;
+    }
+
+    @Override
+    public String expertAwaitRemitDetailChart(AwaitRemitDetailChartParam param) {
+
+        Long loginUserId = SessionUtils.getLoginUser().getId();
+
+        param.setJuniorIds(employeeService.getSelfAndCascadeChildIdList(loginUserId));
+        param.setMaxGroupLevel(taskSchedulingDOMapper.selectMaxGroupLevel(loginUserId));
+
+        List list = chartDOMapper.selectAwaitRemitDetailChartVO(param);
+        ArrayList<String> header = Lists.newArrayList("主贷姓名", "身份证号", "业务员", "业务部门","经办人",
+                "经办时间", "打款金额", "贷款金额", "执行利率%", "银行分期本金"
+        );
+
+
+        String ossResultKey = POIUtil.createExcelFile("MortgageOverdue",list,header,AwaitRemitDetailChartVO.class,ossConfig);
+        return ossResultKey;
+    }
+
+    @Override
+    public String expertCompanyRemitDetailChart(CompanyRemitDetailChartParam param) {
+
+        Long loginUserId = SessionUtils.getLoginUser().getId();
+
+        param.setJuniorIds(employeeService.getSelfAndCascadeChildIdList(loginUserId));
+        param.setMaxGroupLevel(taskSchedulingDOMapper.selectMaxGroupLevel(loginUserId));
+
+        List list = chartDOMapper.selectCompanyRemitDetailChartVO(param);
+        ArrayList<String> header = Lists.newArrayList("客户编号", "主贷姓名", "身份证号", "业务员","大区",
+                "省份", "业务团队", "按揭银行", "执行利率%", "车型", "首付款", "分期总额", "打款金额", "垫款时间"
+
+        );
+
+
+        String ossResultKey = POIUtil.createExcelFile("MortgageOverdue",list,header,CompanyRemitDetailChartVO.class,ossConfig);
+        return ossResultKey;
+    }
+
+
+    public List<Long> getSelfAndChildBiz_area(Long parentId)
+    {
+        List<BizAreaDO> bizAreaDOs = bizAreaDOMapper.getByParentId(parentId, VALID_STATUS);
+        //递归查询所有的子区域--用缓存优化
+        List<Long> longList = bizAreaDOs.stream()
+                .map(bizAreaDO -> bizAreaDO.getId())
+                .collect(Collectors.toList());
+        return longList;
+
     }
 }

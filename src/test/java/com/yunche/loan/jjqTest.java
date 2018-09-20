@@ -2,18 +2,17 @@ package com.yunche.loan;
 
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.junit.Test;
 
 public class jjqTest {
     public static void main(String[] args) {
-        try{
-            int i=1/0;
+        List<Integer> strs = Arrays.asList(1,2,null,4,5,null);
 
-        }catch(Exception e){
-            System.out.println(e.getMessage());
-        }
-        System.out.println("asdas");
+        System.out.println(strs.stream().reduce((x,y)->x+y));
+
     }
 }

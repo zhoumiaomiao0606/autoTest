@@ -34,12 +34,18 @@ public class ParterChartServiceImpl implements ParterChartService
 
         //征信客户查询量
        long creditApplyCustomerCount =  parterChartDOMapper.selectCreditApplyCustomerCount(param);
-        //征信查询订单量
+        //征信查询结果订单量--征信查询提交
+        long credit_record_count = parterChartDOMapper.selectUniversalOrdersByMonthAndnode(BANK_CREDIT_RECORD.getCode(),new Byte[]{1,2,3},param.getStartDate(),param.getEndDate());
+
 
         //视频面签订单数
+        long loanInfo_record_count = parterChartDOMapper.selectUniversalOrdersByMonthAndnode(LOAN_INFO_RECORD.getCode(),new Byte[]{1},param.getStartDate(),param.getEndDate());
 
         //上门调查订单数
-     /*   parterChartDOMapper.select*/
+        long visitVerify_record_count = parterChartDOMapper.selectUniversalOrdersByMonthAndnode(VISIT_VERIFY.getCode(),new Byte[]{1},param.getStartDate(),param.getEndDate());
+
+
+        System.out.println(creditApplyCustomerCount+"===="+credit_record_count+"===="+loanInfo_record_count+"===="+visitVerify_record_count);
         return null;
     }
 
@@ -56,7 +62,7 @@ public class ParterChartServiceImpl implements ParterChartService
                 .count();
         //筛选已垫款的订单数
         long c_remitCount = loanApplyOrders.stream()
-                .filter(loanApplyOrdersVO -> loanApplyOrdersVO.getTask_definition_key().equals(REMIT_REVIEW.getName()))
+                .filter(loanApplyOrdersVO -> loanApplyOrdersVO.getTask_definition_key().equals(REMIT_REVIEW.getCode()))
                 .map(LoanApplyOrdersVO::getOrderId)
                 .distinct()
                 .count();
@@ -65,7 +71,7 @@ public class ParterChartServiceImpl implements ParterChartService
 
         //筛选合同套打未完成的订单数
         long c_materialPrintCount = loanApplyOrders.stream()
-                .filter(loanApplyOrdersVO -> loanApplyOrdersVO.getTask_definition_key().equals(MATERIAL_PRINT_REVIEW.getName()))
+                .filter(loanApplyOrdersVO -> loanApplyOrdersVO.getTask_definition_key().equals(MATERIAL_PRINT_REVIEW.getCode()))
                 .map(LoanApplyOrdersVO::getOrderId)
                 .distinct()
                 .count();
@@ -73,14 +79,14 @@ public class ParterChartServiceImpl implements ParterChartService
 
         //筛选银行放款的订单数
         long c_bankLendCount = loanApplyOrders.stream()
-                .filter(loanApplyOrdersVO -> loanApplyOrdersVO.getTask_definition_key().equals(BANK_LEND_RECORD.getName()))
+                .filter(loanApplyOrdersVO -> loanApplyOrdersVO.getTask_definition_key().equals(BANK_LEND_RECORD.getCode()))
                 .map(LoanApplyOrdersVO::getOrderId)
                 .distinct()
                 .count();
         loanApplyOrdersByMonthChartVO.setC_bankLendCount(c_bankLendCount);
         //筛选车辆抵押完成的订单数
         long c_depositCount = loanApplyOrders.stream()
-                .filter(loanApplyOrdersVO -> loanApplyOrdersVO.getTask_definition_key().equals(APPLY_LICENSE_PLATE_DEPOSIT_INFO.getName()))
+                .filter(loanApplyOrdersVO -> loanApplyOrdersVO.getTask_definition_key().equals(APPLY_LICENSE_PLATE_DEPOSIT_INFO.getCode()))
                 .map(LoanApplyOrdersVO::getOrderId)
                 .distinct()
                 .count();

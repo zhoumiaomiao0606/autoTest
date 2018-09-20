@@ -19,11 +19,33 @@
                    order_id
                    FROM
                    loan_process_log
-                   WHERE task_definition_key = 'usertask_credit_apply' AND action = 1
+                   WHERE task_definition_key = 'usertask_credit_apply' AND action = 1 AND create_time BETWEEN '2016-10' AND '2019-01-01'
                   )
           )
           ) ids
     </select>
+
+
+    <!--=======================================通用查询某时间段某节点提交状态的订单数=========================================-->
+    <select id="selectUniversalOrdersByMonthAndnode"   resultType="long" >
+           SELECT COUNT(1) FROM
+                  (
+                   SELECT
+                   DISTINCT
+                   order_id
+                   FROM
+                   loan_process_log
+                   WHERE task_definition_key = #{record}
+                      and
+                      action in
+                      <foreach item="item" index="index" collection="bytes" open="(" separator="," close=")">
+                          #{item}
+                      </foreach>
+
+                   AND create_time BETWEEN #{startDate} AND #{endDate}
+          ) orders
+    </select>
+
 
     <select id="selectLoanApplyOrdersByMonth" parameterType="com.yunche.loan.domain.param.LoanApplyOrdersByMonthChartParam"  resultType="com.yunche.loan.domain.vo.LoanApplyOrdersVO" >
           SELECT
