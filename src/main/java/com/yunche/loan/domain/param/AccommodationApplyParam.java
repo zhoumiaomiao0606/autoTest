@@ -16,6 +16,8 @@ public class AccommodationApplyParam {
 
     private Date lendDate;//借款日期
 
+    private BigDecimal lendAmount;//借款金额
+
     private Byte repayType;//还款类型
 
     private Date repayDate;//还款日期
@@ -29,6 +31,8 @@ public class AccommodationApplyParam {
     private Date repayInterestDate;//还息日期
 
     private String repayRegisterRemark;//登记备注
+
+    private Byte lendStatus;//出借状态 K_CJZT
 
 
     @Data

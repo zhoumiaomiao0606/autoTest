@@ -25,6 +25,18 @@ public class JinTouHangAccommodationApplyController {
     //--------------------------金投行过桥处理------------------------
 
     /**
+     * 批量导入借款
+     *
+     * @return
+     */
+    @PostMapping(value = "/reject", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @Transactional( rollbackFor = Exception.class)
+    ResultBean reject(@RequestBody AccommodationApplyParam param) {
+        return accommodationApplyService.reject(param);
+    }
+
+
+    /**
      * 单条贷款
      *
      * @return
@@ -37,7 +49,7 @@ public class JinTouHangAccommodationApplyController {
 
 
     /**
-     * 批量贷款
+     * 批量贷款(作废)
      *
      * @return
      */
@@ -46,7 +58,16 @@ public class JinTouHangAccommodationApplyController {
     ResultBean batchLoan(@RequestBody AccommodationApplyParam param) {
         return accommodationApplyService.batchLoan(param);
     }
-
+    /**
+     * 批量导入借款
+     *
+     * @return
+     */
+    @GetMapping(value = "/batchImp")
+    @Transactional( rollbackFor = Exception.class)
+    ResultBean batchImp(@RequestParam("key") String key) {
+        return accommodationApplyService.batchImp(key);
+    }
 
     @PostMapping(value = "/export", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     ResultBean export(@RequestBody ExportApplyLoanPushParam param) {

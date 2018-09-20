@@ -14,8 +14,13 @@ import java.util.Set;
 @Data
 public class AwaitRemitDetailChartParam extends BaseQuery
 {
+
     //权限过滤
     Long maxGroupLevel;
 
     Set<String> juniorIds = Sets.newHashSet();
+
+    private String startDate;
+
+    private String endDate;
 }

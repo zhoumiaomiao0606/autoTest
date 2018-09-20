@@ -138,6 +138,8 @@ public class TaskListQuery {
     private String sendee;
     private String isRepayment;
 
+    private String lendStatus;//出借状态 （用于第三方过桥资金）
+
     /**
      * 区域合伙人ID列表
      */

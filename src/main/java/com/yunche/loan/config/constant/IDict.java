@@ -385,4 +385,25 @@ public class IDict {
         public static final Long K_JTH = 1L;
     }
 
+
+    /**
+     * 第三方资金出借状态
+     */
+    public static abstract interface K_CJZT{
+
+        /**
+         * 未出借
+         */
+        public static final Byte K_CJZT_NO = 1;
+        /**
+         * 已出借
+         */
+        public static final Byte K_CJZT_YES = 2;
+        /**
+         * 拒绝
+         */
+        public static final Byte K_CJZT_REJECT = 3;
+
+    }
+
 }
