@@ -3,6 +3,8 @@ package com.yunche.loan.service.impl;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.yunche.loan.config.cache.BankCache;
+import com.yunche.loan.config.util.SessionUtils;
 import com.yunche.loan.domain.entity.ConfVideoFaceTimeDO;
 import com.yunche.loan.domain.vo.ConfVideoFaceTimeVO;
 import com.yunche.loan.mapper.ConfVideoFaceTimeDOMapper;
@@ -27,65 +29,71 @@ public class ConfVideoFaceTimeServiceImpl implements ConfVideoFaceTimeService {
     @Autowired
     private ConfVideoFaceTimeDOMapper confVideoFaceTimeDOMapper;
 
+    @Autowired
+    private BankCache bankCache;
+
 
     @Override
     @Transactional
     public void save(List<ConfVideoFaceTimeVO> confVideoFaceTimeVOS) {
 
+        Long videoFaceBankId = SessionUtils.getLoginUser().getBankId();
+        Preconditions.checkNotNull(videoFaceBankId, "您无权操作[视频面签]");
+
         // del ALL
-        confVideoFaceTimeDOMapper.deleteAll();
+        deleteAllConfByBankId(videoFaceBankId);
 
-        // insert
-        if (!CollectionUtils.isEmpty(confVideoFaceTimeVOS)) {
-
-            do000(confVideoFaceTimeVOS);
-        }
+        // save
+        doSave(videoFaceBankId, confVideoFaceTimeVOS);
     }
 
     @Override
     public List<ConfVideoFaceTimeVO> listAll() {
 
-        List<ConfVideoFaceTimeDO> confVideoFaceTimeDOS = confVideoFaceTimeDOMapper.listAll();
+        Long videoFaceBankId = SessionUtils.getLoginUser().getBankId();
+        Preconditions.checkNotNull(videoFaceBankId, "您无权操作[视频面签]");
 
-//        List<ConfVideoFaceTimeVO.Type> typeList = Lists.newArrayList();
-//        List<ConfVideoFaceTimeVO.Time> timeList = Lists.newArrayList();
+        List<ConfVideoFaceTimeDO> confVideoFaceTimeDOS = null;
 
+        // 管理员
+        if (videoFaceBankId == -1L) {
+
+            confVideoFaceTimeDOS = confVideoFaceTimeDOMapper.listAll();
+        } else {
+
+            confVideoFaceTimeDOS = confVideoFaceTimeDOMapper.listByBankId(videoFaceBankId);
+        }
 
         if (!CollectionUtils.isEmpty(confVideoFaceTimeDOS)) {
 
-            // bankId
             Map<Long, ConfVideoFaceTimeVO> bankId_Obj_map = Maps.newHashMap();
-
             Map<String, Object> kvMap = Maps.newHashMap();
 
-
-            // DOList -> vo
+            // DOList -> VO
             confVideoFaceTimeDOS.stream()
                     .filter(Objects::nonNull)
                     .forEach(e -> {
 
                         Long bankId = e.getBankId();
 
-                        // 1
                         if (bankId_Obj_map.containsKey(bankId)) {
 
-                            B222(e, kvMap);
+                            doBBB(e, kvMap);
 
                         } else {
 
-                            A1111(e, kvMap, bankId_Obj_map);
+                            doAAA(e, kvMap, bankId_Obj_map);
                         }
 
                     });
 
-            List<ConfVideoFaceTimeVO> confVideoFaceTimeVOList = Lists.newArrayList(bankId_Obj_map.values());
-            return confVideoFaceTimeVOList;
+            return Lists.newArrayList(bankId_Obj_map.values());
         }
 
         return Collections.EMPTY_LIST;
     }
 
-    private void B222(ConfVideoFaceTimeDO e, Map<String, Object> kvMap) {
+    private void doBBB(ConfVideoFaceTimeDO e, Map<String, Object> kvMap) {
 
         Long bankId = e.getBankId();
         BigDecimal startLoanAmount = e.getStartLoanAmount();
@@ -134,7 +142,7 @@ public class ConfVideoFaceTimeServiceImpl implements ConfVideoFaceTimeService {
 
     }
 
-    private void A1111(ConfVideoFaceTimeDO e, Map<String, Object> kvMap, Map<Long, ConfVideoFaceTimeVO> bankId_Obj_map) {
+    private void doAAA(ConfVideoFaceTimeDO e, Map<String, Object> kvMap, Map<Long, ConfVideoFaceTimeVO> bankId_Obj_map) {
 
         Long bankId = e.getBankId();
         BigDecimal startLoanAmount = e.getStartLoanAmount();
@@ -181,27 +189,54 @@ public class ConfVideoFaceTimeServiceImpl implements ConfVideoFaceTimeService {
         bankId_Obj_map.put(bankId, confVideoFaceTimeVO);
     }
 
+    /**
+     * del All
+     *
+     * @param videoFaceBankId
+     */
+    private void deleteAllConfByBankId(Long videoFaceBankId) {
+
+        // 管理员
+        if (videoFaceBankId == -1L) {
+
+            confVideoFaceTimeDOMapper.deleteAll();
+        } else {
+
+            confVideoFaceTimeDOMapper.deleteAllByBankId(videoFaceBankId);
+        }
+    }
 
     /**
-     * -
+     * 保存
      *
+     * @param videoFaceBankId
      * @param confVideoFaceTimeVOS
      */
-    private void do000(List<ConfVideoFaceTimeVO> confVideoFaceTimeVOS) {
+    private void doSave(Long videoFaceBankId, List<ConfVideoFaceTimeVO> confVideoFaceTimeVOS) {
 
-        // insert
-        confVideoFaceTimeVOS.stream()
-                .filter(Objects::nonNull)
-                .forEach(e -> {
+        if (!CollectionUtils.isEmpty(confVideoFaceTimeVOS)) {
 
-                    Preconditions.checkNotNull(e.getBankId(), "bankId不能为空");
+            // insert
+            confVideoFaceTimeVOS.stream()
+                    .filter(Objects::nonNull)
+                    .forEach(e -> {
 
-                    List<ConfVideoFaceTimeVO.Detail> detailList = e.getDetailList();
-                    if (!CollectionUtils.isEmpty(detailList)) {
+                        Long bankId = e.getBankId();
 
-                        doAAA(detailList, e.getBankId());
-                    }
-                });
+                        Preconditions.checkNotNull(bankId, "bankId不能为空");
+                        if (!(bankId == -1L)) {
+                            Preconditions.checkArgument(videoFaceBankId.equals(bankId),
+                                    "您无权操作当前银行：" + bankCache.getNameById(bankId));
+                        }
+
+                        List<ConfVideoFaceTimeVO.Detail> detailList = e.getDetailList();
+                        if (!CollectionUtils.isEmpty(detailList)) {
+
+                            doInsert_detail(detailList, bankId);
+                        }
+                    });
+        }
+
     }
 
     /**
@@ -210,19 +245,27 @@ public class ConfVideoFaceTimeServiceImpl implements ConfVideoFaceTimeService {
      * @param detailList
      * @param bankId
      */
-    private void doAAA(List<ConfVideoFaceTimeVO.Detail> detailList, Long bankId) {
+    private void doInsert_detail(List<ConfVideoFaceTimeVO.Detail> detailList, Long bankId) {
 
         detailList.stream()
                 .filter(Objects::nonNull)
                 .forEach(d -> {
 
-                    Preconditions.checkNotNull(d.getStartLoanAmount(), "startLoanAmount不能为空");
-                    Preconditions.checkNotNull(d.getEndLoanAmount(), "endLoanAmount不能为空");
+                    BigDecimal startLoanAmount = d.getStartLoanAmount();
+                    BigDecimal endLoanAmount = d.getEndLoanAmount();
+
+                    Preconditions.checkNotNull(startLoanAmount, "startLoanAmount不能为空");
+                    Preconditions.checkNotNull(endLoanAmount, "endLoanAmount不能为空");
+                    // -1：+∞
+                    if (!(endLoanAmount.doubleValue() == -1)) {
+                        Preconditions.checkArgument(startLoanAmount.doubleValue() < endLoanAmount.doubleValue(),
+                                "startLoanAmount必须小于endLoanAmount，startLoanAmount : " + startLoanAmount + " ，endLoanAmount : " + endLoanAmount);
+                    }
 
                     List<ConfVideoFaceTimeVO.Type> typeList = d.getTypeList();
                     if (!CollectionUtils.isEmpty(typeList)) {
 
-                        doBBB(typeList, bankId, d.getStartLoanAmount(), d.getEndLoanAmount());
+                        doInsert_type(typeList, bankId, startLoanAmount, endLoanAmount);
                     }
                 });
     }
@@ -235,7 +278,7 @@ public class ConfVideoFaceTimeServiceImpl implements ConfVideoFaceTimeService {
      * @param startLoanAmount
      * @param endLoanAmount
      */
-    private void doBBB(List<ConfVideoFaceTimeVO.Type> typeList, Long bankId, BigDecimal startLoanAmount, BigDecimal endLoanAmount) {
+    private void doInsert_type(List<ConfVideoFaceTimeVO.Type> typeList, Long bankId, BigDecimal startLoanAmount, BigDecimal endLoanAmount) {
 
         typeList.stream()
                 .filter(Objects::nonNull)
@@ -246,7 +289,7 @@ public class ConfVideoFaceTimeServiceImpl implements ConfVideoFaceTimeService {
                     List<ConfVideoFaceTimeVO.Time> timeList = t.getTimeList();
                     if (!CollectionUtils.isEmpty(timeList)) {
 
-                        doCCC(timeList, bankId, startLoanAmount, endLoanAmount, t.getType());
+                        doInsert_time(timeList, bankId, startLoanAmount, endLoanAmount, t.getType());
                     }
                 });
     }
@@ -260,16 +303,19 @@ public class ConfVideoFaceTimeServiceImpl implements ConfVideoFaceTimeService {
      * @param endLoanAmount
      * @param type
      */
-    private void doCCC(List<ConfVideoFaceTimeVO.Time> timeList, Long bankId, BigDecimal startLoanAmount,
-                       BigDecimal endLoanAmount, Byte type) {
+    private void doInsert_time(List<ConfVideoFaceTimeVO.Time> timeList, Long bankId, BigDecimal startLoanAmount,
+                               BigDecimal endLoanAmount, Byte type) {
 
         timeList.stream()
                 .filter(Objects::nonNull)
                 .forEach(time -> {
 
-                    Preconditions.checkNotNull(time.getStartTime(), "startTime不能为空");
-                    Preconditions.checkNotNull(time.getEndTime(), "endTime不能为空");
-
+                    String startTime = time.getStartTime();
+                    String endTime = time.getEndTime();
+                    Preconditions.checkNotNull(startTime, "startTime不能为空");
+                    Preconditions.checkNotNull(endTime, "endTime不能为空");
+                    Preconditions.checkArgument(startTime.compareTo(endTime) < 0,
+                            "startTime必须小于endTime，startTime : " + startTime + " ，endTime : " + endTime);
 
                     ConfVideoFaceTimeDO confVideoFaceTimeDO = new ConfVideoFaceTimeDO();
                     // 银行
@@ -280,8 +326,8 @@ public class ConfVideoFaceTimeServiceImpl implements ConfVideoFaceTimeService {
                     // 时间/日期类型
                     confVideoFaceTimeDO.setType(type);
                     // 时间/日期
-                    confVideoFaceTimeDO.setStartTime(time.getStartTime());
-                    confVideoFaceTimeDO.setEndTime(time.getEndTime());
+                    confVideoFaceTimeDO.setStartTime(startTime);
+                    confVideoFaceTimeDO.setEndTime(endTime);
 
                     int count = confVideoFaceTimeDOMapper.insertSelective(confVideoFaceTimeDO);
                     Preconditions.checkArgument(count > 0, "插入失败");
