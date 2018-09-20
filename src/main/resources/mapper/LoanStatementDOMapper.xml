@@ -1209,7 +1209,7 @@
     </select>
     <select id="exportApplyLoanPush" parameterType="com.yunche.loan.domain.param.ExportApplyLoanPushParam"  resultType="com.yunche.loan.domain.vo.ExportApplyLoanPushVO">
         select
-        fund.bridge_process_id         AS bridgeProcessId
+        process.id        AS bridgeProcessId,
         customer.name     AS customerName,
         customer.id_card  AS customerIdCard,
         car.car_detail_name  AS carDetailName,
@@ -1226,12 +1226,10 @@
         (select * from loan_process_bridge where bridge_handle=2) process
         LEFT JOIN loan_order  loan ON process.order_id = loan.id
         LEFT JOIN loan_base_info base ON loan.loan_base_info_id=base.id
-        LEFT JOIN third_party_fund_business fund ON loan.id=fund.order_id and process.id=fund.bridge_procecss_id
         LEFT JOIN loan_customer customer ON loan.loan_customer_id = customer.id
         LEFT JOIN loan_financial_plan financial ON financial.id = loan.loan_financial_plan_id
         LEFT JOIN remit_details remit  ON loan.remit_details_id =remit.id
         LEFT JOIN loan_car_info car ON loan.loan_car_info_id=car.id
-        where  fund.lend_status=1
     </select>
 
     <select id="exportJinTouHangRepayInfo" parameterType="com.yunche.loan.domain.param.ExportApplyLoanPushParam"  resultType="com.yunche.loan.domain.vo.JinTouHangRepayInfoVO">

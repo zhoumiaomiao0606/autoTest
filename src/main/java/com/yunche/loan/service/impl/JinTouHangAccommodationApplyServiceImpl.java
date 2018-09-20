@@ -72,11 +72,18 @@ public class JinTouHangAccommodationApplyServiceImpl implements JinTouHangAccomm
         Preconditions.checkNotNull(param, "参数有误");
         Preconditions.checkNotNull(param.getIdPair(), "参数有误");
         Preconditions.checkNotNull(param.getLendStatus(), "出借状态不能为空");
-
+        int count;
         ThirdPartyFundBusinessDO thirdPartyFundBusinessDO = thirdPartyFundBusinessDOMapper.selectByPrimaryKey(param.getIdPair().getBridgeProcessId());
-        Preconditions.checkNotNull(thirdPartyFundBusinessDO,"参数有误，出借记录为空");
-        thirdPartyFundBusinessDO.setLendStatus(param.getLendStatus());
-        int count = thirdPartyFundBusinessDOMapper.updateByPrimaryKeySelective(thirdPartyFundBusinessDO);
+        ThirdPartyFundBusinessDO fundBusinessDO = new ThirdPartyFundBusinessDO();
+        fundBusinessDO.setOrderId(param.getIdPair().getOrderId());
+        fundBusinessDO.setBridgeProcecssId(param.getIdPair().getBridgeProcessId());
+        fundBusinessDO.setLendStatus(param.getLendStatus());
+        if(thirdPartyFundBusinessDO==null){
+            fundBusinessDO.setGmtCreate(new Date());
+            count = thirdPartyFundBusinessDOMapper.insertSelective(fundBusinessDO);
+        }else {
+            count = thirdPartyFundBusinessDOMapper.updateByPrimaryKeySelective(fundBusinessDO);
+        }
         Preconditions.checkArgument(count>0,"拒绝出借操作失败");
         return ResultBean.ofSuccess(null,"拒绝出借操作成功");
     }
