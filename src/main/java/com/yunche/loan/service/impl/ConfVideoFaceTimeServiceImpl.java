@@ -208,13 +208,18 @@ public class ConfVideoFaceTimeServiceImpl implements ConfVideoFaceTimeService {
                 .filter(Objects::nonNull)
                 .forEach(d -> {
 
-                    Preconditions.checkNotNull(d.getStartLoanAmount(), "startLoanAmount不能为空");
-                    Preconditions.checkNotNull(d.getEndLoanAmount(), "endLoanAmount不能为空");
+                    BigDecimal startLoanAmount = d.getStartLoanAmount();
+                    BigDecimal endLoanAmount = d.getEndLoanAmount();
+
+                    Preconditions.checkNotNull(startLoanAmount, "startLoanAmount不能为空");
+                    Preconditions.checkNotNull(endLoanAmount, "endLoanAmount不能为空");
+                    Preconditions.checkArgument(startLoanAmount.doubleValue() <= endLoanAmount.doubleValue(),
+                            "startLoanAmount不能大于endLoanAmount");
 
                     List<ConfVideoFaceTimeVO.Type> typeList = d.getTypeList();
                     if (!CollectionUtils.isEmpty(typeList)) {
 
-                        doInsert_type(typeList, bankId, d.getStartLoanAmount(), d.getEndLoanAmount());
+                        doInsert_type(typeList, bankId, startLoanAmount, endLoanAmount);
                     }
                 });
     }
@@ -259,9 +264,11 @@ public class ConfVideoFaceTimeServiceImpl implements ConfVideoFaceTimeService {
                 .filter(Objects::nonNull)
                 .forEach(time -> {
 
-                    Preconditions.checkNotNull(time.getStartTime(), "startTime不能为空");
-                    Preconditions.checkNotNull(time.getEndTime(), "endTime不能为空");
-
+                    String startTime = time.getStartTime();
+                    String endTime = time.getEndTime();
+                    Preconditions.checkNotNull(startTime, "startTime不能为空");
+                    Preconditions.checkNotNull(endTime, "endTime不能为空");
+                    Preconditions.checkArgument(startTime.compareTo(endTime) < 0, "startTime不能大于endTime");
 
                     ConfVideoFaceTimeDO confVideoFaceTimeDO = new ConfVideoFaceTimeDO();
                     // 银行
@@ -272,8 +279,8 @@ public class ConfVideoFaceTimeServiceImpl implements ConfVideoFaceTimeService {
                     // 时间/日期类型
                     confVideoFaceTimeDO.setType(type);
                     // 时间/日期
-                    confVideoFaceTimeDO.setStartTime(time.getStartTime());
-                    confVideoFaceTimeDO.setEndTime(time.getEndTime());
+                    confVideoFaceTimeDO.setStartTime(startTime);
+                    confVideoFaceTimeDO.setEndTime(endTime);
 
                     int count = confVideoFaceTimeDOMapper.insertSelective(confVideoFaceTimeDO);
                     Preconditions.checkArgument(count > 0, "插入失败");
