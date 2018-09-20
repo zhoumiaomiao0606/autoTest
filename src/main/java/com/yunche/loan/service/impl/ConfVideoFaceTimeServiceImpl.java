@@ -38,7 +38,7 @@ public class ConfVideoFaceTimeServiceImpl implements ConfVideoFaceTimeService {
         // insert
         if (!CollectionUtils.isEmpty(confVideoFaceTimeVOS)) {
 
-            do000(confVideoFaceTimeVOS);
+            doSave(confVideoFaceTimeVOS);
         }
     }
 
@@ -47,33 +47,25 @@ public class ConfVideoFaceTimeServiceImpl implements ConfVideoFaceTimeService {
 
         List<ConfVideoFaceTimeDO> confVideoFaceTimeDOS = confVideoFaceTimeDOMapper.listAll();
 
-//        List<ConfVideoFaceTimeVO.Type> typeList = Lists.newArrayList();
-//        List<ConfVideoFaceTimeVO.Time> timeList = Lists.newArrayList();
-
-
         if (!CollectionUtils.isEmpty(confVideoFaceTimeDOS)) {
 
-            // bankId
             Map<Long, ConfVideoFaceTimeVO> bankId_Obj_map = Maps.newHashMap();
-
             Map<String, Object> kvMap = Maps.newHashMap();
 
-
-            // DOList -> vo
+            // DOList -> VO
             confVideoFaceTimeDOS.stream()
                     .filter(Objects::nonNull)
                     .forEach(e -> {
 
                         Long bankId = e.getBankId();
 
-                        // 1
                         if (bankId_Obj_map.containsKey(bankId)) {
 
-                            B222(e, kvMap);
+                            doBBB(e, kvMap);
 
                         } else {
 
-                            A1111(e, kvMap, bankId_Obj_map);
+                            doAAA(e, kvMap, bankId_Obj_map);
                         }
 
                     });
@@ -85,7 +77,7 @@ public class ConfVideoFaceTimeServiceImpl implements ConfVideoFaceTimeService {
         return Collections.EMPTY_LIST;
     }
 
-    private void B222(ConfVideoFaceTimeDO e, Map<String, Object> kvMap) {
+    private void doBBB(ConfVideoFaceTimeDO e, Map<String, Object> kvMap) {
 
         Long bankId = e.getBankId();
         BigDecimal startLoanAmount = e.getStartLoanAmount();
@@ -134,7 +126,7 @@ public class ConfVideoFaceTimeServiceImpl implements ConfVideoFaceTimeService {
 
     }
 
-    private void A1111(ConfVideoFaceTimeDO e, Map<String, Object> kvMap, Map<Long, ConfVideoFaceTimeVO> bankId_Obj_map) {
+    private void doAAA(ConfVideoFaceTimeDO e, Map<String, Object> kvMap, Map<Long, ConfVideoFaceTimeVO> bankId_Obj_map) {
 
         Long bankId = e.getBankId();
         BigDecimal startLoanAmount = e.getStartLoanAmount();
@@ -183,11 +175,11 @@ public class ConfVideoFaceTimeServiceImpl implements ConfVideoFaceTimeService {
 
 
     /**
-     * -
+     * 保存
      *
      * @param confVideoFaceTimeVOS
      */
-    private void do000(List<ConfVideoFaceTimeVO> confVideoFaceTimeVOS) {
+    private void doSave(List<ConfVideoFaceTimeVO> confVideoFaceTimeVOS) {
 
         // insert
         confVideoFaceTimeVOS.stream()
@@ -199,7 +191,7 @@ public class ConfVideoFaceTimeServiceImpl implements ConfVideoFaceTimeService {
                     List<ConfVideoFaceTimeVO.Detail> detailList = e.getDetailList();
                     if (!CollectionUtils.isEmpty(detailList)) {
 
-                        doAAA(detailList, e.getBankId());
+                        doInsert_detail(detailList, e.getBankId());
                     }
                 });
     }
@@ -210,7 +202,7 @@ public class ConfVideoFaceTimeServiceImpl implements ConfVideoFaceTimeService {
      * @param detailList
      * @param bankId
      */
-    private void doAAA(List<ConfVideoFaceTimeVO.Detail> detailList, Long bankId) {
+    private void doInsert_detail(List<ConfVideoFaceTimeVO.Detail> detailList, Long bankId) {
 
         detailList.stream()
                 .filter(Objects::nonNull)
@@ -222,7 +214,7 @@ public class ConfVideoFaceTimeServiceImpl implements ConfVideoFaceTimeService {
                     List<ConfVideoFaceTimeVO.Type> typeList = d.getTypeList();
                     if (!CollectionUtils.isEmpty(typeList)) {
 
-                        doBBB(typeList, bankId, d.getStartLoanAmount(), d.getEndLoanAmount());
+                        doInsert_type(typeList, bankId, d.getStartLoanAmount(), d.getEndLoanAmount());
                     }
                 });
     }
@@ -235,7 +227,7 @@ public class ConfVideoFaceTimeServiceImpl implements ConfVideoFaceTimeService {
      * @param startLoanAmount
      * @param endLoanAmount
      */
-    private void doBBB(List<ConfVideoFaceTimeVO.Type> typeList, Long bankId, BigDecimal startLoanAmount, BigDecimal endLoanAmount) {
+    private void doInsert_type(List<ConfVideoFaceTimeVO.Type> typeList, Long bankId, BigDecimal startLoanAmount, BigDecimal endLoanAmount) {
 
         typeList.stream()
                 .filter(Objects::nonNull)
@@ -246,7 +238,7 @@ public class ConfVideoFaceTimeServiceImpl implements ConfVideoFaceTimeService {
                     List<ConfVideoFaceTimeVO.Time> timeList = t.getTimeList();
                     if (!CollectionUtils.isEmpty(timeList)) {
 
-                        doCCC(timeList, bankId, startLoanAmount, endLoanAmount, t.getType());
+                        doInsert_time(timeList, bankId, startLoanAmount, endLoanAmount, t.getType());
                     }
                 });
     }
@@ -260,8 +252,8 @@ public class ConfVideoFaceTimeServiceImpl implements ConfVideoFaceTimeService {
      * @param endLoanAmount
      * @param type
      */
-    private void doCCC(List<ConfVideoFaceTimeVO.Time> timeList, Long bankId, BigDecimal startLoanAmount,
-                       BigDecimal endLoanAmount, Byte type) {
+    private void doInsert_time(List<ConfVideoFaceTimeVO.Time> timeList, Long bankId, BigDecimal startLoanAmount,
+                               BigDecimal endLoanAmount, Byte type) {
 
         timeList.stream()
                 .filter(Objects::nonNull)

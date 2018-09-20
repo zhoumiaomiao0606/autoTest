@@ -1,10 +1,9 @@
 package com.yunche.loan.domain.vo;
 
-import com.yunche.loan.domain.entity.ConfVideoFaceTimeDO;
+import com.google.common.collect.Lists;
 import lombok.Data;
 
 import java.math.BigDecimal;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -16,7 +15,7 @@ public class ConfVideoFaceTimeVO {
 
     private Long bankId;
 
-    private List<Detail> detailList = Collections.EMPTY_LIST;
+    private List<Detail> detailList = Lists.newArrayList();
 
     @Data
     public static class Detail {
@@ -25,7 +24,7 @@ public class ConfVideoFaceTimeVO {
 
         private BigDecimal endLoanAmount;
 
-        private List<Type> typeList = Collections.EMPTY_LIST;
+        private List<Type> typeList = Lists.newArrayList();
     }
 
     @Data
@@ -33,7 +32,7 @@ public class ConfVideoFaceTimeVO {
 
         private Byte type;
 
-        private List<Time> timeList = Collections.EMPTY_LIST;
+        private List<Time> timeList = Lists.newArrayList();
     }
 
     @Data
