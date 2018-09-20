@@ -85,8 +85,9 @@ public class ShiroConfig {
             filterChainDefinitionMap.put("/api/v1/employee/logout", "anon");
             filterChainDefinitionMap.put("/api/v1/employee/login", "anon");
             filterChainDefinitionMap.put("/api/v1/app/version/check", "anon");
-
+            filterChainDefinitionMap.put("/api/v1/loadqr/apk", "anon");
             filterChainDefinitionMap.put("/api/v1/loadqr/query", "anon");
+
             filterChainDefinitionMap.put("/api/v1/loanorder/icbc/creditresult", "anon");
             filterChainDefinitionMap.put("/api/v1/loanorder/icbc/creditreturn", "anon");
             filterChainDefinitionMap.put("/api/v1/loanorder/icbc/multimediareturn", "anon");
@@ -99,7 +100,6 @@ public class ShiroConfig {
             filterChainDefinitionMap.put("/api/v1/app/loanorder/zhonganname", "anon");
             filterChainDefinitionMap.put("/api/v1/msg/creditDetail", "anon");
             filterChainDefinitionMap.put("/api/v1/app/msg/creditDetail", "anon");
-            filterChainDefinitionMap.put("/api/v1/loadq/apk", "anon");
             filterChainDefinitionMap.put("/**", "authc");
 //            filterChainDefinitionMap.put("/**", "authc,perms");
         }
