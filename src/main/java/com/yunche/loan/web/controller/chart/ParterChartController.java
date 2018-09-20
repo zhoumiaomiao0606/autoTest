@@ -3,8 +3,7 @@ package com.yunche.loan.web.controller.chart;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.param.CreditApplyCustomerByMonthChartParam;
 import com.yunche.loan.domain.param.LoanApplyOrdersByMonthChartParam;
-import com.yunche.loan.domain.param.LoanApplyOrdersByMonthRemitDetailChartParam;
-import com.yunche.loan.domain.param.TelephoneVerifyChartByOperatorChartParam;
+import com.yunche.loan.domain.param.OrdersSuccessByMonthChartParam;
 import com.yunche.loan.service.ParterChartService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -59,7 +58,11 @@ public class ParterChartController
     * @Date:
     * @Description:  征信未通过、风控未通过、银行未通过，征信未通过
     */
-    
+    @PostMapping(value = "/ordersSuccessByMonthChart", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResultBean loanApplyOrdersByMonthRemitDetailChart(@RequestBody @Validated OrdersSuccessByMonthChartParam param)
+    {
+        return parterChartService.getOrdersSuccessByMonthChart(param);
+    }
     
     /** 
     * @Author: ZhongMingxiao 
@@ -68,11 +71,7 @@ public class ParterChartController
     * @Date:  
     * @Description:  当月提交了贷款申请的订单，修改订单信息的，以最后一次订单信息为准
     */
-    @PostMapping(value = "/loanApplyOrdersByMonthChartRemitDetail", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultBean loanApplyOrdersByMonthRemitDetailChart(@RequestBody @Validated LoanApplyOrdersByMonthRemitDetailChartParam param)
-    {
-        return parterChartService.getLoanApplyOrdersByMonthRemitDetailChart(param);
-    }
+
 
 
 

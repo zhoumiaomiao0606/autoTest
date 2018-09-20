@@ -4,9 +4,11 @@ import com.yunche.loan.config.constant.LoanProcessEnum;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.param.CreditApplyCustomerByMonthChartParam;
 import com.yunche.loan.domain.param.LoanApplyOrdersByMonthChartParam;
-import com.yunche.loan.domain.param.LoanApplyOrdersByMonthRemitDetailChartParam;
+import com.yunche.loan.domain.param.OrdersSuccessByMonthChartParam;
+import com.yunche.loan.domain.vo.CreatApplyOrders;
 import com.yunche.loan.domain.vo.LoanApplyOrdersByMonthChartVO;
 import com.yunche.loan.domain.vo.LoanApplyOrdersVO;
+import com.yunche.loan.domain.vo.OrdersSuccessVO;
 import com.yunche.loan.mapper.ChartDOMapper;
 import com.yunche.loan.mapper.ParterChartDOMapper;
 import com.yunche.loan.service.ParterChartService;
@@ -98,7 +100,11 @@ public class ParterChartServiceImpl implements ParterChartService
     }
 
     @Override
-    public ResultBean getLoanApplyOrdersByMonthRemitDetailChart(LoanApplyOrdersByMonthRemitDetailChartParam param) {
+    public ResultBean getOrdersSuccessByMonthChart(OrdersSuccessByMonthChartParam param)
+    {
+        OrdersSuccessVO ordersSuccess =new OrdersSuccessVO();
+        List<CreatApplyOrders> creatApplyOrders = parterChartDOMapper.selectOrdersSuccessByMonth(param);
         return null;
     }
+
 }
