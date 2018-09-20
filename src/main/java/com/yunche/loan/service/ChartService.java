@@ -22,11 +22,11 @@ public interface ChartService
     ResultBean getCompanyRemitDetailChart(CompanyRemitDetailChartParam param);
 
 
-    ResultBean financialDepartmentRemitDetailChartShortcutStatistics();
+    ResultBean financialDepartmentRemitDetailChartShortcutStatistics(FinancialDepartmentRemitDetailChartParam param);
 
-    ResultBean mortgageOverdueQueryForChartShortcutStatistics();
+    ResultBean mortgageOverdueQueryForChartShortcutStatistics(MortgageOverdueParam param);
 
-    ResultBean awaitRemitDetailChartShortcutStatistics();
+    ResultBean awaitRemitDetailChartShortcutStatistics(AwaitRemitDetailChartParam param);
 
-    ResultBean companyRemitDetailChartShortcutStatistics();
+    ResultBean companyRemitDetailChartShortcutStatistics(CompanyRemitDetailChartParam param);
 }

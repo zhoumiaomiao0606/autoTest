@@ -204,9 +204,8 @@ public class ChartServiceImpl implements ChartService
     }
 
     @Override
-    public ResultBean financialDepartmentRemitDetailChartShortcutStatistics()
+    public ResultBean financialDepartmentRemitDetailChartShortcutStatistics(FinancialDepartmentRemitDetailChartParam param)
     {
-        FinancialDepartmentRemitDetailChartParam param =new FinancialDepartmentRemitDetailChartParam();
         List<FinancialDepartmentRemitDetailChartVO> list = chartDOMapper.selectFinancialDepartmentRemitDetailChartVO(param);
         //计算统计数据====判空
         ShortcutStatisticsVO shortcutStatisticsVO =new ShortcutStatisticsVO();
@@ -235,9 +234,8 @@ public class ChartServiceImpl implements ChartService
     }
 
     @Override
-    public ResultBean mortgageOverdueQueryForChartShortcutStatistics()
+    public ResultBean mortgageOverdueQueryForChartShortcutStatistics(MortgageOverdueParam param)
     {
-        MortgageOverdueParam param =new MortgageOverdueParam();
         List<MortgageOverdueChartVO> list = chartDOMapper.selectMortgageOverdueChartVO(param);
         //计算统计数据
         ShortcutStatisticsVO shortcutStatisticsVO =new ShortcutStatisticsVO();
@@ -261,9 +259,8 @@ public class ChartServiceImpl implements ChartService
     }
 
     @Override
-    public ResultBean awaitRemitDetailChartShortcutStatistics()
+    public ResultBean awaitRemitDetailChartShortcutStatistics(AwaitRemitDetailChartParam param)
     {
-        AwaitRemitDetailChartParam param =new AwaitRemitDetailChartParam();
         List<AwaitRemitDetailChartVO> list = chartDOMapper.selectAwaitRemitDetailChartVO(param);
         //计算统计数据
         ShortcutStatisticsVO shortcutStatisticsVO =new ShortcutStatisticsVO();
@@ -292,9 +289,9 @@ public class ChartServiceImpl implements ChartService
     }
 
     @Override
-    public ResultBean companyRemitDetailChartShortcutStatistics()
+    public ResultBean companyRemitDetailChartShortcutStatistics(CompanyRemitDetailChartParam param)
     {
-        CompanyRemitDetailChartParam param =new CompanyRemitDetailChartParam();
+
         List<CompanyRemitDetailChartVO> list = chartDOMapper.selectCompanyRemitDetailChartVO(param);
         //计算统计数据
         ShortcutStatisticsVO shortcutStatisticsVO =new ShortcutStatisticsVO();

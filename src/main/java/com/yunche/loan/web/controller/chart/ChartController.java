@@ -100,9 +100,9 @@ public class ChartController
      * EXCEl财务部 - 快捷统计
      */
     @GetMapping(value = "/financialDepartmentRemitDetailChartShortcutStatistics")
-    public ResultBean financialDepartmentRemitDetailChartShortcutStatistics()
+    public ResultBean financialDepartmentRemitDetailChartShortcutStatistics(@RequestBody FinancialDepartmentRemitDetailChartParam param)
     {
-        return chartService.financialDepartmentRemitDetailChartShortcutStatistics();
+        return chartService.financialDepartmentRemitDetailChartShortcutStatistics(param);
     }
 
 
@@ -132,9 +132,9 @@ public class ChartController
      * EXCEl抵押部 - 快捷统计
      */
     @GetMapping(value = "/mortgageOverdueQueryForChartShortcutStatistics")
-    public ResultBean mortgageOverdueQueryForChartShortcutStatistics()
+    public ResultBean mortgageOverdueQueryForChartShortcutStatistics(@RequestBody MortgageOverdueParam param)
     {
-        return chartService.mortgageOverdueQueryForChartShortcutStatistics();
+        return chartService.mortgageOverdueQueryForChartShortcutStatistics(param);
     }
 
     /**
@@ -184,9 +184,9 @@ public class ChartController
      * EXCEl 渠道部 - 快捷统计
      */
     @GetMapping(value = "/awaitRemitDetailChartShortcutStatistics")
-    public ResultBean awaitRemitDetailChartShortcutStatistics()
+    public ResultBean awaitRemitDetailChartShortcutStatistics(@RequestBody AwaitRemitDetailChartParam param)
     {
-        return chartService.awaitRemitDetailChartShortcutStatistics();
+        return chartService.awaitRemitDetailChartShortcutStatistics(param);
     }
     /** 
     * @Author: ZhongMingxiao 
@@ -205,9 +205,9 @@ public class ChartController
      * EXCEl 渠道部 - 快捷统计
      */
     @GetMapping(value = "/companyRemitDetailChartShortcutStatistics")
-    public ResultBean companyRemitDetailChartShortcutStatistics()
+    public ResultBean companyRemitDetailChartShortcutStatistics(@RequestBody CompanyRemitDetailChartParam param)
     {
-        return chartService.companyRemitDetailChartShortcutStatistics();
+        return chartService.companyRemitDetailChartShortcutStatistics(param);
     }
 
     /**
