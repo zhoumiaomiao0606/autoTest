@@ -481,7 +481,7 @@ public class ReportServiceImpl implements ReportService {
     private String createTelPartnerExcelFile(List<TelPartnerCountVO> list) {
         String timestamp = new SimpleDateFormat("yyyyMMdd").format(new Date());
         Long id = SessionUtils.getLoginUser().getId();
-        String fileName = "TelPartner"+timestamp + id + ".xlsx";
+        String fileName = "电审合伙人"+timestamp + id + ".xlsx";
         //创建workbook
         File file = new File(ossConfig.getDownLoadBasepath() + File.separator + fileName);
         FileOutputStream out = null;
@@ -625,7 +625,7 @@ public class ReportServiceImpl implements ReportService {
     private String createTelUserExcelFile(List<TelUserCountVO> list) {
         String timestamp = new SimpleDateFormat("yyyyMMdd").format(new Date());
         Long id = SessionUtils.getLoginUser().getId();
-        String fileName = "TelUser"+timestamp + id + ".xlsx";
+        String fileName = "电审经办人"+timestamp + id + ".xlsx";
         //创建workbook
         File file = new File(ossConfig.getDownLoadBasepath() + File.separator + fileName);
         FileOutputStream out = null;
@@ -744,7 +744,7 @@ public class ReportServiceImpl implements ReportService {
     private String createTelBankExcelFile(List<TelBankCountVO> list) {
         String timestamp = new SimpleDateFormat("yyyyMMdd").format(new Date());
         Long id = SessionUtils.getLoginUser().getId();
-        String fileName = "TelBank"+timestamp + id + ".xlsx";
+        String fileName = "电审银行"+timestamp + id + ".xlsx";
         //创建workbook
         File file = new File(ossConfig.getDownLoadBasepath() + File.separator + fileName);
         FileOutputStream out = null;
@@ -830,7 +830,7 @@ public class ReportServiceImpl implements ReportService {
     private String createBankCreditPrincipalExcelFile(List<BankCreditPrincipalVO> list) {
         String timestamp = new SimpleDateFormat("yyyyMMdd").format(new Date());
         Long id = SessionUtils.getLoginUser().getId();
-        String fileName = "BankCreditPrincipal"+timestamp + id + ".xlsx";
+        String fileName = "客户征信"+timestamp + id + ".xlsx";
         //创建workbook
         File file = new File(ossConfig.getDownLoadBasepath() + File.separator + fileName);
         FileOutputStream out = null;
@@ -1032,7 +1032,7 @@ public class ReportServiceImpl implements ReportService {
     private String createContractExcelFile(List<ContractSetReportVO> list) {
         String timestamp = new SimpleDateFormat("yyyyMMdd").format(new Date());
         Long id = SessionUtils.getLoginUser().getId();
-        String fileName = timestamp + id + ".xlsx";
+        String fileName = "合同套打"+timestamp + id + ".xlsx";
         //创建workbook
         File file = new File(ossConfig.getDownLoadBasepath() + File.separator + fileName);
         FileOutputStream out = null;
