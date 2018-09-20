@@ -7,13 +7,10 @@
         from
         (
         SELECT
-        (SELECT biz_area.name FROM biz_area_rela_partner LEFT JOIN biz_area ON biz_area_rela_partner.biz_area_id =
-        biz_area.id WHERE biz_area_rela_partner.partner_id = principal_partner.id ORDER BY
-        biz_area_rela_partner.gmt_create limit 1 ) AS biz_area,
+        (SELECT biz_area.name FROM biz_area_rela_partner LEFT JOIN biz_area ON biz_area_rela_partner.biz_area_id = biz_area.id WHERE biz_area_rela_partner.partner_id = principal_partner.id ORDER BY biz_area_rela_partner.gmt_create limit 1 ) AS biz_area,
         (SELECT biz_area.id FROM  biz_area_rela_partner LEFT JOIN biz_area ON biz_area_rela_partner.biz_area_id = biz_area.id WHERE biz_area_rela_partner.partner_id = principal_partner.id ORDER BY biz_area_rela_partner.gmt_create limit 1 ) AS biz_area_id,
 
         principal_area.area_name,
-        -- 客户类型: 1-主贷人;2-共贷人;3-担保人;4-紧急联系人;
         CASE
         WHEN customer.cust_type = 1 THEN
         '主贷人'
@@ -33,7 +30,6 @@
         principal_partner. NAME AS partner_name,
         employee. NAME AS salesman_name,
         principal. NAME AS principal_name,
-        -- 与主贷人关系：0-本人;1-配偶;2-父母;3-子女;4-兄弟姐妹;5-亲戚;6-朋友;7-同学;8-同事;9-其它;
         CASE
         WHEN customer.id = customer.principal_cust_id THEN
         '本人'
@@ -60,7 +56,6 @@
         ELSE
         NULL
         END AS cust_relation,
-        -- 征信结果: 0-不通过;1-通过;2-关注;
         CASE
         WHEN credit_info.result = 0 THEN
         '不通过'
@@ -138,7 +133,8 @@
             AND customer.cust_type in (1,2,3) and customer.status = 0
         </where>
         ) tab
-        <where>
+        where 1=1
+
             <if test="bizAreaList !=null and bizAreaList.size() > 0" >
                 and tab.biz_area_id in
                 <foreach item="item" index="index" collection="bizAreaList" separator=","  open="(" close=")">
@@ -146,13 +142,14 @@
                 </foreach>
             </if>
 
-        </where>
+
+
         <if test="orderBy == 1">
-            order by credit_apply_time desc
+            order by tab.credit_apply_time desc
         </if>
 
-        <if test="orderBy == 2  or orderBy == null  or orderBy ==''" >
-            order by credit_apply_time ASC
+        <if test="orderBy == 2 ">
+            order by tab.credit_apply_time ASC
         </if>
 
 
