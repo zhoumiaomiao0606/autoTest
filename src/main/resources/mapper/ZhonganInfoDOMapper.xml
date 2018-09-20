@@ -27,12 +27,13 @@
     <result column="customer_type" property="customerType" jdbcType="VARCHAR" />
     <result column="result_message" property="resultMessage" jdbcType="VARCHAR" />
     <result column="tel" property="tel" jdbcType="VARCHAR" />
+    <result column="rsp_gong_an" property="rspGongAn" jdbcType="VARCHAR" />
   </resultMap>
   <sql id="Base_Column_List" >
     id, id_card, age, gender, mobile_city, mobile_comm_duration, mobile_comm_sts, phoneid_name_check,
     high_risk_behavior, rsn_high_risk, rsn_long_overdue, rsn_multi_loan, rsn_policy_restrict, 
     rsn_risk_rec, rsp_lawsuit_alllist, rsp_speclist_inblacklist, rsp_speclist_maxdftlevel, 
-    rsp_watchlist_detail, high_risk_record, customer_name ,create_date,order_id,customer_type,result_message,tel
+    rsp_watchlist_detail, high_risk_record, customer_name ,create_date,order_id,customer_type,result_message,tel,rsp_gong_an
   </sql>
   <select id="selectByOrderId" resultMap="BaseResultMap">
     select
@@ -58,7 +59,7 @@
       rsn_high_risk, rsn_long_overdue, rsn_multi_loan, 
       rsn_policy_restrict, rsn_risk_rec, rsp_lawsuit_alllist, 
       rsp_speclist_inblacklist, rsp_speclist_maxdftlevel, 
-      rsp_watchlist_detail, high_risk_record, customer_name,create_date,order_id,customer_type,result_message,tel
+      rsp_watchlist_detail, high_risk_record, customer_name,create_date,order_id,customer_type,result_message,tel,rsp_gong_an
       )
     values (#{id,jdbcType=BIGINT}, #{idCard,jdbcType=BIGINT}, #{age,jdbcType=VARCHAR},
       #{gender,jdbcType=VARCHAR}, #{mobileCity,jdbcType=VARCHAR}, #{mobileCommDuration,jdbcType=VARCHAR}, 
@@ -68,7 +69,7 @@
       #{rspSpeclistInblacklist,jdbcType=VARCHAR}, #{rspSpeclistMaxdftlevel,jdbcType=VARCHAR}, 
       #{rspWatchlistDetail,jdbcType=VARCHAR}, #{highRiskRecord,jdbcType=VARCHAR}, #{customerName,jdbcType=VARCHAR},
       #{createDate,jdbcType=TIMESTAMP},#{orderId,jdbcType=BIGINT},#{customerType,jdbcType=VARCHAR},#{resultMessage,jdbcType=VARCHAR}
-      ,#{tel,jdbcType=VARCHAR})
+      ,#{tel,jdbcType=VARCHAR},#{rspGongAn,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.ZhonganInfoDO" useGeneratedKeys="true" keyProperty="id">
     insert into zhongan_info
@@ -148,6 +149,9 @@
       <if test="tel != null" >
         tel,
       </if>
+      <if test="rspGongAn != null" >
+        rsp_gong_an,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="id != null" >
@@ -224,6 +228,9 @@
       </if>
       <if test="tel != null" >
         #{tel,jdbcType=VARCHAR},
+      </if>
+      <if test="rspGongAn != null" >
+        #{rspGongAn,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
@@ -302,6 +309,9 @@
       <if test="tel != null" >
         tel = #{tel,jdbcType=VARCHAR},
       </if>
+      <if test="rspGongAn != null" >
+        rsp_gong_an = #{rspGongAn,jdbcType=VARCHAR},
+      </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
@@ -330,7 +340,8 @@
       order_id = #{orderId,jdbcType=BIGINT},
       customer_type = #{customerType,jdbcType=VARCHAR},
       result_message = #{resultMessage,jdbcType=VARCHAR},
-      tel = #{tel,jdbcType=VARCHAR}
+      tel = #{tel,jdbcType=VARCHAR},
+      rsp_gong_an = #{rspGongAn,jdbcType=VARCHAR}
     where id = #{id,jdbcType=BIGINT}
   </update>
   <select id="selectZNByOrderIdAndIdcard" resultMap="BaseResultMap">

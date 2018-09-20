@@ -927,6 +927,7 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
                         zhongAnInfoDO.setRspSpeclistInblacklist(creditResultMap.getString("rspSpecList_inBlacklist"));
                         zhongAnInfoDO.setRspSpeclistMaxdftlevel(creditResultMap.getString("rspSpecList_maxDftLevel"));
                         zhongAnInfoDO.setRspWatchlistDetail(creditResultMap.getString("rspWatchList_detail"));
+                        zhongAnInfoDO.setRspGongAn(creditResultMap.getString("rspGongAn"));
                     }
                     zhongAnInfoDO.setCreateDate(new Date());
                     zhongAnInfoDO.setCustomerName(zhongAnCusParam.getName());
