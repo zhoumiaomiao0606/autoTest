@@ -61,7 +61,7 @@ public class FinancialDepartmentRemitDetailChartVO
     private Date gmt_create;
 
     //提交时间
-    private String submitTime;
+    private Date submitTime;
 
     //提交人
     private String username;

@@ -723,7 +723,7 @@
             </foreach>
         </if>
         <if test="startDate != null">
-            AND TO_DAYS(t.credit_apply_time) &lt;= TO_DAYS(#{startDate})
+            AND TO_DAYS(t.credit_apply_time) &gt;= TO_DAYS(#{startDate})
         </if>
         <if test="endDate != null">
             AND TO_DAYS(t.credit_apply_time) &lt;= TO_DAYS(#{endDate})
@@ -800,8 +800,8 @@
         )
         else true end
 
-        <if test="startTime !=null and endTime !=null and startTime !='' and endTime !=''" >
-            having operationDate between #{startTime} and #{endTime}
+        <if test="startDate !=null and endDate !=null and startDate !='' and endDate !=''" >
+            having operationDate between #{startDate} and #{endDate}
         </if>
 
     </select>
@@ -893,8 +893,8 @@
         )
         else true end
 
-        <if test="startTime !=null and endTime !=null and startTime !='' and endTime !=''" >
-            having submitTime between #{startTime} and #{endTime}
+        <if test="startDate !=null and endDate !=null and startDate !='' and endDate !=''" >
+            having submitTime between #{startDate} and #{endDate}
         </if>
 
     </select>
