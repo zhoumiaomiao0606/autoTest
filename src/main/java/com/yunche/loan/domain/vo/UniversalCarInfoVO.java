@@ -30,5 +30,7 @@ public class UniversalCarInfoVO {
     private String vehicle_displacement;
     private String vehicle_register_date;
     private String car_category;
+    private String vehicle_now_driving_license_owner;
+    private String vehicle_assess_use_year;
 
 }

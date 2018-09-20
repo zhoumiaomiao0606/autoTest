@@ -596,8 +596,10 @@
             vehicle.invoice_car_dealer                                              AS vehicle_invoice_car_dealer,
             vehicle.displacement                                                    AS vehicle_displacement,
             vehicle.register_date                                                   AS vehicle_register_date,
+            vehicle.now_driving_license_owner                                       AS vehicle_now_driving_license_owner,
             financial.appraisal                                                     AS financial_appraisal,
             vehicle.qualified_certificate_number                                    AS qualified_certificate_number,
+            vehicle.assess_use_year                                                 AS vehicle_assess_use_year,
             car.car_category                                                        AS car_category
 
         from (select * from loan_order where id = #{orderId,jdbcType=BIGINT}) main_order
