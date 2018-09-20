@@ -224,7 +224,7 @@ public class ConfVideoFaceTimeServiceImpl implements ConfVideoFaceTimeService {
                         Long bankId = e.getBankId();
 
                         Preconditions.checkNotNull(bankId, "bankId不能为空");
-                        if (!(bankId == -1L)) {
+                        if (!(videoFaceBankId == -1L)) {
                             Preconditions.checkArgument(videoFaceBankId.equals(bankId),
                                     "您无权操作当前银行：" + bankCache.getNameById(bankId));
                         }
