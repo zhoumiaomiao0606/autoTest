@@ -279,6 +279,8 @@ public class AuxiliaryServiceImpl implements AuxiliaryService {
         result.addAll(loanQueryDOMapper.selectGpsByOrderId(orderId));
         for (int i = result.size(); i < gpsDetail.getGpsNum(); i++) {
             GpsVO g = new GpsVO();
+            g.setGps_number("");
+            g.setOrder_id("");
             result.add(g);
         }
         gpsDetailTotal.setGpsNum(result);
