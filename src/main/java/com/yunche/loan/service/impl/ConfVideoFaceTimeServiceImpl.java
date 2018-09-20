@@ -213,8 +213,11 @@ public class ConfVideoFaceTimeServiceImpl implements ConfVideoFaceTimeService {
 
                     Preconditions.checkNotNull(startLoanAmount, "startLoanAmount不能为空");
                     Preconditions.checkNotNull(endLoanAmount, "endLoanAmount不能为空");
-                    Preconditions.checkArgument(startLoanAmount.doubleValue() <= endLoanAmount.doubleValue(),
-                            "startLoanAmount不能大于endLoanAmount");
+                    // -1：+∞
+                    if (!(endLoanAmount.doubleValue() == -1)) {
+                        Preconditions.checkArgument(startLoanAmount.doubleValue() < endLoanAmount.doubleValue(),
+                                "startLoanAmount必须小于endLoanAmount，startLoanAmount : " + startLoanAmount + " ，endLoanAmount : " + endLoanAmount);
+                    }
 
                     List<ConfVideoFaceTimeVO.Type> typeList = d.getTypeList();
                     if (!CollectionUtils.isEmpty(typeList)) {
@@ -268,7 +271,8 @@ public class ConfVideoFaceTimeServiceImpl implements ConfVideoFaceTimeService {
                     String endTime = time.getEndTime();
                     Preconditions.checkNotNull(startTime, "startTime不能为空");
                     Preconditions.checkNotNull(endTime, "endTime不能为空");
-                    Preconditions.checkArgument(startTime.compareTo(endTime) < 0, "startTime不能大于endTime");
+                    Preconditions.checkArgument(startTime.compareTo(endTime) < 0,
+                            "startTime必须小于endTime，startTime : " + startTime + " ，endTime : " + endTime);
 
                     ConfVideoFaceTimeDO confVideoFaceTimeDO = new ConfVideoFaceTimeDO();
                     // 银行
