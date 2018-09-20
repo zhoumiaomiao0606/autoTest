@@ -3,6 +3,7 @@ package com.yunche.loan.domain.vo;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.util.Date;
 
 /**
  * @author: ZhongMingxiao
@@ -56,7 +57,7 @@ public class CompanyRemitDetailChartVO
     private BigDecimal remit_amount;
 
     //提交时间
-    private String submitTime;
+    private Date submitTime;
 
     //提交人
     private String username;
