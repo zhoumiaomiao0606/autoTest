@@ -34,7 +34,7 @@ public class BankCreditChartVO
     private String bank;
 
     //担保类型
-    private String guaranteeType;
+   /* private String guaranteeType;*/
 
     //业务团队
     private String partner_name;

@@ -15,8 +15,8 @@ import java.util.Set;
 @Data
 public class SocialCreditChartParam extends BaseQuery
 {
-  /*  private  String startDate;
-    private  String endDate;*/
+    private  String startDate;
+    private  String endDate;
 
     //征信申请时间
   /*  private String startCreditGmtCreate;
