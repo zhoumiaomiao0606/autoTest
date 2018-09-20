@@ -1,46 +1,47 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.yunche.loan.mapper.ThirdPartyFundBusinessDOMapper">
     <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.ThirdPartyFundBusinessDO">
-        <id column="bridge_procecss_id" property="bridgeProcecssId" jdbcType="BIGINT"/>
-        <result column="order_id" property="orderId" jdbcType="BIGINT"/>
-        <result column="lend_date" property="lendDate" jdbcType="TIMESTAMP"/>
-        <result column="repay_type" property="repayType" jdbcType="TINYINT"/>
-        <result column="repay_date" property="repayDate" jdbcType="TIMESTAMP"/>
-        <result column="repay_remark" property="repayRemark" jdbcType="VARCHAR"/>
-        <result column="interest" property="interest" jdbcType="DECIMAL"/>
-        <result column="poundage" property="poundage" jdbcType="DECIMAL"/>
-        <result column="repay_interest_date" property="repayInterestDate" jdbcType="TIMESTAMP"/>
-        <result column="repay_register_remark" property="repayRegisterRemark" jdbcType="VARCHAR"/>
-        <result column="gmt_create" property="gmtCreate" jdbcType="TIMESTAMP"/>
-        <result column="gmt_modify" property="gmtModify" jdbcType="TIMESTAMP"/>
+        <id column="bridge_procecss_id" jdbcType="BIGINT" property="bridgeProcecssId" />
+        <result column="order_id" jdbcType="BIGINT" property="orderId" />
+        <result column="lend_date" jdbcType="TIMESTAMP" property="lendDate" />
+        <result column="repay_type" jdbcType="TINYINT" property="repayType" />
+        <result column="repay_date" jdbcType="TIMESTAMP" property="repayDate" />
+        <result column="repay_remark" jdbcType="VARCHAR" property="repayRemark" />
+        <result column="interest" jdbcType="DECIMAL" property="interest" />
+        <result column="poundage" jdbcType="DECIMAL" property="poundage" />
+        <result column="repay_interest_date" jdbcType="TIMESTAMP" property="repayInterestDate" />
+        <result column="repay_register_remark" jdbcType="VARCHAR" property="repayRegisterRemark" />
+        <result column="lend_status" jdbcType="TINYINT" property="lendStatus" />
+        <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate" />
+        <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify" />
     </resultMap>
     <sql id="Base_Column_List">
-    bridge_procecss_id, order_id, lend_date, repay_type, repay_date, repay_remark, interest,
-    poundage, repay_interest_date, repay_register_remark, gmt_create, gmt_modify
-  </sql>
-    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        bridge_procecss_id, order_id, lend_date, repay_type, repay_date, repay_remark, interest,
+        poundage, repay_interest_date, repay_register_remark, lend_status, gmt_create, gmt_modify
+    </sql>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
         select
-        <include refid="Base_Column_List"/>
+        <include refid="Base_Column_List" />
         from third_party_fund_business
         where bridge_procecss_id = #{bridgeProcecssId,jdbcType=BIGINT}
     </select>
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
-    delete from third_party_fund_business
-    where bridge_procecss_id = #{bridgeProcecssId,jdbcType=BIGINT}
-  </delete>
+        delete from third_party_fund_business
+        where bridge_procecss_id = #{bridgeProcecssId,jdbcType=BIGINT}
+    </delete>
     <insert id="insert" parameterType="com.yunche.loan.domain.entity.ThirdPartyFundBusinessDO">
-    insert into third_party_fund_business (bridge_procecss_id, order_id, lend_date,
-    repay_type, repay_date, repay_remark,
-    interest, poundage, repay_interest_date,
-    repay_register_remark, gmt_create, gmt_modify
-    )
-    values (#{bridgeProcecssId,jdbcType=BIGINT}, #{orderId,jdbcType=BIGINT}, #{lendDate,jdbcType=TIMESTAMP},
-    #{repayType,jdbcType=TINYINT}, #{repayDate,jdbcType=TIMESTAMP}, #{repayRemark,jdbcType=VARCHAR},
-    #{interest,jdbcType=DECIMAL}, #{poundage,jdbcType=DECIMAL}, #{repayInterestDate,jdbcType=TIMESTAMP},
-    #{repayRegisterRemark,jdbcType=VARCHAR}, #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModify,jdbcType=TIMESTAMP}
-    )
-  </insert>
+        insert into third_party_fund_business (bridge_procecss_id, order_id, lend_date,
+        repay_type, repay_date, repay_remark,
+        interest, poundage, repay_interest_date,
+        repay_register_remark, lend_status, gmt_create,
+        gmt_modify)
+        values (#{bridgeProcecssId,jdbcType=BIGINT}, #{orderId,jdbcType=BIGINT}, #{lendDate,jdbcType=TIMESTAMP},
+        #{repayType,jdbcType=TINYINT}, #{repayDate,jdbcType=TIMESTAMP}, #{repayRemark,jdbcType=VARCHAR},
+        #{interest,jdbcType=DECIMAL}, #{poundage,jdbcType=DECIMAL}, #{repayInterestDate,jdbcType=TIMESTAMP},
+        #{repayRegisterRemark,jdbcType=VARCHAR}, #{lendStatus,jdbcType=TINYINT}, #{gmtCreate,jdbcType=TIMESTAMP},
+        #{gmtModify,jdbcType=TIMESTAMP})
+    </insert>
     <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.ThirdPartyFundBusinessDO">
         insert into third_party_fund_business
         <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -73,6 +74,9 @@
             </if>
             <if test="repayRegisterRemark != null">
                 repay_register_remark,
+            </if>
+            <if test="lendStatus != null">
+                lend_status,
             </if>
             <if test="gmtCreate != null">
                 gmt_create,
@@ -112,6 +116,9 @@
             <if test="repayRegisterRemark != null">
                 #{repayRegisterRemark,jdbcType=VARCHAR},
             </if>
+            <if test="lendStatus != null">
+                #{lendStatus,jdbcType=TINYINT},
+            </if>
             <if test="gmtCreate != null">
                 #{gmtCreate,jdbcType=TIMESTAMP},
             </if>
@@ -150,6 +157,9 @@
             <if test="repayRegisterRemark != null">
                 repay_register_remark = #{repayRegisterRemark,jdbcType=VARCHAR},
             </if>
+            <if test="lendStatus != null">
+                lend_status = #{lendStatus,jdbcType=TINYINT},
+            </if>
             <if test="gmtCreate != null">
                 gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
             </if>
@@ -160,26 +170,28 @@
         where bridge_procecss_id = #{bridgeProcecssId,jdbcType=BIGINT}
     </update>
     <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.ThirdPartyFundBusinessDO">
-    update third_party_fund_business
-    set order_id = #{orderId,jdbcType=BIGINT},
-    lend_date = #{lendDate,jdbcType=TIMESTAMP},
-    repay_type = #{repayType,jdbcType=TINYINT},
-    repay_date = #{repayDate,jdbcType=TIMESTAMP},
-    repay_remark = #{repayRemark,jdbcType=VARCHAR},
-    interest = #{interest,jdbcType=DECIMAL},
-    poundage = #{poundage,jdbcType=DECIMAL},
-    repay_interest_date = #{repayInterestDate,jdbcType=TIMESTAMP},
-    repay_register_remark = #{repayRegisterRemark,jdbcType=VARCHAR},
-    gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
-    gmt_modify = #{gmtModify,jdbcType=TIMESTAMP}
-    where bridge_procecss_id = #{bridgeProcecssId,jdbcType=BIGINT}
-  </update>
+        update third_party_fund_business
+        set order_id = #{orderId,jdbcType=BIGINT},
+        lend_date = #{lendDate,jdbcType=TIMESTAMP},
+        repay_type = #{repayType,jdbcType=TINYINT},
+        repay_date = #{repayDate,jdbcType=TIMESTAMP},
+        repay_remark = #{repayRemark,jdbcType=VARCHAR},
+        interest = #{interest,jdbcType=DECIMAL},
+        poundage = #{poundage,jdbcType=DECIMAL},
+        repay_interest_date = #{repayInterestDate,jdbcType=TIMESTAMP},
+        repay_register_remark = #{repayRegisterRemark,jdbcType=VARCHAR},
+        lend_status = #{lendStatus,jdbcType=TINYINT},
+        gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+        gmt_modify = #{gmtModify,jdbcType=TIMESTAMP}
+        where bridge_procecss_id = #{bridgeProcecssId,jdbcType=BIGINT}
+    </update>
+
 
     <!-- batchInsert -->
     <insert id="batchInsert" parameterType="java.util.List">
         insert into third_party_fund_business (bridge_procecss_id, order_id, lend_date, repay_type,
         repay_date, repay_remark, interest,
-        poundage, repay_interest_date, repay_register_remark,
+        poundage, repay_interest_date, repay_register_remark,lend_status,
         gmt_create, gmt_modify)
         values
         <foreach collection="list" item="item" index="index">
@@ -189,9 +201,8 @@
             #{item.repayDate,jdbcType=TIMESTAMP},#{item.repayRemark,jdbcType=VARCHAR},
             #{item.interest,jdbcType=DECIMAL},
             #{item.poundage,jdbcType=DECIMAL},#{item.repayInterestDate,jdbcType=TIMESTAMP},
-            #{item.repayRegisterRemark,jdbcType=VARCHAR},
+            #{item.repayRegisterRemark,jdbcType=VARCHAR}, #{lendStatus,jdbcType=TINYINT},
             #{item.gmtCreate,jdbcType=TIMESTAMP}, #{item.gmtModify,jdbcType=TIMESTAMP})
         </foreach>
     </insert>
-
 </mapper>

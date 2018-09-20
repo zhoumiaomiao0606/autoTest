@@ -7,9 +7,13 @@ import com.yunche.loan.domain.param.ExportApplyLoanPushParam;
 
 public interface JinTouHangAccommodationApplyService {
 
+    ResultBean reject(AccommodationApplyParam param);
+
     ResultBean applyLoan(AccommodationApplyParam param);
 
     ResultBean batchLoan(AccommodationApplyParam param);
+
+    ResultBean batchImp(String key);
 
     ResultBean export(ExportApplyLoanPushParam param);
 

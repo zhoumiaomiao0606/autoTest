@@ -1105,6 +1105,7 @@
                   </when>
                   <when test="taskDefinitionKey == 'usertask_bridge_handle'">
                       AND case when #{taskStatus} = 0 then deputy_b.bridge_handle !=0 else deputy_b.bridge_handle = #{taskStatus} end
+                      AND third_party.lend_status = #{lendStatus}
                   </when>
                   <when test="taskDefinitionKey == 'usertask_bridge_repay_record'">
                       AND case when #{taskStatus} = 0 then deputy_b.bridge_repay_record !=0 else deputy_b.bridge_repay_record = #{taskStatus} end

@@ -4,13 +4,14 @@ import lombok.Data;
 
 @Data
 public class ExportApplyLoanPushVO {
-    String rowId;
+    String bridgeProcessId;
     String customerName;
     String customerIdCard;
     String carDetailName;
     String carPrice;
     String downPaymentMoney;
     String remitAmount;
+    String lendAmount;
     String loanTime;
     String interestRate;
     String loanForm;
