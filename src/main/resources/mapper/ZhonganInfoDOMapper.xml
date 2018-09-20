@@ -935,12 +935,17 @@
     and
     case when #{maxGroupLevel} = 0 then false
     when #{maxGroupLevel} = 1 then
-      <if test="juniorIds != null and juniorIds.size() > 0">
+    <choose>
+      <when test="juniorIds != null and juniorIds.size() > 0">
         a.user_id in
         <foreach item="item" index="index" collection="juniorIds" open="(" separator="," close=")">
           #{item}
         </foreach>
-      </if>
+      </when>
+      <otherwise>
+        false
+      </otherwise>
+    </choose>
     else true end
     group by c.partner_id
   </select>
@@ -995,12 +1000,17 @@
     and
     case when #{maxGroupLevel} = 0 then false
     when #{maxGroupLevel} = 1 then
-    <if test="juniorIds != null and juniorIds.size() > 0">
-      r.user_id in
-      <foreach item="item" index="index" collection="juniorIds" open="(" separator="," close=")">
-        #{item}
-      </foreach>
-    </if>
+    <choose>
+      <when test="juniorIds != null and juniorIds.size() > 0">
+        r.user_id in
+        <foreach item="item" index="index" collection="juniorIds" open="(" separator="," close=")">
+          #{item}
+        </foreach>
+      </when>
+      <otherwise>
+        false
+      </otherwise>
+    </choose>
     else true end
   GROUP BY
       r.user_id
@@ -1060,12 +1070,17 @@
       and
       case when #{maxGroupLevel} = 0 then false
       when #{maxGroupLevel} = 1 then
-      <if test="juniorIds != null and juniorIds.size() > 0">
-        r.user_id in
-        <foreach item="item" index="index" collection="juniorIds" open="(" separator="," close=")">
-          #{item}
-        </foreach>
-      </if>
+      <choose>
+        <when test="juniorIds != null and juniorIds.size() > 0">
+          r.user_id in
+          <foreach item="item" index="index" collection="juniorIds" open="(" separator="," close=")">
+            #{item}
+          </foreach>
+        </when>
+        <otherwise>
+          false
+        </otherwise>
+      </choose>
       else true end
         GROUP BY
         base.partner_id
@@ -1117,12 +1132,17 @@
       and
       case when #{maxGroupLevel} = 0 then false
       when #{maxGroupLevel} = 1 then
-      <if test="juniorIds != null and juniorIds.size() > 0">
-        r.user_id in
-        <foreach item="item" index="index" collection="juniorIds" open="(" separator="," close=")">
-          #{item}
-        </foreach>
-      </if>
+      <choose>
+        <when test="juniorIds != null and juniorIds.size() > 0">
+          r.user_id in
+          <foreach item="item" index="index" collection="juniorIds" open="(" separator="," close=")">
+            #{item}
+          </foreach>
+        </when>
+        <otherwise>
+          false
+        </otherwise>
+      </choose>
       else true end
     GROUP BY
         base.partner_id
