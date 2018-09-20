@@ -932,6 +932,16 @@
     <if test = "gmtCreateEnd1 != null and gmtCreateEnd1 != ''">
       <![CDATA[ AND a.create_time <= #{gmtCreateEnd1} ]]>
     </if>
+    and
+    case when #{maxGroupLevel} = 0 then false
+    when #{maxGroupLevel} = 1 then
+      <if test="juniorIds != null and juniorIds.size() > 0">
+        a.user_id in
+        <foreach item="item" index="index" collection="juniorIds" open="(" separator="," close=")">
+          #{item}
+        </foreach>
+      </if>
+    else true end
     group by c.partner_id
   </select>
   <select id="telUserCount" parameterType="com.yunche.loan.domain.query.BankCreditPrincipalQuery" resultType="com.yunche.loan.domain.vo.TelUserCountVO">
@@ -947,7 +957,7 @@
       COUNT( CASE WHEN ( r.action = 3 ) THEN 1 END ) AS supplement,
       TRUNCATE(COUNT( CASE WHEN ( r.action = 3 ) THEN 1 END ) / COUNT( CASE WHEN ( r.action != 4 AND r.action != 5 ) THEN 1 END )*100,2) AS supplementRatio,
       COUNT( CASE WHEN ( r.action != 4 AND r.action != 5 ) THEN 1 END ) AS total,
-      '1' AS totalRatio
+      '100' AS totalRatio
      FROM
       (
       SELECT DISTINCT
@@ -977,11 +987,21 @@
       <![CDATA[ AND r.create_time <= #{gmtCreateEnd1} ]]>
     </if>
     <if test = "bizAreaId != null and bizAreaId != ''">
-        biz.biz_area_id = #{bizAreaId}
+      AND  biz.biz_area_id = #{bizAreaId}
     </if>
     <if test = "partnerId != null and partnerId != ''">
-      base.partner_id = #{partnerId}
+      AND base.partner_id = #{partnerId}
     </if>
+    and
+    case when #{maxGroupLevel} = 0 then false
+    when #{maxGroupLevel} = 1 then
+    <if test="juniorIds != null and juniorIds.size() > 0">
+      r.user_id in
+      <foreach item="item" index="index" collection="juniorIds" open="(" separator="," close=")">
+        #{item}
+      </foreach>
+    </if>
+    else true end
   GROUP BY
       r.user_id
     ORDER BY area.id
@@ -1000,7 +1020,7 @@
       COUNT( CASE WHEN ( r.action = 3 ) THEN 1 END ) AS supplement,
       TRUNCATE(COUNT( CASE WHEN ( r.action = 3 ) THEN 1 END ) / COUNT( CASE WHEN ( r.action != 4 AND r.action != 5 ) THEN 1 END )*100,2) AS supplementRatio,
       COUNT( CASE WHEN ( r.action != 4 AND r.action != 5 ) THEN 1 END ) AS total,
-      '1' AS totalRatio
+      '100' AS totalRatio
     FROM
         (
         SELECT DISTINCT
@@ -1032,11 +1052,21 @@
             <![CDATA[ AND r.create_time <= #{gmtCreateEnd1} ]]>
         </if>
         <if test = "bizAreaId != null and bizAreaId != ''">
-            biz.biz_area_id = #{bizAreaId}
+           AND biz.biz_area_id = #{bizAreaId}
         </if>
         <if test = "partnerId != null and partnerId != ''">
-            base.partner_id = #{partnerId}
+           AND base.partner_id = #{partnerId}
         </if>
+      and
+      case when #{maxGroupLevel} = 0 then false
+      when #{maxGroupLevel} = 1 then
+      <if test="juniorIds != null and juniorIds.size() > 0">
+        r.user_id in
+        <foreach item="item" index="index" collection="juniorIds" open="(" separator="," close=")">
+          #{item}
+        </foreach>
+      </if>
+      else true end
         GROUP BY
         base.partner_id
       ORDER BY area.id
@@ -1079,12 +1109,28 @@
           <![CDATA[ AND r.create_time <= #{gmtCreateEnd1} ]]>
         </if>
         <if test = "bizAreaId != null and bizAreaId != ''">
-          biz.biz_area_id = #{bizAreaId}
+         AND biz.biz_area_id = #{bizAreaId}
         </if>
         <if test = "partnerId != null and partnerId != ''">
-          base.partner_id = #{partnerId}
+          AND  base.partner_id = #{partnerId}
         </if>
+      and
+      case when #{maxGroupLevel} = 0 then false
+      when #{maxGroupLevel} = 1 then
+      <if test="juniorIds != null and juniorIds.size() > 0">
+        r.user_id in
+        <foreach item="item" index="index" collection="juniorIds" open="(" separator="," close=")">
+          #{item}
+        </foreach>
+      </if>
+      else true end
     GROUP BY
         base.partner_id
     </select>
+  <select id="selectBankByUserId" resultType="java.lang.String">
+      select c.name from employee_rela_user_group  a
+      left join user_group_rela_bank b on b.user_group_id = a.user_group_id
+      left join bank c on c.id = b.bank_id
+      where a.employee_id =#{UserId,jdbcType=BIGINT}
+  </select>
 </mapper>

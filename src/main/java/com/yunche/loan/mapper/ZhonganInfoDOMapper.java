@@ -1,5 +1,6 @@
 package com.yunche.loan.mapper;
 
+import com.yunche.loan.domain.entity.BankDO;
 import com.yunche.loan.domain.entity.LoanCustomerDO;
 import com.yunche.loan.domain.entity.ZhonganInfoDO;
 import com.yunche.loan.domain.query.BankCreditPrincipalQuery;
@@ -75,4 +76,5 @@ public interface ZhonganInfoDOMapper {
                                                 @Param("gmtCreateEnd1")String gmtCreateEnd1,
                                                 @Param("bizAreaId")String bizAreaId,
                                                 @Param("partnerId")String partnerId);
+    List<String> selectBankByUserId(@Param("UserId")Long userId);
 }
