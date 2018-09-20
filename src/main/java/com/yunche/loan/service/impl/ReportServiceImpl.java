@@ -308,30 +308,31 @@ public class ReportServiceImpl implements ReportService {
     public ResultBean<List<TelPartnerCountVO>> telPartnerCount(BankCreditPrincipalQuery query) {
         Long loginUserId = SessionUtils.getLoginUser().getId();
 
-        query.setJuniorIds(employeeService.getSelfAndCascadeChildIdList(loginUserId));
-        query.setMaxGroupLevel(taskSchedulingDOMapper.selectMaxGroupLevel(loginUserId));
+        Set<String> j = employeeService.getSelfAndCascadeChildIdList(loginUserId);
+        Long maxGroupLevel = taskSchedulingDOMapper.selectMaxGroupLevel(loginUserId);
+
         PageHelper.startPage(query.getPageIndex(), query.getPageSize(), true);
         List<TelPartnerCountVO> list = zhonganInfoDOMapper.telPartnerCount(query);
         PageInfo<TelPartnerCountVO> pageInfo = new PageInfo<>(list);
         Set<String> action0 = new HashSet();
         action0.add("0");
         List<ActionParMoneyVO> list0 = zhonganInfoDOMapper.selectActionParMoney(action0,query.getGmtCreateStart1(),
-                query.getGmtCreateEnd1(),query.getBizAreaId(),query.getPartnerId());
+                query.getGmtCreateEnd1(),query.getBizAreaId(),query.getPartnerId(),j,maxGroupLevel);
 
         Set<String> action1 = new HashSet();
         action1.add("1");
         List<ActionParMoneyVO> list1 = zhonganInfoDOMapper.selectActionParMoney(action1,query.getGmtCreateStart1(),
-                query.getGmtCreateEnd1(),query.getBizAreaId(),query.getPartnerId());
+                query.getGmtCreateEnd1(),query.getBizAreaId(),query.getPartnerId(),j,maxGroupLevel);
 
         Set<String> action2 = new HashSet();
         action2.add("2");
         List<ActionParMoneyVO> list2 = zhonganInfoDOMapper.selectActionParMoney(action2,query.getGmtCreateStart1(),
-                query.getGmtCreateEnd1(),query.getBizAreaId(),query.getPartnerId());
+                query.getGmtCreateEnd1(),query.getBizAreaId(),query.getPartnerId(),j,maxGroupLevel);
 
         Set<String> action3 = new HashSet();
         action3.add("3");
         List<ActionParMoneyVO> list3 = zhonganInfoDOMapper.selectActionParMoney(action3,query.getGmtCreateStart1(),
-                query.getGmtCreateEnd1(),query.getBizAreaId(),query.getPartnerId());
+                query.getGmtCreateEnd1(),query.getBizAreaId(),query.getPartnerId(),j,maxGroupLevel);
 
         Set<String> actionTotal = new HashSet();
         actionTotal.add("3");
@@ -339,7 +340,7 @@ public class ReportServiceImpl implements ReportService {
         actionTotal.add("1");
         actionTotal.add("0");
         List<ActionParMoneyVO> listTotal = zhonganInfoDOMapper.selectActionParMoney(actionTotal,query.getGmtCreateStart1(),
-                query.getGmtCreateEnd1(),query.getBizAreaId(),query.getPartnerId());
+                query.getGmtCreateEnd1(),query.getBizAreaId(),query.getPartnerId(),j,maxGroupLevel);
         for(TelPartnerCountVO telPartnerCountVO:list){
             for(ActionParMoneyVO actionParMoneyVO:list0){
                 if(actionParMoneyVO !=null) {
@@ -398,28 +399,28 @@ public class ReportServiceImpl implements ReportService {
     public String telPartnerCountExport(BankCreditPrincipalQuery query) {
         Long loginUserId = SessionUtils.getLoginUser().getId();
 
-        query.setJuniorIds(employeeService.getSelfAndCascadeChildIdList(loginUserId));
-        query.setMaxGroupLevel(taskSchedulingDOMapper.selectMaxGroupLevel(loginUserId));
+        Set<String> juniorIds = employeeService.getSelfAndCascadeChildIdList(loginUserId);
+        Long maxGroupLevel = taskSchedulingDOMapper.selectMaxGroupLevel(loginUserId);
         List<TelPartnerCountVO> list = zhonganInfoDOMapper.telPartnerCount(query);
         Set<String> action0 = new HashSet();
         action0.add("0");
         List<ActionParMoneyVO> list0 = zhonganInfoDOMapper.selectActionParMoney(action0,query.getGmtCreateStart1(),
-                query.getGmtCreateEnd1(),query.getBizAreaId(),query.getPartnerId());
+                query.getGmtCreateEnd1(),query.getBizAreaId(),query.getPartnerId(),juniorIds,maxGroupLevel);
 
         Set<String> action1 = new HashSet();
         action1.add("1");
         List<ActionParMoneyVO> list1 = zhonganInfoDOMapper.selectActionParMoney(action1,query.getGmtCreateStart1(),
-                query.getGmtCreateEnd1(),query.getBizAreaId(),query.getPartnerId());
+                query.getGmtCreateEnd1(),query.getBizAreaId(),query.getPartnerId(),juniorIds,maxGroupLevel);
 
         Set<String> action2 = new HashSet();
         action2.add("2");
         List<ActionParMoneyVO> list2 = zhonganInfoDOMapper.selectActionParMoney(action2,query.getGmtCreateStart1(),
-                query.getGmtCreateEnd1(),query.getBizAreaId(),query.getPartnerId());
+                query.getGmtCreateEnd1(),query.getBizAreaId(),query.getPartnerId(),juniorIds,maxGroupLevel);
 
         Set<String> action3 = new HashSet();
         action3.add("3");
         List<ActionParMoneyVO> list3 = zhonganInfoDOMapper.selectActionParMoney(action3,query.getGmtCreateStart1(),
-                query.getGmtCreateEnd1(),query.getBizAreaId(),query.getPartnerId());
+                query.getGmtCreateEnd1(),query.getBizAreaId(),query.getPartnerId(),juniorIds,maxGroupLevel);
 
         Set<String> actionTotal = new HashSet();
         actionTotal.add("3");
@@ -427,7 +428,7 @@ public class ReportServiceImpl implements ReportService {
         actionTotal.add("1");
         actionTotal.add("0");
         List<ActionParMoneyVO> listTotal = zhonganInfoDOMapper.selectActionParMoney(actionTotal,query.getGmtCreateStart1(),
-                query.getGmtCreateEnd1(),query.getBizAreaId(),query.getPartnerId());
+                query.getGmtCreateEnd1(),query.getBizAreaId(),query.getPartnerId(),juniorIds,maxGroupLevel);
         for(TelPartnerCountVO telPartnerCountVO:list){
             for(ActionParMoneyVO actionParMoneyVO:list0){
                 if(actionParMoneyVO !=null) {
