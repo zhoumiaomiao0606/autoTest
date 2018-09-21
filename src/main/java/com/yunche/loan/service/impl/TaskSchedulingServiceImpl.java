@@ -148,7 +148,7 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         List<FlowOperationMsgListVO> list = taskSchedulingDOMapper.selectFlowOperationMsgList(query);
         PageInfo<FlowOperationMsgListVO> pageInfo = new PageInfo<>(list);
 
-        // 征信结果：截取title的[已通过]
+        // 征信结果：截取title的[已通过/xx]
         cutTitle(list, query.getMultipartType());
 
         return ResultBean.ofSuccess(list, new Long(pageInfo.getTotal()).intValue(), pageInfo.getPageNum(), pageInfo.getPageSize());
@@ -744,7 +744,7 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
     }
 
     /**
-     * 征信结果：截取title的[已通过]
+     * 征信结果：截取title的[已xx]
      *
      * @param list
      * @param multipartType
@@ -761,8 +761,8 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
                         String title = e.getTitle();
                         if (StringUtils.isNotBlank(title)) {
 
-                            // 截取title的[已通过]
-                            String[] titleArr = title.split("\\[已通过]");
+                            // 截取title的[已通过/打回/xx]
+                            String[] titleArr = title.split("\\[");
                             e.setTitle(titleArr[0]);
                         }
                     });

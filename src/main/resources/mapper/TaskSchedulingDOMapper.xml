@@ -485,7 +485,8 @@
                   useGetSmallCarName(join_i.car_detail_id)     AS carName,
                   join_i.gps_num                               AS carGpsNum,
                   join_bp.remit_amount                         AS remitAmount,
-                  join_bp.remit_time                           AS remitTime,
+                  DATE_FORMAT(join_bp.remit_time, '%Y-%m-%d %H:%i:%S')
+                                                               AS remitTime,
             <choose>
                       <when test="taskDefinitionKey == 'usertask_credit_apply'">
                           deputy.credit_apply                     AS taskStatus
@@ -911,7 +912,7 @@
                           || taskDefinitionKey == 'usertask_bridge_interest_record'
                           || taskDefinitionKey == 'usertask_bridge_repay_info'">
                   left join loan_process_bridge        deputy_b         on deputy_b.order_id = main.id
-                  left join conf_third_real_bridge_process real_b       on deputy_b.process_inst_id = real_b.bridge_process_id
+                  left join conf_third_real_bridge_process real_b       on deputy_b.id = real_b.bridge_process_id
                   left join conf_third_party_money conf_t               on real_b.conf_third_party_id = conf_t.id
                   left join third_party_fund_business  third_party      on third_party.bridge_procecss_id    = deputy_b.id
               </if>
@@ -2379,6 +2380,14 @@
 
         SELECT
 
+                    #{taskDefinitionKey}                         AS taskKey,
+                    useGetCurrentTask(#{taskDefinitionKey})      AS currentTask,
+                    <if test="taskDefinitionKey == 'usertask_telephone_verify' ">
+                        deputy.telephone_verify                   AS taskType,
+                        useGetTaskTypeText(#{taskDefinitionKey}, deputy.telephone_verify, deputy.order_status)
+                                                                  AS taskTypeText,
+                    </if>
+
                       main.id                                      AS id,
                       main.id                                      AS taskId,
                       join_e.id                                    AS salesmanId,
@@ -2415,7 +2424,8 @@
                       useGetSmallCarName(join_i.car_detail_id)     AS carName,
                       join_i.gps_num                               AS carGpsNum,
                       join_bp.remit_amount                         AS remitAmount,
-                      join_bp.remit_time                           AS remitTime,
+                      DATE_FORMAT(join_bp.remit_time, '%Y-%m-%d %H:%i:%S')
+                                                                   AS remitTime,
 
                       deputy_log.user_id                           AS  approvalUserId,
                       deputy_log.user_name                         AS  approvalUserName,

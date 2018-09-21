@@ -479,7 +479,7 @@
             car.car_category                                                                        AS car_category,
             cost.performance_fee                                                                    AS performance_fee,
             repay.overdue_amount                                                                    AS overdue_amount,
-            current.usertask_remit_review_create_time                                               AS remit_review_time,
+            remit.remit_time                                                                        AS remit_review_time,
             bank_lend.lend_date                                                                     AS bank_lend_date
 
     from (select * from loan_order where id = #{orderId,jdbcType=BIGINT}) main_order

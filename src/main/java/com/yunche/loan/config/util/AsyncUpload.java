@@ -47,7 +47,7 @@ public class AsyncUpload {
     public void upload(String serNo,List<ICBCApiRequest.PicQueue> queue){
         for(ICBCApiRequest.PicQueue picQueue :queue){
 
-            //1 下载出差 2 合成出错 3 上传出错
+            //1 下载出错 2 合成出错 3 上传出错
             boolean flag = true;
             String picPath = null;
             Byte error = null;

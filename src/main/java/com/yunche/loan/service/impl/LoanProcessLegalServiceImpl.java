@@ -111,6 +111,7 @@ public class LoanProcessLegalServiceImpl implements LoanProcessLegalService {
 
         // 异步推送
         loanProcessApprovalCommonService.asyncPush(loanOrderDO, approval);
+
         visitLawBack(approval);
 
         return ResultBean.ofSuccess(null, "[" + LoanProcessEnum.getNameByCode(approval.getOriginalTaskDefinitionKey()) + "]任务执行成功");
