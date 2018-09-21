@@ -66,7 +66,7 @@ public class ApplyLicensePlateDepositInfoServiceImpl implements ApplyLicensePlat
         String tmpApplyLicensePlateArea = null;
         if (applyLicensePlateDepositInfoVO.getApply_license_plate_area() != null) {
             BaseAreaDO baseAreaDO = baseAreaDOMapper.selectByPrimaryKey(Long.valueOf(applyLicensePlateDepositInfoVO.getApply_license_plate_area()), VALID_STATUS);
-            if("3".equals(String.valueOf(baseAreaDO.getLevel()))){
+            if ("3".equals(String.valueOf(baseAreaDO.getLevel()))) {
                 Long parentAreaId = baseAreaDO.getParentAreaId();
                 BaseAreaDO cityDO = baseAreaDOMapper.selectByPrimaryKey(parentAreaId, null);
                 baseAreaDO.setParentAreaId(cityDO.getParentAreaId());
@@ -83,10 +83,10 @@ public class ApplyLicensePlateDepositInfoServiceImpl implements ApplyLicensePlat
             }
             applyLicensePlateDepositInfoVO.setApply_license_plate_area(tmpApplyLicensePlateArea);
         }
-        RecombinationVO<ApplyLicensePlateDepositInfoVO> recombinationVO = new RecombinationVO<ApplyLicensePlateDepositInfoVO>();
+        RecombinationVO<ApplyLicensePlateDepositInfoVO> recombinationVO = new RecombinationVO<>();
         recombinationVO.setInfo(applyLicensePlateDepositInfoVO);
         recombinationVO.setCustomers(customers);
-        Set<Byte> types = new HashSet<Byte>();
+        Set<Byte> types = new HashSet<>();
         types.add(new Byte("23"));
         types.add(new Byte("20"));
         recombinationVO.setMaterials(loanQueryDOMapper.selectUniversalCustomerFileByTypes(orderId, types));
