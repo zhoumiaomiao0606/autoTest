@@ -280,7 +280,8 @@ public class LoanProcessApprovalRollBackServiceImpl implements LoanProcessApprov
                 VEHICLE_INFORMATION.getCode(),
                 CAR_INSURANCE.getCode(),
                 INSTALL_GPS.getCode(),
-                COMMIT_KEY.getCode()
+                COMMIT_KEY.getCode(),
+                VIDEO_REVIEW.getCode()
         );
 
         // 领取校验
@@ -292,7 +293,7 @@ public class LoanProcessApprovalRollBackServiceImpl implements LoanProcessApprov
         // 执行[反审]
         doRollBack(loanOrderDO.getProcessInstId(),
                 Lists.newArrayList(CAR_INSURANCE.getCode(), INSTALL_GPS.getCode(), COMMIT_KEY.getCode()),
-                Lists.newArrayList(BUSINESS_PAY.getCode(), DATA_FLOW_CONTRACT_P2C.getCode(), VEHICLE_INFORMATION.getCode()),
+                Lists.newArrayList(BUSINESS_PAY.getCode(), DATA_FLOW_CONTRACT_P2C.getCode(), VEHICLE_INFORMATION.getCode(), VIDEO_REVIEW.getCode()),
                 DATA_FLOW_MORTGAGE_P2C_NEW_FILTER.getCode()
         );
 
