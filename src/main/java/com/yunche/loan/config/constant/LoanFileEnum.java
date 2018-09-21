@@ -154,7 +154,7 @@ public enum LoanFileEnum {
     // 银行汽车按揭合同
     BANK_CAR_MORTGAGE_CONTRACT((byte) 94, "银行汽车按揭合同"),
     // 借款借据
-    LOAN_VOUCHER((byte) 95, "借款借据");
+    LOAN_VOUCHER((byte) 95, "金投行委托授权书");
 
 
     @Getter

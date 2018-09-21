@@ -2,6 +2,7 @@ package com.yunche.loan.service.impl;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import com.yunche.loan.config.cache.BankCache;
 import com.yunche.loan.config.common.OSSConfig;
 import com.yunche.loan.config.constant.IDict;
 import com.yunche.loan.config.constant.ProcessApprovalConst;
@@ -15,10 +16,7 @@ import com.yunche.loan.domain.param.AccommodationApplyParam;
 import com.yunche.loan.domain.param.ApprovalParam;
 import com.yunche.loan.domain.param.ExportApplyLoanPushParam;
 import com.yunche.loan.domain.vo.*;
-import com.yunche.loan.mapper.LoanOrderDOMapper;
-import com.yunche.loan.mapper.LoanQueryDOMapper;
-import com.yunche.loan.mapper.LoanStatementDOMapper;
-import com.yunche.loan.mapper.ThirdPartyFundBusinessDOMapper;
+import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.JinTouHangAccommodationApplyService;
 import com.yunche.loan.service.LoanProcessBridgeService;
 import com.yunche.loan.service.LoanQueryService;
@@ -63,6 +61,16 @@ public class JinTouHangAccommodationApplyServiceImpl implements JinTouHangAccomm
 
     @Autowired
     private LoanStatementDOMapper loanStatementDOMapper;
+
+
+    @Autowired
+    private ConfThirdRealBridgeProcessDOMapper confThirdRealBridgeProcessDOMapper;
+
+    @Autowired
+    private ConfThirdPartyMoneyDOMapper confThirdPartyMoneyDOMapper;
+
+    @Autowired
+    private BankCache bankCache;
 
 
 //    @Override
@@ -356,6 +364,17 @@ public class JinTouHangAccommodationApplyServiceImpl implements JinTouHangAccomm
         LoanOrderDO orderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
         Preconditions.checkNotNull(orderDO, "订单信息不存在");
         RecombinationVO<Object> recombinationVO = new RecombinationVO<>();
+
+//        ConfThirdRealBridgeProcessDO thirdRealBridgeProcessDO = confThirdRealBridgeProcessDOMapper.selectByPrimaryKey(bridgeProcessId);
+//        if(thirdRealBridgeProcessDO!=null){
+//            Long confThirdPartyId = thirdRealBridgeProcessDO.getConfThirdPartyId();
+//            ConfThirdPartyMoneyDO confThirdPartyMoneyDO = confThirdPartyMoneyDOMapper.selectByPrimaryKey(confThirdPartyId);
+//            Long bankId = confThirdPartyMoneyDO.getBankId();
+//            String bankName = bankCache.getNameById(bankId);
+//            thirdPartyFundBusinessDO.setConfThirdPartyBankName(bankName);
+//        }
+
+
 
         List<UniversalCustomerVO> customers = loanQueryDOMapper.selectUniversalCustomer(orderId);
         for (UniversalCustomerVO universalCustomerVO : customers) {

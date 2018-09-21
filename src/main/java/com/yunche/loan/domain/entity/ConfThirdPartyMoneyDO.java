@@ -31,4 +31,6 @@ public class ConfThirdPartyMoneyDO {
     private Date gmtModify;
 
     private Byte status;
+
+    private String bankName;
 }
