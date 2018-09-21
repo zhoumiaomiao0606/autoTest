@@ -9,6 +9,7 @@ import com.yunche.loan.domain.entity.ConfVideoFaceTimeDO;
 import com.yunche.loan.domain.vo.ConfVideoFaceTimeVO;
 import com.yunche.loan.mapper.ConfVideoFaceTimeDOMapper;
 import com.yunche.loan.service.ConfVideoFaceTimeService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,6 +17,8 @@ import org.springframework.util.CollectionUtils;
 
 import java.math.BigDecimal;
 import java.util.*;
+
+import static com.yunche.loan.config.constant.VideoFaceConst.ADMIN_VIDEO_FACE_BANK_ID;
 
 /**
  * @author liuzhe
@@ -56,7 +59,7 @@ public class ConfVideoFaceTimeServiceImpl implements ConfVideoFaceTimeService {
         List<ConfVideoFaceTimeDO> confVideoFaceTimeDOS = null;
 
         // 管理员
-        if (videoFaceBankId == -1L) {
+        if (ADMIN_VIDEO_FACE_BANK_ID.equals(videoFaceBankId)) {
 
             confVideoFaceTimeDOS = confVideoFaceTimeDOMapper.listAll();
         } else {
@@ -197,7 +200,7 @@ public class ConfVideoFaceTimeServiceImpl implements ConfVideoFaceTimeService {
     private void deleteAllConfByBankId(Long videoFaceBankId) {
 
         // 管理员
-        if (videoFaceBankId == -1L) {
+        if (ADMIN_VIDEO_FACE_BANK_ID.equals(videoFaceBankId)) {
 
             confVideoFaceTimeDOMapper.deleteAll();
         } else {
@@ -224,7 +227,7 @@ public class ConfVideoFaceTimeServiceImpl implements ConfVideoFaceTimeService {
                         Long bankId = e.getBankId();
 
                         Preconditions.checkNotNull(bankId, "bankId不能为空");
-                        if (!(videoFaceBankId == -1L)) {
+                        if (!ADMIN_VIDEO_FACE_BANK_ID.equals(videoFaceBankId)) {
                             Preconditions.checkArgument(videoFaceBankId.equals(bankId),
                                     "您无权操作当前银行：" + bankCache.getNameById(bankId));
                         }
@@ -312,8 +315,8 @@ public class ConfVideoFaceTimeServiceImpl implements ConfVideoFaceTimeService {
 
                     String startTime = time.getStartTime();
                     String endTime = time.getEndTime();
-                    Preconditions.checkNotNull(startTime, "startTime不能为空");
-                    Preconditions.checkNotNull(endTime, "endTime不能为空");
+                    Preconditions.checkArgument(StringUtils.isNotBlank(startTime), "startTime不能为空");
+                    Preconditions.checkArgument(StringUtils.isNotBlank(endTime), "endTime不能为空");
                     Preconditions.checkArgument(startTime.compareTo(endTime) < 0,
                             "startTime必须小于endTime，startTime : " + startTime + " ，endTime : " + endTime);
 
