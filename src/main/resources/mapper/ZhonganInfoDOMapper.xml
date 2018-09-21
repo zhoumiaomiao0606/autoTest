@@ -948,7 +948,7 @@
     when #{maxGroupLevel} = 1 then
     <choose>
       <when test="juniorIds != null and juniorIds.size() > 0">
-        a.user_id in
+        c.salesman_id in
         <foreach item="item" index="index" collection="juniorIds" open="(" separator="," close=")">
           #{item}
         </foreach>
@@ -1013,7 +1013,7 @@
     when #{maxGroupLevel} = 1 then
     <choose>
       <when test="juniorIds != null and juniorIds.size() > 0">
-        r.user_id in
+        base.salesman_id in
         <foreach item="item" index="index" collection="juniorIds" open="(" separator="," close=")">
           #{item}
         </foreach>
@@ -1083,7 +1083,7 @@
       when #{maxGroupLevel} = 1 then
       <choose>
         <when test="juniorIds != null and juniorIds.size() > 0">
-          r.user_id in
+          base.salesman_id in
           <foreach item="item" index="index" collection="juniorIds" open="(" separator="," close=")">
             #{item}
           </foreach>
@@ -1145,7 +1145,7 @@
       when #{maxGroupLevel} = 1 then
       <choose>
         <when test="juniorIds != null and juniorIds.size() > 0">
-          r.user_id in
+          base.salesman_id in
           <foreach item="item" index="index" collection="juniorIds" open="(" separator="," close=")">
             #{item}
           </foreach>
