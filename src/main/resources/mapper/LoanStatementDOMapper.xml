@@ -1369,6 +1369,8 @@
         LEFT JOIN loan_financial_plan financial ON financial.id = loan.loan_financial_plan_id
         LEFT JOIN remit_details remit  ON loan.remit_details_id =remit.id
         LEFT JOIN loan_car_info car ON loan.loan_car_info_id=car.id
+        LEFT JOIN third_party_fund_business third_party ON third_party.bridge_procecss_id=process.id
+        where third_party.lend_status !=3
     </select>
 
     <select id="exportJinTouHangRepayInfo" parameterType="com.yunche.loan.domain.param.ExportApplyLoanPushParam"  resultType="com.yunche.loan.domain.vo.JinTouHangRepayInfoVO">
