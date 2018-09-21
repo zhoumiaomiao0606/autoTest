@@ -762,7 +762,7 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
                         if (StringUtils.isNotBlank(title)) {
 
                             // 截取title的[已通过]
-                            String[] titleArr = title.split("\\[已通过]");
+                            String[] titleArr = title.split("\\[");
                             e.setTitle(titleArr[0]);
                         }
                     });
