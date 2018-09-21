@@ -1,6 +1,5 @@
 package com.yunche.loan.config.util;
 
-import com.yunche.loan.web.aop.GlobalExceptionHandler;
 import net.bramp.ffmpeg.FFmpeg;
 import net.bramp.ffmpeg.FFmpegExecutor;
 import net.bramp.ffmpeg.FFmpegUtils;
@@ -22,9 +21,9 @@ public class FfmpegUtils
 {
     private static final Logger logger = LoggerFactory.getLogger(FfmpegUtils.class);
 
-    private static final String FFMPEGPATH = "/Users/zhongmingxiao/Desktop/ffmpeg-4.0.2-macos64-shared/bin/ffmpeg";
+    private static final String FFMPEGPATH = "/usr/local/ffmpeg-4.0.2-64bit-static/ffmpeg";
 
-    private static final String FFPROBEPATH = "/Users/zhongmingxiao/Desktop/ffmpeg-4.0.2-macos64-shared/bin/ffprobe";
+    private static final String FFPROBEPATH = "/usr/local/ffmpeg-4.0.2-64bit-static/ffprobe";
 
     private static final Long SUITSIZE = 31_457_000L;
 
