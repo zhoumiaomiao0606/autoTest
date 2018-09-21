@@ -2379,6 +2379,14 @@
 
         SELECT
 
+                    #{taskDefinitionKey}                         AS taskKey,
+                    useGetCurrentTask(#{taskDefinitionKey})      AS currentTask,
+                    <if test="taskDefinitionKey == 'usertask_telephone_verify' ">
+                        deputy.telephone_verify                   AS taskType,
+                        useGetTaskTypeText(#{taskDefinitionKey}, deputy.telephone_verify, deputy.order_status)
+                                                                  AS taskTypeText,
+                    </if>
+
                       main.id                                      AS id,
                       main.id                                      AS taskId,
                       join_e.id                                    AS salesmanId,
