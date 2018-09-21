@@ -608,10 +608,10 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
      */
     private void checkIdCard(Long principalCustId, String idCard) {
 
-        List<LoanCustomerDO> loanCustomerDOS = loanCustomerDOMapper.listByPrincipalCustIdAndType(principalCustId, null, VALID_STATUS);
-        if (!CollectionUtils.isEmpty(loanCustomerDOS)) {
-
             if (StringUtils.isNotBlank(idCard)) {
+
+                List<LoanCustomerDO> loanCustomerDOS = loanCustomerDOMapper.listByPrincipalCustIdAndType(principalCustId, null, VALID_STATUS);
+                if (!CollectionUtils.isEmpty(loanCustomerDOS)) {
 
                 String trimIdCard = idCard.trim();
                 loanCustomerDOS.stream()
@@ -619,7 +619,7 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
 
                             if (StringUtils.isNotBlank(e.getIdCard())) {
 
-                                Preconditions.checkArgument(trimIdCard.equals(e.getIdCard().trim()),
+                                Preconditions.checkArgument(!trimIdCard.equals(e.getIdCard().trim()),
                                         "有身份证号码重复，请先检查再提交");
                             }
                         });
