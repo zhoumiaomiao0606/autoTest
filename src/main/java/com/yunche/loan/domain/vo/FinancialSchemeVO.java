@@ -80,4 +80,9 @@ public class FinancialSchemeVO {
     private Byte customer_signature_type;//签单类型
 
     private String customer_ctelzone;//客户单位区号
+    private String partner_area_id;//合伙人区域ID
+    private String partner_area_name;//合伙人区域名称
+    private String partner_name;//合伙人
+
+
 }

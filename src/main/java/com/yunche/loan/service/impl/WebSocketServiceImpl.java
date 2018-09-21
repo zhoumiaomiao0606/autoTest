@@ -5,7 +5,6 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.yunche.loan.config.cache.BankCache;
-import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.queue.VideoFaceQueue;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.MapSortUtils;
@@ -206,170 +205,6 @@ public class WebSocketServiceImpl implements WebSocketService {
         return doWaitTeam_ICBC(webSocketParam, wsSessionId);
     }
 
-
-    /**
-     * 面签排队     -台州路桥支行
-     *
-     * @param webSocketParam
-     * @param wsSessionId
-     * @return
-     */
-    private boolean doWaitTeam_ICBC_TaiZhou_LuQiao_default(WebSocketParam webSocketParam, String wsSessionId) {
-
-        // 银行分期本金
-        double bankPeriodPrincipal = webSocketParam.getBankPeriodPrincipal().doubleValue();
-
-        // a、若银行分期本金小于10万，进入机器面签
-        if (bankPeriodPrincipal < 100000) {
-
-            // 进行机器面签
-            return false;
-        }
-
-        // b、10万及以上人工面签等待一分钟，若无人接听转入机器面签
-        else if (bankPeriodPrincipal >= 100000) {
-
-            // 排队时间
-            Long startWaitTime = videoFaceQueue.getWaitTime(webSocketParam.getBankId(), webSocketParam.getUserId(), webSocketParam.getType(),
-                    webSocketParam.getAnyChatUserId(), webSocketParam.getOrderId(), wsSessionId);
-
-            if (null != startWaitTime) {
-
-                // 排队时间
-                long waitTime = System.currentTimeMillis() - startWaitTime;
-
-                // 60s
-                if (waitTime >= 60000) {
-
-                    // 进行机器面签
-                    return false;
-                }
-            }
-        }
-
-        // nothing  -> 正常排队
-        return true;
-    }
-
-    /**
-     * 面签排队     -杭州城站支行
-     *
-     * @param webSocketParam
-     * @param wsSessionId
-     * @return
-     */
-    private boolean doWaitTeam_ICBC_HangZhou_(WebSocketParam webSocketParam, String wsSessionId) {
-
-        // 银行分期本金
-        double bankPeriodPrincipal = webSocketParam.getBankPeriodPrincipal().doubleValue();
-
-        // 城站工行的配置规则为：
-
-        // 1、金额≥30万，全天，无限等待 -> 只能走人工面签
-        if (bankPeriodPrincipal >= 300000) {
-
-            // 正常排队
-            return true;
-        }
-
-        // 2、金额＜30万时，每天08:30~12:00 以及 14:00~17:30  等待时长10分钟后，自动接通机器面签; 剩余时间，等待0分钟后，走机器面签
-        else {
-
-            LocalTime now_time = LocalTime.now();
-
-            LocalTime start_time_8_30 = LocalTime.of(8, 30);
-            LocalTime end_time_12_00 = LocalTime.of(12, 00);
-            LocalTime start_time_14_00 = LocalTime.of(14, 00);
-            LocalTime end_time_17_30 = LocalTime.of(17, 30);
-
-            // 每天08:30~12:00 以及 14:00~17:30
-            boolean match_time = (now_time.isAfter(start_time_8_30) && now_time.isBefore(end_time_12_00)) ||
-                    (now_time.isAfter(start_time_14_00) && now_time.isBefore(end_time_17_30));
-
-            if (match_time) {
-
-                // 排队时间
-                Long startWaitTime = videoFaceQueue.getWaitTime(webSocketParam.getBankId(), webSocketParam.getUserId(), webSocketParam.getType(),
-                        webSocketParam.getAnyChatUserId(), webSocketParam.getOrderId(), wsSessionId);
-
-                if (null != startWaitTime) {
-
-                    // 排队时间
-                    long waitTime = System.currentTimeMillis() - startWaitTime;
-
-                    // 等待时长10分钟后，自动接通机器面签
-                    if (waitTime >= 10 * 60 * 1000) {
-
-                        // 进行机器面签
-                        return false;
-                    }
-                }
-            }
-
-            // 剩余时间，等待0分钟后，走机器面签
-            else {
-
-                // 进行机器面签
-                return false;
-            }
-
-        }
-
-        // nothing  -> 正常排队
-        return true;
-    }
-
-
-    /**
-     * 面签排队     -杭州城站支行
-     *
-     * @param webSocketParam
-     * @param wsSessionId
-     * @return
-     */
-    private boolean doWaitTeam_ICBC_HangZhou(WebSocketParam webSocketParam, String wsSessionId) {
-
-        Long bankId = webSocketParam.getBankId();
-        List<ConfVideoFaceTimeDO> confVideoFaceTimeDOS = confVideoFaceTimeDOMapper.listByBankId(bankId);
-
-        // 无配置
-        if (CollectionUtils.isEmpty(confVideoFaceTimeDOS)) {
-
-            return doWaitTeam_ICBC_HangZhou_default(webSocketParam, wsSessionId);
-        }
-
-        // 有配置
-        else {
-
-            List<ConfVideoFaceTimeDO> type_work_list = Lists.newArrayList();
-            List<ConfVideoFaceTimeDO> type_weekend_list = Lists.newArrayList();
-            List<ConfVideoFaceTimeDO> type_holiday_list = Lists.newArrayList();
-
-            confVideoFaceTimeDOS.stream()
-                    .filter(Objects::nonNull)
-                    .forEach(e -> {
-
-                        Byte type = e.getType();
-
-                        if (CONF_TYPE_WORK.equals(type)) {
-
-                            type_work_list.add(e);
-
-                        } else if (CONF_TYPE_WEEKEND.equals(type)) {
-
-                            type_weekend_list.add(e);
-
-                        } else if (CONF_TYPE_HOLIDAY.equals(type)) {
-
-                            type_holiday_list.add(e);
-                        }
-
-                    });
-
-            return A000(webSocketParam, wsSessionId, type_work_list, type_weekend_list, type_holiday_list);
-        }
-    }
-
     /**
      * 面签排队     -杭州城站支行
      *
@@ -391,33 +226,48 @@ public class WebSocketServiceImpl implements WebSocketService {
         // 有配置
         else {
 
-            List<ConfVideoFaceTimeDO> type_work_list = Lists.newArrayList();
-            List<ConfVideoFaceTimeDO> type_weekend_list = Lists.newArrayList();
-            List<ConfVideoFaceTimeDO> type_holiday_list = Lists.newArrayList();
-
-            confVideoFaceTimeDOS.stream()
-                    .filter(Objects::nonNull)
-                    .forEach(e -> {
-
-                        Byte type = e.getType();
-
-                        if (CONF_TYPE_WORK.equals(type)) {
-
-                            type_work_list.add(e);
-
-                        } else if (CONF_TYPE_WEEKEND.equals(type)) {
-
-                            type_weekend_list.add(e);
-
-                        } else if (CONF_TYPE_HOLIDAY.equals(type)) {
-
-                            type_holiday_list.add(e);
-                        }
-
-                    });
-
-            return A000(webSocketParam, wsSessionId, type_work_list, type_weekend_list, type_holiday_list);
+            return doWaitTeam_ICBC_conf(webSocketParam, wsSessionId, confVideoFaceTimeDOS);
         }
+    }
+
+    /**
+     * 排队-conf
+     *
+     * @param webSocketParam
+     * @param wsSessionId
+     * @param confVideoFaceTimeDOS
+     * @return
+     */
+    private boolean doWaitTeam_ICBC_conf(WebSocketParam webSocketParam,
+                                         String wsSessionId,
+                                         List<ConfVideoFaceTimeDO> confVideoFaceTimeDOS) {
+
+        List<ConfVideoFaceTimeDO> type_work_list = Lists.newArrayList();
+        List<ConfVideoFaceTimeDO> type_weekend_list = Lists.newArrayList();
+        List<ConfVideoFaceTimeDO> type_holiday_list = Lists.newArrayList();
+
+        confVideoFaceTimeDOS.stream()
+                .filter(Objects::nonNull)
+                .forEach(e -> {
+
+                    Byte type = e.getType();
+
+                    if (CONF_TYPE_WORK.equals(type)) {
+
+                        type_work_list.add(e);
+
+                    } else if (CONF_TYPE_WEEKEND.equals(type)) {
+
+                        type_weekend_list.add(e);
+
+                    } else if (CONF_TYPE_HOLIDAY.equals(type)) {
+
+                        type_holiday_list.add(e);
+                    }
+
+                });
+
+        return doWaitTeam_ICBC_conf(webSocketParam, wsSessionId, type_work_list, type_weekend_list, type_holiday_list);
     }
 
     /**
@@ -441,7 +291,8 @@ public class WebSocketServiceImpl implements WebSocketService {
             return doWaitTeam_ICBC_TaiZhou_LuQiao_default(webSocketParam, wsSessionId);
         }
 
-        throw new BizException("bankId有误");
+        // 无限排队
+        return true;
     }
 
     /**
@@ -454,11 +305,11 @@ public class WebSocketServiceImpl implements WebSocketService {
      * @param type_holiday_list
      * @return
      */
-    private boolean A000(WebSocketParam webSocketParam,
-                         String wsSessionId,
-                         List<ConfVideoFaceTimeDO> type_work_list,
-                         List<ConfVideoFaceTimeDO> type_weekend_list,
-                         List<ConfVideoFaceTimeDO> type_holiday_list) {
+    private boolean doWaitTeam_ICBC_conf(WebSocketParam webSocketParam,
+                                         String wsSessionId,
+                                         List<ConfVideoFaceTimeDO> type_work_list,
+                                         List<ConfVideoFaceTimeDO> type_weekend_list,
+                                         List<ConfVideoFaceTimeDO> type_holiday_list) {
 
 
         // 是否存在节假日设置
@@ -466,7 +317,7 @@ public class WebSocketServiceImpl implements WebSocketService {
         // 存在
         if (!CollectionUtils.isEmpty(type_holiday_list)) {
 
-            return A111(webSocketParam, wsSessionId, type_work_list, type_weekend_list, type_holiday_list);
+            return doWaitTeam_holiday(webSocketParam, wsSessionId, type_work_list, type_weekend_list, type_holiday_list);
         }
 
         // 不存在
@@ -486,11 +337,11 @@ public class WebSocketServiceImpl implements WebSocketService {
      * @param type_holiday_list
      * @return
      */
-    private boolean A111(WebSocketParam webSocketParam,
-                         String wsSessionId,
-                         List<ConfVideoFaceTimeDO> type_work_list,
-                         List<ConfVideoFaceTimeDO> type_weekend_list,
-                         List<ConfVideoFaceTimeDO> type_holiday_list) {
+    private boolean doWaitTeam_holiday(WebSocketParam webSocketParam,
+                                       String wsSessionId,
+                                       List<ConfVideoFaceTimeDO> type_work_list,
+                                       List<ConfVideoFaceTimeDO> type_weekend_list,
+                                       List<ConfVideoFaceTimeDO> type_holiday_list) {
 
         // 是
         if (match_holiday(webSocketParam, type_holiday_list)) {
@@ -514,11 +365,13 @@ public class WebSocketServiceImpl implements WebSocketService {
      */
     private boolean match_holiday(WebSocketParam webSocketParam, List<ConfVideoFaceTimeDO> type_holiday_list) {
 
-        double bankPeriodPrincipal = webSocketParam.getBankPeriodPrincipal().doubleValue();
-        LocalDateTime now = LocalDateTime.now();
         final boolean[] result = {false};
 
+        double bankPeriodPrincipal = webSocketParam.getBankPeriodPrincipal().doubleValue();
+        LocalDateTime now = LocalDateTime.now();
+
         type_holiday_list.stream()
+                .filter(Objects::nonNull)
                 .forEach(e -> {
 
                     double startLoanAmount = e.getStartLoanAmount().doubleValue();
@@ -537,6 +390,7 @@ public class WebSocketServiceImpl implements WebSocketService {
 
                         // (无限)排队：人工面签
                         result[0] = true;
+                        return;
                     }
                 });
 
@@ -544,50 +398,53 @@ public class WebSocketServiceImpl implements WebSocketService {
     }
 
 
-//    /**
-//     * holiday
-//     *
-//     * @param webSocketParam
-//     * @param wsSessionId
-//     * @param type_holiday_list
-//     * @return
-//     */
-//    private boolean doWaitTeam_holiday(WebSocketParam webSocketParam,
-//                                       String wsSessionId,
-//                                       List<ConfVideoFaceTimeDO> type_holiday_list) {
-//
-//        double bankPeriodPrincipal = webSocketParam.getBankPeriodPrincipal().doubleValue();
-//        final boolean[] match_time = {false};
-//        LocalDateTime now = LocalDateTime.now();
-//
-//        type_holiday_list.stream()
-//                .forEach(e -> {
-//
-//                    double startLoanAmount = e.getStartLoanAmount().doubleValue();
-//                    double endLoanAmount = e.getEndLoanAmount().doubleValue();
-//
-//                    // 金额区间匹配
-//                    boolean match_loan = bankPeriodPrincipal >= startLoanAmount && bankPeriodPrincipal < endLoanAmount;
-//                    boolean match_loan_ = bankPeriodPrincipal >= startLoanAmount && endLoanAmount == -1L;
-//
-//                    if (match_loan || match_loan_) {
-//
-//                        LocalDateTime startDateTime = LocalDateTime.parse(e.getStartTime(), formatter_yyyyMMdd_HHmmss);
-//                        LocalDateTime endDateTime = LocalDateTime.parse(e.getEndTime(), formatter_yyyyMMdd_HHmmss);
-//
+    /**
+<<<<<<< Updated upstream
+=======
+     * holiday
+     *
+     * @param webSocketParam
+     * @param wsSessionId
+     * @param type_holiday_list
+     * @return
+     */
+    private boolean doWaitTeam_holiday(WebSocketParam webSocketParam,
+                                       String wsSessionId,
+                                       List<ConfVideoFaceTimeDO> type_holiday_list) {
+
+        double bankPeriodPrincipal = webSocketParam.getBankPeriodPrincipal().doubleValue();
+        final boolean[] match_time = {false};
+        LocalDateTime now = LocalDateTime.now();
+
+        type_holiday_list.stream()
+                .forEach(e -> {
+
+                    double startLoanAmount = e.getStartLoanAmount().doubleValue();
+                    double endLoanAmount = e.getEndLoanAmount().doubleValue();
+
+                    // 金额区间匹配
+                    boolean match_loan = bankPeriodPrincipal >= startLoanAmount && bankPeriodPrincipal < endLoanAmount;
+                    boolean match_loan_ = bankPeriodPrincipal >= startLoanAmount && endLoanAmount == -1L;
+
+                    if (match_loan || match_loan_) {
+
+                        LocalDateTime startDateTime = LocalDateTime.parse(e.getStartTime(), formatter_yyyyMMdd_HHmmss);
+                        LocalDateTime endDateTime = LocalDateTime.parse(e.getEndTime(), formatter_yyyyMMdd_HHmmss);
+
 //                        if (now.isAfter()) {
 //                            match_time[0] = true;
 //                        }
-//
-//                    }
-//
-//                });
-//
-//        return true;
-//    }
+
+                    }
+
+                });
+
+        return true;
+    }
 
 
     /**
+>>>>>>> Stashed changes
      * work / weekend
      *
      * @param webSocketParam
@@ -638,6 +495,7 @@ public class WebSocketServiceImpl implements WebSocketService {
             final boolean[] result = {false};
 
             type_work_weekend_list.stream()
+                    .filter(Objects::nonNull)
                     .forEach(e -> {
 
                         LocalTime startTime = LocalTime.parse(e.getStartTime());
@@ -657,6 +515,7 @@ public class WebSocketServiceImpl implements WebSocketService {
 
                             // (无限)排队：人工面签
                             result[0] = true;
+                            return;
                         }
                     });
 
@@ -666,7 +525,7 @@ public class WebSocketServiceImpl implements WebSocketService {
         // 无配置 -> 走默认
         else {
 
-            return doWaitTeam_ICBC_HangZhou_default(webSocketParam, wsSessionId);
+            return doWaitTeam_ICBC_default(webSocketParam, wsSessionId);
         }
     }
 
@@ -740,21 +599,63 @@ public class WebSocketServiceImpl implements WebSocketService {
     }
 
     /**
+     * 面签排队     -台州路桥支行
+     *
+     * @param webSocketParam
+     * @param wsSessionId
+     * @return
+     */
+    private boolean doWaitTeam_ICBC_TaiZhou_LuQiao_default(WebSocketParam webSocketParam, String wsSessionId) {
+
+        // 银行分期本金
+        double bankPeriodPrincipal = webSocketParam.getBankPeriodPrincipal().doubleValue();
+
+        // a、若银行分期本金小于10万，进入机器面签
+        if (bankPeriodPrincipal < 100000) {
+
+            // 进行机器面签
+            return false;
+        }
+
+        // b、10万及以上人工面签等待一分钟，若无人接听转入机器面签
+        else if (bankPeriodPrincipal >= 100000) {
+
+            // 排队时间
+            Long startWaitTime = videoFaceQueue.getWaitTime(webSocketParam.getBankId(), webSocketParam.getUserId(), webSocketParam.getType(),
+                    webSocketParam.getAnyChatUserId(), webSocketParam.getOrderId(), wsSessionId);
+
+            if (null != startWaitTime) {
+
+                // 排队时间
+                long waitTime = System.currentTimeMillis() - startWaitTime;
+
+                // 60s
+                if (waitTime >= 60000) {
+
+                    // 进行机器面签
+                    return false;
+                }
+            }
+        }
+
+        // nothing  -> 正常排队
+        return true;
+    }
+
+    /**
      * 进行机器面签
      *
      * @param webSocketParam
      * @param wsSessionId
      * @return
      */
-    private boolean doMachineFace(WebSocketParam webSocketParam, String wsSessionId) {
+    private void doMachineFace(WebSocketParam webSocketParam, String wsSessionId) {
 
         // 机器面签
         machineFace(wsSessionId, webSocketParam.getBankId());
 
         // 退出排队
         exitTeam(webSocketParam);
-
-        return false;
     }
 
     /**
@@ -923,31 +824,6 @@ public class WebSocketServiceImpl implements WebSocketService {
             String carName = carService.getName(Long.valueOf(universalInfoVO.getCar_detail_id()), CAR_DETAIL, CAR_MODEL);
             videoFaceCustomerVO.setCarName(carName);
         }
-
-//        // customer info
-//        CustomerVO customerVO = loanCustomerService.getById(loanOrderDO.getLoanCustomerId());
-//        if (null != customerVO) {
-//            videoFaceCustomerVO.setId(customerVO.getId());
-//            videoFaceCustomerVO.setName(customerVO.getName());
-//            videoFaceCustomerVO.setIdCard(customerVO.getIdCard());
-//        }
-//
-//        // financial plan
-//        LoanFinancialPlanDO loanFinancialPlanDO = loanFinancialPlanDOMapper.selectByPrimaryKey(loanOrderDO.getLoanFinancialPlanId());
-//        if (null != loanFinancialPlanDO) {
-//            // carPrice
-//            videoFaceCustomerVO.setCarPrice(loanFinancialPlanDO.getCarPrice());
-//            // 意向贷款金额    -> 银行分期本金
-//            videoFaceCustomerVO.setExpectLoanAmount(loanFinancialPlanDO.getBankPeriodPrincipal());
-//        }
-//
-//        // carInfo
-//        LoanCarInfoDO loanCarInfoDO = loanCarInfoDOMapper.selectByPrimaryKey(loanOrderDO.getLoanCarInfoId());
-//        if (null != loanCarInfoDO) {
-//            videoFaceCustomerVO.setCarDetailId(loanCarInfoDO.getCarDetailId());
-//            String carName = carService.getName(loanCarInfoDO.getCarDetailId(), CAR_DETAIL, CAR_MODEL);
-//            videoFaceCustomerVO.setCarName(carName);
-//        }
 
         return videoFaceCustomerVO;
     }

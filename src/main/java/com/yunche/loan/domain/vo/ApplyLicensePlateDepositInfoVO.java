@@ -8,6 +8,10 @@ public class ApplyLicensePlateDepositInfoVO {
     private String order_id;
     private String customer_id;
     private String cname;
+    private String car_detail_id;
+    private String car_brand_name;
+    private String car_name;
+    private String car_detail_name;
     private String card_type;
     private String id_card;
     private String ename;

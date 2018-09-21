@@ -23,10 +23,12 @@ public class FlowOperationMsgParam {
     private Integer pageSize;
 
     Long readStatus;
+    /**
+     * 1:征信反馈;  2:风控结果;  3:业务(其他)通知;  4：众安;
+     */
     Long multipartType;
     Long maxGroupLevel;
     private List<Long> bizAreaIdList = Lists.newArrayList();//区域ID列表
     private List<String> bankList = Lists.newArrayList();//银行ID列表
     Set<String> juniorIds = Sets.newHashSet();
-
 }

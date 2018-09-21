@@ -16,6 +16,7 @@ public class TaskListVO {
     private String receiveManId;
     private String receiveManName;
     private String remitAmount;
+    private String remitTime;
     private String telephoneGmtCreate;
     private String partnerCompensationAmount;
     private String visitGmtCreate;
@@ -154,6 +155,7 @@ public class TaskListVO {
     private String bridgeRepayInterestDate;//还利日期
     private String bridgeRepayRegisterRemark;//还款登记备注
     private String confThirdLoanTime;//借款期限
+    private String bridgeLendStatus;//出借状态
 
     /////////////////////////////--过桥资金--//////////////////////////////
 }
