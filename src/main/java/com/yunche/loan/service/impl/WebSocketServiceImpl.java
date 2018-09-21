@@ -5,7 +5,6 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.yunche.loan.config.cache.BankCache;
-import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.queue.VideoFaceQueue;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.MapSortUtils;
@@ -480,7 +479,7 @@ public class WebSocketServiceImpl implements WebSocketService {
         // 无配置 -> 走默认
         else {
 
-            return doWaitTeam_ICBC_HangZhou_default(webSocketParam, wsSessionId);
+            return doWaitTeam_ICBC_default(webSocketParam, wsSessionId);
         }
     }
 
