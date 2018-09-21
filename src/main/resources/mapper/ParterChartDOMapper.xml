@@ -64,7 +64,7 @@
 
     <select id="selectOrdersSuccessByMonth" parameterType="com.yunche.loan.domain.param.OrdersSuccessByMonthChartParam"  resultType="com.yunche.loan.domain.vo.CreatApplyOrders" >
           SELECT
-             order_id,task_definition_key
+             order_id,task_definition_key,action
              FROM
              loan_process_log
              WHERE order_id in(
@@ -73,7 +73,7 @@
              FROM
              loan_process_log
              WHERE action =1 AND task_definition_key = 'usertask_credit_apply' AND create_time BETWEEN '2016-10' AND '2019-01-01'
-             )  AND create_time BETWEEN '2016-10' AND '2019-01-01' AND action =1
+             )  AND create_time BETWEEN '2016-10' AND '2019-01-01' AND action !=1
     </select>
 
 

@@ -104,6 +104,9 @@ public class ParterChartServiceImpl implements ParterChartService
     {
         OrdersSuccessVO ordersSuccess =new OrdersSuccessVO();
         List<CreatApplyOrders> creatApplyOrders = parterChartDOMapper.selectOrdersSuccessByMonth(param);
+        //
+      /*  creatApplyOrders.stream()*/
+
         return null;
     }
 

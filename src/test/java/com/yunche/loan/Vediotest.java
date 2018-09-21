@@ -14,6 +14,7 @@ import net.bramp.ffmpeg.progress.ProgressListener;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -27,8 +28,8 @@ public class Vediotest
     //基本设置参数及输出
     @Test
     public void ffmpeg() throws IOException {
-        FFmpeg ffmpeg = new FFmpeg("E:\\ffmpeg\\ffmpeg-20180919-49c67e7-win64-shared\\bin\\ffmpeg");
-        FFprobe ffprobe = new FFprobe("E:\\ffmpeg\\ffmpeg-20180919-49c67e7-win64-shared\\bin\\ffprobe");
+        FFmpeg ffmpeg = new FFmpeg("/Users/zhongmingxiao/Desktop/ffmpeg-4.0.2-macos64-shared/bin/ffmpeg");
+        FFprobe ffprobe = new FFprobe("/Users/zhongmingxiao/Desktop/ffmpeg-4.0.2-macos64-shared/bin/ffprobe");
 
         FFmpegBuilder builder = new FFmpegBuilder()
 
@@ -86,15 +87,15 @@ public class Vediotest
 
     @Test
     public void get_progress_while_encoding() throws IOException {
-        FFmpeg ffmpeg = new FFmpeg("E:\\ffmpeg\\ffmpeg-20180919-49c67e7-win64-shared\\bin\\ffmpeg");
-        FFprobe ffprobe = new FFprobe("E:\\ffmpeg\\ffmpeg-20180919-49c67e7-win64-shared\\bin\\ffprobe");
+        FFmpeg ffmpeg = new FFmpeg("/Users/zhongmingxiao/Desktop/ffmpeg-4.0.2-macos64-shared/bin/ffmpeg");
+        FFprobe ffprobe = new FFprobe("/Users/zhongmingxiao/Desktop/ffmpeg-4.0.2-macos64-shared/bin/ffprobe");
         FFmpegExecutor executor = new FFmpegExecutor(ffmpeg, ffprobe);
 
-        FFmpegProbeResult in = ffprobe.probe("G:\\yc.mp4");
+        FFmpegProbeResult in = ffprobe.probe("/Users/zhongmingxiao/Downloads/yc.mp4");
 
         FFmpegBuilder builder = new FFmpegBuilder()
                 .setInput(in) // Or filename
-                .addOutput("G:\\yc1.mp4")
+                .addOutput("/Users/zhongmingxiao/Downloads/yc1.mp4")
                 .setTargetSize(10_720_000)
                 .done();
 
@@ -119,7 +120,10 @@ public class Vediotest
                 ));
             }
         });
+        System.err.println("压缩开始时间："+ LocalDateTime.now());
 
         job.run();
+
+        System.err.println("压缩结束时间："+ LocalDateTime.now());
     }
 }
