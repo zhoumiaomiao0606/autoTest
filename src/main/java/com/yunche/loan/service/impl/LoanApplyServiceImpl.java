@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
+import static com.yunche.loan.config.constant.LoanCustomerConst.CUST_TYPE_COMMON;
 import static com.yunche.loan.config.constant.LoanCustomerConst.CUST_TYPE_GUARANTOR;
 
 /**
@@ -87,6 +88,12 @@ public class LoanApplyServiceImpl implements LoanApplyService {
         // 关联的类型为：担保人时，需要选择担保类型
         if (CUST_TYPE_GUARANTOR.equals(rela.getRelaCustType())) {
             Preconditions.checkNotNull(rela.getRelaGuaranteeType(), "请选择担保类型");
+        }
+
+        // 只能绑定一个共贷人
+        if (CUST_TYPE_COMMON.equals(rela.getRelaCustType())) {
+            List<LoanCustomerDO> loanCustomerDOS = loanCustomerDOMapper.listByPrincipalCustIdAndType(principalCustId, rela.getRelaCustType(), null);
+            Preconditions.checkArgument(CollectionUtils.isEmpty(loanCustomerDOS), "当前订单已绑定共贷人");
         }
 
         // rela  -->  迁移
