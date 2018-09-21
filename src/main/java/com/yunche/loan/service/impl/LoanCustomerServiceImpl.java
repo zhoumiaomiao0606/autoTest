@@ -641,27 +641,13 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
         Long principalCustId = principalLender.getId();
         Preconditions.checkNotNull(principalCustId, "主贷人Id不能为空");
 
-        List<String> idCardList = Lists.newArrayList();
-
-        // 已保存过的
-        List<LoanCustomerDO> loanCustomerDOS = loanCustomerDOMapper.listByPrincipalCustIdAndType(principalCustId, null, null);
-        if (!CollectionUtils.isEmpty(loanCustomerDOS)) {
-
-            loanCustomerDOS.stream()
-                    .forEach(e -> {
-
-                        String idCard = e.getIdCard();
-                        if (StringUtils.isNotBlank(idCard)) {
-                            idCardList.add(idCard.trim());
-                        }
-                    });
-        }
-
+        List<String> idCardList = Lists.newArrayList(principalLender.getIdCard());
 
         List<CustomerParam> guarantorList = allCustDetailParam.getGuarantorList();
         if (!CollectionUtils.isEmpty(guarantorList)) {
 
             guarantorList.stream()
+                    .filter(Objects::nonNull)
                     .forEach(e -> {
 
                         String idCard = e.getIdCard();
@@ -678,6 +664,7 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
         if (!CollectionUtils.isEmpty(emergencyContactList)) {
 
             emergencyContactList.stream()
+                    .filter(Objects::nonNull)
                     .forEach(e -> {
 
                         String idCard = e.getIdCard();
@@ -694,6 +681,7 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
         if (!CollectionUtils.isEmpty(commonLenderList)) {
 
             commonLenderList.stream()
+                    .filter(Objects::nonNull)
                     .forEach(e -> {
 
                         String idCard = e.getIdCard();
