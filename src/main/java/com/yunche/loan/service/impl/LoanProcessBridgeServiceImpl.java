@@ -92,6 +92,9 @@ public class LoanProcessBridgeServiceImpl implements LoanProcessBridgeService {
         LoanProcessBridgeDO loanProcessDO = getLoanProcess(approval.getProcessId());
 
         if (ACTION_ROLL_BACK.equals(approval.getAction())) {
+            // 过桥业务后处理
+            jinTouHangAccommodationApplyService.dealTask(approval);
+
             return loanProcessApprovalRollBackService.execRollBackTask(approval, loanOrderDO, loanProcessDO);
         }
 
@@ -117,8 +120,7 @@ public class LoanProcessBridgeServiceImpl implements LoanProcessBridgeService {
         loanProcessApprovalCommonService.asyncPush(loanOrderDO, approval);
 
 
-        // 过桥业务后处理
-        jinTouHangAccommodationApplyService.dealTask(approval);
+
 
 
 
