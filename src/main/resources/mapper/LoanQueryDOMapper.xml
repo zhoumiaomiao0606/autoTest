@@ -141,6 +141,8 @@
 
             left join car_model m on model_id = m.id
     </select>
+
+
     <!--上牌抵押-->
     <select id="selectApplyLicensePlateDepositInfo"
             resultType="com.yunche.loan.domain.vo.ApplyLicensePlateDepositInfoVO" parameterType="java.lang.Long">
@@ -153,9 +155,15 @@
              c.id_card                          AS id_card,
              e.name                             AS ename,
              p.name                             AS pname,
-             h.old_driving_license_owner        AS old_driving_license_owner,
-             i.car_type                         AS car_type,
              b.bank                             AS bank,
+
+             brand.name                         AS car_brand_name,
+             useGetCarName(car.car_detail_id)   AS car_name,
+             detail.name                        AS car_detail_name,
+             detail.id                          AS car_detail_id,
+             car.car_type                       AS car_type,
+
+             h.old_driving_license_owner        AS old_driving_license_owner,
              h.license_plate_number             AS license_plate_number,
              h.transfer_ownership_date          AS transfer_ownership_date,
              h.apply_license_plate_area         AS apply_license_plate_area,
@@ -170,11 +178,11 @@
 
     from (select * from loan_order where id = #{orderId,jdbcType=BIGINT}) o
 
-    left join loan_customer c on o.loan_customer_id= c.id
+    left join loan_customer c   on o.loan_customer_id= c.id
 
-    left join loan_base_info b on o.loan_base_info_id = b.id
+    left join loan_base_info b  on o.loan_base_info_id = b.id
 
-    left join loan_car_info i on o.loan_car_info_id = i.id
+    left join loan_car_info car on o.loan_car_info_id = car.id
 
     left join vehicle_information h on o.vehicle_information_id = h.id
 
@@ -183,6 +191,12 @@
     left join partner p on b.partner_id = p.id
 
     left join employee e on b.salesman_id = e.id
+
+    left join car_detail detail on car.car_detail_id = detail.id
+
+    left join car_model  model  on detail.model_id = model.id
+
+    left join car_brand  brand  on model.brand_id = brand.id
 
   </select>
 
