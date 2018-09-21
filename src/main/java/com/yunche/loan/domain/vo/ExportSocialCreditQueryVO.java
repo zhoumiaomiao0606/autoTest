@@ -10,6 +10,7 @@ import lombok.Data;
 @Data
 public class ExportSocialCreditQueryVO
 {
+    private String id;
     //业务区域
     private String area_name;
 

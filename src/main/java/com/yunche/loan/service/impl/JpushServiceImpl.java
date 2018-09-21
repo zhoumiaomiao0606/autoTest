@@ -17,6 +17,8 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.Resource;
 import java.util.List;
 
+import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
+
 @Service
 @Transactional
 public class JpushServiceImpl implements JpushService {
@@ -31,20 +33,11 @@ public class JpushServiceImpl implements JpushService {
     @Override
     public void push(FlowOperationMsgDO DO) {
         flowOperationMsgDOMapper.insertSelective(DO);
-        EmployeeDO employeeDO = employeeDOMapper.selectByPrimaryKey(DO.getEmployeeId(), new Byte("0"));
+        EmployeeDO employeeDO = employeeDOMapper.selectByPrimaryKey(DO.getEmployeeId(), VALID_STATUS);
         if (employeeDO != null) {
-            if (!StringUtils.isBlank(employeeDO.getMachineId())) {
+            if (StringUtils.isNotBlank(employeeDO.getMachineId())) {
                 Jpush.sendToRegistrationId(employeeDO.getMachineId(), DO.getPrompt(), DO.getProcessKey());
             }
-        }
-    }
-
-    private String nullToEmp(String str) {
-
-        if (StringUtils.isBlank(str)) {
-            return "";
-        } else {
-            return str;
         }
     }
 
@@ -53,7 +46,7 @@ public class JpushServiceImpl implements JpushService {
         PageHelper.startPage(pageIndex, pageSize, true);
         List<FlowOperationMsgDO> list = flowOperationMsgDOMapper.selectByEmployeeId(SessionUtils.getLoginUser().getId());
         // 取分页信息
-        PageInfo<FlowOperationMsgDO> pageInfo = new PageInfo<FlowOperationMsgDO>(list);
+        PageInfo<FlowOperationMsgDO> pageInfo = new PageInfo<>(list);
         return ResultBean.ofSuccess(list, new Long(pageInfo.getTotal()).intValue(), pageInfo.getPageNum(), pageInfo.getPageSize());
     }
 

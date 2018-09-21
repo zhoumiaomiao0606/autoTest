@@ -16,6 +16,7 @@ public class TaskListVO {
     private String receiveManId;
     private String receiveManName;
     private String remitAmount;
+    private String remitTime;
     private String telephoneGmtCreate;
     private String partnerCompensationAmount;
     private String visitGmtCreate;
