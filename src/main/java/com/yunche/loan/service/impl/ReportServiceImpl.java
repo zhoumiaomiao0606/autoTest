@@ -85,7 +85,7 @@ public class ReportServiceImpl implements ReportService {
         if(banks == null){
             query.setBankList(nullList);
         }else{
-            if(bankList == null){
+            if(bankList.size() == 0){
                 banks.removeAll(Collections.singleton(null));
                 banks = banks.stream().distinct().collect(Collectors.toList());
                 if(banks.size()>0){
@@ -122,7 +122,7 @@ public class ReportServiceImpl implements ReportService {
         if(banks == null){
             query.setBankList(nullList);
         }else{
-            if(bankList == null){
+            if(bankList.size() == 0){
                 banks.removeAll(Collections.singleton(null));
                 banks = banks.stream().distinct().collect(Collectors.toList());
                 if(banks.size()>0){
@@ -154,7 +154,7 @@ public class ReportServiceImpl implements ReportService {
         if(banks == null){
             query.setBankList(nullList);
         }else{
-            if(bankList == null){
+            if(bankList.size() == 0){
                 banks.removeAll(Collections.singleton(null));
                 banks = banks.stream().distinct().collect(Collectors.toList());
                 if(banks.size()>0){
@@ -187,7 +187,7 @@ public class ReportServiceImpl implements ReportService {
         if(banks == null){
             query.setBankList(nullList);
         }else{
-            if(bankList == null){
+            if(bankList.size() == 0){
                 banks.removeAll(Collections.singleton(null));
                 banks = banks.stream().distinct().collect(Collectors.toList());
                 if(banks.size()>0){
@@ -224,7 +224,7 @@ public class ReportServiceImpl implements ReportService {
         if(banks == null){
             query.setBankList(nullList);
         }else{
-            if(bankList == null){
+            if(bankList.size() == 0){
                 banks.removeAll(Collections.singleton(null));
                 banks = banks.stream().distinct().collect(Collectors.toList());
                 if(banks.size()>0){
@@ -256,7 +256,7 @@ public class ReportServiceImpl implements ReportService {
         if(banks == null){
             query.setBankList(nullList);
         }else{
-            if(bankList == null){
+            if(bankList.size() == 0){
                 banks.removeAll(Collections.singleton(null));
                 banks = banks.stream().distinct().collect(Collectors.toList());
                 if(banks.size()>0){
@@ -289,7 +289,7 @@ public class ReportServiceImpl implements ReportService {
         if(banks == null){
             query.setBankList(nullList);
         }else{
-            if(bankList == null){
+            if(bankList.size() == 0){
                 banks.removeAll(Collections.singleton(null));
                 banks = banks.stream().distinct().collect(Collectors.toList());
                 if(banks.size()>0){
@@ -326,7 +326,7 @@ public class ReportServiceImpl implements ReportService {
         if(banks == null){
             query.setBankList(nullList);
         }else{
-            if(bankList == null){
+            if(bankList.size() == 0){
                 banks.removeAll(Collections.singleton(null));
                 banks = banks.stream().distinct().collect(Collectors.toList());
                 if(banks.size()>0){
@@ -358,7 +358,7 @@ public class ReportServiceImpl implements ReportService {
         if(banks == null){
             query.setBankList(nullList);
         }else{
-            if(bankList == null){
+            if(bankList.size() == 0){
                 banks.removeAll(Collections.singleton(null));
                 banks = banks.stream().distinct().collect(Collectors.toList());
                 if(banks.size()>0){
