@@ -339,7 +339,7 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
                         }
                         LoanCustomerDO loanCustomerDO = loanCustomerDOMapper.selectByPrimaryKey(bankAndSocietyPicVO.getCustomerId(), null);
                         if (loanCustomerDO != null && picPath.size() != 0) {
-                            String fileName = loanCustomerDO.getId()+loanCustomerDO.getName()+ loanCustomerDO.getIdCard()+".jpg";
+                            String fileName = loanCustomerDO.getId() + loanCustomerDO.getName() + loanCustomerDO.getIdCard() + ".jpg";
                             String retPath = ImageUtil.mergeImage2Pic_NO_COMPROCESS(fileName, picPath);
                             File file = new File(retPath);
                             //上传OSS
@@ -377,7 +377,7 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
                         }
                         LoanCustomerDO loanCustomerDO = loanCustomerDOMapper.selectByPrimaryKey(bankAndSocietyPicVO.getCustomerId(), null);
                         if (loanCustomerDO != null && picPath.size() != 0) {
-                            String fileName =  loanCustomerDO.getId()+loanCustomerDO.getName()+ loanCustomerDO.getIdCard()+".jpg";
+                            String fileName = loanCustomerDO.getId() + loanCustomerDO.getName() + loanCustomerDO.getIdCard() + ".jpg";
                             String retPath = ImageUtil.mergeImage2Pic_NO_COMPROCESS(fileName, picPath);
 
                             File file = new File(retPath);
@@ -644,7 +644,7 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
         List<String> idCardList = Lists.newArrayList();
 
         // 已保存过的
-        List<LoanCustomerDO> loanCustomerDOS = loanCustomerDOMapper.listByPrincipalCustIdAndType(principalCustId, null, VALID_STATUS);
+        List<LoanCustomerDO> loanCustomerDOS = loanCustomerDOMapper.listByPrincipalCustIdAndType(principalCustId, null, null);
         if (!CollectionUtils.isEmpty(loanCustomerDOS)) {
 
             loanCustomerDOS.stream()
@@ -668,7 +668,7 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
                         if (StringUtils.isNotBlank(idCard)) {
 
                             idCard = idCard.trim();
-                            Preconditions.checkArgument(idCardList.contains(idCard), "有身份证号码重复，请先检查再提交");
+                            Preconditions.checkArgument(!idCardList.contains(idCard), "有身份证号码重复，请先检查再提交");
                             idCardList.add(idCard);
                         }
                     });
@@ -684,7 +684,7 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
                         if (StringUtils.isNotBlank(idCard)) {
 
                             idCard = idCard.trim();
-                            Preconditions.checkArgument(idCardList.contains(idCard), "有身份证号码重复，请先检查再提交");
+                            Preconditions.checkArgument(!idCardList.contains(idCard), "有身份证号码重复，请先检查再提交");
                             idCardList.add(idCard);
                         }
                     });
@@ -700,7 +700,7 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
                         if (StringUtils.isNotBlank(idCard)) {
 
                             idCard = idCard.trim();
-                            Preconditions.checkArgument(idCardList.contains(idCard), "有身份证号码重复，请先检查再提交");
+                            Preconditions.checkArgument(!idCardList.contains(idCard), "有身份证号码重复，请先检查再提交");
                             idCardList.add(idCard);
                         }
                     });
