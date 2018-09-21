@@ -82,19 +82,28 @@ public class ReportServiceImpl implements ReportService {
         List<String> bankList = query.getBankList();
         List<String> nullList = new ArrayList<>();
         nullList.add("ZX");
-        if(banks !=null&&bankList!=null){
-            banks.removeAll(Collections.singleton(null));
-            banks = banks.stream().distinct().collect(Collectors.toList());
-            banks.retainAll(bankList);
-            if(banks.size()>0){
-                query.setBankList(banks);
-            }else{
-                query.setBankList(nullList);
-            }
-        }else{
+        if(banks == null){
             query.setBankList(nullList);
+        }else{
+            if(bankList.size() == 0){
+                banks.removeAll(Collections.singleton(null));
+                banks = banks.stream().distinct().collect(Collectors.toList());
+                if(banks.size()>0){
+                    query.setBankList(banks);
+                }else{
+                    query.setBankList(nullList);
+                }
+            }else{
+                banks.removeAll(Collections.singleton(null));
+                banks = banks.stream().distinct().collect(Collectors.toList());
+                banks.retainAll(bankList);
+                if(banks.size()>0){
+                    query.setBankList(banks);
+                }else{
+                    query.setBankList(nullList);
+                }
+            }
         }
-
         PageHelper.startPage(query.getPageIndex(), query.getPageSize(), true);
         List<ContractSetReportVO> list = zhonganInfoDOMapper.contractSet(query);
         PageInfo<ContractSetReportVO> pageInfo = new PageInfo<>(list);
@@ -110,17 +119,27 @@ public class ReportServiceImpl implements ReportService {
         List<String> bankList = query.getBankList();
         List<String> nullList = new ArrayList<>();
         nullList.add("ZX");
-        if(banks !=null&&bankList!=null){
-            banks.removeAll(Collections.singleton(null));
-            banks = banks.stream().distinct().collect(Collectors.toList());
-            banks.retainAll(bankList);
-            if(banks.size()>0){
-                query.setBankList(banks);
-            }else{
-                query.setBankList(nullList);
-            }
-        }else{
+        if(banks == null){
             query.setBankList(nullList);
+        }else{
+            if(bankList.size() == 0){
+                banks.removeAll(Collections.singleton(null));
+                banks = banks.stream().distinct().collect(Collectors.toList());
+                if(banks.size()>0){
+                    query.setBankList(banks);
+                }else{
+                    query.setBankList(nullList);
+                }
+            }else{
+                banks.removeAll(Collections.singleton(null));
+                banks = banks.stream().distinct().collect(Collectors.toList());
+                banks.retainAll(bankList);
+                if(banks.size()>0){
+                    query.setBankList(banks);
+                }else{
+                    query.setBankList(nullList);
+                }
+            }
         }
         return zhonganInfoDOMapper.contractSetTotal(query);
     }
@@ -132,17 +151,27 @@ public class ReportServiceImpl implements ReportService {
         List<String> bankList = query.getBankList();
         List<String> nullList = new ArrayList<>();
         nullList.add("ZX");
-        if(banks !=null&&bankList!=null){
-            banks.removeAll(Collections.singleton(null));
-            banks = banks.stream().distinct().collect(Collectors.toList());
-            banks.retainAll(bankList);
-            if(banks.size()>0){
-                query.setBankList(banks);
-            }else{
-                query.setBankList(nullList);
-            }
-        }else{
+        if(banks == null){
             query.setBankList(nullList);
+        }else{
+            if(bankList.size() == 0){
+                banks.removeAll(Collections.singleton(null));
+                banks = banks.stream().distinct().collect(Collectors.toList());
+                if(banks.size()>0){
+                    query.setBankList(banks);
+                }else{
+                    query.setBankList(nullList);
+                }
+            }else{
+                banks.removeAll(Collections.singleton(null));
+                banks = banks.stream().distinct().collect(Collectors.toList());
+                banks.retainAll(bankList);
+                if(banks.size()>0){
+                    query.setBankList(banks);
+                }else{
+                    query.setBankList(nullList);
+                }
+            }
         }
         List<ContractSetReportVO> list = zhonganInfoDOMapper.contractSetExport(query);
         return createContractExcelFile(list);
@@ -155,17 +184,27 @@ public class ReportServiceImpl implements ReportService {
         List<String> bankList = query.getBankList();
         List<String> nullList = new ArrayList<>();
         nullList.add("ZX");
-        if(banks !=null&&bankList!=null){
-            banks.removeAll(Collections.singleton(null));
-            banks = banks.stream().distinct().collect(Collectors.toList());
-            banks.retainAll(bankList);
-            if(banks.size()>0){
-                query.setBankList(banks);
-            }else{
-                query.setBankList(nullList);
-            }
-        }else{
+        if(banks == null){
             query.setBankList(nullList);
+        }else{
+            if(bankList.size() == 0){
+                banks.removeAll(Collections.singleton(null));
+                banks = banks.stream().distinct().collect(Collectors.toList());
+                if(banks.size()>0){
+                    query.setBankList(banks);
+                }else{
+                    query.setBankList(nullList);
+                }
+            }else{
+                banks.removeAll(Collections.singleton(null));
+                banks = banks.stream().distinct().collect(Collectors.toList());
+                banks.retainAll(bankList);
+                if(banks.size()>0){
+                    query.setBankList(banks);
+                }else{
+                    query.setBankList(nullList);
+                }
+            }
         }
         PageHelper.startPage(query.getPageIndex(), query.getPageSize(), true);
         List<BankCreditPrincipalVO> list = zhonganInfoDOMapper.bankCreditPrincipal(query);
@@ -182,17 +221,27 @@ public class ReportServiceImpl implements ReportService {
         List<String> bankList = query.getBankList();
         List<String> nullList = new ArrayList<>();
         nullList.add("ZX");
-        if(banks !=null&&bankList!=null){
-            banks.removeAll(Collections.singleton(null));
-            banks = banks.stream().distinct().collect(Collectors.toList());
-            banks.retainAll(bankList);
-            if(banks.size()>0){
-                query.setBankList(banks);
-            }else{
-                query.setBankList(nullList);
-            }
-        }else{
+        if(banks == null){
             query.setBankList(nullList);
+        }else{
+            if(bankList.size() == 0){
+                banks.removeAll(Collections.singleton(null));
+                banks = banks.stream().distinct().collect(Collectors.toList());
+                if(banks.size()>0){
+                    query.setBankList(banks);
+                }else{
+                    query.setBankList(nullList);
+                }
+            }else{
+                banks.removeAll(Collections.singleton(null));
+                banks = banks.stream().distinct().collect(Collectors.toList());
+                banks.retainAll(bankList);
+                if(banks.size()>0){
+                    query.setBankList(banks);
+                }else{
+                    query.setBankList(nullList);
+                }
+            }
         }
         return zhonganInfoDOMapper.bankCreditPrincipalTotal(query);
     }
@@ -204,17 +253,27 @@ public class ReportServiceImpl implements ReportService {
         List<String> bankList = query.getBankList();
         List<String> nullList = new ArrayList<>();
         nullList.add("ZX");
-        if(banks !=null&&bankList!=null){
-            banks.removeAll(Collections.singleton(null));
-            banks = banks.stream().distinct().collect(Collectors.toList());
-            banks.retainAll(bankList);
-            if(banks.size()>0){
-                query.setBankList(banks);
-            }else{
-                query.setBankList(nullList);
-            }
-        }else{
+        if(banks == null){
             query.setBankList(nullList);
+        }else{
+            if(bankList.size() == 0){
+                banks.removeAll(Collections.singleton(null));
+                banks = banks.stream().distinct().collect(Collectors.toList());
+                if(banks.size()>0){
+                    query.setBankList(banks);
+                }else{
+                    query.setBankList(nullList);
+                }
+            }else{
+                banks.removeAll(Collections.singleton(null));
+                banks = banks.stream().distinct().collect(Collectors.toList());
+                banks.retainAll(bankList);
+                if(banks.size()>0){
+                    query.setBankList(banks);
+                }else{
+                    query.setBankList(nullList);
+                }
+            }
         }
         List<BankCreditPrincipalVO> list = zhonganInfoDOMapper.bankCreditPrincipalExport(query);
         return createBankCreditPrincipalExcelFile(list);
@@ -227,17 +286,27 @@ public class ReportServiceImpl implements ReportService {
         List<String> bankList = query.getBankList();
         List<String> nullList = new ArrayList<>();
         nullList.add("ZX");
-        if(banks !=null&&bankList!=null){
-            banks.removeAll(Collections.singleton(null));
-            banks = banks.stream().distinct().collect(Collectors.toList());
-            banks.retainAll(bankList);
-            if(banks.size()>0){
-                query.setBankList(banks);
-            }else{
-                query.setBankList(nullList);
-            }
-        }else{
+        if(banks == null){
             query.setBankList(nullList);
+        }else{
+            if(bankList.size() == 0){
+                banks.removeAll(Collections.singleton(null));
+                banks = banks.stream().distinct().collect(Collectors.toList());
+                if(banks.size()>0){
+                    query.setBankList(banks);
+                }else{
+                    query.setBankList(nullList);
+                }
+            }else{
+                banks.removeAll(Collections.singleton(null));
+                banks = banks.stream().distinct().collect(Collectors.toList());
+                banks.retainAll(bankList);
+                if(banks.size()>0){
+                    query.setBankList(banks);
+                }else{
+                    query.setBankList(nullList);
+                }
+            }
         }
         PageHelper.startPage(query.getPageIndex(), query.getPageSize(), true);
         List<BankCreditPrincipalVO> list = zhonganInfoDOMapper.bankCreditAll(query);
@@ -254,17 +323,27 @@ public class ReportServiceImpl implements ReportService {
         List<String> bankList = query.getBankList();
         List<String> nullList = new ArrayList<>();
         nullList.add("ZX");
-        if(banks !=null&&bankList!=null){
-            banks.removeAll(Collections.singleton(null));
-            banks = banks.stream().distinct().collect(Collectors.toList());
-            banks.retainAll(bankList);
-            if(banks.size()>0){
-                query.setBankList(banks);
-            }else{
-                query.setBankList(nullList);
-            }
-        }else{
+        if(banks == null){
             query.setBankList(nullList);
+        }else{
+            if(bankList.size() == 0){
+                banks.removeAll(Collections.singleton(null));
+                banks = banks.stream().distinct().collect(Collectors.toList());
+                if(banks.size()>0){
+                    query.setBankList(banks);
+                }else{
+                    query.setBankList(nullList);
+                }
+            }else{
+                banks.removeAll(Collections.singleton(null));
+                banks = banks.stream().distinct().collect(Collectors.toList());
+                banks.retainAll(bankList);
+                if(banks.size()>0){
+                    query.setBankList(banks);
+                }else{
+                    query.setBankList(nullList);
+                }
+            }
         }
         return zhonganInfoDOMapper.bankCreditAllTotal(query);
     }
@@ -276,17 +355,27 @@ public class ReportServiceImpl implements ReportService {
         List<String> bankList = query.getBankList();
         List<String> nullList = new ArrayList<>();
         nullList.add("ZX");
-        if(banks !=null&&bankList!=null){
-            banks.removeAll(Collections.singleton(null));
-            banks = banks.stream().distinct().collect(Collectors.toList());
-            banks.retainAll(bankList);
-            if(banks.size()>0){
-                query.setBankList(banks);
-            }else{
-                query.setBankList(nullList);
-            }
-        }else{
+        if(banks == null){
             query.setBankList(nullList);
+        }else{
+            if(bankList.size() == 0){
+                banks.removeAll(Collections.singleton(null));
+                banks = banks.stream().distinct().collect(Collectors.toList());
+                if(banks.size()>0){
+                    query.setBankList(banks);
+                }else{
+                    query.setBankList(nullList);
+                }
+            }else{
+                banks.removeAll(Collections.singleton(null));
+                banks = banks.stream().distinct().collect(Collectors.toList());
+                banks.retainAll(bankList);
+                if(banks.size()>0){
+                    query.setBankList(banks);
+                }else{
+                    query.setBankList(nullList);
+                }
+            }
         }
         List<BankCreditPrincipalVO> list = zhonganInfoDOMapper.bankCreditAllExport(query);
         return createBankCreditPrincipalExcelFile(list);
