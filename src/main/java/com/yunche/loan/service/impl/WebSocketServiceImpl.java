@@ -603,15 +603,13 @@ public class WebSocketServiceImpl implements WebSocketService {
      * @param wsSessionId
      * @return
      */
-    private boolean doMachineFace(WebSocketParam webSocketParam, String wsSessionId) {
+    private void doMachineFace(WebSocketParam webSocketParam, String wsSessionId) {
 
         // 机器面签
         machineFace(wsSessionId, webSocketParam.getBankId());
 
         // 退出排队
         exitTeam(webSocketParam);
-
-        return false;
     }
 
     /**
