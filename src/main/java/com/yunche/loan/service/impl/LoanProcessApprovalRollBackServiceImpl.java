@@ -173,7 +173,7 @@ public class LoanProcessApprovalRollBackServiceImpl implements LoanProcessApprov
         checkTaskProcessStatus(loanProcessDO, nextTaskKeys, approval.getTaskDefinitionKey());
 
         // 执行[反审]
-        doRollBack(loanOrderDO.getProcessInstId(),
+        doRollBack(loanProcessDO.getProcessInstId(),
                 Lists.newArrayList(),
                 Lists.newArrayList(),
                 BRIDGE_INTEREST_RECORD.getCode()
@@ -202,7 +202,7 @@ public class LoanProcessApprovalRollBackServiceImpl implements LoanProcessApprov
         checkTaskProcessStatus(loanProcessDO, nextTaskKeys, approval.getTaskDefinitionKey());
 
         // 执行[反审]
-        doRollBack(loanOrderDO.getProcessInstId(),
+        doRollBack(loanProcessDO.getProcessInstId(),
                 Lists.newArrayList(),
                 Lists.newArrayList(),
                 BRIDGE_REPAY_RECORD.getCode()
@@ -694,6 +694,16 @@ public class LoanProcessApprovalRollBackServiceImpl implements LoanProcessApprov
                     .forEach(taskKey -> {
 
                         loanProcessApprovalCommonService.updateCurrentTaskProcessStatus(loanProcessDO, taskKey, TASK_PROCESS_TODO, approval);
+                    });
+        }
+
+        if (!CollectionUtils.isEmpty(nextTaskKeys)) {
+
+            nextTaskKeys.stream()
+                    .filter(StringUtils::isNotBlank)
+                    .forEach(taskKey -> {
+
+                        loanProcessApprovalCommonService.updateCurrentTaskProcessStatus(loanProcessDO, taskKey, TASK_PROCESS_INIT, approval);
                     });
         }
 
