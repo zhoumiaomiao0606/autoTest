@@ -292,7 +292,8 @@ public class WebSocketServiceImpl implements WebSocketService {
             return doWaitTeam_ICBC_TaiZhou_LuQiao_default(webSocketParam, wsSessionId);
         }
 
-        throw new BizException("bankId有误");
+        // 无限排队
+        return true;
     }
 
     /**
