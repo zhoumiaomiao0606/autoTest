@@ -47,4 +47,19 @@ public class VideoFaceConst {
      */
     public static final Long ADMIN_VIDEO_FACE_BANK_ID = -1L;
 
+
+    //////////////////////////////////-- conf_video_face_time --> type --///////////////////////////////////////////////
+    /**
+     * 工作日
+     */
+    public static final Byte CONF_TYPE_WORK = 1;
+    /**
+     * 周末
+     */
+    public static final Byte CONF_TYPE_WEEKEND = 2;
+    /**
+     * 节假日
+     */
+    public static final Byte CONF_TYPE_HOLIDAY = 3;
+    //////////////////////////////////-- conf_video_face_time --> type --///////////////////////////////////////////////
 }

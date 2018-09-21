@@ -14,6 +14,8 @@ public class ThirdPartyFundBusinessDO {
 
     private Date lendDate;
 
+    private BigDecimal lendAmount;
+
     private Byte repayType;
 
     private Date repayDate;
@@ -27,6 +29,8 @@ public class ThirdPartyFundBusinessDO {
     private Date repayInterestDate;
 
     private String repayRegisterRemark;
+
+    private Byte lendStatus;
 
     private Date gmtCreate;
 

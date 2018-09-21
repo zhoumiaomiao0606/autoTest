@@ -44,8 +44,9 @@ import static com.yunche.loan.config.constant.ProcessApprovalConst.ACTION_PASS;
 public class BankOpenCardServiceImpl implements BankOpenCardService {
 
     private static final Logger LOG = LoggerFactory.getLogger(BankOpenCardServiceImpl.class);
+    private static final Long AUTO_EMPLOYEE_ID = 878L;
 
-
+    private static final String AUTO_EMPLOYEE_NAME = "自动任务";
     @Autowired
     LoanQueryService loanQueryService;
 
@@ -103,6 +104,8 @@ public class BankOpenCardServiceImpl implements BankOpenCardService {
     @Autowired
     LoanProcessService loanProcessService;
 
+    @Autowired
+    LoanProcessLogDOMapper loanProcessLogDOMapper;
     /**
      * 银行开卡详情页
      *
@@ -302,16 +305,33 @@ public class BankOpenCardServiceImpl implements BankOpenCardService {
                     Preconditions.checkArgument(count2>0,"更新银行流水失败");
                 }
                 if (!openCard.equals(LoanOrderProcessConst.TASK_PROCESS_DONE)) {
-                    ApprovalParam approvalParam = new ApprovalParam();
-                    approvalParam.setOrderId(e.getOrderId());
-                    approvalParam.setTaskDefinitionKey(LoanProcessEnum.BANK_OPEN_CARD.getCode());
-                    approvalParam.setAction(ACTION_PASS);
-                    approvalParam.setNeedLog(true);
-                    approvalParam.setAutoTask(true);
-                    approvalParam.setCheckPermission(false);
-                    ResultBean<Void> approvalResultBean = loanProcessService.approval(approvalParam);
-                    LOG.info(e.getOrderId() + approvalResultBean.getMsg());
+                    try{
+                        ApprovalParam approvalParam = new ApprovalParam();
+                        approvalParam.setOrderId(e.getOrderId());
+                        approvalParam.setTaskDefinitionKey(LoanProcessEnum.BANK_OPEN_CARD.getCode());
+                        approvalParam.setAction(ACTION_PASS);
+                        approvalParam.setNeedLog(true);
+                        approvalParam.setAutoTask(true);
+                        approvalParam.setCheckPermission(false);
+                        ResultBean<Void> approvalResultBean = loanProcessService.approval(approvalParam);
+                        LOG.info(e.getOrderId() + approvalResultBean.getMsg());
+                    }catch (Exception e2){
+                        LoanProcessDO processDO = loanProcessDOMapper.selectByPrimaryKey(e.getOrderId());
+                        processDO.setBankOpenCard(ACTION_PASS);
+                        int count = loanProcessDOMapper.updateByPrimaryKeySelective(processDO);
+                        Preconditions.checkArgument(count>0,"更新失败");
 
+                        //记录一条假日志
+                        LoanProcessLogDO loanProcessLogDO = new LoanProcessLogDO();
+                        loanProcessLogDO.setOrderId(e.getOrderId());
+                        loanProcessLogDO.setTaskDefinitionKey(LoanProcessEnum.BANK_OPEN_CARD.getCode());
+                        loanProcessLogDO.setAction(ACTION_PASS);
+                        loanProcessLogDO.setUserId(AUTO_EMPLOYEE_ID);
+                        loanProcessLogDO.setUserName(AUTO_EMPLOYEE_NAME);
+                        loanProcessLogDO.setCreateTime(new Date());
+                        int nLog = loanProcessLogDOMapper.insertSelective(loanProcessLogDO);
+                        Preconditions.checkArgument(nLog > 0, "操作日志记录失败");
+                    }
                     BankInterfaceSerialDO bankInterfaceSerialDO = bankInterfaceSerialDOMapper.selectByCustomerIdAndTransCode(loanOrderDO.getLoanCustomerId(), IDict.K_TRANS_CODE.CREDITCARDAPPLY);
                     bankInterfaceSerialDO.setStatus(IDict.K_JYZT.SUCCESS);
                     bankInterfaceSerialDOMapper.updateByPrimaryKeySelective(bankInterfaceSerialDO);

@@ -99,7 +99,7 @@ public class ChartController
     /**
      * EXCEl财务部 - 快捷统计
      */
-    @GetMapping(value = "/financialDepartmentRemitDetailChartShortcutStatistics")
+    @PostMapping(value = "/financialDepartmentRemitDetailChartShortcutStatistics")
     public ResultBean financialDepartmentRemitDetailChartShortcutStatistics(@RequestBody FinancialDepartmentRemitDetailChartParam param)
     {
         return chartService.financialDepartmentRemitDetailChartShortcutStatistics(param);
@@ -131,7 +131,7 @@ public class ChartController
     /**
      * EXCEl抵押部 - 快捷统计
      */
-    @GetMapping(value = "/mortgageOverdueQueryForChartShortcutStatistics")
+    @PostMapping(value = "/mortgageOverdueQueryForChartShortcutStatistics")
     public ResultBean mortgageOverdueQueryForChartShortcutStatistics(@RequestBody MortgageOverdueParam param)
     {
         return chartService.mortgageOverdueQueryForChartShortcutStatistics(param);
@@ -183,7 +183,7 @@ public class ChartController
     /**
      * EXCEl 渠道部 - 快捷统计
      */
-    @GetMapping(value = "/awaitRemitDetailChartShortcutStatistics")
+    @PostMapping(value = "/awaitRemitDetailChartShortcutStatistics")
     public ResultBean awaitRemitDetailChartShortcutStatistics(@RequestBody AwaitRemitDetailChartParam param)
     {
         return chartService.awaitRemitDetailChartShortcutStatistics(param);
@@ -204,7 +204,7 @@ public class ChartController
     /**
      * EXCEl 渠道部 - 快捷统计
      */
-    @GetMapping(value = "/companyRemitDetailChartShortcutStatistics")
+    @PostMapping(value = "/companyRemitDetailChartShortcutStatistics")
     public ResultBean companyRemitDetailChartShortcutStatistics(@RequestBody CompanyRemitDetailChartParam param)
     {
         return chartService.companyRemitDetailChartShortcutStatistics(param);

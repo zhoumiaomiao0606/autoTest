@@ -21,7 +21,7 @@ public class CompanyRemitDetailChartParam  extends BaseQuery
 
     private Set<String> juniorIds = Sets.newHashSet();
 
-    private String startTime;
+    private String startDate;
 
-    private String endTime;
+    private String endDate;
 }

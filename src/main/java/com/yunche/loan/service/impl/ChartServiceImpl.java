@@ -206,6 +206,19 @@ public class ChartServiceImpl implements ChartService
     @Override
     public ResultBean financialDepartmentRemitDetailChartShortcutStatistics(FinancialDepartmentRemitDetailChartParam param)
     {
+        Long loginUserId = SessionUtils.getLoginUser().getId();
+
+        param.setJuniorIds(employeeService.getSelfAndCascadeChildIdList(loginUserId));
+        param.setMaxGroupLevel(taskSchedulingDOMapper.selectMaxGroupLevel(loginUserId));
+
+        //大区
+        if (param.getBiz_areaId() !=null)
+        {
+            List<Long> selfAndChildBiz_area = getSelfAndChildBiz_area(param.getBiz_areaId());
+            selfAndChildBiz_area.add(param.getBiz_areaId());
+            param.setBizAreaList(selfAndChildBiz_area);
+
+        }
         List<FinancialDepartmentRemitDetailChartVO> list = chartDOMapper.selectFinancialDepartmentRemitDetailChartVO(param);
         //计算统计数据====判空
         ShortcutStatisticsVO shortcutStatisticsVO =new ShortcutStatisticsVO();
@@ -236,6 +249,19 @@ public class ChartServiceImpl implements ChartService
     @Override
     public ResultBean mortgageOverdueQueryForChartShortcutStatistics(MortgageOverdueParam param)
     {
+        Long loginUserId = SessionUtils.getLoginUser().getId();
+
+        param.setJuniorIds(employeeService.getSelfAndCascadeChildIdList(loginUserId));
+        param.setMaxGroupLevel(taskSchedulingDOMapper.selectMaxGroupLevel(loginUserId));
+
+        //大区
+        if (param.getBiz_areaId() !=null)
+        {
+            List<Long> selfAndChildBiz_area = getSelfAndChildBiz_area(param.getBiz_areaId());
+            selfAndChildBiz_area.add(param.getBiz_areaId());
+            param.setBizAreaList(selfAndChildBiz_area);
+
+        }
         List<MortgageOverdueChartVO> list = chartDOMapper.selectMortgageOverdueChartVO(param);
         //计算统计数据
         ShortcutStatisticsVO shortcutStatisticsVO =new ShortcutStatisticsVO();

@@ -60,7 +60,7 @@ public class MaterialReviewChartVO
     private Date carMaterialCreateTime;
 
     //资料增补时间
-    private Date supplementTime;
+    private String supplementTime;
 
     //合同上交银行日期
     private Date express_sendbank_date;
