@@ -382,7 +382,7 @@ public class WebSocketServiceImpl implements WebSocketService {
                     // 匹配：节假日时间段
                     boolean match_dateTime = now.isAfter(startDateTime) && now.isBefore(endDateTime);
                     // 匹配：金额
-                    boolean match_loan = bankPeriodPrincipal >= startLoanAmount && bankPeriodPrincipal <= endLoanAmount;
+                    boolean match_loan = bankPeriodPrincipal >= startLoanAmount && bankPeriodPrincipal < endLoanAmount;
                     boolean match_loan_ = bankPeriodPrincipal >= startLoanAmount && endLoanAmount == -1;
 
                     boolean match = match_dateTime && (match_loan || match_loan_);
@@ -399,8 +399,8 @@ public class WebSocketServiceImpl implements WebSocketService {
 
 
     /**
-<<<<<<< Updated upstream
-=======
+     * <<<<<<< Updated upstream
+     * =======
      * holiday
      *
      * @param webSocketParam
@@ -444,7 +444,7 @@ public class WebSocketServiceImpl implements WebSocketService {
 
 
     /**
->>>>>>> Stashed changes
+     * >>>>>>> Stashed changes
      * work / weekend
      *
      * @param webSocketParam
@@ -507,7 +507,7 @@ public class WebSocketServiceImpl implements WebSocketService {
                         // 匹配：时间段
                         boolean match_time = nowTime.isAfter(startTime) && nowTime.isBefore(endTime);
                         // 匹配：金额
-                        boolean match_loan = bankPeriodPrincipal >= startLoanAmount && bankPeriodPrincipal <= endLoanAmount;
+                        boolean match_loan = bankPeriodPrincipal >= startLoanAmount && bankPeriodPrincipal < endLoanAmount;
                         boolean match_loan_ = bankPeriodPrincipal >= startLoanAmount && endLoanAmount == -1;
 
                         boolean match = match_time && (match_loan || match_loan_);
