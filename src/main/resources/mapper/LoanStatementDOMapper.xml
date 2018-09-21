@@ -569,7 +569,7 @@
         create_time
         LIMIT 1
         ) AS credit_apply_time,
-        credit_info.gmt_modify AS credit_query_time,
+        '' AS credit_query_time,
         (
         SELECT
         user_name
