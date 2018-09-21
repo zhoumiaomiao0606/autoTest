@@ -24,6 +24,11 @@ public class JinTouHangAccommodationApplyController {
 
     //--------------------------金投行过桥处理------------------------
 
+//    @PostMapping(value = "/revoke", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+//    ResultBean revoke(@RequestBody AccommodationApplyParam param) {
+//        return accommodationApplyService.revoke(param);
+//    }
+
     /**
      * 批量导入借款
      *

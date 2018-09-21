@@ -62,6 +62,10 @@ public class LoanProcessBridgeServiceImpl implements LoanProcessBridgeService {
     private LoanProcessApprovalRollBackService loanProcessApprovalRollBackService;
 
 
+    @Autowired
+    private JinTouHangAccommodationApplyService jinTouHangAccommodationApplyService;
+
+
     @Override
     @Transactional
     public ResultBean<Void> approval(ApprovalParam approval) {
@@ -111,6 +115,12 @@ public class LoanProcessBridgeServiceImpl implements LoanProcessBridgeService {
 
         // 异步推送
         loanProcessApprovalCommonService.asyncPush(loanOrderDO, approval);
+
+
+        // 过桥业务后处理
+        jinTouHangAccommodationApplyService.dealTask(approval);
+
+
 
         return ResultBean.ofSuccess(null, "[" + LoanProcessEnum.getNameByCode(approval.getOriginalTaskDefinitionKey()) + "]任务执行成功");
     }
