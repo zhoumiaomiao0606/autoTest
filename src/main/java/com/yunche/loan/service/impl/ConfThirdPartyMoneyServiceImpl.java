@@ -73,6 +73,11 @@ public class ConfThirdPartyMoneyServiceImpl implements ConfThirdPartyMoneyServic
         Preconditions.checkNotNull(id, "id不能为空");
 
         ConfThirdPartyMoneyDO confThirdPartyMoneyDO = confThirdPartyMoneyDOMapper.selectByPrimaryKey(id);
+        if(confThirdPartyMoneyDO!=null){
+            Long bankId = confThirdPartyMoneyDO.getBankId();
+            String bankName = bankCache.getNameById(bankId);
+            confThirdPartyMoneyDO.setBankName(bankName);
+        }
 
         return confThirdPartyMoneyDO;
     }
