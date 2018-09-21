@@ -485,7 +485,8 @@
                   useGetSmallCarName(join_i.car_detail_id)     AS carName,
                   join_i.gps_num                               AS carGpsNum,
                   join_bp.remit_amount                         AS remitAmount,
-                  join_bp.remit_time                           AS remitTime,
+                  DATE_FORMAT(join_bp.remit_time, '%Y-%m-%d %H:%i:%S')
+                                                               AS remitTime,
             <choose>
                       <when test="taskDefinitionKey == 'usertask_credit_apply'">
                           deputy.credit_apply                     AS taskStatus
@@ -2423,7 +2424,8 @@
                       useGetSmallCarName(join_i.car_detail_id)     AS carName,
                       join_i.gps_num                               AS carGpsNum,
                       join_bp.remit_amount                         AS remitAmount,
-                      join_bp.remit_time                           AS remitTime,
+                      DATE_FORMAT(join_bp.remit_time, '%Y-%m-%d %H:%i:%S')
+                                                                   AS remitTime,
 
                       deputy_log.user_id                           AS  approvalUserId,
                       deputy_log.user_name                         AS  approvalUserName,
