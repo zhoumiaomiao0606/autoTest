@@ -1,6 +1,7 @@
 package com.yunche.loan.service.impl;
 
 import com.google.common.base.Preconditions;
+import com.yunche.loan.config.cache.AreaCache;
 import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.BeanPlasticityUtills;
@@ -62,6 +63,9 @@ public class FinancialSchemeServiceImpl implements FinancialSchemeService {
     @Autowired
     private BaseAreaDOMapper baseAreaDOMapper;
 
+    @Autowired
+    private AreaCache areaCache;
+
 
     @Override
     public RecombinationVO<FinancialSchemeVO> detail(Long orderId) {
@@ -93,9 +97,15 @@ public class FinancialSchemeServiceImpl implements FinancialSchemeService {
             }
         }
         universalCarInfoVO.setVehicle_apply_license_plate_area(tmpApplyLicensePlateArea);
+
+        FinancialSchemeVO schemeVO = loanQueryDOMapper.selectFinancialScheme(orderId);
+        if(StringUtils.isNotBlank(schemeVO.getPartner_area_id())){
+            String areaName = areaCache.getAreaName(schemeVO.getPartner_area_id());
+            schemeVO.setPartner_area_name(areaName);
+        }
         RecombinationVO<FinancialSchemeVO> recombinationVO = new RecombinationVO<>();
         recombinationVO.setCustomers(customers);
-        recombinationVO.setInfo(loanQueryDOMapper.selectFinancialScheme(orderId));
+        recombinationVO.setInfo(schemeVO);
         recombinationVO.setCar(universalCarInfoVO);
         recombinationVO.setRemit(loanQueryDOMapper.selectUniversalRemitDetails(orderId));
         recombinationVO.setMaterialAudit(loanQueryDOMapper.selectUniversalMaterialAudit(orderId));
