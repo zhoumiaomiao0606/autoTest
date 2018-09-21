@@ -9,6 +9,7 @@ import com.yunche.loan.service.TaskDistributionService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.util.Date;
@@ -108,6 +109,10 @@ public class TaskDistributionServiceImpl implements TaskDistributionService {
     // 打回完成
     @Override
     public void rejectFinish(Long taskId, Long orderId, List<String> taskKeys) {
+
+        if (CollectionUtils.isEmpty(taskKeys)) {
+            return;
+        }
 
         //遍历可能性
         for (String taskKey : taskKeys) {
