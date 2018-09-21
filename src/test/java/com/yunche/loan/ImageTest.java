@@ -31,8 +31,16 @@ public class ImageTest {
 //        ImageUtil.mergeImage2Doc(fileKey);
         fileKey.add("img/2018/201805/20180504/k6FY5XC2J5.jpg");
         fileKey.add("img/2018/201805/20180504/WNf4THHX8M.jpg");
+//        fileKey.add("img/2018/201805/20180504/k6FY5XC2J5.jpg");
+//        fileKey.add("img/2018/201805/20180504/WNf4THHX8M.jpg");
+        System.out.println("开始时间："+System.currentTimeMillis());
+        Long startTime =System.currentTimeMillis();
+        ImageUtil.mergeImage2Pic_NO_COMPROCESS("77779.jpg",fileKey);
+        Long endTime =System.currentTimeMillis();
+        System.out.println("结束时间："+System.currentTimeMillis());
+        System.out.println("用时："+(endTime-startTime)/1000);
 //        ImageUtil.mergeImage2Pic(fileKey);
-        ImageUtil.mergeImage2Doc(fileKey);
+//        ImageUtil.mergeImage2Doc(fileKey);
 //        ArrayList<String> image = Lists.newArrayList();
 //        image.add("img/2018/201807/20180716/3D5rCiMtZB.jpg");
 //        image.add("img/2018/201807/20180716/ANd6tRAxFe.jpg");
@@ -98,6 +106,24 @@ public class ImageTest {
       }
 
     }
+
+//    @Test
+//    public void func5(){
+//        try {
+//            IMOperation operation = new IMOperation();
+//            Operation operation1 = operation.addImage("/tmp/77777.jpg", "/tmp/77778.jpg");
+//            ConvertCmd cmd = new ConvertCmd();
+//            cmd.setSearchPath("/tmp/aaa.jpg");
+//            cmd.run(operation1);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        } catch (IM4JavaException e) {
+//            e.printStackTrace();
+//        }
+//
+//    }
 }
 
 
