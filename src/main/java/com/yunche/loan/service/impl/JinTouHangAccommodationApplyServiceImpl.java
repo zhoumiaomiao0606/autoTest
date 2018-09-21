@@ -235,7 +235,13 @@ public class JinTouHangAccommodationApplyServiceImpl implements JinTouHangAccomm
                             Preconditions.checkArgument(approvalResultBean.getSuccess(), approvalResultBean.getMsg());
 
                             //更新状态为已出借
-                            int count = thirdPartyFundBusinessDOMapper.updateByPrimaryKeySelective(e);
+                            ThirdPartyFundBusinessDO thirdPartyFundBusinessDO = thirdPartyFundBusinessDOMapper.selectByPrimaryKey(e.getBridgeProcecssId());
+                            int count;
+                            if(thirdPartyFundBusinessDO==null){
+                                count = thirdPartyFundBusinessDOMapper.insertSelective(e);
+                            }else{
+                                count = thirdPartyFundBusinessDOMapper.updateByPrimaryKeySelective(e);
+                            }
                             Preconditions.checkArgument(count>0,"更新状态[已出借]失败");
                         });
             }
