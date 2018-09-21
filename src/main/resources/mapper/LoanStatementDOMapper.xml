@@ -343,7 +343,7 @@
 
 
     <!--=======================================导出 EXCEL 社会征信查询=========================================-->
-    <select id="exportSocialCreditQuerys" parameterType="com.yunche.loan.domain.param.ExportSocialCreditQueryVerifyParam"  resultType="com.yunche.loan.domain.vo.ExportSocialCreditQueryVO" >
+    <select id="exportSocialCreditQuerys1" parameterType="com.yunche.loan.domain.param.ExportSocialCreditQueryVerifyParam"  resultType="com.yunche.loan.domain.vo.ExportSocialCreditQueryVO" >
         SELECT
         principal_area.area_name,principal_orders.id,
         -- 客户类型: 1-主贷人;2-共贷人;3-担保人;4-紧急联系人;
@@ -450,17 +450,7 @@
         LEFT JOIN employee employee ON employee.id = principal_base.salesman_id
         LEFT JOIN loan_process ON principal_orders.id = loan_process.order_id
         <where>
-            loan_process.order_status = 1
-            <if test="state == 1">
-                and credit_info.type = 2
-            </if>
-            <if test="state == 2">
-                and loan_process.social_credit_record =2 AND credit_info.type is NULL
-            </if>
-            <if test="state == null or state == ''">
-               AND loan_process.social_credit_record in(1,2,0) and (credit_info.type =2 or credit_info.type = null)
-            </if>
-
+            loan_process.order_status = 1 and credit_info.type = 2
             and
             case when #{maxGroupLevel} = 0 then false
             when #{maxGroupLevel} = 1 then
@@ -506,6 +496,152 @@
         </if>
         order by credit_info.gmt_modify desc
     </select>
+
+    <select id="exportSocialCreditQuerys2" parameterType="com.yunche.loan.domain.param.ExportSocialCreditQueryVerifyParam"  resultType="com.yunche.loan.domain.vo.ExportSocialCreditQueryVO" >
+        SELECT
+        principal_area.area_name,principal_orders.id,
+        -- 客户类型: 1-主贷人;2-共贷人;3-担保人;4-紧急联系人;
+        CASE
+        WHEN customer.cust_type = 1 THEN
+        '主贷人'
+        WHEN customer.cust_type = 2 THEN
+        '共贷人'
+        WHEN customer.cust_type = 3 THEN
+        '担保人'
+        WHEN customer.cust_type = 4 THEN
+        '紧急联系人'
+        ELSE
+        NULL
+        END AS cust_type,
+        customer. NAME AS customer_name,
+        customer.id_card AS customer_id_card,
+        customer.mobile AS customer_mobile,
+        principal_base.bank,
+        principal_partner. NAME AS partner_name,
+        employee. NAME AS salesman_name,
+        principal. NAME AS principal_name,
+        -- 与主贷人关系：0-本人;1-配偶;2-父母;3-子女;4-兄弟姐妹;5-亲戚;6-朋友;7-同学;8-同事;9-其它;
+        CASE
+        WHEN customer.id = customer.principal_cust_id THEN
+        '本人'
+        WHEN customer.cust_relation = 0 THEN
+        '本人'
+        WHEN customer.cust_relation = 1 THEN
+        '配偶'
+        WHEN customer.cust_relation = 2 THEN
+        '父母'
+        WHEN customer.cust_relation = 3 THEN
+        '子女'
+        WHEN customer.cust_relation = 4 THEN
+        '兄弟姐妹'
+        WHEN customer.cust_relation = 5 THEN
+        '亲戚'
+        WHEN customer.cust_relation = 6 THEN
+        '朋友'
+        WHEN customer.cust_relation = 7 THEN
+        '同学'
+        WHEN customer.cust_relation = 8 THEN
+        '同事'
+        WHEN customer.cust_relation = 9 THEN
+        '其他'
+        ELSE
+        NULL
+        END AS cust_relation,
+        -- 征信结果: 0-不通过;1-通过;2-关注;
+        '' AS credit_result,
+        CASE
+        WHEN customer.guarantee_type = 1 THEN
+        '银行担保'
+        WHEN customer.guarantee_type = 2 THEN
+        '内部担保'
+        ELSE
+        NULL
+        END  AS guaranteeType,
+        (
+        SELECT
+        create_time
+        FROM
+        loan_process_log
+        WHERE
+        task_definition_key = 'usertask_credit_apply'
+        AND order_id = principal_orders.id
+        ORDER BY
+        create_time
+        LIMIT 1
+        ) AS credit_apply_time,
+        '' AS credit_query_time,
+        (
+        SELECT
+        user_name
+        FROM
+        loan_process_log
+        WHERE
+        task_definition_key = 'usertask_bank_credit_record'
+        AND order_id = principal_orders.id
+        ORDER BY
+        create_time
+        LIMIT 1
+        ) AS gmt_user
+        FROM
+        loan_customer customer
+        LEFT JOIN loan_credit_info credit_info ON credit_info.customer_id = customer.id
+        LEFT JOIN loan_customer principal ON customer.principal_cust_id = principal.id
+        LEFT JOIN loan_order principal_orders ON principal_orders.loan_customer_id = principal.id
+        LEFT JOIN loan_base_info principal_base ON principal_orders.loan_base_info_id = principal_base.id
+        LEFT JOIN partner principal_partner ON principal_partner.id = principal_base.partner_id
+        LEFT JOIN base_area principal_area ON principal_area.area_id = principal_base.area_id
+        LEFT JOIN employee employee ON employee.id = principal_base.salesman_id
+        LEFT JOIN loan_process ON principal_orders.id = loan_process.order_id
+        <where>
+            loan_process.order_status = 1 and loan_process.social_credit_record =2 and if((select count(*) from loan_credit_info where customer_id = customer.id and type =2) = 1,false,true)
+            and
+            case when #{maxGroupLevel} = 0 then false
+            when #{maxGroupLevel} = 1 then
+            principal_base.salesman_id in
+            (
+            <choose>
+                <when test="juniorIds != null and juniorIds.size() > 0">
+                    <foreach item="item" index="index" collection="juniorIds" separator=",">
+                        #{item}
+                    </foreach>
+                </when>
+                <otherwise>
+                    select temp.id from (SELECT 1 as id) temp  where temp.id =2
+                </otherwise>
+            </choose>
+            )
+            else true end
+
+            <if test="startDate !=null and endDate !=null">
+                and credit_info.gmt_modify between #{startDate} and #{endDate}
+            </if>
+            <if test="partnerList != null and partnerList.size() > 0">
+                and
+                principal_base.partner_id in
+                <foreach item="item" index="index" collection="partnerList" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="bankList != null and bankList.size() > 0">
+                and
+                principal_base.bank in
+                <foreach item="item" index="index" collection="bankList" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            AND customer.cust_type  in  (1,2,3) and customer.status = 0
+        </where>
+        <if test="startCreditGmtCreate != null and endCreditGmtCreate != null">
+            having(
+            TO_DAYS(credit_apply_time) &gt;= TO_DAYS(#{startCreditGmtCreate})
+            AND TO_DAYS(credit_apply_time) &lt;= TO_DAYS(#{endCreditGmtCreate})
+            )
+        </if>
+        order by credit_info.gmt_modify desc
+    </select>
+
+
+
     <!--=======================================导出 EXCEL 财务垫款明细查询=========================================-->
     <select id="exportRemitDetailQuerys" parameterType="com.yunche.loan.domain.param.ExportRemitDetailQueryVerifyParam"  resultType="com.yunche.loan.domain.vo.ExportRemitDetailQueryVO" >
 
