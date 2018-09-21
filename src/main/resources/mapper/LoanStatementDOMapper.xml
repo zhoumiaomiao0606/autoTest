@@ -345,7 +345,7 @@
     <!--=======================================导出 EXCEL 社会征信查询=========================================-->
     <select id="exportSocialCreditQuerys" parameterType="com.yunche.loan.domain.param.ExportSocialCreditQueryVerifyParam"  resultType="com.yunche.loan.domain.vo.ExportSocialCreditQueryVO" >
         SELECT
-        principal_area.area_name,
+        principal_area.area_name,principal_orders.id,
         -- 客户类型: 1-主贷人;2-共贷人;3-担保人;4-紧急联系人;
         CASE
         WHEN customer.cust_type = 1 THEN
@@ -450,14 +450,15 @@
         LEFT JOIN employee employee ON employee.id = principal_base.salesman_id
         LEFT JOIN loan_process ON principal_orders.id = loan_process.order_id
         <where>
+            loan_process.order_status = 1
             <if test="state == 1">
-                and credit_info.type = 2 AND loan_process.social_credit_record = 1
+                and credit_info.type = 2
             </if>
             <if test="state == 2">
-                and (credit_info.type = 2 OR credit_info.type is NULL) AND loan_process.social_credit_record = 2
+                and loan_process.social_credit_record =2 AND credit_info.type is NULL
             </if>
             <if test="state == null or state == ''">
-                and (credit_info.type = 2 OR credit_info.type is NULL) AND loan_process.social_credit_record IN (1,2)
+               AND loan_process.social_credit_record in(1,2,0) and (credit_info.type =2 or credit_info.type = null)
             </if>
 
             and
