@@ -47,36 +47,37 @@ public class UniversalController {
 
     @GetMapping(value = "/getPartnerLeaderId")
     public ResultBean getPartnerLeaderId(@RequestParam @Validated String partnerId) {
-        PartnerDO partnerDO = partnerDOMapper.selectByPrimaryKey(Long.valueOf(partnerId),new Byte("0"));
-        if(partnerDO == null){
+        PartnerDO partnerDO = partnerDOMapper.selectByPrimaryKey(Long.valueOf(partnerId), new Byte("0"));
+        if (partnerDO == null) {
             throw new BizException("合伙人团队不存在");
         }
-        if(partnerDO.getLeaderId() == null){
+        if (partnerDO.getLeaderId() == null) {
             throw new BizException("请先设置合伙人leader");
         }
         return ResultBean.ofSuccess(partnerDO.getLeaderId());
     }
 
     @GetMapping("/ftp")
-    public ResultBean ftp(){
+    public ResultBean ftp() {
         FtpUtil.icbcUpload("/tmp/9999.jpg");
         return ResultBean.ofSuccess("9999");
     }
+
     @GetMapping("/ftp2")
-    public ResultBean ftp2(){
+    public ResultBean ftp2() {
         FtpUtil.icbcUpload("/tmp/8888.jpg");
         return ResultBean.ofSuccess("8888");
     }
 
     @GetMapping("/dictmapcache")
-    public ResultBean refreshDictMap(){
+    public ResultBean refreshDictMap() {
         dictMapCache.refreshAll();
-       return ResultBean.ofSuccess(null,"刷新成功");
+        return ResultBean.ofSuccess(null, "刷新成功");
     }
 
     @GetMapping("/jjq")
-    public ResultBean test1(){
-       return  materialService.downSupplementFiles2OSS(Long.valueOf("1809051406599576357"), true, Long.valueOf("193"));
+    public ResultBean test1() {
+        return materialService.downSupplementFiles2OSS(Long.valueOf("1809051406599576357"), true, Long.valueOf("193"));
     }
 
 
@@ -84,15 +85,15 @@ public class UniversalController {
     @GetMapping("/downreport")
     public String downreport() throws UnsupportedEncodingException {
 
-        try{
+        try {
             List<Long> orderLists = Lists.newArrayList();
             orderLists.add(1806151541217761225l);
             orderLists.add(1806221600152528006l);
             orderLists.add(1807041505471350219l);
             orderLists.add(1807041514375640555l);
-            final CountDownLatch latch= new CountDownLatch(orderLists.size());//使用java并发库concurrent
-            for(int i=0;i<orderLists.size();i++){
-                System.out.println(i+"："+System.currentTimeMillis());
+            final CountDownLatch latch = new CountDownLatch(orderLists.size());//使用java并发库concurrent
+            for (int i = 0; i < orderLists.size(); i++) {
+                System.out.println(i + "：" + System.currentTimeMillis());
                 ThreadTask threadTask = new ThreadTask();
                 threadTask.setOrderId(orderLists.get(i));
                 Long orderId = orderLists.get(i);
@@ -100,19 +101,19 @@ public class UniversalController {
                 ThreadPool.executorService.execute(new Runnable() {
                     @Override
                     public void run() {
-                       System.out.println(Thread.currentThread().getName()+":"+orderId);
-                       latch.countDown();
+                        System.out.println(Thread.currentThread().getName() + ":" + orderId);
+                        latch.countDown();
                     }
                 });
 
-                System.out.println(i+"："+System.currentTimeMillis());
+                System.out.println(i + "：" + System.currentTimeMillis());
             }
             latch.await();
             //打包
             //
             Runtime.getRuntime().exec("");
             System.out.println("结束");
-        }catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return "";
