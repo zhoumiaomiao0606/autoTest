@@ -15,7 +15,10 @@ public interface LoanStatementDOMapper {
     List<ExportBankCreditQueryVO> exportBankCreditQuerys(ExportBankCreditQueryVerifyParam expertBankCreditQueryVerifyParam);
 
 
-    List<ExportSocialCreditQueryVO> exportSocialCreditQuerys(ExportSocialCreditQueryVerifyParam exportSocialCreditQueryVerifyParam);
+    List<ExportSocialCreditQueryVO> exportSocialCreditQuerys1(ExportSocialCreditQueryVerifyParam exportSocialCreditQueryVerifyParam);
+
+    List<ExportSocialCreditQueryVO> exportSocialCreditQuerys2(ExportSocialCreditQueryVerifyParam exportSocialCreditQueryVerifyParam);
+
 
     List<ExportRemitDetailQueryVO> exportRemitDetailQuerys(ExportRemitDetailQueryVerifyParam exportRemitDetailQueryVerifyParam);
 
