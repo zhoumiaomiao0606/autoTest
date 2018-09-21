@@ -66,14 +66,15 @@ public class Vediotest
 
     @Test
     public  void ffmpeg_vedioInformation() throws IOException {
-        FFprobe ffprobe = new FFprobe("E:\\ffmpeg\\ffmpeg-20180919-49c67e7-win64-shared\\bin\\ffprobe");
-        FFmpegProbeResult probeResult = ffprobe.probe("G:\\aaa.mp4");
+        FFprobe ffprobe = new FFprobe("/Users/zhongmingxiao/Desktop/ffmpeg-4.0.2-macos64-shared/bin/ffprobe");
+        FFmpegProbeResult probeResult = ffprobe.probe("/Users/zhongmingxiao/Downloads/yc.mp4");
 
         FFmpegFormat format = probeResult.getFormat();
-        System.out.format("%nFile: '%s' ; Format: '%s' ; Duration: %.3fs",
+        System.out.format("%nFile: '%s' ; Format: '%s' ; Duration: %.3fs ;大小：%s",
                 format.filename,
                 format.format_long_name,
-                format.duration
+                format.duration,
+                format.size
         );
 
         FFmpegStream stream = probeResult.getStreams().get(0);
@@ -96,7 +97,7 @@ public class Vediotest
         FFmpegBuilder builder = new FFmpegBuilder()
                 .setInput(in) // Or filename
                 .addOutput("/Users/zhongmingxiao/Downloads/yc1.mp4")
-                .setTargetSize(10_720_000)
+                .setTargetSize(14_320_000)
                 .done();
 
         FFmpegJob job = executor.createJob(builder, new ProgressListener() {

@@ -44,11 +44,11 @@ public class ParterChartController
     * @Date:  
     * @Description:  当月提交了征信查询的订单客户
     */
-    /*@PostMapping(value = "/creditApplyCustomerByMonthChart", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @PostMapping(value = "/creditApplyCustomerByMonthChart", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean creditApplyCustomerByMonthChart(@RequestBody @Validated CreditApplyCustomerByMonthChartParam param)
     {
         return parterChartService.getCreditApplyCustomerByMonthChart(param);
-    }*/
+    }
     
     
     /** 
@@ -107,7 +107,7 @@ public class ParterChartController
 
 
 
-    @PostMapping(value = "/creditApplyCustomerByMonthChart", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+   /* @PostMapping(value = "/creditApplyCustomerByMonthChart", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean creditApplyCustomerByMonthChart(@RequestBody @Validated CreditApplyCustomerByMonthChartParam param)
     {
         try {
@@ -157,7 +157,7 @@ public class ParterChartController
         job.run();
 
         System.err.println("压缩结束时间："+ LocalDateTime.now());
-    }
+    }*/
 
 
 }

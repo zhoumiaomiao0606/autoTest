@@ -102,20 +102,37 @@ public class AsyncUpload {
 
         boolean flag = true;
         String picPath = null;
+        String outPath = null;
         Byte error = null;
         try {
             try {
+
                 picPath = ImageUtil.getSingleFile(name,urls,fileType);
-                if(StringUtils.isBlank(picPath)){
+
+                //视频压缩
+                if(StringUtils.isBlank(picPath))
+                {
                     error = new Byte("1");
                     throw new RuntimeException("文件下载出错");
                 }
+
+                //新的压缩输出路径
+                outPath = new StringBuilder(picPath).append("_c").toString();
+
+
+                //先判断视频大小-----大于30m则进行压缩
+                boolean needCompress = FfmpegUtils.needCompress(picPath);
+                if (needCompress)
+                {
+                    FfmpegUtils.compress(picPath,outPath);
+                }
+
             }catch (Exception e){
                 throw new RuntimeException("文件下载出错");
             }
 
             try {
-                boolean check = FtpUtil.icbcUpload(picPath);
+                boolean check = FtpUtil.icbcUpload(outPath);
                 if(!check){
                     error = new Byte("3");
                     throw new RuntimeException("文件上传出错");
@@ -131,7 +148,7 @@ public class AsyncUpload {
         BankInterfaceFileSerialDO bankInterfaceFileSerialDO = new BankInterfaceFileSerialDO();
         bankInterfaceFileSerialDO.setSerialNo(serialNo);
         bankInterfaceFileSerialDO.setFileName(name);
-        bankInterfaceFileSerialDO.setFilePath(picPath);
+        bankInterfaceFileSerialDO.setFilePath(outPath);
         bankInterfaceFileSerialDO.setFileType(fileType);
         bankInterfaceFileSerialDO.setError(error);
 
