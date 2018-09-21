@@ -8,6 +8,7 @@ import com.yunche.loan.config.constant.ProcessApprovalConst;
 import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.POIUtil;
+import com.yunche.loan.config.util.StringUtil;
 import com.yunche.loan.domain.entity.LoanOrderDO;
 import com.yunche.loan.domain.entity.ThirdPartyFundBusinessDO;
 import com.yunche.loan.domain.param.AccommodationApplyParam;
@@ -200,6 +201,11 @@ public class JinTouHangAccommodationApplyServiceImpl implements JinTouHangAccomm
                     } catch (Exception e) {
                         throw new BizException("第" + rowNum + "行，第1列格式有误：" + row[0]);
                     }
+
+
+                    if(StringUtil.isEmpty(row[7].trim())){
+                        throw new BizException("第" + rowNum + "行，第8列格式有误：【借款金额不能为空】");
+                    }
                     try {
                         partyFundBusinessDO.setLendAmount(new BigDecimal(row[7]));//乙方借款金额（导入）
                     } catch (Exception e) {
@@ -247,7 +253,7 @@ public class JinTouHangAccommodationApplyServiceImpl implements JinTouHangAccomm
             }
 
         } catch (Exception e) {
-            throw new BizException("文件解析失败");
+            throw new BizException(e.getMessage());
         }
 
         return null;

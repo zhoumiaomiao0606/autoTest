@@ -1514,7 +1514,9 @@
                                                   AS financial_bank_staging_ratio,
              p.bank_rate                          AS bank_base_rate,
              applay_quota(f.bank_period_principal,f.bank_fee)                              AS applayQuota,
-             product.category_superior            AS category_superior
+             product.category_superior            AS category_superior,
+             par.name                             AS partner_name,
+             par.area_id                          AS partner_area_id
 
 
         from (select * from loan_order where id = #{orderId,jdbcType=BIGINT}) o
@@ -1522,6 +1524,8 @@
     left join loan_customer c on o.loan_customer_id= c.id
 
     left join loan_base_info b on o.loan_base_info_id = b.id
+
+    left join partner  par on par.id = b.partner_id
 
     left join loan_car_info i on o.loan_car_info_id = i.id
 

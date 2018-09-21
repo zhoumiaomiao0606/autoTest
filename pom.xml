@@ -368,10 +368,9 @@
         <!--视频压缩-->
         <!-- https://mvnrepository.com/artifact/com.tagtraum/ffmpeg -->
         <dependency>
-            <groupId>com.tagtraum</groupId>
+            <groupId>net.bramp.ffmpeg</groupId>
             <artifactId>ffmpeg</artifactId>
-            <version>4.0.0</version>
-            <type>pom</type>
+            <version>0.6.2</version>
         </dependency>
 
 
