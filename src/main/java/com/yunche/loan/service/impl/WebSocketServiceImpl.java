@@ -82,7 +82,9 @@ public class WebSocketServiceImpl implements WebSocketService {
 
         // 无需排队 --> 机器面签
         if (!needWaitTeam) {
+            // 机器面签
             doMachineFace(webSocketParam, wsSessionId);
+            // 结束
             return;
         }
 
@@ -221,7 +223,7 @@ public class WebSocketServiceImpl implements WebSocketService {
         if (bankPeriodPrincipal < 100000) {
 
             // 进行机器面签
-            return doMachineFace(webSocketParam, wsSessionId);
+            return false;
         }
 
         // b、10万及以上人工面签等待一分钟，若无人接听转入机器面签
@@ -240,7 +242,7 @@ public class WebSocketServiceImpl implements WebSocketService {
                 if (waitTime >= 60000) {
 
                     // 进行机器面签
-                    return doMachineFace(webSocketParam, wsSessionId);
+                    return false;
                 }
             }
         }
@@ -299,7 +301,7 @@ public class WebSocketServiceImpl implements WebSocketService {
                     if (waitTime >= 10 * 60 * 1000) {
 
                         // 进行机器面签
-                        return doMachineFace(webSocketParam, wsSessionId);
+                        return false;
                     }
                 }
             }
@@ -308,7 +310,7 @@ public class WebSocketServiceImpl implements WebSocketService {
             else {
 
                 // 进行机器面签
-                return doMachineFace(webSocketParam, wsSessionId);
+                return false;
             }
 
         }
@@ -719,7 +721,7 @@ public class WebSocketServiceImpl implements WebSocketService {
                     if (waitTime >= 10 * 60 * 1000) {
 
                         // 进行机器面签
-                        return doMachineFace(webSocketParam, wsSessionId);
+                        return false;
                     }
                 }
             }
@@ -728,7 +730,7 @@ public class WebSocketServiceImpl implements WebSocketService {
             else {
 
                 // 进行机器面签
-                return doMachineFace(webSocketParam, wsSessionId);
+                return false;
             }
 
         }
