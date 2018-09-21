@@ -36,6 +36,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static com.yunche.loan.config.constant.LoanProcessEnum.BRIDGE_HANDLE;
+import static com.yunche.loan.config.constant.ProcessApprovalConst.ACTION_ROLL_BACK;
 
 @Service
 @Transactional
@@ -62,6 +63,30 @@ public class JinTouHangAccommodationApplyServiceImpl implements JinTouHangAccomm
 
     @Autowired
     private LoanStatementDOMapper loanStatementDOMapper;
+
+
+//    @Override
+//    public ResultBean revoke(AccommodationApplyParam param) {
+//        return null;
+//    }
+
+    /**
+     * 提交接口 业务后处理
+     * @param param
+     * @return
+     */
+    @Override
+    public void dealTask(ApprovalParam param) {
+
+        //金投行过桥处理 -反审
+        if(ACTION_ROLL_BACK.equals(param.getAction()) && BRIDGE_HANDLE.getCode().equals(param.getTaskDefinitionKey())){
+            ThirdPartyFundBusinessDO businessDO = thirdPartyFundBusinessDOMapper.selectByPrimaryKey(param.getProcessId());
+            businessDO.setLendStatus(IDict.K_CJZT.K_CJZT_NO);
+            int count = thirdPartyFundBusinessDOMapper.updateByPrimaryKeySelective(businessDO);
+            Preconditions.checkArgument(count>0,"更新状态[未出借]失败");
+        }
+
+    }
 
     /**
      *拒绝出借

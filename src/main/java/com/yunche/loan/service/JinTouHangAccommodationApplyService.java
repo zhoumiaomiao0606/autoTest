@@ -3,9 +3,14 @@ package com.yunche.loan.service;
 
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.param.AccommodationApplyParam;
+import com.yunche.loan.domain.param.ApprovalParam;
 import com.yunche.loan.domain.param.ExportApplyLoanPushParam;
 
 public interface JinTouHangAccommodationApplyService {
+
+//    ResultBean revoke(AccommodationApplyParam param);
+
+    void dealTask(ApprovalParam param);
 
     ResultBean reject(AccommodationApplyParam param);
 
