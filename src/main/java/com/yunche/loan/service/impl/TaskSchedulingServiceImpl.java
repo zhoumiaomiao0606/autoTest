@@ -127,9 +127,8 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         //获取用户可见的银行
         query.setBankList(getUserHaveBank(loginUser.getId()));
         query.setReadStatus(new Long("0"));
-        long count = PageHelper.count(() -> {
-            taskSchedulingDOMapper.selectFlowOperationMsgList(query);
-        });
+        long count = PageHelper.count(() -> taskSchedulingDOMapper.selectFlowOperationMsgList(query));
+
         return ResultBean.ofSuccess(count);
     }
 
@@ -144,9 +143,14 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         query.setBizAreaIdList(getUserHaveBizAreaPartnerId(loginUser.getId()));
         //获取用户可见的银行
         query.setBankList(getUserHaveBank(loginUser.getId()));
+
         PageHelper.startPage(query.getPageIndex(), query.getPageSize(), true);
-        List list = taskSchedulingDOMapper.selectFlowOperationMsgList(query);
+        List<FlowOperationMsgListVO> list = taskSchedulingDOMapper.selectFlowOperationMsgList(query);
         PageInfo<FlowOperationMsgListVO> pageInfo = new PageInfo<>(list);
+
+        // 征信结果：截取title的[已通过]
+        cutTitle(list, query.getMultipartType());
+
         return ResultBean.ofSuccess(list, new Long(pageInfo.getTotal()).intValue(), pageInfo.getPageNum(), pageInfo.getPageSize());
     }
 
@@ -739,12 +743,29 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         return empBizAreaPartnerIds;
     }
 
-    public static void main(String[] args) {
+    /**
+     * 征信结果：截取title的[已通过]
+     *
+     * @param list
+     * @param multipartType
+     */
+    private void cutTitle(List<FlowOperationMsgListVO> list, Long multipartType) {
 
-        LocalDate _2_years_ago = LocalDate.now().minusYears(2);
+        // 征信结果
+        if (multipartType == 1L) {
 
-        LocalDateTime localDateTime = _2_years_ago.atTime(0, 0, 0);
-        String format = localDateTime.format(formatter_yyyyMMdd);
-        System.out.println(format);
+            list.parallelStream()
+                    .filter(Objects::nonNull)
+                    .forEach(e -> {
+
+                        String title = e.getTitle();
+                        if (StringUtils.isNotBlank(title)) {
+
+                            // 截取title的[已通过]
+                            String[] titleArr = title.split("[已通过]");
+                            e.setTitle(titleArr[0]);
+                        }
+                    });
+        }
     }
 }
