@@ -399,6 +399,52 @@ public class WebSocketServiceImpl implements WebSocketService {
 
 
     /**
+<<<<<<< Updated upstream
+=======
+     * holiday
+     *
+     * @param webSocketParam
+     * @param wsSessionId
+     * @param type_holiday_list
+     * @return
+     */
+    private boolean doWaitTeam_holiday(WebSocketParam webSocketParam,
+                                       String wsSessionId,
+                                       List<ConfVideoFaceTimeDO> type_holiday_list) {
+
+        double bankPeriodPrincipal = webSocketParam.getBankPeriodPrincipal().doubleValue();
+        final boolean[] match_time = {false};
+        LocalDateTime now = LocalDateTime.now();
+
+        type_holiday_list.stream()
+                .forEach(e -> {
+
+                    double startLoanAmount = e.getStartLoanAmount().doubleValue();
+                    double endLoanAmount = e.getEndLoanAmount().doubleValue();
+
+                    // 金额区间匹配
+                    boolean match_loan = bankPeriodPrincipal >= startLoanAmount && bankPeriodPrincipal < endLoanAmount;
+                    boolean match_loan_ = bankPeriodPrincipal >= startLoanAmount && endLoanAmount == -1L;
+
+                    if (match_loan || match_loan_) {
+
+                        LocalDateTime startDateTime = LocalDateTime.parse(e.getStartTime(), formatter_yyyyMMdd_HHmmss);
+                        LocalDateTime endDateTime = LocalDateTime.parse(e.getEndTime(), formatter_yyyyMMdd_HHmmss);
+
+//                        if (now.isAfter()) {
+//                            match_time[0] = true;
+//                        }
+
+                    }
+
+                });
+
+        return true;
+    }
+
+
+    /**
+>>>>>>> Stashed changes
      * work / weekend
      *
      * @param webSocketParam
