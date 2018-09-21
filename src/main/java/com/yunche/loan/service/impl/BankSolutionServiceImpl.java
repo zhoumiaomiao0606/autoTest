@@ -54,6 +54,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
 
     private static final Logger LOG = LoggerFactory.getLogger(BankSolutionService.class);
 
+
     @Resource
     private ViolationUtil violationUtil;
 
