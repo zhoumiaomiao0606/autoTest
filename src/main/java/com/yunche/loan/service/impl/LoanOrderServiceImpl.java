@@ -169,17 +169,17 @@ public class LoanOrderServiceImpl implements LoanOrderService {
      * @param param
      */
     private void checkBankInterfaceSerial(CreditApplyOrderParam param) {
-        //如果当前订单状态是 【打回】，则不用校验
-        LoanProcessDO loanProcessDO = loanProcessDOMapper.selectByPrimaryKey(param.getOrderId());
-        //如果是打回修改的单子则不用于校验14天
-        if(loanProcessDO!=null && loanProcessDO.getCreditApply().equals(TASK_PROCESS_REJECT)){
-            return;
-        }
+//        //如果当前订单状态是 【打回】，则不用校验
+//        LoanProcessDO loanProcessDO = loanProcessDOMapper.selectByPrimaryKey(param.getOrderId());
+//        //如果是打回修改的单子则不用于校验14天
+//        if(loanProcessDO!=null && loanProcessDO.getCreditApply().equals(TASK_PROCESS_REJECT)){
+//            return;
+//        }
         //主贷人校验
         if (param.getPrincipalLender() != null ) {
             String idCard = param.getPrincipalLender().getIdCard();
 
-            bankCredit(idCard,param.getPrincipalLender().getName(),param.getLoanBaseInfo().getBank());
+            bankCredit(param.getOrderId(),idCard,param.getPrincipalLender().getName(),param.getLoanBaseInfo().getBank(),param.getPrincipalLender().getId());
 
 
         }
@@ -188,7 +188,7 @@ public class LoanOrderServiceImpl implements LoanOrderService {
             param.getCommonLenderList().stream().forEach(e -> {
                 String idCard = e.getIdCard();
                 String name = e.getName();
-                bankCredit(idCard,name,param.getLoanBaseInfo().getBank());
+                bankCredit(param.getOrderId(),idCard,name,param.getLoanBaseInfo().getBank(),e.getId());
 
             });
         }
@@ -199,7 +199,7 @@ public class LoanOrderServiceImpl implements LoanOrderService {
                 String idCard = e.getIdCard();
                 String name = e.getName();
 
-                bankCredit(idCard,name,param.getLoanBaseInfo().getBank());
+                bankCredit(param.getOrderId(),idCard,name,param.getLoanBaseInfo().getBank(),e.getId());
 
             });
         }
@@ -207,12 +207,17 @@ public class LoanOrderServiceImpl implements LoanOrderService {
     }
 
 
-    private  void bankCredit(String idCard,String name,String bankName){
+    private  void bankCredit(Long orderId,String idCard,String name,String bankName,Long loanCustomerId){
 
         if (StringUtils.isNotBlank(idCard)) {
 
             List<LoanCustomerDO> loanCustomerDOS = loanCustomerDOMapper.selectByIdCard(idCard);
-
+            //如果当前订单状态是 【打回】，则不用校验
+            LoanProcessDO loanProcessDO = loanProcessDOMapper.selectByPrimaryKey(orderId);
+            //如果是打回修改的单子则不用于校验14天
+            if(loanProcessDO!=null && loanProcessDO.getCreditApply().equals(TASK_PROCESS_REJECT) && loanCustomerId!=null){
+                return;
+            }
 
             List<LoanOrderDO> collect = Lists.newArrayList();
 
