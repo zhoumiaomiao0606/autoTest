@@ -25,6 +25,7 @@ import static com.yunche.loan.config.constant.GuaranteeRelaConst.GUARANTOR_PERSO
 import static com.yunche.loan.config.constant.LoanCustomerConst.*;
 import static com.yunche.loan.config.constant.LoanCustomerEnum.*;
 import static com.yunche.loan.config.constant.LoanFileConst.UPLOAD_TYPE_NORMAL;
+import static com.yunche.loan.config.constant.LoanOrderProcessConst.TASK_PROCESS_REJECT;
 import static com.yunche.loan.config.constant.LoanProcessEnum.CREDIT_APPLY;
 
 /**
@@ -108,6 +109,9 @@ public class LoanOrderServiceImpl implements LoanOrderService {
     @Autowired
     private LoanProcessLogService loanProcessLogService;
 
+    @Autowired
+    private LoanProcessDOMapper loanProcessDOMapper;
+
 
     @Override
     public ResultBean<CreditApplyOrderVO> creditApplyOrderDetail(Long orderId) {
@@ -165,8 +169,14 @@ public class LoanOrderServiceImpl implements LoanOrderService {
      * @param param
      */
     private void checkBankInterfaceSerial(CreditApplyOrderParam param) {
+        //如果当前订单状态是 【打回】，则不用校验
+        LoanProcessDO loanProcessDO = loanProcessDOMapper.selectByPrimaryKey(param.getOrderId());
+        //如果是打回修改的单子则不用于校验14天
+        if(loanProcessDO!=null && loanProcessDO.getCreditApply().equals(TASK_PROCESS_REJECT)){
+            return;
+        }
         //主贷人校验
-        if (param.getPrincipalLender() != null) {
+        if (param.getPrincipalLender() != null ) {
             String idCard = param.getPrincipalLender().getIdCard();
 
             bankCredit(idCard,param.getPrincipalLender().getName(),param.getLoanBaseInfo().getBank());
