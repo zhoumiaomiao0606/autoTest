@@ -130,6 +130,9 @@ public class AsyncUpload {
                 {
                     LOG.info("--------------》视频压缩开始2:"+sysConfig.getTempDir()+name);
                     FfmpegUtils.compress(picPath,sysConfig.getTempDir()+name);
+                    outPath = sysConfig.getTempDir()+name;
+                }else{
+                    outPath = picPath;
                 }
                 LOG.info("--------------》视频压缩开始3:"+sysConfig.getTempDir()+name);
 
@@ -139,7 +142,7 @@ public class AsyncUpload {
 
             try {
                 LOG.info("--------------》上传开始1:"+sysConfig.getTempDir()+name);
-                boolean check = FtpUtil.icbcUpload(sysConfig.getTempDir()+name);
+                boolean check = FtpUtil.icbcUpload(outPath);
                 if(!check){
                     error = new Byte("3");
                     throw new RuntimeException("文件上传出错");
