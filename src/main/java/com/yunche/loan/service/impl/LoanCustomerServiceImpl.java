@@ -636,6 +636,9 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
     private void checkIdCard(AllCustDetailParam allCustDetailParam) {
 
         CustomerParam principalLender = allCustDetailParam.getPrincipalLender();
+        if(principalLender==null){
+            return;
+        }
         Preconditions.checkNotNull(principalLender, "主贷人不能为空");
 
         Long principalCustId = principalLender.getId();
