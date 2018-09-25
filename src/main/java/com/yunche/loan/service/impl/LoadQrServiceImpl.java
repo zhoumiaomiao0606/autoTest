@@ -57,7 +57,7 @@ public class LoadQrServiceImpl implements LoadQrService {
     @Override
     public ResultBean apkDownload(){
         AppVersionDO latestVersion = appVersionCache.getLatestVersion(TERMINAL_TYPE_ANDROID);
-        String endPoint = ossConfig.getEndpoint();
+        String endPoint = "oss-cn-hangzhou.aliyuncs.com";
         String bucketNameAndroid =ossConfig.getBucketName_android();
         String downUrl;
         if(latestVersion == null || endPoint.isEmpty()|| bucketNameAndroid.isEmpty()){
