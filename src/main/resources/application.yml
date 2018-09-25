@@ -49,7 +49,7 @@ spring:
     druid:
       url: jdbc:mysql://rm-bp1uk11f20h4i65u90o.mysql.rds.aliyuncs.com:3306/yunche_loan_biz?useUnicode=true&characterEncoding=utf-8
       username: yuncheadmin
-      password: Yunche_2018
+      password: hzzsqc@2020
       driver-class-name: com.mysql.jdbc.Driver
       max-wait: 10000
       max-idle: 100
@@ -92,7 +92,7 @@ spring:
     druid:
       url: jdbc:mysql://rm-bp1uk11f20h4i65u9rw.mysql.rds.aliyuncs.com:3306/yunche_loan_biz?useUnicode=true&characterEncoding=utf-8
       username: yuncheadmin
-      password: Yunche_2018
+      password: hzzsqc@2020
       driver-class-name: com.mysql.jdbc.Driver
       max-wait: 10000
       max-idle: 2000
