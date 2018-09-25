@@ -1108,6 +1108,7 @@
                   </when>
                   <when test="taskDefinitionKey == 'usertask_bridge_handle'">
                       AND case when #{lendStatus} = 1 then deputy_b.bridge_handle in (2,3)
+                                       and if((select count(*) from third_party_fund_business where bridge_procecss_id=deputy_b.id and lend_status=3)=1,false,true)
                                when #{lendStatus} = 2 then deputy_b.bridge_handle = 1
                                when #{lendStatus} = 3 then deputy_b.bridge_handle = 2 and third_party.lend_status = 3
                       end

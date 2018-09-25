@@ -13,6 +13,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.io.File;
 import java.util.List;
 import java.util.Set;
 
@@ -130,11 +131,13 @@ public class AsyncUpload {
                 {
                     LOG.info("--------------》视频压缩开始:"+sysConfig.getTempDir()+name);
                     FfmpegUtils.compress(picPath,sysConfig.getTempDir()+name);
-                    outPath = sysConfig.getTempDir()+name;
-                }else{
-                    outPath = picPath;
-                }
 
+                }else{
+                    File target = new File(sysConfig.getTempDir() + name);
+                    File source = new File(picPath);
+                    source.renameTo(target);
+                }
+                outPath = sysConfig.getTempDir()+name;
 
             }catch (Exception e){
                 throw new RuntimeException("文件下载出错");
