@@ -92,11 +92,11 @@ public class Vediotest
         FFprobe ffprobe = new FFprobe("/Users/zhongmingxiao/Desktop/ffmpeg-4.0.2-macos64-shared/bin/ffprobe");
         FFmpegExecutor executor = new FFmpegExecutor(ffmpeg, ffprobe);
 
-        FFmpegProbeResult in = ffprobe.probe("/Users/zhongmingxiao/Downloads/yc.mp4");
+        FFmpegProbeResult in = ffprobe.probe("/Users/zhongmingxiao/Downloads/38_7.mp4");
 
         FFmpegBuilder builder = new FFmpegBuilder()
                 .setInput(in) // Or filename
-                .addOutput("/Users/zhongmingxiao/Downloads/yc1.mp4")
+                .addOutput("/Users/zhongmingxiao/Downloads/38_7_c.mp4")
                 .setTargetSize(14_320_000)
                 .done();
 
