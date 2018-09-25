@@ -8,6 +8,7 @@ import com.yunche.loan.config.constant.LoanProcessEnum;
 import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.DateTimeFormatUtils;
+import com.yunche.loan.config.util.EventBusCenter;
 import com.yunche.loan.config.util.SessionUtils;
 import com.yunche.loan.domain.entity.*;
 import com.yunche.loan.domain.param.ApprovalParam;
@@ -278,6 +279,9 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
         // 执行当前节点-附带任务
         doCurrentNodeAttachTask(approval, loanOrderDO, loanProcessDO);
+
+        //如果是打款确认 和 代偿确认 则通知财务系统
+            EventBusCenter.eventBus.post(approval);
 
         return ResultBean.ofSuccess(null, "[" + LoanProcessEnum.getNameByCode(approval.getOriginalTaskDefinitionKey()) + "]任务执行成功");
     }
@@ -905,6 +909,9 @@ public class LoanProcessServiceImpl implements LoanProcessService {
                 // 更新流程（已退款）
                 loanProcessDO.setRemitReview(TASK_PROCESS_REFUND);
                 loanProcessApprovalCommonService.updateLoanProcess(loanProcessDO);
+
+                //异步同步财务数据
+                EventBusCenter.eventBus.post(approval);
 
             } else if (ACTION_REJECT_MANUAL.equals(approval.getAction())) {
 
