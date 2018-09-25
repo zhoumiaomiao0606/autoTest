@@ -100,10 +100,10 @@ spring:
       password: ycjinfu@2099
       driver-class-name: com.mysql.jdbc.Driver
       max-wait: 10000
-      initialSize: 24
+      initialSize: 16
       minIdle: 16
-      max-idle: 24
-      max-active: 50
+      max-idle: 16
+      max-active: 30
       test-on-borrow: true
     tomcat:
       max-wait: 10000
