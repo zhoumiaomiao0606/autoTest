@@ -2505,8 +2505,8 @@
             AND
             case
             when (select level from base_area where area_id = #{bizAreaId}) = 0 then 1=1
-            when (select level from base_area where area_id = #{bizAreaId}) = 1 then join_b.bizAreaId in (select area_id from base_area where parent_area_id = #{bizAreaId})
-            when (select level from base_area where area_id = #{bizAreaId}) = 2 then join_b.bizAreaId = #{bizAreaId}
+            when (select level from base_area where area_id = #{bizAreaId}) = 1 then join_b.area_id in (select area_id from base_area where parent_area_id = #{bizAreaId})
+            when (select level from base_area where area_id = #{bizAreaId}) = 2 then join_b.area_id = #{bizAreaId}
             else 1=2
             end
         </if>
