@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.*;
@@ -343,11 +344,20 @@ public class WebSocketServiceImpl implements WebSocketService {
                                        List<ConfVideoFaceTimeDO> type_weekend_list,
                                        List<ConfVideoFaceTimeDO> type_holiday_list) {
 
-        // 是
-        if (match_holiday(webSocketParam, type_holiday_list)) {
+        // 日期匹配是：holiday
+        if (match_holiday_date(webSocketParam, type_holiday_list)) {
 
-            // (无限)排队：人工面签
-            return true;
+            // 匹配时间
+            if (match_holiday_time(webSocketParam, type_holiday_list)) {
+
+                // (无限)排队：人工面签
+                return true;
+
+            } else {
+
+                // 直接机器面签
+                return false;
+            }
         }
         // 否
         else {
@@ -357,13 +367,54 @@ public class WebSocketServiceImpl implements WebSocketService {
     }
 
     /**
-     * 是否为：holiday
+     * 日期匹配是否为：holiday
      *
      * @param webSocketParam
      * @param type_holiday_list
      * @return
      */
-    private boolean match_holiday(WebSocketParam webSocketParam, List<ConfVideoFaceTimeDO> type_holiday_list) {
+    private boolean match_holiday_date(WebSocketParam webSocketParam, List<ConfVideoFaceTimeDO> type_holiday_list) {
+
+        final boolean[] result = {false};
+
+        double bankPeriodPrincipal = webSocketParam.getBankPeriodPrincipal().doubleValue();
+        LocalDate now = LocalDate.now();
+
+        type_holiday_list.stream()
+                .filter(Objects::nonNull)
+                .forEach(e -> {
+
+                    double startLoanAmount = e.getStartLoanAmount().doubleValue();
+                    double endLoanAmount = e.getEndLoanAmount().doubleValue();
+                    LocalDate startDate = LocalDateTime.parse(e.getStartTime(), formatter_yyyyMMdd_HHmmss).toLocalDate();
+                    LocalDate endDate = LocalDateTime.parse(e.getEndTime(), formatter_yyyyMMdd_HHmmss).toLocalDate();
+
+                    // 匹配：节假日日期
+                    boolean match_date = now.isEqual(startDate) || (now.isAfter(startDate) || now.isBefore(endDate)) || now.isEqual(endDate);
+                    // 匹配：金额
+                    boolean match_loan = bankPeriodPrincipal >= startLoanAmount && bankPeriodPrincipal < endLoanAmount;
+                    boolean match_loan_ = bankPeriodPrincipal >= startLoanAmount && endLoanAmount == -1;
+
+                    boolean match = match_date && (match_loan || match_loan_);
+                    if (match) {
+
+                        // (无限)排队：人工面签
+                        result[0] = true;
+                        return;
+                    }
+                });
+
+        return result[0];
+    }
+
+    /**
+     * 日期匹配是否为：holiday
+     *
+     * @param webSocketParam
+     * @param type_holiday_list
+     * @return
+     */
+    private boolean match_holiday_time(WebSocketParam webSocketParam, List<ConfVideoFaceTimeDO> type_holiday_list) {
 
         final boolean[] result = {false};
 

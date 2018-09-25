@@ -2491,23 +2491,23 @@
             AND main.id = #{orderId}
         </if>
         <if test="customer != null and customer != ''">
-            AND join_c.customer LIKE CONCAT('%', #{customer} ,'%')
+            AND join_c.name LIKE CONCAT('%', #{customer} ,'%')
         </if>
         <if test="mobile != null">
             AND join_b.mobile = #{mobile}
         </if>
         <if test="idCard != null">
-            AND join_c.idCard = #{idCard}
+            AND join_c.id_card = #{idCard}
         </if>
         <if test="salesmanId != null">
-            AND join_b.salesmanId = #{salesmanId}
+            AND join_b.salesman_id = #{salesmanId}
         </if>
         <if test="bizAreaId != null">
             AND
             case
             when (select level from base_area where area_id = #{bizAreaId}) = 0 then 1=1
-            when (select level from base_area where area_id = #{bizAreaId}) = 1 then join_b.bizAreaId in (select area_id from base_area where parent_area_id = #{bizAreaId})
-            when (select level from base_area where area_id = #{bizAreaId}) = 2 then join_b.bizAreaId = #{bizAreaId}
+            when (select level from base_area where area_id = #{bizAreaId}) = 1 then join_b.area_id in (select area_id from base_area where parent_area_id = #{bizAreaId})
+            when (select level from base_area where area_id = #{bizAreaId}) = 2 then join_b.area_id = #{bizAreaId}
             else 1=2
             end
         </if>
@@ -2516,13 +2516,13 @@
         </if>
         <if test="loanAmountType != null">
             <if test="loanAmountType == 1">
-                AND join_b.loanAmount = 1
+                AND join_b.loan_amount = 1
             </if>
             <if test="loanAmountType == 2">
-                AND join_b.loanAmount = 2
+                AND join_b.loan_amount = 2
             </if>
             <if test="loanAmountType == 3">
-                AND join_b.loanAmount = 3
+                AND join_b.loan_amount = 3
             </if>
         </if>
         <if test="startLoanGmtCreate != null">

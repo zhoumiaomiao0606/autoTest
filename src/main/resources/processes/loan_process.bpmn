@@ -393,7 +393,7 @@
     <sequenceFlow id="flow262" sourceRef="usertask_bank_open_card" targetRef="endevent36">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1}]]></conditionExpression>
     </sequenceFlow>
-    <userTask id="usertask_apply_instalment" name="申请分期" activiti:candidateGroups="管理员,总经理,培训经理,台州主管,业务内勤,杭州城站分期专员,台州分期专员"></userTask>
+    <userTask id="usertask_apply_instalment" name="申请分期" activiti:candidateGroups="管理员,总经理,培训经理,台州主管,杭州城站分期专员,台州分期专员"></userTask>
     <sequenceFlow id="flow263" sourceRef="parallelgateway9" targetRef="usertask_apply_instalment"></sequenceFlow>
     <endEvent id="endevent37" name="End"></endEvent>
     <sequenceFlow id="flow264" sourceRef="usertask_apply_instalment" targetRef="endevent37">
