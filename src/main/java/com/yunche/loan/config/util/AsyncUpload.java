@@ -123,25 +123,25 @@ public class AsyncUpload {
 
 
                 //先判断视频大小-----大于30m则进行压缩
-                LOG.info("--------------》视频压缩开始1:"+sysConfig.getTempDir()+name);
+
                 boolean needCompress = FfmpegUtils.needCompress(picPath);
 
                 if (needCompress)
                 {
-                    LOG.info("--------------》视频压缩开始2:"+sysConfig.getTempDir()+name);
+                    LOG.info("--------------》视频压缩开始:"+sysConfig.getTempDir()+name);
                     FfmpegUtils.compress(picPath,sysConfig.getTempDir()+name);
                     outPath = sysConfig.getTempDir()+name;
                 }else{
                     outPath = picPath;
                 }
-                LOG.info("--------------》视频压缩开始3:"+sysConfig.getTempDir()+name);
+
 
             }catch (Exception e){
                 throw new RuntimeException("文件下载出错");
             }
 
             try {
-                LOG.info("--------------》上传开始1:"+sysConfig.getTempDir()+name);
+                LOG.info("--------------》上传开始1:"+outPath);
                 boolean check = FtpUtil.icbcUpload(outPath);
                 if(!check){
                     error = new Byte("3");
