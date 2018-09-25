@@ -32,13 +32,13 @@
 
 
     <Loggers>
-        <logger level="INFO" name="com.yunche.loan">
+        <logger level="WARN" name="com.yunche.loan">
             <AppenderRef ref="App-File-Appender"/>
         </logger>
-        <logger level="INFO" name="org.activiti.engine.impl.persistence.entity">
+        <logger level="WARN" name="org.activiti.engine.impl.persistence.entity">
             <AppenderRef ref="App-File-Appender"/>
         </logger>
-        <Root level="INFO">
+        <Root level="WARN">
             <AppenderRef ref="Console"/>
         </Root>
     </Loggers>
