@@ -43,9 +43,13 @@ public class LoanCustomerDO {
     private String companyName;
 
     private String companyPhone;
-
+    /**
+     * 单位地址
+     */
     private String companyAddress;
-
+    /**
+     * 月收入
+     */
     private BigDecimal monthIncome;
 
     private Byte houseType;
