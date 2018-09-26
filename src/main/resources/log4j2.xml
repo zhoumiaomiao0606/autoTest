@@ -11,7 +11,7 @@
         </Console>
 
         <RollingFile name="App-File-Appender" fileName="${LOG_PATH}/biz_log.log"
-                     filePattern="${LOG_PATH}/$${date:yyyy-MM}/biz-%d{yyyy-MM-dd}-%i.log">
+                     filePattern="${LOG_PATH}/$${date:yyyy-MM}/$${date:dd}/biz-%d{yyyy-MM-dd}-%i.log">
 
             <PatternLayout>
                 <Pattern>${LOG_PATTERN}</Pattern>
