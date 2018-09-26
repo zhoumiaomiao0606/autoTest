@@ -1,40 +1,51 @@
 package com.yunche.loan.config.util;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
+import org.apache.http.*;
+import org.apache.http.client.CookieStore;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
+import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.conn.ClientConnectionManager;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeRegistry;
 import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.BasicCookieStore;
+import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.cookie.BasicClientCookie;
+import org.apache.http.message.BasicHeader;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.util.EntityUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author liuzhe
  * @date 2018/1/12
  */
 public class HttpUtils {
+    private static final Logger LOG = LoggerFactory.getLogger(HttpUtils.class);
+    static CookieStore cookieStore = null;
+    static HttpClientContext context = null;
 
     /**
      * get
@@ -132,6 +143,7 @@ public class HttpUtils {
 
         return httpClient.execute(request);
     }
+
 
     /**
      * Post stream
@@ -322,4 +334,136 @@ public class HttpUtils {
             throw new RuntimeException(ex);
         }
     }
+
+
+    public static HttpResponse doPost(String host, String path,
+                                      Map<String, String> headers,
+                                      Map<String, String> urlParas,
+                                      String body)
+            throws Exception {
+        HttpClient httpClient = wrapClient(host);
+
+        HttpPost request = new HttpPost(buildUrl(host, path, urlParas));
+        for (Map.Entry<String, String> e : headers.entrySet()) {
+            request.addHeader(e.getKey(), e.getValue());
+        }
+
+        //设置cookie
+       /* request.setHeader(new BasicHeader("Cookie",cookie));*/
+
+        if (StringUtils.isNotBlank(body)) {
+            request.setEntity(new StringEntity(body, "utf-8"));
+        }
+
+        return httpClient.execute(request);
+    }
+
+
+    //请求财务系统----返回json数据
+
+    //登陆鉴权
+     public static void loginAuth()
+     {
+         CloseableHttpClient client = HttpClients.createDefault();
+         HttpPost httpPost = new HttpPost("http://127.0.0.1:8001/api/v1/employee/login");
+         Map parameterMap = new HashMap();
+         parameterMap.put("username", "admin@yunche.com");
+         parameterMap.put("password", "111111");
+
+
+
+         try {
+             UrlEncodedFormEntity postEntity = new UrlEncodedFormEntity(
+                     getParam(parameterMap), "UTF-8");
+
+             StringEntity s = new StringEntity("{\n" +
+                     "\t\"username\": \"admin@yunche.com\",\n" +
+                     "\t\"password\":111111\n" +
+                     "}", "utf-8");
+             s.setContentEncoding("UTF-8");
+             s.setContentType("application/json");//发送json数据需要设置contentType
+
+             httpPost.setEntity(s);
+             /*postEntity.setContentType("application/json; charset=UTF-8");
+             httpPost.setEntity(postEntity);*/
+
+
+             HttpResponse httpResponse = client.execute(httpPost);
+             /*String location = httpResponse.getFirstHeader("Location")
+                     .getValue();*/
+             /*if (location != null) {
+                 System.out.println("----loginError");
+             }*/
+
+             if(httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK){
+                 String result = EntityUtils.toString(httpResponse.getEntity());// 返回json格式：
+                 LOG.error("数据读取！！！！"+result);
+             }
+           /*  printResponse(httpResponse);*/
+
+             client.close();
+         }catch (IOException e)
+         {
+             LOG.error("鉴权失败！！！！");
+
+
+         }
+
+     }
+
+     //打印返回response
+     public static void printResponse(HttpResponse httpResponse)
+             throws ParseException, IOException {
+         LOG.error("返回结果======开始=====！！！！");
+         // 获取响应消息实体
+         HttpEntity entity = httpResponse.getEntity();
+         // 响应状态
+         System.out.println("status:" + httpResponse.getStatusLine());
+         System.out.println("headers:");
+         HeaderIterator iterator = httpResponse.headerIterator();
+         while (iterator.hasNext()) {
+             System.out.println("\t" + iterator.next());
+         }
+         // 判断响应实体是否为空
+         if (entity != null) {
+             String responseString = EntityUtils.toString(entity);
+             System.out.println("response length:" + responseString.length());
+             System.out.println("response content:"
+                     + responseString.replace("\r\n", ""));
+         }
+         LOG.error("返回结果======结束=====！！！！");
+     }
+
+    public static List<NameValuePair> getParam(Map parameterMap) {
+        List<NameValuePair> param = new ArrayList<NameValuePair>();
+        Iterator it = parameterMap.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry parmEntry = (Map.Entry) it.next();
+            param.add(new BasicNameValuePair((String) parmEntry.getKey(),
+                    (String) parmEntry.getValue()));
+        }
+        return param;
+    }
+
+    //设置cookie
+    public static void setCookieStore(HttpResponse httpResponse)
+    {
+        cookieStore = new BasicCookieStore();
+
+        // JSESSIONID
+        String setCookie = httpResponse.getFirstHeader("Set-Cookie")
+                .getValue();
+        String SID = setCookie.substring("sid=".length(),
+                setCookie.indexOf(";"));
+        System.out.println("sid:" + SID);
+
+        BasicClientCookie cookie = new BasicClientCookie("sid",
+                SID);
+        cookie.setVersion(0);
+        cookie.setDomain("127.0.0.1");
+        cookie.setPath("/partneraccountinterface");
+        cookieStore.addCookie(cookie);
+    }
+
+
 }

@@ -1,7 +1,9 @@
-package com.yunche.loan.config.util;
+package com.yunche.loan.manager.finance;
 
 import com.google.common.base.Preconditions;
 import com.google.common.eventbus.Subscribe;
+import com.yunche.loan.config.util.EventBusCenter;
+import com.yunche.loan.config.util.HttpUtils;
 import com.yunche.loan.domain.entity.*;
 import com.yunche.loan.domain.param.ApprovalParam;
 import com.yunche.loan.domain.param.PostFinanceData;
@@ -13,13 +15,10 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-
 import java.math.BigDecimal;
 import java.util.List;
 
-import static com.yunche.loan.config.constant.LoanProcessEnum.FINANCE_INSTEAD_PAY_REVIEW;
-import static com.yunche.loan.config.constant.LoanProcessEnum.REFUND_APPLY;
-import static com.yunche.loan.config.constant.LoanProcessEnum.REMIT_REVIEW;
+import static com.yunche.loan.config.constant.LoanProcessEnum.*;
 import static com.yunche.loan.config.constant.ProcessApprovalConst.ACTION_PASS;
 
 @Component
@@ -105,7 +104,8 @@ public class AsyncFinanceApI
 
         //进行推送
         try {
-            LOG.error("准备异步发送数据！！！");
+            LOG.error("准备异步发送数据！！！"+postFinanceData.toString());
+            HttpUtils.loginAuth();
             /*HttpUtils.doPost(HOST,PATH,METHOD,null,null,postFinanceData.toString());*/
         } catch (Exception e) {
             LOG.error("财务数据异步发送失败！！！",e);
@@ -119,7 +119,7 @@ public class AsyncFinanceApI
     @Subscribe
     public void listernApproval(ApprovalParam approvalParam)
     {
-        if((approvalParam.equals(REMIT_REVIEW.getCode()) && ACTION_PASS.equals(approvalParam.getAction())) || (approvalParam.equals(FINANCE_INSTEAD_PAY_REVIEW.getCode()) && ACTION_PASS.equals(approvalParam.getAction())) || (approvalParam.equals(REFUND_APPLY.getCode()) && ACTION_PASS.equals(approvalParam.getAction())))
+        if((approvalParam.getTaskDefinitionKey().equals(REMIT_REVIEW.getCode()) && ACTION_PASS.equals(approvalParam.getAction())) || (approvalParam.getTaskDefinitionKey().equals(FINANCE_INSTEAD_PAY_REVIEW.getCode()) && ACTION_PASS.equals(approvalParam.getAction())) || (approvalParam.getTaskDefinitionKey().equals(REFUND_APPLY.getCode()) && ACTION_PASS.equals(approvalParam.getAction())))
         {
             postFinanceData(approvalParam);
         }
