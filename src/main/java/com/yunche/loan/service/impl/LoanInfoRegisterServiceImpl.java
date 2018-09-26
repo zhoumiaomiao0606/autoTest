@@ -9,7 +9,7 @@ import com.yunche.loan.domain.vo.RecombinationVO;
 import com.yunche.loan.domain.vo.UniversalCarInfoVO;
 import com.yunche.loan.domain.vo.UniversalInfoVO;
 import com.yunche.loan.mapper.*;
-import com.yunche.loan.service.LoanFinancialPlanService;
+import com.yunche.loan.service.LoanCustomerService;
 import com.yunche.loan.service.LoanInfoRegisterService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,26 +40,25 @@ public class LoanInfoRegisterServiceImpl implements LoanInfoRegisterService {
     private LoanBaseInfoDOMapper loanBaseInfoDOMapper;
 
     @Autowired
-    private LoanFinancialPlanService loanFinancialPlanService;
+    private LoanCustomerService loanCustomerService;
 
 
     @Override
     public ResultBean detail(Long orderId) {
         Preconditions.checkNotNull(orderId, "参数有误");
 
-        RecombinationVO recombinationVO = new RecombinationVO<>();
         //客户基本信息
         UniversalInfoVO universalInfoVO = loanQueryDOMapper.selectUniversalInfo(orderId);
-
         //车辆详情
         UniversalCarInfoVO universalCarInfoVO = loanQueryDOMapper.selectUniversalCarInfo(orderId);
-
         //金融方案信息
         FinancialSchemeVO financialSchemeVO = loanQueryDOMapper.selectFinancialScheme(orderId);
 
+        RecombinationVO recombinationVO = new RecombinationVO<>();
         recombinationVO.setInfo(universalInfoVO);
         recombinationVO.setCar(universalCarInfoVO);
         recombinationVO.setFinancial(financialSchemeVO);
+
         return ResultBean.ofSuccess(recombinationVO);
     }
 
@@ -170,6 +169,9 @@ public class LoanInfoRegisterServiceImpl implements LoanInfoRegisterService {
             int count2 = loanOrderDOMapper.updateByPrimaryKeySelective(loanOrderDO);
             Preconditions.checkArgument(count2 > 0, "插入金融方案计划失败");
         }
+
+        // 客户信息
+        loanCustomerService.update(loanInfoRegisterParam.getLoanCustomerDO());
 
         return ResultBean.ofSuccess(null, "保存成功");
     }

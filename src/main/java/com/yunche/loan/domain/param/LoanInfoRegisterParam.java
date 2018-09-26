@@ -1,5 +1,6 @@
 package com.yunche.loan.domain.param;
 
+import com.yunche.loan.domain.entity.LoanCustomerDO;
 import com.yunche.loan.domain.vo.BaseVO;
 import lombok.Data;
 
@@ -26,15 +27,18 @@ public class LoanInfoRegisterParam {
      * 车辆颜色
      */
     private String color;
-    /**
-     * 金融方案
-     */
-    private LoanFinancialPlanParam loanFinancialPlanParam;
-
 
     /**
      * 产品大类
      */
     private String categorySuperior;
 
+    /**
+     * 金融方案
+     */
+    private LoanFinancialPlanParam loanFinancialPlanParam;
+    /**
+     * 客户信息
+     */
+    private LoanCustomerDO loanCustomerDO;
 }
