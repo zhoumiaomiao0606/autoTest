@@ -15,6 +15,7 @@ public class LoanInfoRegisterController {
     @Autowired
     LoanInfoRegisterService loanInfoRegisterService;
 
+
     @GetMapping("/detail")
     ResultBean detail(@RequestParam("orderId") Long orderId) {
         return loanInfoRegisterService.detail(orderId);
