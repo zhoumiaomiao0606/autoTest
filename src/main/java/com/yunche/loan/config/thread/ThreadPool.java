@@ -17,7 +17,7 @@ public class ThreadPool {
             .setNameFormat("biz-pool-%d").build();
 
     public static final ExecutorService executorService = new ThreadPoolExecutor(
-            10,
+            0,
             32,
             60L,
             TimeUnit.SECONDS,

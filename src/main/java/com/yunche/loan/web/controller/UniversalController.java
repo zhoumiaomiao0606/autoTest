@@ -9,10 +9,12 @@ import com.yunche.loan.config.task.ThreadTask;
 import com.yunche.loan.config.thread.ThreadPool;
 import com.yunche.loan.config.util.FtpUtil;
 import com.yunche.loan.domain.entity.PartnerDO;
+import com.yunche.loan.domain.query.LoanCreditExportQuery;
 import com.yunche.loan.mapper.PartnerDOMapper;
 import com.yunche.loan.service.LoanQueryService;
 import com.yunche.loan.service.MaterialService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -82,10 +84,14 @@ public class UniversalController {
 
 
     // 文件下载
-    @GetMapping("/downreport")
-    public String downreport() throws UnsupportedEncodingException {
+    @PostMapping(value = "/downreport", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public String downreport(@RequestBody LoanCreditExportQuery loanCreditExportQuery) throws UnsupportedEncodingException {
 
         try {
+
+            //查询符合要求的数据
+
+
             List<Long> orderLists = Lists.newArrayList();
             orderLists.add(1806151541217761225l);
             orderLists.add(1806221600152528006l);
