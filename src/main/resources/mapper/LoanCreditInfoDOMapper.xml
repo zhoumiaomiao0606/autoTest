@@ -165,4 +165,11 @@
         where id = #{id,jdbcType=BIGINT}
     </update>
 
+    <select id="bankNoByCusId" resultType="java.lang.String">
+        select c.bank from loan_customer a
+        left join loan_order b on b.loan_customer_id = a.principal_cust_id
+        left join loan_base_info c on c.id = b.loan_base_info_id
+        where a.principal_cust_id = #{customerId}
+    </select>
+
 </mapper>
