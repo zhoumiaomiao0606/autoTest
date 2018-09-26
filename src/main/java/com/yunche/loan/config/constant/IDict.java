@@ -406,4 +406,14 @@ public class IDict {
 
     }
 
+    /**
+     * 文件后缀
+     */
+    public static abstract interface K_SUFFIX{
+
+        public static final String K_SUFFIX_JPG = ".jpg";
+
+        public static final String K_SUFFIX_DOC = ".doc";
+    }
+
 }

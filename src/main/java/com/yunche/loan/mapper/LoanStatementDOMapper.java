@@ -1,6 +1,7 @@
 package com.yunche.loan.mapper;
 
 import com.yunche.loan.domain.param.*;
+import com.yunche.loan.domain.query.LoanCreditExportQuery;
 import com.yunche.loan.domain.vo.*;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -41,5 +42,7 @@ public interface LoanStatementDOMapper {
     List<JinTouHangRepayInfoVO> exportJinTouHangRepayInfo(ExportApplyLoanPushParam param);
 
     List<JinTouHangInterestRegisterVO> exportJinTouHangInterestRegister(ExportApplyLoanPushParam param);
+
+    List<CreditPicExportVO> selectCreditPicExport(LoanCreditExportQuery param);
 
 }
