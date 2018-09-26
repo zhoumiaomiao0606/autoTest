@@ -3,6 +3,7 @@ package com.yunche.loan.mapper;
 import com.yunche.loan.domain.entity.BankDO;
 import com.yunche.loan.domain.entity.LoanCustomerDO;
 import com.yunche.loan.domain.entity.ZhonganInfoDO;
+import com.yunche.loan.domain.query.AppBusDetailQuery;
 import com.yunche.loan.domain.query.BankCreditPrincipalQuery;
 import com.yunche.loan.domain.query.BaseQuery;
 import com.yunche.loan.domain.query.ContractSetQuery;
@@ -79,4 +80,11 @@ public interface ZhonganInfoDOMapper {
                                                 @Param("juniorIds")Set<String> juniorIds,
                                                 @Param("maxGroupLevel")Long maxGroupLevel);
     List<String> selectBankByUserId(@Param("UserId")Long userId);
+
+    List<AppBusinessDetailReportVO> appBusinessDetailReport(AppBusDetailQuery query);
+
+    int countAppBusDetail(@Param("orderId")Long orderId);
+
+
+    List<AppMakeMoneyDetailReportVO> appMakeMoneyDetailReport(AppBusDetailQuery query);
 }

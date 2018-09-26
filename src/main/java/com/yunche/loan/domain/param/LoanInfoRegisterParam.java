@@ -37,4 +37,10 @@ public class LoanInfoRegisterParam {
      */
     private String categorySuperior;
 
+
+    private String workCompanyName;
+
+
+    private String monthIncome;
+
 }

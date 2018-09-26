@@ -2,6 +2,8 @@ package com.yunche.loan.web.controller;
 
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.entity.LoanBankCardSendDO;
+import com.yunche.loan.domain.param.LoanBankCardSendExpParam;
+import com.yunche.loan.domain.vo.BankAndSocietyExportVO;
 import com.yunche.loan.domain.vo.UniversalBankCardSendVO;
 import com.yunche.loan.service.LoanBankCardSendService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +36,11 @@ public class LoanBankCardSendController {
     @GetMapping(value = "/imp")
     public ResultBean<Integer> imp(@RequestParam(value = "key") String ossKey) {
         return loanBankCardSendService.imp(ossKey);
+    }
+
+    @PostMapping(value = "export")
+    public ResultBean export(@RequestBody LoanBankCardSendExpParam loanBankCardSendExpParam) {
+        return ResultBean.ofSuccess(loanBankCardSendService.export(loanBankCardSendExpParam));
     }
 }
 
