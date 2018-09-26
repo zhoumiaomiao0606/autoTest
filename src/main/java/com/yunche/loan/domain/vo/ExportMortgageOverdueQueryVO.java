@@ -10,7 +10,9 @@ import lombok.Data;
 @Data
 public class ExportMortgageOverdueQueryVO
 {
-    //业务区域
+    //
+    private Long area_id;
+    //上牌地
     private String area_name;
 
     //业务团队
@@ -33,6 +35,9 @@ public class ExportMortgageOverdueQueryVO
 
     //车牌号
     private String license_plate_number;
+
+    //车架号
+    private String vehicle_identification_number;
 
     //车价
     private String price;

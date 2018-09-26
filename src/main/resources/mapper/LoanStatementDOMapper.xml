@@ -868,6 +868,7 @@
     <!--=======================================导出 EXCEL 抵押超期=========================================-->
     <select id="exportMortgageOverdueQuerys" parameterType="com.yunche.loan.domain.param.ExportMortgageOverdueQueryVerifyParam"  resultType="com.yunche.loan.domain.vo.ExportMortgageOverdueQueryVO" >
         SELECT
+        loanbaseinfo.area_id,
         base_area.area_name,
         partner.NAME AS partner_name,
         customer.NAME AS customer_name,
@@ -882,6 +883,7 @@
         '二手车' ELSE '其他'
         END AS car_type,
         vehicle_information.license_plate_number,
+        vehicle_information.vehicle_identification_number,
         cardetail.price,
         loan_financial_plan.loan_amount,
         loan_financial_plan.bank_period_principal,

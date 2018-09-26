@@ -15,4 +15,6 @@ public class InstalmentUpdateParam {
     private BigDecimal appraisal;
     @NotNull
     private List<UniversalFileParam> files;
+
+    private String vehicle_assess_use_year;
 }

@@ -28,6 +28,7 @@ public class LoanInfoRegisterParam {
      */
     private String color;
 
+
     /**
      * 产品大类
      */
@@ -41,4 +42,10 @@ public class LoanInfoRegisterParam {
      * 客户信息
      */
     private LoanCustomerDO loanCustomerDO;
+
+    private String workCompanyName;
+
+
+    private String monthIncome;
+
 }

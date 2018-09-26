@@ -2,6 +2,7 @@ package com.yunche.loan.service;
 
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.entity.LoanBankCardSendDO;
+import com.yunche.loan.domain.param.LoanBankCardSendExpParam;
 import com.yunche.loan.domain.vo.UniversalBankCardSendVO;
 
 /**
@@ -15,4 +16,6 @@ public interface LoanBankCardSendService {
     ResultBean<UniversalBankCardSendVO> detail(Long orderId);
 
     ResultBean<Integer> imp(String ossKey);
+
+    String export(LoanBankCardSendExpParam loanBankCardSendExpParam);
 }
