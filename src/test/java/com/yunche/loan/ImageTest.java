@@ -11,6 +11,7 @@ import org.junit.Test;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -35,7 +36,18 @@ public class ImageTest {
 //        fileKey.add("img/2018/201805/20180504/WNf4THHX8M.jpg");
         System.out.println("开始时间："+System.currentTimeMillis());
         Long startTime =System.currentTimeMillis();
-        ImageUtil.mergeImage2Pic_NO_COMPROCESS("77779.jpg",fileKey);
+        try {
+            Runtime.getRuntime().exec("mkdir /tmp/fdfd");
+        } catch (IOException e) {
+            System.out.println("创建路径 /tmp/aaa 失败");
+        }
+        ImageUtil.mergetImage2PicByConvert("/tmp/fdfd/","hahha.jpg",fileKey);
+//        ImageUtil.mergeImage2Pic("/tmp/aaa","hahha.jpg",fileKey);
+//        ImageUtil.mergeImage2Pic("/tmp/aaa","bbbbb.jpg",fileKey);
+//        ImageUtil.mergeImage2Pic_NO_COMPROCESS("77779.jpg",fileKey);
+
+
+
         Long endTime =System.currentTimeMillis();
         System.out.println("结束时间："+System.currentTimeMillis());
         System.out.println("用时："+(endTime-startTime)/1000);

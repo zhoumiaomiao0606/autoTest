@@ -7,14 +7,12 @@ import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.domain.entity.LoanFileDO;
 import com.yunche.loan.domain.entity.LoanFinancialPlanDO;
 import com.yunche.loan.domain.entity.LoanOrderDO;
+import com.yunche.loan.domain.entity.VehicleInformationDO;
 import com.yunche.loan.domain.param.InstalmentUpdateParam;
 import com.yunche.loan.domain.param.UniversalFileParam;
 import com.yunche.loan.domain.vo.ApplyDiviGeneralInfoVO;
 import com.yunche.loan.domain.vo.RecombinationVO;
-import com.yunche.loan.mapper.LoanFileDOMapper;
-import com.yunche.loan.mapper.LoanFinancialPlanDOMapper;
-import com.yunche.loan.mapper.LoanOrderDOMapper;
-import com.yunche.loan.mapper.LoanQueryDOMapper;
+import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.InstalmentService;
 import com.yunche.loan.service.LoanQueryService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +43,9 @@ public class InstalmentServiceImpl implements InstalmentService {
 
     @Autowired
     private LoanFinancialPlanDOMapper loanFinancialPlanDOMapper;
+
+    @Autowired
+    private VehicleInformationDOMapper vehicleInformationDOMapper;
 
 
     @Override
@@ -113,6 +114,9 @@ public class InstalmentServiceImpl implements InstalmentService {
                 }
             }
         }
-
+        VehicleInformationDO vehicleInformationDO = new VehicleInformationDO();
+        vehicleInformationDO.setId(orderDO.getVehicleInformationId());
+        vehicleInformationDO.setAssess_use_year(param.getVehicle_assess_use_year());
+        vehicleInformationDOMapper.updateByPrimaryKeySelective(vehicleInformationDO);
     }
 }

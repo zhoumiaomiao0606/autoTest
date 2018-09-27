@@ -3,6 +3,9 @@ package com.yunche.loan.web.controller;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.param.BusinessReviewCalculateParam;
 import com.yunche.loan.domain.param.BusinessReviewUpdateParam;
+import com.yunche.loan.domain.param.ParternerRuleParam;
+import com.yunche.loan.domain.param.ParternerRuleSharpTuningeParam;
+import com.yunche.loan.manager.finance.BusinessReviewManager;
 import com.yunche.loan.service.BusinessReviewService;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
@@ -16,6 +19,9 @@ import javax.annotation.Resource;
 public class BusinessReviewController {
     @Resource
     private BusinessReviewService businessReviewService;
+
+    @Resource
+    private BusinessReviewManager businessReviewManager;
 
     /**
      * 业务审批单详情
@@ -43,5 +49,21 @@ public class BusinessReviewController {
     @PostMapping(value = "/calculate", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean calculate(@RequestBody @Validated BusinessReviewCalculateParam param) {
         return ResultBean.ofSuccess(businessReviewService.calculate(param));
+    }
+
+    /**
+     * 财务系统对接-----页面渲染--初始计算
+     */
+    @PostMapping(value = "/parternerRule", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResultBean parternerRule(@RequestBody @Validated ParternerRuleParam param) {
+        return ResultBean.ofSuccess(businessReviewManager.parternerRule(param));
+    }
+
+    /**
+     * 财务系统对接-----微调参数--重新计算
+     */
+    @PostMapping(value = "/parternerRuleSharpTuning", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResultBean parternerRuleSharpTuning(@RequestBody @Validated ParternerRuleSharpTuningeParam param) {
+        return ResultBean.ofSuccess(businessReviewManager.parternerRuleSharpTuning(param));
     }
 }

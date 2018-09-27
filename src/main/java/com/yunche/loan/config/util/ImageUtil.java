@@ -10,6 +10,9 @@ import com.yunche.loan.config.exception.BizException;
 import net.coobird.thumbnailator.Thumbnails;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.im4java.core.ConvertCmd;
+import org.im4java.core.IM4JavaException;
+import org.im4java.core.IMOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,6 +51,52 @@ public class ImageUtil {
 
     public static final  String  mergeImage2Pic(List<String> imageList) {
         return mergeImage2Pic(generateName()+PIC_SUFFIX,imageList);
+    }
+
+    public static final void mergetImage2PicByConvert(String localPath,String name,List<String> imageList){
+
+        //创建文件对象
+        List<String> fileList = imageList.stream().map(pic -> {
+            File file=null;
+            try {
+                file = new File("/tmp/" + GeneratorIDUtil.execute() + IDict.K_SUFFIX.K_SUFFIX_JPG);
+                InputStream oss2InputStream = OSSUnit.getOSS2InputStream(pic);
+                FileUtils.copyInputStreamToFile(oss2InputStream, file);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return file.getName();
+        }).collect(Collectors.toList());
+       String fileNames="";
+       for(int i=0;i<fileList.size();i++){
+           fileNames+=" "+"/tmp/"+fileList.get(i);
+       }
+        try {
+            IMOperation operation = new IMOperation();
+            operation.addRawArgs("convert");
+            operation.append();
+            operation.addImage("/tmp/20180926223057649918.jpg");
+            operation.addImage("/tmp/20180926223057649918.jpg");
+            operation.addImage("/tmp/jjjj.jpg");
+
+            ConvertCmd cmd = new ConvertCmd();
+            cmd.setSearchPath("/usr/local/imagemagick/bin/");
+            LOG.info("convert 合成图片开始【"+localPath+name+"】");
+            try {
+                cmd.run(operation);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (IM4JavaException e) {
+                e.printStackTrace();
+            }
+//            String exe ="convert -append "+fileNames+" "+localPath+name;
+//            Runtime.getRuntime().exec(exe);
+            LOG.info("convert 合成图片结束【"+localPath+name+"】");LOG.info("convert 合成图片结束【"+localPath+name+"】");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
     }
         /**
          * 图片合并成jpg
@@ -225,6 +274,94 @@ public class ImageUtil {
             }
         }
         return fileName;
+    }
+
+
+
+
+    /**
+     * 图片合并成jpg,指定路径合成
+     * @param imageList
+     */
+    public static synchronized final  void  mergeImage2Pic(String localPath,String name,List<String> imageList){
+
+
+
+        FileOutputStream out = null;
+        String fileName=null;//临时文件名
+        try{
+            //创建文件对象
+            List<Image> images = imageList.stream().map(pic->{
+                Image src =null;
+                try {
+                    src = ImageIO.read(OSSUnit.getOSS2InputStream(pic));
+                } catch (IOException e) {
+                    Preconditions.checkArgument(false,"读图片异常");
+                }
+                return src;
+            }).collect(Collectors.toList());
+            //获取待合并图片中最大宽度 & 图片总高度之和
+            int maxWidth = 0;
+            int maxHeight = 0;
+            int totalHeight = 0;
+
+            for(int i=0;i<images.size();i++){
+
+                int width = images.get(i).getWidth(null);
+
+                int height = images.get(i).getHeight(null);
+
+                Double rate = (double) DEFAULT_WIDTH / (double)width;
+                if(rate.intValue()<=0){
+                    rate =1.0;
+                }
+                int rateHeight = rate.intValue()*height;
+                if(width>maxWidth){
+                    maxWidth = width;
+                }
+                if(height>maxHeight){
+                    maxHeight = height;
+                }
+                totalHeight += rateHeight;
+            }
+            //构造一个类型为预定义图像类型之一的 BufferedImage。 高度为各个图片高度之和
+            BufferedImage tag = new BufferedImage(DEFAULT_WIDTH, totalHeight, BufferedImage.TYPE_INT_RGB);
+            //创建输出流
+            fileName = localPath+File.separator+name;
+            out = new FileOutputStream(fileName);
+            //绘制合成图像
+            Graphics graphics = tag.createGraphics();
+            int tmpHeight=0;
+            for(int i=0;i<images.size();i++){
+                Image image = images.get(i);
+                Double rate = (double) DEFAULT_WIDTH / (double)image.getWidth(null);
+                if(rate.intValue()<=0){
+                    rate =1.0;
+                }
+                int rateHeight = rate.intValue()*image.getHeight(null);
+                Image scaledInstance = image.getScaledInstance(DEFAULT_WIDTH, rateHeight, Image.SCALE_SMOOTH);
+                graphics.drawImage(scaledInstance, 0, tmpHeight, DEFAULT_WIDTH, rateHeight, null);
+                tmpHeight+=rateHeight;
+            }
+            // 释放此图形的上下文以及它使用的所有系统资源。
+            graphics.dispose();
+            //将绘制的图像生成至输出流
+            ImageIO.write(tag, FORMATNAME, out);
+            tag.flush();
+            tag=null;
+        }catch(Exception e){
+            throw new BizException(e.getMessage());
+        }finally {
+            //关闭输出流
+            try {
+                if(out!=null){
+                    out.close();
+                }
+                System.gc();
+            } catch (IOException e) {
+                Preconditions.checkArgument(false,e.getMessage());
+            }
+        }
     }
 //    /**
 //     * 图片合成word文档

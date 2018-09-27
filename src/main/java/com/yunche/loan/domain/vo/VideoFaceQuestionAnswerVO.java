@@ -52,4 +52,6 @@ public class VideoFaceQuestionAnswerVO {
 
     private BigDecimal firstMonthRepay;
 
+    private BigDecimal monthIncome;
+
 }

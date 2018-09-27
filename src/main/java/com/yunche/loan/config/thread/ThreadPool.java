@@ -18,7 +18,7 @@ public class ThreadPool {
 
     public static final ExecutorService executorService = new ThreadPoolExecutor(
             0,
-            32,
+            50,
             60L,
             TimeUnit.SECONDS,
             new LinkedBlockingQueue<>(1024),

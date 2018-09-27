@@ -1,29 +1,42 @@
 package com.yunche.loan.service.impl;
 
 
+import com.aliyun.oss.OSSClient;
 import com.github.pagehelper.PageHelper;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.yunche.loan.config.common.OSSConfig;
 import com.yunche.loan.config.exception.BizException;
+import com.yunche.loan.config.util.OSSUnit;
 import com.yunche.loan.config.util.POIUtil;
 import com.yunche.loan.config.util.SessionUtils;
+import com.yunche.loan.domain.entity.BaseAreaDO;
 import com.yunche.loan.domain.entity.BizAreaDO;
 import com.yunche.loan.domain.param.*;
 import com.yunche.loan.domain.vo.*;
-import com.yunche.loan.mapper.BizAreaDOMapper;
-import com.yunche.loan.mapper.ChartDOMapper;
-import com.yunche.loan.mapper.LoanStatementDOMapper;
-import com.yunche.loan.mapper.TaskSchedulingDOMapper;
+import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.EmployeeService;
 import com.yunche.loan.service.ExportQueryService;
+import org.apache.poi.xssf.usermodel.XSSFCell;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.beans.PropertyDescriptor;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -53,6 +66,9 @@ public class ExportQueryServiceImpl implements ExportQueryService
 
     @Autowired
     private BizAreaDOMapper bizAreaDOMapper;
+
+    @Autowired
+    private BaseAreaDOMapper baseAreaDOMapper;
 
     /**
      * 导出 EXCEL 银行征信查询
@@ -322,15 +338,136 @@ public class ExportQueryServiceImpl implements ExportQueryService
         exportMortgageOverdueQueryVerifyParam.setMaxGroupLevel(taskSchedulingDOMapper.selectMaxGroupLevel(loginUserId));
 
         List<ExportMortgageOverdueQueryVO> list = loanStatementDOMapper.exportMortgageOverdueQuerys(exportMortgageOverdueQueryVerifyParam);
+        for(ExportMortgageOverdueQueryVO exportMortgageOverdueQueryVO : list){
+            exportMortgageOverdueQueryVO.setArea_name(getAreaName(exportMortgageOverdueQueryVO.getArea_id()));
+        }
 
-        ArrayList<String> header = Lists.newArrayList("业务区域", "业务团队", "客户姓名", "身份证号","手机号",
-                "贷款银行", "车辆型号", "车牌号", "车价", "贷款金融", "银行分期本金", "垫款日期", "银行放款日期", "抵押资料公司寄合伙人",
+        ArrayList<String> header = Lists.newArrayList("上牌地", "业务团队", "客户姓名", "身份证号","手机号",
+                "贷款银行", "车辆型号", "车牌号","车架号" ,"车价", "贷款金融", "银行分期本金", "垫款日期", "银行放款日期", "抵押资料公司寄合伙人",
                 "抵押资料合伙人接收时间","抵押状态","抵押日期","抵押超期天数","提交人"
         );
 
 
-        String ossResultKey = POIUtil.createExcelFile("MortgageOverdue",list,header,ExportMortgageOverdueQueryVO.class,ossConfig);
+        String ossResultKey = createExcelFile("MortgageOverdue",list,header,ExportMortgageOverdueQueryVO.class,ossConfig);
         return ossResultKey;
+    }
+    //特殊处理
+    public static <T> String createExcelFile(String fname, List<T> list, List<String> header, Class<T> clazz, OSSConfig ossConfig) {
+        StringBuilder fileName = new StringBuilder();
+        String timestamp = new SimpleDateFormat("yyyyMMdd").format(new Date());
+        Long id = SessionUtils.getLoginUser().getId();
+        fileName.append(fname).append(timestamp).append(id).append(".xlsx");
+        //创建workbook
+        File file = new File(ossConfig.getDownLoadBasepath() + File.separator + fileName);
+        FileOutputStream out = null;
+        XSSFWorkbook workbook = null;
+
+        try {
+
+            out = new FileOutputStream(file);
+
+            workbook = new XSSFWorkbook();
+            XSSFSheet sheet = workbook.createSheet();
+
+            XSSFRow headRow = sheet.createRow(0);
+            for (int i = 0; i < header.size(); i++) {
+                XSSFCell cell = headRow.createCell(i);
+                cell.setCellValue(header.get(i));
+            }
+            XSSFRow row = null;
+            XSSFCell cell = null;
+
+            Field[] fields = clazz.getDeclaredFields();
+
+            List<Method> getMethods = new ArrayList();
+
+
+            for (int i = 0; i < fields.length; i++)
+            {
+                Field field = fields[i];
+                // 此处应该判断beanObj,property不为null
+                PropertyDescriptor pd = new PropertyDescriptor(field.getName(), clazz);
+                getMethods.add(pd.getReadMethod());
+            }
+
+
+            //设置数据
+            for (int i = 0; i < list.size(); i++)
+            {
+                T data = list.get(i);
+                //创建行
+                row = sheet.createRow(i + 1);
+
+                for (int j = 1; j < getMethods.size(); j++)
+                {
+                    cell = row.createCell(j);
+                    //判断----将Date特殊处理
+                    if(getMethods.get(j).invoke(data) instanceof Date)
+                    {
+                        cell.setCellValue((Date) getMethods.get(j).invoke(data));
+                    }
+                    else if (getMethods.get(j).invoke(data) instanceof BigDecimal)
+                    {
+
+                        cell.setCellValue( ((BigDecimal)getMethods.get(j).invoke(data)).toString());
+
+                    }
+                    else{
+                        cell.setCellValue((String) getMethods.get(j).invoke(data));
+                    }
+
+                }
+
+            }
+
+            for (int j = 0; j < getMethods.size(); j++)
+            {
+                //文件宽度自适应
+                sheet.autoSizeColumn((short) j);
+            }
+            workbook.write(out);
+            //上传OSS
+            OSSClient ossClient = OSSUnit.getOSSClient();
+            String bucketName = ossConfig.getBucketName();
+            String diskName = ossConfig.getDownLoadDiskName();
+            OSSUnit.deleteFile(ossClient, bucketName, diskName + File.separator, fileName.toString());
+            OSSUnit.uploadObject2OSS(ossClient, file, bucketName, diskName + File.separator);
+        } catch (Exception e) {
+            Preconditions.checkArgument(false, e.getMessage());
+        } finally {
+            try {
+                if (out != null) {
+                    out.close();
+                }
+            } catch (IOException e) {
+                Preconditions.checkArgument(false, e.getMessage());
+            }
+        }
+
+        return ossConfig.getDownLoadDiskName() + File.separator + fileName;
+    }
+
+
+    public String getAreaName(Long areaId){
+        String tmpApplyLicensePlateArea ="";
+        if (areaId != null) {
+            BaseAreaDO baseAreaDO = baseAreaDOMapper.selectByPrimaryKey(areaId, VALID_STATUS);
+            //（个性化）如果上牌地是区县一级，则返回形式为 省+区
+            if ("3".equals(String.valueOf(baseAreaDO.getLevel()))) {
+                Long parentAreaId = baseAreaDO.getParentAreaId();
+                BaseAreaDO cityDO = baseAreaDOMapper.selectByPrimaryKey(parentAreaId, null);
+                baseAreaDO.setParentAreaId(cityDO.getParentAreaId());
+                baseAreaDO.setParentAreaName(cityDO.getParentAreaName());
+            }
+            if (baseAreaDO != null) {
+                if (baseAreaDO.getParentAreaName() != null) {
+                    tmpApplyLicensePlateArea = baseAreaDO.getParentAreaName() + baseAreaDO.getAreaName();
+                } else {
+                    tmpApplyLicensePlateArea = baseAreaDO.getAreaName();
+                }
+            }
+        }
+        return tmpApplyLicensePlateArea;
     }
 
     @Override
