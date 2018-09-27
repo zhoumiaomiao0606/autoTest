@@ -145,7 +145,7 @@ public class LoanOrderServiceImpl implements LoanOrderService {
         permissionService.checkTaskPermission(CREDIT_APPLY.getCode());
 
         // 校验客户是否在系统之前已经查过征信，如果已经查过了，则不允许再添加
-        //根据身份证号校验
+        // 根据身份证号校验
         checkBankInterfaceSerial(param);
 
         // 是否已经禁用该银行
@@ -176,19 +176,18 @@ public class LoanOrderServiceImpl implements LoanOrderService {
 //            return;
 //        }
         //主贷人校验
-        if (param.getPrincipalLender() != null ) {
+        if (param.getPrincipalLender() != null) {
             String idCard = param.getPrincipalLender().getIdCard();
 
-            bankCredit(param.getOrderId(),idCard,param.getPrincipalLender().getName(),param.getLoanBaseInfo().getBank(),param.getPrincipalLender().getId());
-
-
+            bankCredit(param.getOrderId(), idCard, param.getPrincipalLender().getName(), param.getLoanBaseInfo().getBank(), param.getPrincipalLender().getId());
         }
+
         //共待人校验
         if (param.getCommonLenderList() != null) {
             param.getCommonLenderList().stream().forEach(e -> {
                 String idCard = e.getIdCard();
                 String name = e.getName();
-                bankCredit(param.getOrderId(),idCard,name,param.getLoanBaseInfo().getBank(),e.getId());
+                bankCredit(param.getOrderId(), idCard, name, param.getLoanBaseInfo().getBank(), e.getId());
 
             });
         }
@@ -199,7 +198,7 @@ public class LoanOrderServiceImpl implements LoanOrderService {
                 String idCard = e.getIdCard();
                 String name = e.getName();
 
-                bankCredit(param.getOrderId(),idCard,name,param.getLoanBaseInfo().getBank(),e.getId());
+                bankCredit(param.getOrderId(), idCard, name, param.getLoanBaseInfo().getBank(), e.getId());
 
             });
         }
@@ -207,7 +206,7 @@ public class LoanOrderServiceImpl implements LoanOrderService {
     }
 
 
-    private  void bankCredit(Long orderId,String idCard,String name,String bankName,Long loanCustomerId){
+    private void bankCredit(Long orderId, String idCard, String name, String bankName, Long loanCustomerId) {
 
         if (StringUtils.isNotBlank(idCard)) {
 
@@ -215,28 +214,28 @@ public class LoanOrderServiceImpl implements LoanOrderService {
             //如果当前订单状态是 【打回】，则不用校验
             LoanProcessDO loanProcessDO = loanProcessDOMapper.selectByPrimaryKey(orderId);
             //如果是打回修改的单子则不用于校验14天
-            if(loanProcessDO!=null && loanProcessDO.getCreditApply().equals(TASK_PROCESS_REJECT) && loanCustomerId!=null){
+            if (loanProcessDO != null && loanProcessDO.getCreditApply().equals(TASK_PROCESS_REJECT) && loanCustomerId != null) {
                 return;
             }
 
             List<LoanOrderDO> collect = Lists.newArrayList();
 
-           loanCustomerDOS.stream().filter(Objects::nonNull).forEach(e -> {
-                LoanOrderDO loanOrderDO =null;
+            loanCustomerDOS.stream().filter(Objects::nonNull).forEach(e -> {
+                LoanOrderDO loanOrderDO = null;
                 //主贷人
-                if(PRINCIPAL_LENDER.getType().equals(e.getCustType())){
+                if (PRINCIPAL_LENDER.getType().equals(e.getCustType())) {
 
                     loanOrderDO = loanOrderDOMapper.selectByCustomerId(e.getId());
 
-                }else
+                } else
                     //共待人 || 担保人
-                    if(COMMON_LENDER.getType().equals(e.getCustType()) ||
-                        GUARANTOR.getType().equals(e.getCustType())){
-                    loanOrderDO = loanOrderDOMapper.selectByCustomerId(e.getPrincipalCustId());
-                }
+                    if (COMMON_LENDER.getType().equals(e.getCustType()) ||
+                            GUARANTOR.getType().equals(e.getCustType())) {
+                        loanOrderDO = loanOrderDOMapper.selectByCustomerId(e.getPrincipalCustId());
+                    }
 
 
-                if(loanOrderDO !=null) {
+                if (loanOrderDO != null) {
                     LoanBaseInfoDO loanBaseInfoDO = loanBaseInfoDOMapper.selectByPrimaryKey(loanOrderDO.getLoanBaseInfoId());
                     //同一个贷款银行需要校验征信
                     if (bankName.equals(loanBaseInfoDO.getBank())) {
@@ -258,8 +257,8 @@ public class LoanOrderServiceImpl implements LoanOrderService {
             });
 
 
-            if(collect!=null && collect.size()>0){
-                throw new BizException(name+":征信14天内已经发起征信申请，对应订单号【"+collect.get(0).getId()+"】");
+            if (collect != null && collect.size() > 0) {
+                throw new BizException(name + ":征信14天内已经发起征信申请，对应订单号【" + collect.get(0).getId() + "】");
 
             }
 

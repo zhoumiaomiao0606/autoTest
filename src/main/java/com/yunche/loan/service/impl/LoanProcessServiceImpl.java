@@ -196,7 +196,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         LoanBaseInfoDO loanBaseInfoDO = getLoanBaseInfoDO(loanOrderDO.getLoanBaseInfoId());
 
         // 校验审核前提条件
-        checkPreCondition(approval.getTaskDefinitionKey(), approval.getAction(), loanOrderDO, loanProcessDO);
+//        checkPreCondition(approval.getTaskDefinitionKey(), approval.getAction(), loanOrderDO, loanProcessDO);
 
         // 日志
         loanProcessApprovalCommonService.log(approval);
@@ -889,7 +889,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
                 loanProcessDO.setRemitReview(TASK_PROCESS_REFUND);
                 loanProcessApprovalCommonService.updateLoanProcess(loanProcessDO);
 
-                //异步同步财务数据
+                // 异步同步财务数据
                 EventBusCenter.eventBus.post(approval);
 
             } else if (ACTION_REJECT_MANUAL.equals(approval.getAction())) {
@@ -3165,8 +3165,8 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      */
     private void doCurrentNodeAttachTask(ApprovalParam approval, LoanOrderDO loanOrderDO, LoanProcessDO loanProcessDO) {
 
-        // 附带任务-[征信申请] ： 通过银行接口  ->  自动查询征信
-        doAttachTask_creditApply(approval);
+        // TODO 附带任务-[征信申请] ： 通过银行接口  ->  自动查询征信
+//        doAttachTask_creditApply(approval);
 
         // 附带任务-[打款确认]
         doAttachTask_RemitReview(approval, loanOrderDO);

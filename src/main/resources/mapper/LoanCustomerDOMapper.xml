@@ -121,7 +121,8 @@
         delete from loan_customer
         where id = #{id,jdbcType=BIGINT}
     </delete>
-    <insert id="insert" parameterType="com.yunche.loan.domain.entity.LoanCustomerDO">
+    <insert id="insert" parameterType="com.yunche.loan.domain.entity.LoanCustomerDO"
+            useGeneratedKeys="true" keyProperty="id" keyColumn="id">
         insert into loan_customer (id, name, nation,
         birth, identity_validity, lend_card,
         id_card, mobile, age, sex,
@@ -185,7 +186,8 @@
         #{openCardOrder,jdbcType=VARCHAR}, #{ctelzone,jdbcType=VARCHAR}, #{signatureType,jdbcType=TINYINT},
         #{creditExpFlag,jdbcType=TINYINT}, #{enable,jdbcType=TINYINT})
     </insert>
-    <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.LoanCustomerDO">
+    <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.LoanCustomerDO"
+            useGeneratedKeys="true" keyProperty="id" keyColumn="id">
         insert into loan_customer
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="id != null">
@@ -1158,6 +1160,13 @@
         select b.* from loan_customer b where b.principal_cust_id =(
         select a.loan_customer_id from loan_order a where a.id = #{orderId,jdbcType=BIGINT}) and b.`status` =0 and
         b.cust_type != 4
+    </select>
+
+    <select id="selectByIdCard" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select
+        <include refid="Base_Column_List"/>
+        from loan_customer
+        where id_card = #{idCard,jdbcType=VARCHAR} and status='0'
     </select>
 
     <update id="batchUpdateEnable">
