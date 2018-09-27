@@ -199,4 +199,9 @@ public class LoanCustomerDO {
     private String ctelzone;
 
     private Byte signatureType;
+
+    /**
+     * 是否可编辑：0-否;1-是;   默认：否
+     */
+    private Byte enable;
 }

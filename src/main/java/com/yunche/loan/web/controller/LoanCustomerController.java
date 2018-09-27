@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
  */
 @CrossOrigin
 @RestController
-@RequestMapping("/api/v1/loanorder/customer")
+@RequestMapping(value = {"/api/v1/loanorder/customer", "/api/v1/app/loanorder/customer"})
 public class LoanCustomerController {
 
     @Autowired
@@ -114,5 +114,18 @@ public class LoanCustomerController {
     @PostMapping(value = "/societypicexport")
     public ResultBean societyPicExport(@RequestBody BankAndSocietyExportVO bankAndSocietyExport) {
         return ResultBean.ofSuccess(loanCustomerService.societyPicExport(bankAndSocietyExport.getCusList()));
+    }
+
+    /**
+     * 客户可编辑状态变更
+     *
+     * @param ids    客户ID列表，逗号分隔
+     * @param enable 0-否; 1-是;
+     * @return
+     */
+    @GetMapping(value = "/enable")
+    public ResultBean<Long> enable(@RequestParam String ids,
+                                   @RequestParam(required = false, defaultValue = "1") Byte enable) {
+        return ResultBean.ofSuccess(loanCustomerService.enable(ids, enable));
     }
 }

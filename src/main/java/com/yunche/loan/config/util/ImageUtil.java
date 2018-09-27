@@ -2,6 +2,7 @@ package com.yunche.loan.config.util;
 
 import com.aliyun.oss.OSSClient;
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
 import com.lowagie.text.Document;
 import com.lowagie.text.PageSize;
 import com.lowagie.text.rtf.RtfWriter2;
@@ -15,6 +16,7 @@ import org.im4java.core.IM4JavaException;
 import org.im4java.core.IMOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.CollectionUtils;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -30,6 +32,8 @@ import java.util.stream.Collectors;
 public class ImageUtil {
 
     private  static String downLoadBasepath="/tmp";
+
+    private static String IMAGEMAGICK_CLASSPATH="/usr/local/imagemagick/bin/";
 
     public static final String PIC_SUFFIX=".jpg";
     public static final String DOC_SUFFIX=".doc";
@@ -54,50 +58,58 @@ public class ImageUtil {
     }
 
     public static final void mergetImage2PicByConvert(String localPath,String name,List<String> imageList){
-
-        //创建文件对象
-        List<String> fileList = imageList.stream().map(pic -> {
-            File file=null;
-            try {
-                file = new File("/tmp/" + GeneratorIDUtil.execute() + IDict.K_SUFFIX.K_SUFFIX_JPG);
-                InputStream oss2InputStream = OSSUnit.getOSS2InputStream(pic);
-                FileUtils.copyInputStreamToFile(oss2InputStream, file);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return file.getName();
-        }).collect(Collectors.toList());
-       String fileNames="";
-       for(int i=0;i<fileList.size();i++){
-           fileNames+=" "+"/tmp/"+fileList.get(i);
-       }
+        List<String> fileList= Lists.newLinkedList();
+        if(CollectionUtils.isEmpty(imageList)){
+            return;
+        }
         try {
+            //创建文件对象
+          fileList = imageList.stream().map(pic -> {
+                File file=null;
+                try {
+                    file = new File(localPath +"DEL"+GeneratorIDUtil.execute() + IDict.K_SUFFIX.K_SUFFIX_JPG);
+                    InputStream oss2InputStream = OSSUnit.getOSS2InputStream(pic);
+                    FileUtils.copyInputStreamToFile(oss2InputStream, file);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                return localPath+file.getName();
+            }).collect(Collectors.toList());
+
+
+
+            RuntimeUtils.delete(localPath+name);
             IMOperation operation = new IMOperation();
             operation.addRawArgs("convert");
             operation.append();
-            operation.addImage("/tmp/20180926223057649918.jpg");
-            operation.addImage("/tmp/20180926223057649918.jpg");
-            operation.addImage("/tmp/jjjj.jpg");
 
-            ConvertCmd cmd = new ConvertCmd();
-            cmd.setSearchPath("/usr/local/imagemagick/bin/");
-            LOG.info("convert 合成图片开始【"+localPath+name+"】");
-            try {
-                cmd.run(operation);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            } catch (IM4JavaException e) {
-                e.printStackTrace();
+            for(int i=0;i<fileList.size();i++){
+                operation.addImage(fileList.get(i));
             }
-//            String exe ="convert -append "+fileNames+" "+localPath+name;
-//            Runtime.getRuntime().exec(exe);
-            LOG.info("convert 合成图片结束【"+localPath+name+"】");LOG.info("convert 合成图片结束【"+localPath+name+"】");
+            operation.addImage(localPath+name);
+            ConvertCmd cmd = new ConvertCmd();
+            cmd.setSearchPath(IMAGEMAGICK_CLASSPATH);
+            LOG.info("convert 合成图片开始【"+localPath+name+"】");
+
+                cmd.run(operation);
+
+            LOG.info("convert 合成图片结束【"+localPath+name+"】");
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new BizException(e);
+        } catch (InterruptedException e) {
+            throw new BizException(e);
+        } catch (IM4JavaException e) {
+            throw new BizException(e);
+        }finally {
+//            fileList.stream().forEach(e->{
+//                RuntimeUtils.delete(e);
+//            });
+
         }
 
 
     }
+    // org.im4java.core.CommandException: org.im4java.core.CommandException: convert: no images defined `' @ error/convert.c/ConvertImageCommand/3288.
         /**
          * 图片合并成jpg
          * @param imageList

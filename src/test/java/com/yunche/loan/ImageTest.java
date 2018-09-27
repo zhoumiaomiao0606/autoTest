@@ -41,7 +41,7 @@ public class ImageTest {
         } catch (IOException e) {
             System.out.println("创建路径 /tmp/aaa 失败");
         }
-        ImageUtil.mergetImage2PicByConvert("/tmp/fdfd/","hahha.jpg",fileKey);
+        ImageUtil.mergetImage2PicByConvert("/tmp/fdfd/","787878.jpg",fileKey);
 //        ImageUtil.mergeImage2Pic("/tmp/aaa","hahha.jpg",fileKey);
 //        ImageUtil.mergeImage2Pic("/tmp/aaa","bbbbb.jpg",fileKey);
 //        ImageUtil.mergeImage2Pic_NO_COMPROCESS("77779.jpg",fileKey);
