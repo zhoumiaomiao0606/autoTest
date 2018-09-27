@@ -105,10 +105,10 @@ public class ImageUtil {
         } catch (IM4JavaException e) {
             throw new BizException(e);
         }finally {
-//            fileList.stream().forEach(e->{
-//                RuntimeUtils.delete(e);
-//                RuntimeUtils.delete(localPath+tmpName);
-//            });
+            fileList.stream().forEach(e->{
+                RuntimeUtils.delete(e);
+                RuntimeUtils.delete(localPath+tmpName);
+            });
 
         }
 
