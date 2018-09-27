@@ -17,12 +17,15 @@ import com.yunche.loan.mapper.LoanStatementDOMapper;
 import com.yunche.loan.mapper.PartnerDOMapper;
 import com.yunche.loan.service.LoanQueryService;
 import com.yunche.loan.service.MaterialService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Objects;
@@ -32,6 +35,9 @@ import java.util.Set;
 @RestController
 @RequestMapping("/api/v1/loanorder/universal")
 public class UniversalController {
+
+    private static final Logger LOG = LoggerFactory.getLogger(UniversalController.class);
+
 
     @Resource
     private LoanQueryService loanQueryService;
@@ -104,8 +110,9 @@ public class UniversalController {
             long start = System.currentTimeMillis();
             String name = SessionUtils.getLoginUser().getName();
             String dir = name+ DateUtil.getTime();
-            final String localPath ="/tmp/"+dir+"/";
+            final String localPath ="/tmp/"+dir;
             RuntimeUtils.exe("mkdir "+localPath);
+            LOG.info("图片合成 开始时间："+start);
             creditPicExportVOS.stream().filter(Objects::nonNull).forEach(e->{
                 //查图片
                 Set types = Sets.newHashSet();
@@ -126,32 +133,18 @@ public class UniversalController {
                 for (UniversalMaterialRecordVO V : list) {
                     urls.addAll(V.getUrls());
                 }
-                ImageUtil.mergetImage2PicByConvert(localPath,fileName,urls);
-                System.out.println(Thread.currentThread()+"图片合成");
+                ImageUtil.mergetImage2PicByConvert(localPath+ File.separator,fileName,urls);
+                System.out.println(Thread.currentThread()+fileName+"图片合成");
             });
 
 
-
-//            final CountDownLatch latch = new CountDownLatch(creditPicExportVOS.size());//使用java并发库concurrent
-//
-//            Runtime.getRuntime().exec("mkdir "+localPath);
-//
-//            long start = System.currentTimeMillis();
-//            System.out.println("开始时间"+start);
-//            for (int i = 0; i < creditPicExportVOS.size(); i++) {
-//
-//                ThreadTask threadTask = new ThreadTask(loanQueryDOMapper,latch,creditPicExportVOS.get(i),loanCreditExportQuery.getMergeFlag(),localPath);
-//                ThreadPool.executorService.execute(threadTask);
-//
-//            }
-//            latch.await();
-//            //打包
+            //打包
             long end = System.currentTimeMillis();
-            System.out.println("结束时间："+end);
-            System.out.println("总用时："+(end-start)/1000);
+            LOG.info("图片合成 结束时间："+end);
+            LOG.info("总用时："+(end-start)/1000);
 
             Runtime.getRuntime().exec("tar -zcvf "+localPath+".tar.gz "+localPath);
-            System.out.println("结束时间"+System.currentTimeMillis());
+            LOG.info("打包结束啦啦啦啦啦啦啦");
         } catch (Exception e) {
             e.printStackTrace();
         }
