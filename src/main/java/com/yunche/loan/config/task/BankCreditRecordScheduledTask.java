@@ -11,6 +11,7 @@ import com.yunche.loan.domain.entity.LoanCustomerDO;
 import com.yunche.loan.domain.param.ApprovalParam;
 import com.yunche.loan.mapper.BankInterfaceSerialDOMapper;
 import com.yunche.loan.mapper.LoanCustomerDOMapper;
+import com.yunche.loan.service.LoanCustomerService;
 import com.yunche.loan.service.LoanProcessService;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -26,6 +27,8 @@ import static com.yunche.loan.config.constant.LoanProcessEnum.BANK_CREDIT_RECORD
 import static com.yunche.loan.config.constant.ProcessApprovalConst.ACTION_REJECT_MANUAL;
 
 /**
+ * [银行征信]推送失败 - 自动打回 定时任务
+ *
  * @author liuzhe
  * @date 2018/9/4
  */
@@ -39,10 +42,13 @@ public class BankCreditRecordScheduledTask {
     private BankInterfaceSerialDOMapper bankInterfaceSerialDOMapper;
 
     @Autowired
+    private LoanCustomerDOMapper loanCustomerDOMapper;
+
+    @Autowired
     private LoanProcessService loanProcessService;
 
     @Autowired
-    private LoanCustomerDOMapper loanCustomerDOMapper;
+    private LoanCustomerService loanCustomerService;
 
 
     /**
@@ -92,58 +98,104 @@ public class BankCreditRecordScheduledTask {
             bankInterfaceSerialDOS.parallelStream()
                     .forEach(bankInterfaceSerialDO -> {
 
-                        Long orderId = bankInterfaceSerialDO.getOrderId();
-                        String rejectReason = bankInterfaceSerialDO.getRejectReason();
+                        // 审核参数设置
+                        setApprovalParam(approval, bankInterfaceSerialDO);
 
-                        approval.setOrderId(orderId);
+                        // 更新可编辑状态
+                        updateCustomerEnable(bankInterfaceSerialDO.getCustomerId());
 
-                        LoanCustomerDO customerDO = loanCustomerDOMapper.selectByPrimaryKey(bankInterfaceSerialDO.getCustomerId(), null);
-
-                        // {"ICBC_API_RETMSG":"success","ICBC_API_TIMESTAMP":"2018-08-27 08:23:52","pub":{"retcode":"22094","retmsg":"该客户为灰名单客户"},"ICBC_API_RETCODE":0}
-                        String apiMsg = bankInterfaceSerialDO.getApiMsg();
-
-                        if (StringUtils.isNotBlank(rejectReason)) {
-
-                            approval.setInfo(customerDO.getName() + ":" + rejectReason);
-
-                        } else if (StringUtils.isNotBlank(apiMsg)) {
-
-                            JSONObject jsonObject = JSON.parseObject(apiMsg);
-                            JSONObject pub = jsonObject.getJSONObject("pub");
-
-                            if (!CollectionUtils.isEmpty(pub)) {
-                                String retmsg = pub.getString("retmsg");
-                                approval.setInfo(customerDO.getName() + ":" + retmsg);
-                            }
-                        }
-
-
-                        try {
-
-                            ResultBean<Void> approvalResult = loanProcessService.approval(approval);
-
-                            if (approvalResult.getSuccess()) {
-
-                                logger.info("自动打回成功  >>>  orderId : {} , info : {} ", orderId, approval.getInfo());
-
-                                // 更新：auto_reject --> 1-是;
-                                bankInterfaceSerialDO.setAutoReject(BaseConst.K_YORN_YES);
-                                int count = bankInterfaceSerialDOMapper.updateByPrimaryKeySelective(bankInterfaceSerialDO);
-                                Preconditions.checkArgument(count > 0, "更新auto_reject失败");
-
-                            } else {
-
-                                logger.error("自动打回失败  >>>  orderId : {} , errMsg : {} ", orderId, approvalResult.getMsg());
-                            }
-
-                        } catch (Exception e) {
-
-                            logger.error("自动打回失败  >>>  orderId : {} , errMsg : {} ", orderId, e.getMessage(), e);
-                        }
+                        // 提交打回
+                        autoReject(approval, bankInterfaceSerialDO);
 
                     });
         }
 
+    }
+
+    /**
+     * 审核参数设置
+     *
+     * @param approval
+     * @param bankInterfaceSerialDO
+     */
+    private void setApprovalParam(ApprovalParam approval, BankInterfaceSerialDO bankInterfaceSerialDO) {
+
+        Long orderId = bankInterfaceSerialDO.getOrderId();
+        String rejectReason = bankInterfaceSerialDO.getRejectReason();
+
+        approval.setOrderId(orderId);
+
+        LoanCustomerDO customerDO = loanCustomerDOMapper.selectByPrimaryKey(bankInterfaceSerialDO.getCustomerId(), null);
+
+        // {"ICBC_API_RETMSG":"success","ICBC_API_TIMESTAMP":"2018-08-27 08:23:52","pub":{"retcode":"22094","retmsg":"该客户为灰名单客户"},"ICBC_API_RETCODE":0}
+        String apiMsg = bankInterfaceSerialDO.getApiMsg();
+
+        if (StringUtils.isNotBlank(rejectReason)) {
+
+            approval.setInfo(customerDO.getName() + ":" + rejectReason);
+
+        } else if (StringUtils.isNotBlank(apiMsg)) {
+
+            JSONObject jsonObject = JSON.parseObject(apiMsg);
+            JSONObject pub = jsonObject.getJSONObject("pub");
+
+            if (!CollectionUtils.isEmpty(pub)) {
+                String retmsg = pub.getString("retmsg");
+                approval.setInfo(customerDO.getName() + ":" + retmsg);
+            }
+        }
+    }
+
+    /**
+     * 更新可编辑状态
+     *
+     * @param customerId
+     */
+    private void updateCustomerEnable(Long customerId) {
+
+        if (null != customerId) {
+
+            LoanCustomerDO loanCustomerDO = new LoanCustomerDO();
+            loanCustomerDO.setId(customerId);
+            loanCustomerDO.setEnable(BaseConst.K_YORN_YES);
+
+            ResultBean<Void> updateResult = loanCustomerService.update(loanCustomerDO);
+            Preconditions.checkArgument(updateResult.getSuccess(), updateResult.getMsg());
+        }
+    }
+
+    /**
+     * 提交打回
+     *
+     * @param approval
+     * @param bankInterfaceSerialDO
+     */
+    private void autoReject(ApprovalParam approval, BankInterfaceSerialDO bankInterfaceSerialDO) {
+
+        Long orderId = approval.getOrderId();
+
+        try {
+
+            ResultBean<Void> approvalResult = loanProcessService.approval(approval);
+
+            if (approvalResult.getSuccess()) {
+
+                logger.info("自动打回成功  >>>  orderId : {} , info : {} ", orderId, approval.getInfo());
+
+                // 更新：auto_reject --> 1-是;
+                bankInterfaceSerialDO.setAutoReject(BaseConst.K_YORN_YES);
+                int count = bankInterfaceSerialDOMapper.updateByPrimaryKeySelective(bankInterfaceSerialDO);
+                Preconditions.checkArgument(count > 0, "更新auto_reject失败");
+
+            } else {
+
+                logger.error("自动打回失败  >>>  orderId : {} , errMsg : {} ", orderId, approvalResult.getMsg());
+            }
+
+        } catch (Exception e) {
+
+            logger.error("自动打回失败  >>>  orderId : {} , errMsg : {} ", orderId, e.getMessage(), e);
+        }
     }
 
 }

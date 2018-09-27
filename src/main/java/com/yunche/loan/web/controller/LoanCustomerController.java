@@ -115,4 +115,17 @@ public class LoanCustomerController {
     public ResultBean societyPicExport(@RequestBody BankAndSocietyExportVO bankAndSocietyExport) {
         return ResultBean.ofSuccess(loanCustomerService.societyPicExport(bankAndSocietyExport.getCusList()));
     }
+
+    /**
+     * 客户可编辑状态变更
+     *
+     * @param ids    客户ID列表，逗号分隔
+     * @param enable 0-否; 1-是;
+     * @return
+     */
+    @GetMapping(value = "/enable")
+    public ResultBean<Long> enable(@RequestParam String ids,
+                                   @RequestParam(required = false, defaultValue = "1") Byte enable) {
+        return ResultBean.ofSuccess(loanCustomerService.enable(ids, enable));
+    }
 }

@@ -398,12 +398,28 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
         return bankAndSocietyResultVO;
     }
 
+    @Override
+    public Long enable(String ids, Byte enable) {
+        Preconditions.checkArgument(StringUtils.isNotBlank(ids), "ids不能为空");
+
+        List<Long> idList = Arrays.stream(ids.split("\\,"))
+                .filter(StringUtils::isNotBlank)
+                .map(Long::valueOf)
+                .collect(Collectors.toList());
+
+        Preconditions.checkArgument(!CollectionUtils.isEmpty(idList), "ids不能为空");
+
+        long count = loanCustomerDOMapper.batchUpdateEnable(idList, enable);
+
+        return count;
+    }
+
+
     private void convertLoanCustomer(CustomerParam customerParam, LoanCustomerDO loanCustomerDO) {
         if (null != customerParam) {
             BeanUtils.copyProperties(customerParam, loanCustomerDO);
         }
     }
-
 
     /**
      * 填充客户详情信息
@@ -424,6 +440,7 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
 
                     // 主贷人
                     if (CUST_TYPE_PRINCIPAL.equals(e.getCustType())) {
+
                         CustomerVO principalLender = new CustomerVO();
                         BeanUtils.copyProperties(e, principalLender);
 
@@ -437,6 +454,7 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
 
                     // 共贷人
                     else if (CUST_TYPE_COMMON.equals(e.getCustType())) {
+
                         CustomerVO commonLender = new CustomerVO();
                         BeanUtils.copyProperties(e, commonLender);
 
@@ -448,8 +466,10 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
 
                         commonLenderList.add(commonLender);
                     }
+
                     // 担保人
                     else if (CUST_TYPE_GUARANTOR.equals(e.getCustType())) {
+
                         CustomerVO guarantor = new CustomerVO();
                         BeanUtils.copyProperties(e, guarantor);
 
@@ -461,8 +481,10 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
 
                         guarantorList.add(guarantor);
                     }
+
                     // 紧急联系人
                     else if (CUST_TYPE_EMERGENCY_CONTACT.equals(e.getCustType())) {
+
                         CustomerVO emergencyContact = new CustomerVO();
                         BeanUtils.copyProperties(e, emergencyContact);
 
@@ -608,10 +630,10 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
      */
     private void checkIdCard(Long principalCustId, String idCard) {
 
-            if (StringUtils.isNotBlank(idCard)) {
+        if (StringUtils.isNotBlank(idCard)) {
 
-                List<LoanCustomerDO> loanCustomerDOS = loanCustomerDOMapper.listByPrincipalCustIdAndType(principalCustId, null, VALID_STATUS);
-                if (!CollectionUtils.isEmpty(loanCustomerDOS)) {
+            List<LoanCustomerDO> loanCustomerDOS = loanCustomerDOMapper.listByPrincipalCustIdAndType(principalCustId, null, VALID_STATUS);
+            if (!CollectionUtils.isEmpty(loanCustomerDOS)) {
 
                 String trimIdCard = idCard.trim();
                 loanCustomerDOS.stream()
@@ -636,7 +658,7 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
     private void checkIdCard(AllCustDetailParam allCustDetailParam) {
 
         CustomerParam principalLender = allCustDetailParam.getPrincipalLender();
-        if(principalLender==null){
+        if (principalLender == null) {
             return;
         }
         Preconditions.checkNotNull(principalLender, "主贷人不能为空");

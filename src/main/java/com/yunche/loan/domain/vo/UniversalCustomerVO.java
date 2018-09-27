@@ -2,7 +2,6 @@ package com.yunche.loan.domain.vo;
 
 import lombok.Data;
 
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,6 +42,5 @@ public class UniversalCustomerVO {
 
     private String open_card_status;//银行开卡状态 (0:否，1：是)
 
-    private List<UniversalCustomerFileVO> files = new ArrayList<UniversalCustomerFileVO>();
-
+    private List<UniversalCustomerFileVO> files = new ArrayList<>();
 }

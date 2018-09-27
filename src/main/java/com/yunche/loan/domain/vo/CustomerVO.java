@@ -167,7 +167,9 @@ public class CustomerVO {
     private String hcity;
 
     private String hcounty;
+
     private String issuingDepartment;
+
     private List<FileVO> files = Collections.EMPTY_LIST;
 
     private String bankCreditNote;
@@ -176,5 +178,13 @@ public class CustomerVO {
 
     private String ctelzone;
 
-    private Byte signatureType;//签单类型  1-夫妻单签  2-夫妻双签  3-其他
+    /**
+     * 签单类型  1-夫妻单签  2-夫妻双签  3-其他
+     */
+    private Byte signatureType;
+
+    /**
+     * 是否可编辑：0-否;1-是;   默认：否
+     */
+    private Byte enable;
 }
