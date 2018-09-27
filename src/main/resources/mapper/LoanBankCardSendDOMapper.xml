@@ -207,22 +207,24 @@
     </update>
     <select id="loanBankCardSendExp" parameterType="com.yunche.loan.domain.param.LoanBankCardSendExpParam" resultMap="BaseResultMap">
         SELECT
-        a.order_id           AS orderId,
-        b.cardholder_name		 AS cardholderName,
-        b.cardholder_phone   AS cardholderPhone,
-        b.cardholder_address AS cardholderAddress,
-        b.repay_card_num		 AS repayCardNum,
-        b.express_com				 AS expressCom,
-        b.express_send_num   AS expressSendNum,
-        b.express_send_date	 AS expressSendDate
+        a.order_id,
+        b.cardholder_name,
+        b.cardholder_phone,
+        b.cardholder_address,
+        b.repay_card_num,
+        b.express_com,
+        b.express_send_num,
+        b.express_send_date,
+        b.express_send_address
     FROM
         loan_process a
         LEFT JOIN loan_bank_card_send b ON a.order_id = b.order_id
+        LEFT JOIN loan_order c ON c.id = a.order_id
         left join loan_customer d on d.id = c.loan_customer_id
         left join loan_base_info e on e.id = c.loan_base_info_id
     WHERE
-        bank_card_send = 1
-        AND order_status =1
+        a.bank_card_send = 2
+        AND a.order_status =1
         <if test="name !=null and name !=''">
             and d.name LIKE CONCAT('%',#{name},'%')
         </if>
