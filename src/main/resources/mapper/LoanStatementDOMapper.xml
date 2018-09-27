@@ -1797,4 +1797,60 @@
 
     </select>
 
+
+    <select id="selectCreditPicExport" parameterType="com.yunche.loan.domain.query.LoanCreditExportQuery" resultType="com.yunche.loan.domain.vo.CreditPicExportVO">
+        SELECT
+            result.order_id AS orderId,
+            result.id       AS loanCustomerId,
+            result.name     AS customerName,
+            result.employee_id AS employeeId,
+            result.id_card     AS idCard
+        FROM
+        (
+            SELECT
+                process.order_id,
+                customer.id,
+                customer.`name`,
+                customer.credit_exp_flag,
+                customer.id_card,
+                process.credit_apply,
+                process.bank_credit_record,
+                ( SELECT create_time FROM loan_process_log log WHERE log.task_definition_key = 'usertask_credit_apply' AND order_id = process.order_id ORDER BY create_time DESC LIMIT 1 ) AS credit_apply_time,
+                ( SELECT create_time FROM loan_process_log log WHERE log.task_definition_key = 'usertask_bank_credit_record' AND order_id = process.order_id ORDER BY create_time DESC LIMIT 1 ) AS bank_credit_time,
+                ( SELECT user_id FROM loan_process_log log WHERE log.task_definition_key = 'usertask_bank_credit_record' AND order_id = process.order_id ORDER BY create_time DESC LIMIT 1 ) AS employee_id
+            FROM
+                loan_process process
+                LEFT JOIN loan_order loan ON process.order_id = loan.id
+                LEFT JOIN loan_base_info base ON base.id=loan.loan_base_info_id
+                LEFT JOIN loan_customer customer ON ( loan.loan_customer_id = customer.principal_cust_id AND customer.cust_type != 4 )
+            WHERE
+                process.loan_apply = 0
+                and base.bank in('中国工商银行南京江宁支行','中国工商银行哈尔滨顾乡支行')
+        ) result
+        WHERE
+            1=1
+            <if test="creditApplyStartTime != null">
+                AND result.credit_apply_time &gt;= #{creditApplyStartTime}
+            </if>
+            <if test="creditApplyEndTime != null">
+                AND result.credit_apply_time &lt;= #{creditApplyEndTime}
+            </if>
+            <if test="creditQueryStartTime !=null">
+                AND result.bank_credit_time &gt;=  #{creditQueryStartTime}
+            </if>
+            <if test="creditQueryEndTime !=null">
+                AND result.bank_credit_time &gt;=  #{creditQueryEndTime}
+            </if>
+            <if test="employeeId !=null">
+                AND result.employee_id =#{employeeId}
+            </if>
+            <if test="creditStatus !=null">
+                case when #{creditStatus} = 1 then result.credit_exp_flag =1
+                     when #{creditStatus} = 2 then result.credit_exp_flag =2
+                     when #{creditStatus} = 3 then result.bank_credit_time IS NOT NULL
+                end
+            </if>
+
+    </select>
+
 </mapper>

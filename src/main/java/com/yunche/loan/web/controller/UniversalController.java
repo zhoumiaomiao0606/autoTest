@@ -1,15 +1,19 @@
 package com.yunche.loan.web.controller;
 
 
-import com.google.common.collect.Lists;
 import com.yunche.loan.config.cache.DictMapCache;
 import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.task.ThreadTask;
 import com.yunche.loan.config.thread.ThreadPool;
+import com.yunche.loan.config.util.DateUtil;
 import com.yunche.loan.config.util.FtpUtil;
+import com.yunche.loan.config.util.SessionUtils;
 import com.yunche.loan.domain.entity.PartnerDO;
 import com.yunche.loan.domain.query.LoanCreditExportQuery;
+import com.yunche.loan.domain.vo.CreditPicExportVO;
+import com.yunche.loan.mapper.LoanQueryDOMapper;
+import com.yunche.loan.mapper.LoanStatementDOMapper;
 import com.yunche.loan.mapper.PartnerDOMapper;
 import com.yunche.loan.service.LoanQueryService;
 import com.yunche.loan.service.MaterialService;
@@ -39,6 +43,12 @@ public class UniversalController {
 
     @Autowired
     private MaterialService materialService;
+
+    @Autowired
+    private LoanStatementDOMapper loanStatementDOMapper;
+
+    @Autowired
+    private LoanQueryDOMapper loanQueryDOMapper;
 
 
     @GetMapping(value = "/customer")
@@ -88,41 +98,37 @@ public class UniversalController {
     public String downreport(@RequestBody LoanCreditExportQuery loanCreditExportQuery) throws UnsupportedEncodingException {
 
         try {
-
             //查询符合要求的数据
+            List<CreditPicExportVO> creditPicExportVOS = loanStatementDOMapper.selectCreditPicExport(loanCreditExportQuery);
 
 
-            List<Long> orderLists = Lists.newArrayList();
-            orderLists.add(1806151541217761225l);
-            orderLists.add(1806221600152528006l);
-            orderLists.add(1807041505471350219l);
-            orderLists.add(1807041514375640555l);
-            final CountDownLatch latch = new CountDownLatch(orderLists.size());//使用java并发库concurrent
-            for (int i = 0; i < orderLists.size(); i++) {
-                System.out.println(i + "：" + System.currentTimeMillis());
-                ThreadTask threadTask = new ThreadTask();
-                threadTask.setOrderId(orderLists.get(i));
-                Long orderId = orderLists.get(i);
+            final CountDownLatch latch = new CountDownLatch(creditPicExportVOS.size());//使用java并发库concurrent
+            String localPath =null;
+            String name = SessionUtils.getLoginUser().getName();
+            String dir = name+ DateUtil.getTime();
+            localPath ="/tmp/"+dir;
+            Runtime.getRuntime().exec("mkdir "+localPath);
 
-                ThreadPool.executorService.execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        System.out.println(Thread.currentThread().getName() + ":" + orderId);
-                        latch.countDown();
-                    }
-                });
+            long start = System.currentTimeMillis();
+            System.out.println("开始时间"+start);
+            for (int i = 0; i < creditPicExportVOS.size(); i++) {
 
-                System.out.println(i + "：" + System.currentTimeMillis());
+                ThreadTask threadTask = new ThreadTask(loanQueryDOMapper,latch,creditPicExportVOS.get(i),loanCreditExportQuery.getMergeFlag(),localPath);
+                ThreadPool.executorService.execute(threadTask);
+
             }
             latch.await();
             //打包
-            //
-            Runtime.getRuntime().exec("");
-            System.out.println("结束");
+            long end = System.currentTimeMillis();
+            System.out.println("结束时间："+end);
+            System.out.println("总用时："+(end-start)/1000);
+
+            Runtime.getRuntime().exec("tar -zcvf "+localPath+".tar.gz "+localPath);
+            System.out.println("结束时间"+System.currentTimeMillis());
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return "";
+        return "压缩完成";
 
     }
 }
