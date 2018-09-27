@@ -3,13 +3,13 @@ package com.yunche.loan.config.task;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.yunche.loan.config.constant.IDict;
+import com.yunche.loan.config.util.ImageUtil;
 import com.yunche.loan.domain.vo.CreditPicExportVO;
 import com.yunche.loan.domain.vo.UniversalMaterialRecordVO;
 import com.yunche.loan.mapper.LoanQueryDOMapper;
 import lombok.Data;
 import org.springframework.util.CollectionUtils;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
@@ -48,7 +48,6 @@ public class ThreadTask implements Runnable{
                 types.add(new Byte("4"));
                 types.add(new Byte("5"));
             }
-            Runtime.getRuntime().exec("mkdir "+localPath);
             List<UniversalMaterialRecordVO> list = loanQueryDOMapper.selectUniversalCustomerFiles(creditPicExportVO.getLoanCustomerId(), types);
             List<String> urls = Lists.newLinkedList();
             for (UniversalMaterialRecordVO V : list) {
@@ -56,14 +55,11 @@ public class ThreadTask implements Runnable{
             }
             String fileName = creditPicExportVO.getOrderId()+creditPicExportVO.getCustomerName()+creditPicExportVO.getIdCard()+ IDict.K_SUFFIX.K_SUFFIX_JPG;
             if(!CollectionUtils.isEmpty(urls)){
-                //合成到本地服务器 路径-【localPath】
-//                ImageUtil.mergeImage2Pic(localPath,fileName,urls);
+                ImageUtil.mergetImage2PicByConvert(localPath,fileName,urls);
                 System.out.println(Thread.currentThread()+"图片合成");
             }
             System.out.println(Thread.currentThread().getName()+"_"+Thread.currentThread().getId()+"合成完成"+creditPicExportVO.getLoanCustomerId());
 
-        }catch (IOException e){
-            e.printStackTrace();
         }finally {
             countDownLatch.countDown();
         }
