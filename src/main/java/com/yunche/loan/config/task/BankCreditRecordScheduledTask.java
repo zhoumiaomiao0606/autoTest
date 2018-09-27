@@ -95,7 +95,7 @@ public class BankCreditRecordScheduledTask {
             approval.setNeedPush(true);
             approval.setAutoTask(true);
 
-            bankInterfaceSerialDOS.parallelStream()
+            bankInterfaceSerialDOS.stream()
                     .forEach(bankInterfaceSerialDO -> {
 
                         // 审核参数设置
