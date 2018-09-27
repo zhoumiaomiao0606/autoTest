@@ -312,8 +312,15 @@ public class JinTouHangAccommodationApplyServiceImpl implements JinTouHangAccomm
                 .filter(Objects::nonNull)
                 .forEach(e->{
                     ThirdPartyFundBusinessDO fundBusinessDO = thirdPartyFundBusinessDOMapper.selectByPrimaryKey(Long.valueOf(e.getBridgeProcessId()));
-                    if(fundBusinessDO.getLendStatus().equals(IDict.K_CJZT.K_CJZT_NO)){
-                        fundBusinessDO.setLendStatus(IDict.K_CJZT.K_CJZT_YES);
+                    if(fundBusinessDO==null){
+                        ThirdPartyFundBusinessDO thirdPartyFundBusinessDO = new ThirdPartyFundBusinessDO();
+                        thirdPartyFundBusinessDO.setBridgeProcecssId(Long.valueOf(e.getBridgeProcessId()));
+                        thirdPartyFundBusinessDO.setOrderId(Long.valueOf(e.getLoanForm()));
+                        thirdPartyFundBusinessDO.setLendStatus(IDict.K_CJZT.K_CJZT_NO);
+                        thirdPartyFundBusinessDO.setGmtCreate(new Date());
+                        thirdPartyFundBusinessDOMapper.insertSelective(thirdPartyFundBusinessDO);
+                    }else{
+                        fundBusinessDO.setLendStatus(IDict.K_CJZT.K_CJZT_NO);
                         int count = thirdPartyFundBusinessDOMapper.updateByPrimaryKeySelective(fundBusinessDO);
                         Preconditions.checkArgument(count>0,"更新失败");
                     }

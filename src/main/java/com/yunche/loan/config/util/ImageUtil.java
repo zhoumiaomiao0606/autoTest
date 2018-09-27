@@ -62,6 +62,7 @@ public class ImageUtil {
         if(CollectionUtils.isEmpty(imageList)){
             return;
         }
+        String tmpName =GeneratorIDUtil.execute()+IDict.K_SUFFIX.K_SUFFIX_JPG;
         try {
             //创建文件对象
           fileList = imageList.stream().map(pic -> {
@@ -70,6 +71,7 @@ public class ImageUtil {
                     file = new File(localPath +"DEL"+GeneratorIDUtil.execute() + IDict.K_SUFFIX.K_SUFFIX_JPG);
                     InputStream oss2InputStream = OSSUnit.getOSS2InputStream(pic);
                     FileUtils.copyInputStreamToFile(oss2InputStream, file);
+
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -86,14 +88,16 @@ public class ImageUtil {
             for(int i=0;i<fileList.size();i++){
                 operation.addImage(fileList.get(i));
             }
-            operation.addImage(localPath+name);
+            operation.addImage(localPath+tmpName);
             ConvertCmd cmd = new ConvertCmd();
             cmd.setSearchPath(IMAGEMAGICK_CLASSPATH);
-            LOG.info("convert 合成图片开始【"+localPath+name+"】");
+            LOG.info("convert 合成图片开始【"+localPath+name+"】"+operation.toString());
 
-                cmd.run(operation);
+             cmd.run(operation);
 
             LOG.info("convert 合成图片结束【"+localPath+name+"】");
+            FileUtils.copyFile(new File(localPath+tmpName),new File(localPath+name));
+            new File(localPath+tmpName);
         } catch (IOException e) {
             throw new BizException(e);
         } catch (InterruptedException e) {
@@ -103,6 +107,7 @@ public class ImageUtil {
         }finally {
 //            fileList.stream().forEach(e->{
 //                RuntimeUtils.delete(e);
+//                RuntimeUtils.delete(localPath+tmpName);
 //            });
 
         }
