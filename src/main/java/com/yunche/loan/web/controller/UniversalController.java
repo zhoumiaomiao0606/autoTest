@@ -25,6 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.util.CollectionUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -117,20 +118,23 @@ public class UniversalController {
     public ResultBean downreport(@RequestBody LoanCreditExportQuery loanCreditExportQuery) throws UnsupportedEncodingException {
 
         OSSClient ossUnit=null;
-        String resultName = null;//压缩包名称
+        String resultNamePath = null;
+        String resultName= null;
+        String diskName =null;
         try {
 
             ossUnit = OSSUnit.getOSSClient();
             //查询符合要求的数据
             List<CreditPicExportVO> creditPicExportVOS = loanStatementDOMapper.selectCreditPicExport(loanCreditExportQuery);
-            if(creditPicExportVOS==null){
+            if(CollectionUtils.isEmpty(creditPicExportVOS)){
                 return ResultBean.ofSuccess("无记录");
             }
             long start = System.currentTimeMillis();
             String name = SessionUtils.getLoginUser().getName();
-            String dir = name+ DateUtil.getTime();
-            final String localPath ="/tmp/"+dir;
-            resultName = localPath+".tar.gz";
+            diskName = name+ DateUtil.getTime();
+            final String localPath ="/tmp/"+diskName;
+
+            resultName = diskName+".tar.gz";
 
             RuntimeUtils.exe("mkdir "+localPath);
             LOG.info("图片合成 开始时间："+start);
