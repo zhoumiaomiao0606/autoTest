@@ -184,10 +184,6 @@ public class LoanInfoRegisterServiceImpl implements LoanInfoRegisterService {
             loanCustomerDOMapper.updateByPrimaryKeySelective(loanCustomerDO);
         }
 
-
-        // 客户信息
-        loanCustomerService.update(loanInfoRegisterParam.getLoanCustomerDO());
-
         return ResultBean.ofSuccess(null, "保存成功");
     }
 }

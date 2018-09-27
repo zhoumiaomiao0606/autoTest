@@ -400,7 +400,7 @@ public class ExportQueryServiceImpl implements ExportQueryService
 
                 for (int j = 1; j < getMethods.size(); j++)
                 {
-                    cell = row.createCell(j);
+                    cell = row.createCell(j-1);
                     //判断----将Date特殊处理
                     if(getMethods.get(j).invoke(data) instanceof Date)
                     {

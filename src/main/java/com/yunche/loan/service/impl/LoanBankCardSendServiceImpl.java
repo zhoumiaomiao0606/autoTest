@@ -23,6 +23,7 @@ import com.yunche.loan.mapper.LoanQueryDOMapper;
 import com.yunche.loan.service.LoanBankCardSendService;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -131,7 +132,13 @@ public class LoanBankCardSendServiceImpl implements LoanBankCardSendService {
                 // 当前行，具体列val
                 String rowVal = "";
                 int num =loanBankCardSendDOMapper.countByorderId(Long.valueOf(row[0]));
-                if(num > 0){
+                if(num == 0){
+                    LoanOrderDO orderDO = loanOrderDOMapper.selectByPrimaryKey(Long.valueOf(row[0]));
+                    if (orderDO != null) {
+                        LoanCustomerDO customerDO = loanCustomerDOMapper.selectByPrimaryKey(orderDO.getLoanCustomerId(), BaseConst.VALID_STATUS);
+                        customerDO.setBankCardTransmitAddress(row[3]);
+                        loanCustomerDOMapper.updateByPrimaryKeySelective(customerDO);
+                    }
                     LoanBankCardSendDO loanBankCardSendDO = new LoanBankCardSendDO();
 
                     try {
@@ -157,7 +164,7 @@ public class LoanBankCardSendServiceImpl implements LoanBankCardSendService {
 
                     try {
                         rowVal = row[line++];
-                        loanBankCardSendDO.setCardholderAddress(rowVal);
+                        loanBankCardSendDO.setExpressSendAddress(rowVal);
                     } catch (Exception e) {
                         throw new BizException("第" + rowNum + "行，第" + (line) + "列格式有误：" + rowVal);
                     }
@@ -171,7 +178,7 @@ public class LoanBankCardSendServiceImpl implements LoanBankCardSendService {
 
                     try {
                         rowVal = row[line++];
-                        loanBankCardSendDO.setExpressSendAddress(rowVal);
+                        loanBankCardSendDO.setExpressCom(new Byte(rowVal));
                     } catch (Exception e) {
                         throw new BizException("第" + rowNum + "行，第" + (line) + "列格式有误：" + rowVal);
                     }
@@ -200,9 +207,20 @@ public class LoanBankCardSendServiceImpl implements LoanBankCardSendService {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
+        List<LoanBankCardSendDO> insertList = new ArrayList<>();
+        for(LoanBankCardSendDO loanBankCardSendDO:loanBankCardSendDOList){
+            LoanBankCardSendDO l = loanBankCardSendDOMapper.selectByPrimaryKey(loanBankCardSendDO.getOrderId());
+            if(l == null){
+                insertList.add(loanBankCardSendDO);
+            }else{
+                int num =loanBankCardSendDOMapper.countByorderId(loanBankCardSendDO.getOrderId());
+                if(num == 0){
+                    loanBankCardSendDOMapper.updateByPrimaryKeySelective(loanBankCardSendDO);
+                }
+            }
+        }
         // batchInsert
-        int count = batchInsert(loanBankCardSendDOList);
+        int count = batchInsert(insertList);
 
         return ResultBean.ofSuccess(count, "导入成功");
     }
@@ -222,6 +240,7 @@ public class LoanBankCardSendServiceImpl implements LoanBankCardSendService {
         File file = new File(ossConfig.getDownLoadBasepath() + File.separator + fileName);
         FileOutputStream out = null;
         XSSFWorkbook workbook = null;
+        SimpleDateFormat sdf =new SimpleDateFormat("yyyy-MM-dd");
         try {
             out = new FileOutputStream(file);
             workbook = new XSSFWorkbook();
@@ -245,7 +264,7 @@ public class LoanBankCardSendServiceImpl implements LoanBankCardSendService {
                 row = sheet.createRow(i + 1);
 
                 cell = row.createCell(0);
-                cell.setCellValue(loanBankCardSendDO.getOrderId());
+                cell.setCellValue(loanBankCardSendDO.getOrderId()+"");
 
                 cell = row.createCell(1);
                 cell.setCellValue(loanBankCardSendDO.getCardholderName());
@@ -255,19 +274,20 @@ public class LoanBankCardSendServiceImpl implements LoanBankCardSendService {
                 cell.setCellValue(loanBankCardSendDO.getCardholderPhone());
 
                 cell = row.createCell(3);
-                cell.setCellValue(loanBankCardSendDO.getCardholderAddress());
+                cell.setCellValue(loanBankCardSendDO.getExpressSendAddress());
 
                 cell = row.createCell(4);
                 cell.setCellValue(loanBankCardSendDO.getRepayCardNum());
 
                 cell = row.createCell(5);
-                cell.setCellValue(loanBankCardSendDO.getExpressSendAddress());
+                cell.setCellValue(loanBankCardSendDO.getExpressCom()+"");
 
                 cell = row.createCell(6);
                 cell.setCellValue(loanBankCardSendDO.getExpressSendNum());
 
                 cell = row.createCell(7);
-                cell.setCellValue(loanBankCardSendDO.getExpressSendDate());
+                cell.setCellType(HSSFCell.CELL_TYPE_STRING);
+                cell.setCellValue(sdf.format(loanBankCardSendDO.getExpressSendDate()));
             }
             //文件宽度自适应
             sheet.autoSizeColumn((short) 0);
