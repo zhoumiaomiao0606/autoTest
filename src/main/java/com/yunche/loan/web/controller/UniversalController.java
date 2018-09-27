@@ -1,17 +1,17 @@
 package com.yunche.loan.web.controller;
 
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.yunche.loan.config.cache.DictMapCache;
+import com.yunche.loan.config.constant.IDict;
 import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.result.ResultBean;
-import com.yunche.loan.config.task.ThreadTask;
-import com.yunche.loan.config.thread.ThreadPool;
-import com.yunche.loan.config.util.DateUtil;
-import com.yunche.loan.config.util.FtpUtil;
-import com.yunche.loan.config.util.SessionUtils;
+import com.yunche.loan.config.util.*;
 import com.yunche.loan.domain.entity.PartnerDO;
 import com.yunche.loan.domain.query.LoanCreditExportQuery;
 import com.yunche.loan.domain.vo.CreditPicExportVO;
+import com.yunche.loan.domain.vo.UniversalMaterialRecordVO;
 import com.yunche.loan.mapper.LoanQueryDOMapper;
 import com.yunche.loan.mapper.LoanStatementDOMapper;
 import com.yunche.loan.mapper.PartnerDOMapper;
@@ -25,7 +25,8 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
-import java.util.concurrent.CountDownLatch;
+import java.util.Objects;
+import java.util.Set;
 
 @CrossOrigin
 @RestController
@@ -100,25 +101,51 @@ public class UniversalController {
         try {
             //查询符合要求的数据
             List<CreditPicExportVO> creditPicExportVOS = loanStatementDOMapper.selectCreditPicExport(loanCreditExportQuery);
-
-
-            final CountDownLatch latch = new CountDownLatch(creditPicExportVOS.size());//使用java并发库concurrent
-            String localPath =null;
+            long start = System.currentTimeMillis();
             String name = SessionUtils.getLoginUser().getName();
             String dir = name+ DateUtil.getTime();
-            localPath ="/tmp/"+dir;
-            Runtime.getRuntime().exec("mkdir "+localPath);
+            final String localPath ="/tmp/"+dir+"/";
+            RuntimeUtils.exe("mkdir "+localPath);
+            creditPicExportVOS.stream().filter(Objects::nonNull).forEach(e->{
+                //查图片
+                Set types = Sets.newHashSet();
+                //1:合成身份证图片 , 2:合成图片
+                if("1".equals(loanCreditExportQuery.getMergeFlag())){
+                    types.add(new Byte("2"));
+                    types.add(new Byte("3"));
+                }else{
+                    types.add(new Byte("2"));
+                    types.add(new Byte("3"));
+                    types.add(new Byte("4"));
+                    types.add(new Byte("5"));
+                }
+                String fileName = e.getOrderId()+e.getCustomerName()+e.getIdCard()+ IDict.K_SUFFIX.K_SUFFIX_JPG;
 
-            long start = System.currentTimeMillis();
-            System.out.println("开始时间"+start);
-            for (int i = 0; i < creditPicExportVOS.size(); i++) {
+                List<UniversalMaterialRecordVO> list = loanQueryDOMapper.selectUniversalCustomerFiles(e.getLoanCustomerId(), types);
+                List<String> urls = Lists.newLinkedList();
+                for (UniversalMaterialRecordVO V : list) {
+                    urls.addAll(V.getUrls());
+                }
+                ImageUtil.mergetImage2PicByConvert(localPath,fileName,urls);
+                System.out.println(Thread.currentThread()+"图片合成");
+            });
 
-                ThreadTask threadTask = new ThreadTask(loanQueryDOMapper,latch,creditPicExportVOS.get(i),loanCreditExportQuery.getMergeFlag(),localPath);
-                ThreadPool.executorService.execute(threadTask);
 
-            }
-            latch.await();
-            //打包
+
+//            final CountDownLatch latch = new CountDownLatch(creditPicExportVOS.size());//使用java并发库concurrent
+//
+//            Runtime.getRuntime().exec("mkdir "+localPath);
+//
+//            long start = System.currentTimeMillis();
+//            System.out.println("开始时间"+start);
+//            for (int i = 0; i < creditPicExportVOS.size(); i++) {
+//
+//                ThreadTask threadTask = new ThreadTask(loanQueryDOMapper,latch,creditPicExportVOS.get(i),loanCreditExportQuery.getMergeFlag(),localPath);
+//                ThreadPool.executorService.execute(threadTask);
+//
+//            }
+//            latch.await();
+//            //打包
             long end = System.currentTimeMillis();
             System.out.println("结束时间："+end);
             System.out.println("总用时："+(end-start)/1000);
