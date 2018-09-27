@@ -1,16 +1,15 @@
 package com.yunche.loan.mapper;
 
 import com.yunche.loan.domain.entity.LoanCustomerDO;
-import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 import java.util.Set;
 
-@Mapper
 public interface LoanCustomerDOMapper {
 
-    List<LoanCustomerDO> listByPrincipalCustIdAndRelation(@Param("principalCustId") Long principalLenderId, @Param("custRelation") Byte custRelation);
+    List<LoanCustomerDO> listByPrincipalCustIdAndRelation(@Param("principalCustId") Long principalLenderId,
+                                                          @Param("custRelation") Byte custRelation);
 
     int deleteByPrimaryKey(Long id);
 
@@ -18,7 +17,8 @@ public interface LoanCustomerDOMapper {
 
     int insertSelective(LoanCustomerDO record);
 
-    LoanCustomerDO selectByPrimaryKey(@Param("id") Long id, @Param("status") Byte status);
+    LoanCustomerDO selectByPrimaryKey(@Param("id") Long id,
+                                      @Param("status") Byte status);
 
     int updateByPrimaryKeySelective(LoanCustomerDO record);
 
@@ -43,7 +43,8 @@ public interface LoanCustomerDOMapper {
      * @param oldPrincipalLenderId 旧的主贷人ID
      * @param newPrincipalLenderId 新的主贷人ID
      */
-    int updatePrincipalCustId(@Param("oldPrincipalLenderId") Long oldPrincipalLenderId, @Param("newPrincipalLenderId") Long newPrincipalLenderId);
+    int updatePrincipalCustId(@Param("oldPrincipalLenderId") Long oldPrincipalLenderId,
+                              @Param("newPrincipalLenderId") Long newPrincipalLenderId);
 
     /**
      * 获取文件信息
@@ -69,7 +70,8 @@ public interface LoanCustomerDOMapper {
      * @param types
      * @return
      */
-    List<LoanCustomerDO> selectSelfAndRelevanceCustomersByCustTypes(@Param("orderId") Long orderId, @Param("types") Set types);
+    List<LoanCustomerDO> selectSelfAndRelevanceCustomersByCustTypes(@Param("orderId") Long orderId,
+                                                                    @Param("types") Set types);
 
     /**
      * 根据客户ID 获取 cust_relation
@@ -79,10 +81,24 @@ public interface LoanCustomerDOMapper {
      */
     Byte getCustRelationById(Long id);
 
-    //查询订单人员是否全部查过征信
-    List<LoanCustomerDO> selectCusByOrderId(@Param("orderId")Long orderId);
+    /**
+     * 查询订单人员是否全部查过征信
+     *
+     * @param orderId
+     * @return
+     */
+    List<LoanCustomerDO> selectCusByOrderId(@Param("orderId") Long orderId);
 
 
     List<LoanCustomerDO> selectByIdCard(@Param("idCard") String idCard);
 
+    /**
+     * 批量编辑enable
+     *
+     * @param idList
+     * @param enable
+     * @return
+     */
+    long batchUpdateEnable(@Param("idList") List<Long> idList,
+                           @Param("enable") Byte enable);
 }

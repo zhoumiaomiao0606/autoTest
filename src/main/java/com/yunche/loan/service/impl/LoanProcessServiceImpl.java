@@ -112,9 +112,6 @@ public class LoanProcessServiceImpl implements LoanProcessService {
     private LoanRepayPlanDOMapper loanRepayPlanDOMapper;
 
     @Autowired
-    private VideoFaceLogDOMapper videoFaceLogDOMapper;
-
-    @Autowired
     private LoanQueryDOMapper loanQueryDOMapper;
 
     @Autowired
@@ -265,23 +262,20 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         // 生成客户还款计划
         createRepayPlan(approval.getTaskDefinitionKey(), loanProcessDO, loanOrderDO);
 
-        // TODO  抽取AOP   [领取]完成
+        // [领取]完成
         loanProcessApprovalCommonService.finishTask(approval, getTaskIdList(startTaskList), loanOrderDO.getProcessInstId());
-
-        // 通过银行接口  ->  自动查询征信
-        creditAutomaticCommit(approval);
 
         // 异步打包文件
         asyncPackZipFile(approval.getTaskDefinitionKey(), approval.getAction(), loanProcessDO, 2);
 
-        // 异步推送
-        loanProcessApprovalCommonService.asyncPush(loanOrderDO, approval);
-
         // 执行当前节点-附带任务
         doCurrentNodeAttachTask(approval, loanOrderDO, loanProcessDO);
 
-        //如果是打款确认 和 代偿确认 则通知财务系统
-            EventBusCenter.eventBus.post(approval);
+        // 异步推送
+        loanProcessApprovalCommonService.asyncPush(loanOrderDO, approval);
+
+        // 如果是打款确认 和 代偿确认 则通知财务系统
+        EventBusCenter.eventBus.post(approval);
 
         return ResultBean.ofSuccess(null, "[" + LoanProcessEnum.getNameByCode(approval.getOriginalTaskDefinitionKey()) + "]任务执行成功");
     }
@@ -362,21 +356,6 @@ public class LoanProcessServiceImpl implements LoanProcessService {
     private boolean actionIsRollBack(Byte action) {
         return ACTION_ROLL_BACK.equals(action);
     }
-
-
-    /**
-     * 通过银行接口  ->  自动查询征信
-     *
-     * @param approval
-     */
-    private void creditAutomaticCommit(ApprovalParam approval) {
-
-        // 征信申请 && PASS
-        if (CREDIT_APPLY.getCode().equals(approval.getTaskDefinitionKey()) && ACTION_PASS.equals(approval.getAction())) {
-            bankSolutionService.creditAutomaticCommit(approval.getOrderId());
-        }
-    }
-
 
     /**
      * [领取]完成
@@ -3186,11 +3165,29 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      */
     private void doCurrentNodeAttachTask(ApprovalParam approval, LoanOrderDO loanOrderDO, LoanProcessDO loanProcessDO) {
 
+        // 附带任务-[征信申请] ： 通过银行接口  ->  自动查询征信
+        doAttachTask_creditApply(approval);
+
         // 附带任务-[打款确认]
         doAttachTask_RemitReview(approval, loanOrderDO);
 
         // 附带任务-[金融方案修改-审核]
         doAttachTask_FinancialSchemeModifyApplyReview(approval, loanProcessDO);
+    }
+
+    /**
+     * 附带任务-[征信申请]
+     *
+     * @param approval
+     */
+    private void doAttachTask_creditApply(ApprovalParam approval) {
+
+        // 征信申请 && PASS
+        if (CREDIT_APPLY.getCode().equals(approval.getTaskDefinitionKey()) && ACTION_PASS.equals(approval.getAction())) {
+
+            // 通过银行接口  ->  自动查询征信
+            bankSolutionService.creditAutomaticCommit(approval.getOrderId());
+        }
     }
 
     /**
