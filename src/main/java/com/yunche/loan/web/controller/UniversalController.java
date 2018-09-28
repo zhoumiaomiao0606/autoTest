@@ -177,7 +177,7 @@ public class UniversalController {
 
             Runtime.getRuntime().exec("tar -zcvf "+"/tmp/"+resultName+" "+localPath);
             LOG.info("打包结束啦啦啦啦啦啦啦");
-            File file = new File(resultName);
+            File file = new File("/tmp/"+resultName);
             //上传至OSS
             OSSUnit.uploadObject2OSS(ossUnit, file, ossConfig.getBucketName(), ossConfig.getDownLoadDiskName());
         } catch (Exception e) {
