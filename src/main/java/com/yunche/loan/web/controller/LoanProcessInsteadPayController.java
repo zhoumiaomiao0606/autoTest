@@ -36,6 +36,7 @@ public class LoanProcessInsteadPayController {
         approval.setCheckPermission(true);
         approval.setNeedLog(true);
         approval.setNeedPush(true);
+        approval.setAutoTask(false);
         return loanProcessInsteadPayService.approval(approval);
     }
 

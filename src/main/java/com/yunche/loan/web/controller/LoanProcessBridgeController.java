@@ -36,6 +36,7 @@ public class LoanProcessBridgeController {
         approval.setCheckPermission(true);
         approval.setNeedLog(true);
         approval.setNeedPush(true);
+        approval.setAutoTask(false);
         return loanProcessBridgeService.approval(approval);
     }
 
