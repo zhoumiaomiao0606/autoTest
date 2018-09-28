@@ -4,6 +4,7 @@ package com.yunche.loan.web.controller;
 import com.aliyun.oss.OSSClient;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.yunche.loan.config.anno.Limiter;
 import com.yunche.loan.config.cache.DictMapCache;
 import com.yunche.loan.config.common.OSSConfig;
 import com.yunche.loan.config.constant.IDict;
@@ -114,6 +115,7 @@ public class UniversalController {
 
 
     // 文件下载
+    @Limiter(1)
     @PostMapping(value = "/downreport", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean downreport(@RequestBody LoanCreditExportQuery loanCreditExportQuery) {
 
