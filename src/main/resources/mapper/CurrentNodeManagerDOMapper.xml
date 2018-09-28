@@ -1,0 +1,567 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunche.loan.mapper.CurrentNodeManagerDOMapper">
+  <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.CurrentNodeManagerDO">
+    <id column="order_id" jdbcType="BIGINT" property="orderId" />
+    <result column="usertask_credit_apply_create_time" jdbcType="VARCHAR" property="usertaskCreditApplyCreateTime" />
+    <result column="usertask_bank_credit_record_create_time" jdbcType="VARCHAR" property="usertaskBankCreditRecordCreateTime" />
+    <result column="usertask_social_credit_record_create_time" jdbcType="VARCHAR" property="usertaskSocialCreditRecordCreateTime" />
+    <result column="usertask_loan_apply_create_time" jdbcType="VARCHAR" property="usertaskLoanApplyCreateTime" />
+    <result column="usertask_visit_verify_create_time" jdbcType="VARCHAR" property="usertaskVisitVerifyCreateTime" />
+    <result column="usertask_telephone_verify_create_time" jdbcType="VARCHAR" property="usertaskTelephoneVerifyCreateTime" />
+    <result column="usertask_vehicle_information_create_time" jdbcType="VARCHAR" property="usertaskVehicleInformationCreateTime" />
+    <result column="usertask_material_review_create_time" jdbcType="VARCHAR" property="usertaskMaterialReviewCreateTime" />
+    <result column="usertask_material_print_review_create_time" jdbcType="VARCHAR" property="usertaskMaterialPrintReviewCreateTime" />
+    <result column="usertask_install_gps_create_time" jdbcType="VARCHAR" property="usertaskInstallGpsCreateTime" />
+    <result column="usertask_apply_license_plate_deposit_info_create_time" jdbcType="VARCHAR" property="usertaskApplyLicensePlateDepositInfoCreateTime" />
+    <result column="usertask_car_insurance_create_time" jdbcType="VARCHAR" property="usertaskCarInsuranceCreateTime" />
+    <result column="usertask_business_pay_create_time" jdbcType="VARCHAR" property="usertaskBusinessPayCreateTime" />
+    <result column="usertask_business_review_create_time" jdbcType="VARCHAR" property="usertaskBusinessReviewCreateTime" />
+    <result column="usertask_loan_review_create_time" jdbcType="VARCHAR" property="usertaskLoanReviewCreateTime" />
+    <result column="usertask_remit_review_create_time" jdbcType="VARCHAR" property="usertaskRemitReviewCreateTime" />
+    <result column="usertask_material_manage_create_time" jdbcType="VARCHAR" property="usertaskMaterialManageCreateTime" />
+    <result column="usertask_bank_lend_record_create_time" jdbcType="VARCHAR" property="usertaskBankLendRecordCreateTime" />
+    <result column="usertask_bank_card_send_create_time" jdbcType="VARCHAR" property="usertaskBankCardSendCreateTime" />
+    <result column="usertask_refund_apply_create_time" jdbcType="VARCHAR" property="usertaskRefundApplyCreateTime" />
+    <result column="usertask_financial_scheme_modify_apply_create_time" jdbcType="VARCHAR" property="usertaskFinancialSchemeModifyApplyCreateTime" />
+    <result column="usertask_credit_apply_gmt_user_name" jdbcType="VARCHAR" property="usertaskCreditApplyGmtUserName" />
+    <result column="usertask_bank_credit_record_gmt_user_name" jdbcType="VARCHAR" property="usertaskBankCreditRecordGmtUserName" />
+    <result column="usertask_social_credit_record_gmt_user_name" jdbcType="VARCHAR" property="usertaskSocialCreditRecordGmtUserName" />
+    <result column="usertask_loan_apply_gmt_user_name" jdbcType="VARCHAR" property="usertaskLoanApplyGmtUserName" />
+    <result column="usertask_visit_verify_gmt_user_name" jdbcType="VARCHAR" property="usertaskVisitVerifyGmtUserName" />
+    <result column="usertask_telephone_verify_gmt_user_name" jdbcType="VARCHAR" property="usertaskTelephoneVerifyGmtUserName" />
+    <result column="usertask_vehicle_information_gmt_user_name" jdbcType="VARCHAR" property="usertaskVehicleInformationGmtUserName" />
+    <result column="usertask_material_review_gmt_user_name" jdbcType="VARCHAR" property="usertaskMaterialReviewGmtUserName" />
+    <result column="usertask_material_print_review_gmt_user_name" jdbcType="VARCHAR" property="usertaskMaterialPrintReviewGmtUserName" />
+    <result column="usertask_install_gps_gmt_user_name" jdbcType="VARCHAR" property="usertaskInstallGpsGmtUserName" />
+    <result column="usertask_apply_license_plate_deposit_info_gmt_user_name" jdbcType="VARCHAR" property="usertaskApplyLicensePlateDepositInfoGmtUserName" />
+    <result column="usertask_car_insurance_gmt_user_name" jdbcType="VARCHAR" property="usertaskCarInsuranceGmtUserName" />
+    <result column="usertask_business_pay_gmt_user_name" jdbcType="VARCHAR" property="usertaskBusinessPayGmtUserName" />
+    <result column="usertask_business_review_gmt_user_name" jdbcType="VARCHAR" property="usertaskBusinessReviewGmtUserName" />
+    <result column="usertask_loan_review_gmt_user_name" jdbcType="VARCHAR" property="usertaskLoanReviewGmtUserName" />
+    <result column="usertask_remit_review_gmt_user_name" jdbcType="VARCHAR" property="usertaskRemitReviewGmtUserName" />
+    <result column="usertask_material_manage_gmt_user_name" jdbcType="VARCHAR" property="usertaskMaterialManageGmtUserName" />
+    <result column="usertask_bank_lend_record_gmt_user_name" jdbcType="VARCHAR" property="usertaskBankLendRecordGmtUserName" />
+    <result column="usertask_bank_card_send_gmt_user_name" jdbcType="VARCHAR" property="usertaskBankCardSendGmtUserName" />
+    <result column="usertask_refund_apply_gmt_user_name" jdbcType="VARCHAR" property="usertaskRefundApplyGmtUserName" />
+    <result column="usertask_financial_scheme_modify_apply_gmt_user_name" jdbcType="VARCHAR" property="usertaskFinancialSchemeModifyApplyGmtUserName" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    order_id, usertask_credit_apply_create_time, usertask_bank_credit_record_create_time, 
+    usertask_social_credit_record_create_time, usertask_loan_apply_create_time, usertask_visit_verify_create_time, 
+    usertask_telephone_verify_create_time, usertask_vehicle_information_create_time, 
+    usertask_material_review_create_time, usertask_material_print_review_create_time, 
+    usertask_install_gps_create_time, usertask_apply_license_plate_deposit_info_create_time, 
+    usertask_car_insurance_create_time, usertask_business_pay_create_time, usertask_business_review_create_time, 
+    usertask_loan_review_create_time, usertask_remit_review_create_time, usertask_material_manage_create_time, 
+    usertask_bank_lend_record_create_time, usertask_bank_card_send_create_time, usertask_refund_apply_create_time, 
+    usertask_financial_scheme_modify_apply_create_time, usertask_credit_apply_gmt_user_name, 
+    usertask_bank_credit_record_gmt_user_name, usertask_social_credit_record_gmt_user_name, 
+    usertask_loan_apply_gmt_user_name, usertask_visit_verify_gmt_user_name, usertask_telephone_verify_gmt_user_name, 
+    usertask_vehicle_information_gmt_user_name, usertask_material_review_gmt_user_name, 
+    usertask_material_print_review_gmt_user_name, usertask_install_gps_gmt_user_name, 
+    usertask_apply_license_plate_deposit_info_gmt_user_name, usertask_car_insurance_gmt_user_name, 
+    usertask_business_pay_gmt_user_name, usertask_business_review_gmt_user_name, usertask_loan_review_gmt_user_name, 
+    usertask_remit_review_gmt_user_name, usertask_material_manage_gmt_user_name, usertask_bank_lend_record_gmt_user_name, 
+    usertask_bank_card_send_gmt_user_name, usertask_refund_apply_gmt_user_name, usertask_financial_scheme_modify_apply_gmt_user_name
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from current_node_manager
+    where order_id = #{orderId,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from current_node_manager
+    where order_id = #{orderId,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.yunche.loan.domain.entity.CurrentNodeManagerDO">
+    insert into current_node_manager (order_id, usertask_credit_apply_create_time, 
+      usertask_bank_credit_record_create_time, usertask_social_credit_record_create_time, 
+      usertask_loan_apply_create_time, usertask_visit_verify_create_time, 
+      usertask_telephone_verify_create_time, usertask_vehicle_information_create_time, 
+      usertask_material_review_create_time, usertask_material_print_review_create_time, 
+      usertask_install_gps_create_time, usertask_apply_license_plate_deposit_info_create_time, 
+      usertask_car_insurance_create_time, usertask_business_pay_create_time, 
+      usertask_business_review_create_time, usertask_loan_review_create_time, 
+      usertask_remit_review_create_time, usertask_material_manage_create_time, 
+      usertask_bank_lend_record_create_time, usertask_bank_card_send_create_time, 
+      usertask_refund_apply_create_time, usertask_financial_scheme_modify_apply_create_time, 
+      usertask_credit_apply_gmt_user_name, usertask_bank_credit_record_gmt_user_name, 
+      usertask_social_credit_record_gmt_user_name, usertask_loan_apply_gmt_user_name, 
+      usertask_visit_verify_gmt_user_name, usertask_telephone_verify_gmt_user_name, 
+      usertask_vehicle_information_gmt_user_name, usertask_material_review_gmt_user_name, 
+      usertask_material_print_review_gmt_user_name, usertask_install_gps_gmt_user_name, 
+      usertask_apply_license_plate_deposit_info_gmt_user_name, usertask_car_insurance_gmt_user_name, 
+      usertask_business_pay_gmt_user_name, usertask_business_review_gmt_user_name, 
+      usertask_loan_review_gmt_user_name, usertask_remit_review_gmt_user_name, 
+      usertask_material_manage_gmt_user_name, usertask_bank_lend_record_gmt_user_name, 
+      usertask_bank_card_send_gmt_user_name, usertask_refund_apply_gmt_user_name, 
+      usertask_financial_scheme_modify_apply_gmt_user_name)
+    values (#{orderId,jdbcType=BIGINT}, #{usertaskCreditApplyCreateTime,jdbcType=VARCHAR}, 
+      #{usertaskBankCreditRecordCreateTime,jdbcType=VARCHAR}, #{usertaskSocialCreditRecordCreateTime,jdbcType=VARCHAR}, 
+      #{usertaskLoanApplyCreateTime,jdbcType=VARCHAR}, #{usertaskVisitVerifyCreateTime,jdbcType=VARCHAR}, 
+      #{usertaskTelephoneVerifyCreateTime,jdbcType=VARCHAR}, #{usertaskVehicleInformationCreateTime,jdbcType=VARCHAR}, 
+      #{usertaskMaterialReviewCreateTime,jdbcType=VARCHAR}, #{usertaskMaterialPrintReviewCreateTime,jdbcType=VARCHAR}, 
+      #{usertaskInstallGpsCreateTime,jdbcType=VARCHAR}, #{usertaskApplyLicensePlateDepositInfoCreateTime,jdbcType=VARCHAR}, 
+      #{usertaskCarInsuranceCreateTime,jdbcType=VARCHAR}, #{usertaskBusinessPayCreateTime,jdbcType=VARCHAR}, 
+      #{usertaskBusinessReviewCreateTime,jdbcType=VARCHAR}, #{usertaskLoanReviewCreateTime,jdbcType=VARCHAR}, 
+      #{usertaskRemitReviewCreateTime,jdbcType=VARCHAR}, #{usertaskMaterialManageCreateTime,jdbcType=VARCHAR}, 
+      #{usertaskBankLendRecordCreateTime,jdbcType=VARCHAR}, #{usertaskBankCardSendCreateTime,jdbcType=VARCHAR}, 
+      #{usertaskRefundApplyCreateTime,jdbcType=VARCHAR}, #{usertaskFinancialSchemeModifyApplyCreateTime,jdbcType=VARCHAR}, 
+      #{usertaskCreditApplyGmtUserName,jdbcType=VARCHAR}, #{usertaskBankCreditRecordGmtUserName,jdbcType=VARCHAR}, 
+      #{usertaskSocialCreditRecordGmtUserName,jdbcType=VARCHAR}, #{usertaskLoanApplyGmtUserName,jdbcType=VARCHAR}, 
+      #{usertaskVisitVerifyGmtUserName,jdbcType=VARCHAR}, #{usertaskTelephoneVerifyGmtUserName,jdbcType=VARCHAR}, 
+      #{usertaskVehicleInformationGmtUserName,jdbcType=VARCHAR}, #{usertaskMaterialReviewGmtUserName,jdbcType=VARCHAR}, 
+      #{usertaskMaterialPrintReviewGmtUserName,jdbcType=VARCHAR}, #{usertaskInstallGpsGmtUserName,jdbcType=VARCHAR}, 
+      #{usertaskApplyLicensePlateDepositInfoGmtUserName,jdbcType=VARCHAR}, #{usertaskCarInsuranceGmtUserName,jdbcType=VARCHAR}, 
+      #{usertaskBusinessPayGmtUserName,jdbcType=VARCHAR}, #{usertaskBusinessReviewGmtUserName,jdbcType=VARCHAR}, 
+      #{usertaskLoanReviewGmtUserName,jdbcType=VARCHAR}, #{usertaskRemitReviewGmtUserName,jdbcType=VARCHAR}, 
+      #{usertaskMaterialManageGmtUserName,jdbcType=VARCHAR}, #{usertaskBankLendRecordGmtUserName,jdbcType=VARCHAR}, 
+      #{usertaskBankCardSendGmtUserName,jdbcType=VARCHAR}, #{usertaskRefundApplyGmtUserName,jdbcType=VARCHAR}, 
+      #{usertaskFinancialSchemeModifyApplyGmtUserName,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.CurrentNodeManagerDO">
+    insert into current_node_manager
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="orderId != null">
+        order_id,
+      </if>
+      <if test="usertaskCreditApplyCreateTime != null">
+        usertask_credit_apply_create_time,
+      </if>
+      <if test="usertaskBankCreditRecordCreateTime != null">
+        usertask_bank_credit_record_create_time,
+      </if>
+      <if test="usertaskSocialCreditRecordCreateTime != null">
+        usertask_social_credit_record_create_time,
+      </if>
+      <if test="usertaskLoanApplyCreateTime != null">
+        usertask_loan_apply_create_time,
+      </if>
+      <if test="usertaskVisitVerifyCreateTime != null">
+        usertask_visit_verify_create_time,
+      </if>
+      <if test="usertaskTelephoneVerifyCreateTime != null">
+        usertask_telephone_verify_create_time,
+      </if>
+      <if test="usertaskVehicleInformationCreateTime != null">
+        usertask_vehicle_information_create_time,
+      </if>
+      <if test="usertaskMaterialReviewCreateTime != null">
+        usertask_material_review_create_time,
+      </if>
+      <if test="usertaskMaterialPrintReviewCreateTime != null">
+        usertask_material_print_review_create_time,
+      </if>
+      <if test="usertaskInstallGpsCreateTime != null">
+        usertask_install_gps_create_time,
+      </if>
+      <if test="usertaskApplyLicensePlateDepositInfoCreateTime != null">
+        usertask_apply_license_plate_deposit_info_create_time,
+      </if>
+      <if test="usertaskCarInsuranceCreateTime != null">
+        usertask_car_insurance_create_time,
+      </if>
+      <if test="usertaskBusinessPayCreateTime != null">
+        usertask_business_pay_create_time,
+      </if>
+      <if test="usertaskBusinessReviewCreateTime != null">
+        usertask_business_review_create_time,
+      </if>
+      <if test="usertaskLoanReviewCreateTime != null">
+        usertask_loan_review_create_time,
+      </if>
+      <if test="usertaskRemitReviewCreateTime != null">
+        usertask_remit_review_create_time,
+      </if>
+      <if test="usertaskMaterialManageCreateTime != null">
+        usertask_material_manage_create_time,
+      </if>
+      <if test="usertaskBankLendRecordCreateTime != null">
+        usertask_bank_lend_record_create_time,
+      </if>
+      <if test="usertaskBankCardSendCreateTime != null">
+        usertask_bank_card_send_create_time,
+      </if>
+      <if test="usertaskRefundApplyCreateTime != null">
+        usertask_refund_apply_create_time,
+      </if>
+      <if test="usertaskFinancialSchemeModifyApplyCreateTime != null">
+        usertask_financial_scheme_modify_apply_create_time,
+      </if>
+      <if test="usertaskCreditApplyGmtUserName != null">
+        usertask_credit_apply_gmt_user_name,
+      </if>
+      <if test="usertaskBankCreditRecordGmtUserName != null">
+        usertask_bank_credit_record_gmt_user_name,
+      </if>
+      <if test="usertaskSocialCreditRecordGmtUserName != null">
+        usertask_social_credit_record_gmt_user_name,
+      </if>
+      <if test="usertaskLoanApplyGmtUserName != null">
+        usertask_loan_apply_gmt_user_name,
+      </if>
+      <if test="usertaskVisitVerifyGmtUserName != null">
+        usertask_visit_verify_gmt_user_name,
+      </if>
+      <if test="usertaskTelephoneVerifyGmtUserName != null">
+        usertask_telephone_verify_gmt_user_name,
+      </if>
+      <if test="usertaskVehicleInformationGmtUserName != null">
+        usertask_vehicle_information_gmt_user_name,
+      </if>
+      <if test="usertaskMaterialReviewGmtUserName != null">
+        usertask_material_review_gmt_user_name,
+      </if>
+      <if test="usertaskMaterialPrintReviewGmtUserName != null">
+        usertask_material_print_review_gmt_user_name,
+      </if>
+      <if test="usertaskInstallGpsGmtUserName != null">
+        usertask_install_gps_gmt_user_name,
+      </if>
+      <if test="usertaskApplyLicensePlateDepositInfoGmtUserName != null">
+        usertask_apply_license_plate_deposit_info_gmt_user_name,
+      </if>
+      <if test="usertaskCarInsuranceGmtUserName != null">
+        usertask_car_insurance_gmt_user_name,
+      </if>
+      <if test="usertaskBusinessPayGmtUserName != null">
+        usertask_business_pay_gmt_user_name,
+      </if>
+      <if test="usertaskBusinessReviewGmtUserName != null">
+        usertask_business_review_gmt_user_name,
+      </if>
+      <if test="usertaskLoanReviewGmtUserName != null">
+        usertask_loan_review_gmt_user_name,
+      </if>
+      <if test="usertaskRemitReviewGmtUserName != null">
+        usertask_remit_review_gmt_user_name,
+      </if>
+      <if test="usertaskMaterialManageGmtUserName != null">
+        usertask_material_manage_gmt_user_name,
+      </if>
+      <if test="usertaskBankLendRecordGmtUserName != null">
+        usertask_bank_lend_record_gmt_user_name,
+      </if>
+      <if test="usertaskBankCardSendGmtUserName != null">
+        usertask_bank_card_send_gmt_user_name,
+      </if>
+      <if test="usertaskRefundApplyGmtUserName != null">
+        usertask_refund_apply_gmt_user_name,
+      </if>
+      <if test="usertaskFinancialSchemeModifyApplyGmtUserName != null">
+        usertask_financial_scheme_modify_apply_gmt_user_name,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="orderId != null">
+        #{orderId,jdbcType=BIGINT},
+      </if>
+      <if test="usertaskCreditApplyCreateTime != null">
+        #{usertaskCreditApplyCreateTime,jdbcType=VARCHAR},
+      </if>
+      <if test="usertaskBankCreditRecordCreateTime != null">
+        #{usertaskBankCreditRecordCreateTime,jdbcType=VARCHAR},
+      </if>
+      <if test="usertaskSocialCreditRecordCreateTime != null">
+        #{usertaskSocialCreditRecordCreateTime,jdbcType=VARCHAR},
+      </if>
+      <if test="usertaskLoanApplyCreateTime != null">
+        #{usertaskLoanApplyCreateTime,jdbcType=VARCHAR},
+      </if>
+      <if test="usertaskVisitVerifyCreateTime != null">
+        #{usertaskVisitVerifyCreateTime,jdbcType=VARCHAR},
+      </if>
+      <if test="usertaskTelephoneVerifyCreateTime != null">
+        #{usertaskTelephoneVerifyCreateTime,jdbcType=VARCHAR},
+      </if>
+      <if test="usertaskVehicleInformationCreateTime != null">
+        #{usertaskVehicleInformationCreateTime,jdbcType=VARCHAR},
+      </if>
+      <if test="usertaskMaterialReviewCreateTime != null">
+        #{usertaskMaterialReviewCreateTime,jdbcType=VARCHAR},
+      </if>
+      <if test="usertaskMaterialPrintReviewCreateTime != null">
+        #{usertaskMaterialPrintReviewCreateTime,jdbcType=VARCHAR},
+      </if>
+      <if test="usertaskInstallGpsCreateTime != null">
+        #{usertaskInstallGpsCreateTime,jdbcType=VARCHAR},
+      </if>
+      <if test="usertaskApplyLicensePlateDepositInfoCreateTime != null">
+        #{usertaskApplyLicensePlateDepositInfoCreateTime,jdbcType=VARCHAR},
+      </if>
+      <if test="usertaskCarInsuranceCreateTime != null">
+        #{usertaskCarInsuranceCreateTime,jdbcType=VARCHAR},
+      </if>
+      <if test="usertaskBusinessPayCreateTime != null">
+        #{usertaskBusinessPayCreateTime,jdbcType=VARCHAR},
+      </if>
+      <if test="usertaskBusinessReviewCreateTime != null">
+        #{usertaskBusinessReviewCreateTime,jdbcType=VARCHAR},
+      </if>
+      <if test="usertaskLoanReviewCreateTime != null">
+        #{usertaskLoanReviewCreateTime,jdbcType=VARCHAR},
+      </if>
+      <if test="usertaskRemitReviewCreateTime != null">
+        #{usertaskRemitReviewCreateTime,jdbcType=VARCHAR},
+      </if>
+      <if test="usertaskMaterialManageCreateTime != null">
+        #{usertaskMaterialManageCreateTime,jdbcType=VARCHAR},
+      </if>
+      <if test="usertaskBankLendRecordCreateTime != null">
+        #{usertaskBankLendRecordCreateTime,jdbcType=VARCHAR},
+      </if>
+      <if test="usertaskBankCardSendCreateTime != null">
+        #{usertaskBankCardSendCreateTime,jdbcType=VARCHAR},
+      </if>
+      <if test="usertaskRefundApplyCreateTime != null">
+        #{usertaskRefundApplyCreateTime,jdbcType=VARCHAR},
+      </if>
+      <if test="usertaskFinancialSchemeModifyApplyCreateTime != null">
+        #{usertaskFinancialSchemeModifyApplyCreateTime,jdbcType=VARCHAR},
+      </if>
+      <if test="usertaskCreditApplyGmtUserName != null">
+        #{usertaskCreditApplyGmtUserName,jdbcType=VARCHAR},
+      </if>
+      <if test="usertaskBankCreditRecordGmtUserName != null">
+        #{usertaskBankCreditRecordGmtUserName,jdbcType=VARCHAR},
+      </if>
+      <if test="usertaskSocialCreditRecordGmtUserName != null">
+        #{usertaskSocialCreditRecordGmtUserName,jdbcType=VARCHAR},
+      </if>
+      <if test="usertaskLoanApplyGmtUserName != null">
+        #{usertaskLoanApplyGmtUserName,jdbcType=VARCHAR},
+      </if>
+      <if test="usertaskVisitVerifyGmtUserName != null">
+        #{usertaskVisitVerifyGmtUserName,jdbcType=VARCHAR},
+      </if>
+      <if test="usertaskTelephoneVerifyGmtUserName != null">
+        #{usertaskTelephoneVerifyGmtUserName,jdbcType=VARCHAR},
+      </if>
+      <if test="usertaskVehicleInformationGmtUserName != null">
+        #{usertaskVehicleInformationGmtUserName,jdbcType=VARCHAR},
+      </if>
+      <if test="usertaskMaterialReviewGmtUserName != null">
+        #{usertaskMaterialReviewGmtUserName,jdbcType=VARCHAR},
+      </if>
+      <if test="usertaskMaterialPrintReviewGmtUserName != null">
+        #{usertaskMaterialPrintReviewGmtUserName,jdbcType=VARCHAR},
+      </if>
+      <if test="usertaskInstallGpsGmtUserName != null">
+        #{usertaskInstallGpsGmtUserName,jdbcType=VARCHAR},
+      </if>
+      <if test="usertaskApplyLicensePlateDepositInfoGmtUserName != null">
+        #{usertaskApplyLicensePlateDepositInfoGmtUserName,jdbcType=VARCHAR},
+      </if>
+      <if test="usertaskCarInsuranceGmtUserName != null">
+        #{usertaskCarInsuranceGmtUserName,jdbcType=VARCHAR},
+      </if>
+      <if test="usertaskBusinessPayGmtUserName != null">
+        #{usertaskBusinessPayGmtUserName,jdbcType=VARCHAR},
+      </if>
+      <if test="usertaskBusinessReviewGmtUserName != null">
+        #{usertaskBusinessReviewGmtUserName,jdbcType=VARCHAR},
+      </if>
+      <if test="usertaskLoanReviewGmtUserName != null">
+        #{usertaskLoanReviewGmtUserName,jdbcType=VARCHAR},
+      </if>
+      <if test="usertaskRemitReviewGmtUserName != null">
+        #{usertaskRemitReviewGmtUserName,jdbcType=VARCHAR},
+      </if>
+      <if test="usertaskMaterialManageGmtUserName != null">
+        #{usertaskMaterialManageGmtUserName,jdbcType=VARCHAR},
+      </if>
+      <if test="usertaskBankLendRecordGmtUserName != null">
+        #{usertaskBankLendRecordGmtUserName,jdbcType=VARCHAR},
+      </if>
+      <if test="usertaskBankCardSendGmtUserName != null">
+        #{usertaskBankCardSendGmtUserName,jdbcType=VARCHAR},
+      </if>
+      <if test="usertaskRefundApplyGmtUserName != null">
+        #{usertaskRefundApplyGmtUserName,jdbcType=VARCHAR},
+      </if>
+      <if test="usertaskFinancialSchemeModifyApplyGmtUserName != null">
+        #{usertaskFinancialSchemeModifyApplyGmtUserName,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.CurrentNodeManagerDO">
+    update current_node_manager
+    <set>
+      <if test="usertaskCreditApplyCreateTime != null">
+        usertask_credit_apply_create_time = #{usertaskCreditApplyCreateTime,jdbcType=VARCHAR},
+      </if>
+      <if test="usertaskBankCreditRecordCreateTime != null">
+        usertask_bank_credit_record_create_time = #{usertaskBankCreditRecordCreateTime,jdbcType=VARCHAR},
+      </if>
+      <if test="usertaskSocialCreditRecordCreateTime != null">
+        usertask_social_credit_record_create_time = #{usertaskSocialCreditRecordCreateTime,jdbcType=VARCHAR},
+      </if>
+      <if test="usertaskLoanApplyCreateTime != null">
+        usertask_loan_apply_create_time = #{usertaskLoanApplyCreateTime,jdbcType=VARCHAR},
+      </if>
+      <if test="usertaskVisitVerifyCreateTime != null">
+        usertask_visit_verify_create_time = #{usertaskVisitVerifyCreateTime,jdbcType=VARCHAR},
+      </if>
+      <if test="usertaskTelephoneVerifyCreateTime != null">
+        usertask_telephone_verify_create_time = #{usertaskTelephoneVerifyCreateTime,jdbcType=VARCHAR},
+      </if>
+      <if test="usertaskVehicleInformationCreateTime != null">
+        usertask_vehicle_information_create_time = #{usertaskVehicleInformationCreateTime,jdbcType=VARCHAR},
+      </if>
+      <if test="usertaskMaterialReviewCreateTime != null">
+        usertask_material_review_create_time = #{usertaskMaterialReviewCreateTime,jdbcType=VARCHAR},
+      </if>
+      <if test="usertaskMaterialPrintReviewCreateTime != null">
+        usertask_material_print_review_create_time = #{usertaskMaterialPrintReviewCreateTime,jdbcType=VARCHAR},
+      </if>
+      <if test="usertaskInstallGpsCreateTime != null">
+        usertask_install_gps_create_time = #{usertaskInstallGpsCreateTime,jdbcType=VARCHAR},
+      </if>
+      <if test="usertaskApplyLicensePlateDepositInfoCreateTime != null">
+        usertask_apply_license_plate_deposit_info_create_time = #{usertaskApplyLicensePlateDepositInfoCreateTime,jdbcType=VARCHAR},
+      </if>
+      <if test="usertaskCarInsuranceCreateTime != null">
+        usertask_car_insurance_create_time = #{usertaskCarInsuranceCreateTime,jdbcType=VARCHAR},
+      </if>
+      <if test="usertaskBusinessPayCreateTime != null">
+        usertask_business_pay_create_time = #{usertaskBusinessPayCreateTime,jdbcType=VARCHAR},
+      </if>
+      <if test="usertaskBusinessReviewCreateTime != null">
+        usertask_business_review_create_time = #{usertaskBusinessReviewCreateTime,jdbcType=VARCHAR},
+      </if>
+      <if test="usertaskLoanReviewCreateTime != null">
+        usertask_loan_review_create_time = #{usertaskLoanReviewCreateTime,jdbcType=VARCHAR},
+      </if>
+      <if test="usertaskRemitReviewCreateTime != null">
+        usertask_remit_review_create_time = #{usertaskRemitReviewCreateTime,jdbcType=VARCHAR},
+      </if>
+      <if test="usertaskMaterialManageCreateTime != null">
+        usertask_material_manage_create_time = #{usertaskMaterialManageCreateTime,jdbcType=VARCHAR},
+      </if>
+      <if test="usertaskBankLendRecordCreateTime != null">
+        usertask_bank_lend_record_create_time = #{usertaskBankLendRecordCreateTime,jdbcType=VARCHAR},
+      </if>
+      <if test="usertaskBankCardSendCreateTime != null">
+        usertask_bank_card_send_create_time = #{usertaskBankCardSendCreateTime,jdbcType=VARCHAR},
+      </if>
+      <if test="usertaskRefundApplyCreateTime != null">
+        usertask_refund_apply_create_time = #{usertaskRefundApplyCreateTime,jdbcType=VARCHAR},
+      </if>
+      <if test="usertaskFinancialSchemeModifyApplyCreateTime != null">
+        usertask_financial_scheme_modify_apply_create_time = #{usertaskFinancialSchemeModifyApplyCreateTime,jdbcType=VARCHAR},
+      </if>
+      <if test="usertaskCreditApplyGmtUserName != null">
+        usertask_credit_apply_gmt_user_name = #{usertaskCreditApplyGmtUserName,jdbcType=VARCHAR},
+      </if>
+      <if test="usertaskBankCreditRecordGmtUserName != null">
+        usertask_bank_credit_record_gmt_user_name = #{usertaskBankCreditRecordGmtUserName,jdbcType=VARCHAR},
+      </if>
+      <if test="usertaskSocialCreditRecordGmtUserName != null">
+        usertask_social_credit_record_gmt_user_name = #{usertaskSocialCreditRecordGmtUserName,jdbcType=VARCHAR},
+      </if>
+      <if test="usertaskLoanApplyGmtUserName != null">
+        usertask_loan_apply_gmt_user_name = #{usertaskLoanApplyGmtUserName,jdbcType=VARCHAR},
+      </if>
+      <if test="usertaskVisitVerifyGmtUserName != null">
+        usertask_visit_verify_gmt_user_name = #{usertaskVisitVerifyGmtUserName,jdbcType=VARCHAR},
+      </if>
+      <if test="usertaskTelephoneVerifyGmtUserName != null">
+        usertask_telephone_verify_gmt_user_name = #{usertaskTelephoneVerifyGmtUserName,jdbcType=VARCHAR},
+      </if>
+      <if test="usertaskVehicleInformationGmtUserName != null">
+        usertask_vehicle_information_gmt_user_name = #{usertaskVehicleInformationGmtUserName,jdbcType=VARCHAR},
+      </if>
+      <if test="usertaskMaterialReviewGmtUserName != null">
+        usertask_material_review_gmt_user_name = #{usertaskMaterialReviewGmtUserName,jdbcType=VARCHAR},
+      </if>
+      <if test="usertaskMaterialPrintReviewGmtUserName != null">
+        usertask_material_print_review_gmt_user_name = #{usertaskMaterialPrintReviewGmtUserName,jdbcType=VARCHAR},
+      </if>
+      <if test="usertaskInstallGpsGmtUserName != null">
+        usertask_install_gps_gmt_user_name = #{usertaskInstallGpsGmtUserName,jdbcType=VARCHAR},
+      </if>
+      <if test="usertaskApplyLicensePlateDepositInfoGmtUserName != null">
+        usertask_apply_license_plate_deposit_info_gmt_user_name = #{usertaskApplyLicensePlateDepositInfoGmtUserName,jdbcType=VARCHAR},
+      </if>
+      <if test="usertaskCarInsuranceGmtUserName != null">
+        usertask_car_insurance_gmt_user_name = #{usertaskCarInsuranceGmtUserName,jdbcType=VARCHAR},
+      </if>
+      <if test="usertaskBusinessPayGmtUserName != null">
+        usertask_business_pay_gmt_user_name = #{usertaskBusinessPayGmtUserName,jdbcType=VARCHAR},
+      </if>
+      <if test="usertaskBusinessReviewGmtUserName != null">
+        usertask_business_review_gmt_user_name = #{usertaskBusinessReviewGmtUserName,jdbcType=VARCHAR},
+      </if>
+      <if test="usertaskLoanReviewGmtUserName != null">
+        usertask_loan_review_gmt_user_name = #{usertaskLoanReviewGmtUserName,jdbcType=VARCHAR},
+      </if>
+      <if test="usertaskRemitReviewGmtUserName != null">
+        usertask_remit_review_gmt_user_name = #{usertaskRemitReviewGmtUserName,jdbcType=VARCHAR},
+      </if>
+      <if test="usertaskMaterialManageGmtUserName != null">
+        usertask_material_manage_gmt_user_name = #{usertaskMaterialManageGmtUserName,jdbcType=VARCHAR},
+      </if>
+      <if test="usertaskBankLendRecordGmtUserName != null">
+        usertask_bank_lend_record_gmt_user_name = #{usertaskBankLendRecordGmtUserName,jdbcType=VARCHAR},
+      </if>
+      <if test="usertaskBankCardSendGmtUserName != null">
+        usertask_bank_card_send_gmt_user_name = #{usertaskBankCardSendGmtUserName,jdbcType=VARCHAR},
+      </if>
+      <if test="usertaskRefundApplyGmtUserName != null">
+        usertask_refund_apply_gmt_user_name = #{usertaskRefundApplyGmtUserName,jdbcType=VARCHAR},
+      </if>
+      <if test="usertaskFinancialSchemeModifyApplyGmtUserName != null">
+        usertask_financial_scheme_modify_apply_gmt_user_name = #{usertaskFinancialSchemeModifyApplyGmtUserName,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where order_id = #{orderId,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.CurrentNodeManagerDO">
+    update current_node_manager
+    set usertask_credit_apply_create_time = #{usertaskCreditApplyCreateTime,jdbcType=VARCHAR},
+      usertask_bank_credit_record_create_time = #{usertaskBankCreditRecordCreateTime,jdbcType=VARCHAR},
+      usertask_social_credit_record_create_time = #{usertaskSocialCreditRecordCreateTime,jdbcType=VARCHAR},
+      usertask_loan_apply_create_time = #{usertaskLoanApplyCreateTime,jdbcType=VARCHAR},
+      usertask_visit_verify_create_time = #{usertaskVisitVerifyCreateTime,jdbcType=VARCHAR},
+      usertask_telephone_verify_create_time = #{usertaskTelephoneVerifyCreateTime,jdbcType=VARCHAR},
+      usertask_vehicle_information_create_time = #{usertaskVehicleInformationCreateTime,jdbcType=VARCHAR},
+      usertask_material_review_create_time = #{usertaskMaterialReviewCreateTime,jdbcType=VARCHAR},
+      usertask_material_print_review_create_time = #{usertaskMaterialPrintReviewCreateTime,jdbcType=VARCHAR},
+      usertask_install_gps_create_time = #{usertaskInstallGpsCreateTime,jdbcType=VARCHAR},
+      usertask_apply_license_plate_deposit_info_create_time = #{usertaskApplyLicensePlateDepositInfoCreateTime,jdbcType=VARCHAR},
+      usertask_car_insurance_create_time = #{usertaskCarInsuranceCreateTime,jdbcType=VARCHAR},
+      usertask_business_pay_create_time = #{usertaskBusinessPayCreateTime,jdbcType=VARCHAR},
+      usertask_business_review_create_time = #{usertaskBusinessReviewCreateTime,jdbcType=VARCHAR},
+      usertask_loan_review_create_time = #{usertaskLoanReviewCreateTime,jdbcType=VARCHAR},
+      usertask_remit_review_create_time = #{usertaskRemitReviewCreateTime,jdbcType=VARCHAR},
+      usertask_material_manage_create_time = #{usertaskMaterialManageCreateTime,jdbcType=VARCHAR},
+      usertask_bank_lend_record_create_time = #{usertaskBankLendRecordCreateTime,jdbcType=VARCHAR},
+      usertask_bank_card_send_create_time = #{usertaskBankCardSendCreateTime,jdbcType=VARCHAR},
+      usertask_refund_apply_create_time = #{usertaskRefundApplyCreateTime,jdbcType=VARCHAR},
+      usertask_financial_scheme_modify_apply_create_time = #{usertaskFinancialSchemeModifyApplyCreateTime,jdbcType=VARCHAR},
+      usertask_credit_apply_gmt_user_name = #{usertaskCreditApplyGmtUserName,jdbcType=VARCHAR},
+      usertask_bank_credit_record_gmt_user_name = #{usertaskBankCreditRecordGmtUserName,jdbcType=VARCHAR},
+      usertask_social_credit_record_gmt_user_name = #{usertaskSocialCreditRecordGmtUserName,jdbcType=VARCHAR},
+      usertask_loan_apply_gmt_user_name = #{usertaskLoanApplyGmtUserName,jdbcType=VARCHAR},
+      usertask_visit_verify_gmt_user_name = #{usertaskVisitVerifyGmtUserName,jdbcType=VARCHAR},
+      usertask_telephone_verify_gmt_user_name = #{usertaskTelephoneVerifyGmtUserName,jdbcType=VARCHAR},
+      usertask_vehicle_information_gmt_user_name = #{usertaskVehicleInformationGmtUserName,jdbcType=VARCHAR},
+      usertask_material_review_gmt_user_name = #{usertaskMaterialReviewGmtUserName,jdbcType=VARCHAR},
+      usertask_material_print_review_gmt_user_name = #{usertaskMaterialPrintReviewGmtUserName,jdbcType=VARCHAR},
+      usertask_install_gps_gmt_user_name = #{usertaskInstallGpsGmtUserName,jdbcType=VARCHAR},
+      usertask_apply_license_plate_deposit_info_gmt_user_name = #{usertaskApplyLicensePlateDepositInfoGmtUserName,jdbcType=VARCHAR},
+      usertask_car_insurance_gmt_user_name = #{usertaskCarInsuranceGmtUserName,jdbcType=VARCHAR},
+      usertask_business_pay_gmt_user_name = #{usertaskBusinessPayGmtUserName,jdbcType=VARCHAR},
+      usertask_business_review_gmt_user_name = #{usertaskBusinessReviewGmtUserName,jdbcType=VARCHAR},
+      usertask_loan_review_gmt_user_name = #{usertaskLoanReviewGmtUserName,jdbcType=VARCHAR},
+      usertask_remit_review_gmt_user_name = #{usertaskRemitReviewGmtUserName,jdbcType=VARCHAR},
+      usertask_material_manage_gmt_user_name = #{usertaskMaterialManageGmtUserName,jdbcType=VARCHAR},
+      usertask_bank_lend_record_gmt_user_name = #{usertaskBankLendRecordGmtUserName,jdbcType=VARCHAR},
+      usertask_bank_card_send_gmt_user_name = #{usertaskBankCardSendGmtUserName,jdbcType=VARCHAR},
+      usertask_refund_apply_gmt_user_name = #{usertaskRefundApplyGmtUserName,jdbcType=VARCHAR},
+      usertask_financial_scheme_modify_apply_gmt_user_name = #{usertaskFinancialSchemeModifyApplyGmtUserName,jdbcType=VARCHAR}
+    where order_id = #{orderId,jdbcType=BIGINT}
+  </update>
+</mapper>
