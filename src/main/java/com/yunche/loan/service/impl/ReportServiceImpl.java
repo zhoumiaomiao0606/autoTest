@@ -644,7 +644,7 @@ public class ReportServiceImpl implements ReportService {
                     "单量", "占比","贷款金额","单量", "占比","贷款金额","单量", "占比","贷款金额","单量", "占比","贷款金额"
             );
             for (int i = 0; i < header1.size(); i++) {
-                XSSFCell cell = headRow1.createCell(i+1);
+                XSSFCell cell = headRow1.createCell(i+2);
                 cell.setCellValue(header1.get(i));
             }
             XSSFRow row = null;
@@ -882,7 +882,7 @@ public class ReportServiceImpl implements ReportService {
 
 
             ArrayList<String> header = Lists.newArrayList("大区", "合伙人", "中国工商银行哈尔滨顾乡支行", "中国工商银行杭州城站支行",
-                    "中国工商银行南京江宁支行", "中国工商银行台州路桥支行"
+                    "中国工商银行南京江宁支行", "中国工商银行台州路桥支行","合计"
             );
             //申请单号	客户名称	证件类型	证件号	业务员	合伙人团队	贷款金额	gps数量	申请单状态	提交状态	备注	审核员	审核时间
             XSSFRow headRow = sheet.createRow(0);

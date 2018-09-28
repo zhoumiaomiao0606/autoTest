@@ -416,4 +416,11 @@ public class IDict {
         public static final String K_SUFFIX_DOC = ".doc";
     }
 
+    /**
+     * 银行征信图片导出状态
+     */
+    public static abstract interface K_CREDIT_PIC_EXP{
+        public static final Byte K_SUFFIX_JPG_NO = 1;
+        public static final Byte K_SUFFIX_JPG_YES = 2;
+    }
 }

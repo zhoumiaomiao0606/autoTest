@@ -1,17 +1,21 @@
 package com.yunche.loan.web.controller;
 
 
+import com.aliyun.oss.OSSClient;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.yunche.loan.config.cache.DictMapCache;
+import com.yunche.loan.config.common.OSSConfig;
 import com.yunche.loan.config.constant.IDict;
 import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.*;
+import com.yunche.loan.domain.entity.LoanCustomerDO;
 import com.yunche.loan.domain.entity.PartnerDO;
 import com.yunche.loan.domain.query.LoanCreditExportQuery;
 import com.yunche.loan.domain.vo.CreditPicExportVO;
 import com.yunche.loan.domain.vo.UniversalMaterialRecordVO;
+import com.yunche.loan.mapper.LoanCustomerDOMapper;
 import com.yunche.loan.mapper.LoanQueryDOMapper;
 import com.yunche.loan.mapper.LoanStatementDOMapper;
 import com.yunche.loan.mapper.PartnerDOMapper;
@@ -21,15 +25,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.util.CollectionUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.io.File;
-import java.io.UnsupportedEncodingException;
+import java.lang.Process;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+
+import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
 
 @CrossOrigin
 @RestController
@@ -56,6 +63,12 @@ public class UniversalController {
 
     @Autowired
     private LoanQueryDOMapper loanQueryDOMapper;
+
+    @Autowired
+    private LoanCustomerDOMapper loanCustomerDOMapper;
+
+    @Autowired
+    private OSSConfig ossConfig;
 
 
     @GetMapping(value = "/customer")
@@ -102,15 +115,27 @@ public class UniversalController {
 
     // 文件下载
     @PostMapping(value = "/downreport", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public String downreport(@RequestBody LoanCreditExportQuery loanCreditExportQuery) throws UnsupportedEncodingException {
+    public ResultBean downreport(@RequestBody LoanCreditExportQuery loanCreditExportQuery) {
 
+        OSSClient ossUnit=null;
+        String resultNamePath = null;
+        String resultName= null;
+        String diskName =null;
         try {
+
+            ossUnit = OSSUnit.getOSSClient();
             //查询符合要求的数据
             List<CreditPicExportVO> creditPicExportVOS = loanStatementDOMapper.selectCreditPicExport(loanCreditExportQuery);
+            if(CollectionUtils.isEmpty(creditPicExportVOS)){
+                return ResultBean.ofError("无记录");
+            }
             long start = System.currentTimeMillis();
             String name = SessionUtils.getLoginUser().getName();
-            String dir = name+ DateUtil.getTime();
-            final String localPath ="/tmp/"+dir;
+            diskName = name+ DateUtil.getTime();
+            final String localPath ="/tmp/"+diskName;
+
+            resultName = diskName+".tar.gz";
+
             RuntimeUtils.exe("mkdir "+localPath);
             LOG.info("图片合成 开始时间："+start);
             creditPicExportVOS.stream().filter(Objects::nonNull).forEach(e->{
@@ -133,22 +158,40 @@ public class UniversalController {
                 for (UniversalMaterialRecordVO V : list) {
                     urls.addAll(V.getUrls());
                 }
-                ImageUtil.mergetImage2PicByConvert(localPath+ File.separator,fileName,urls);
-                System.out.println(Thread.currentThread()+fileName+"图片合成");
+                try{
+                    ImageUtil.mergetImage2PicByConvert(localPath+ File.separator,fileName,urls);
+                    LoanCustomerDO loanCustomerDO = loanCustomerDOMapper.selectByPrimaryKey(e.getLoanCustomerId(), VALID_STATUS);
+                    if(loanCustomerDO!=null){
+                        loanCustomerDO.setCreditExpFlag(IDict.K_CREDIT_PIC_EXP.K_SUFFIX_JPG_YES);
+                        loanCustomerDOMapper.updateByPrimaryKeySelective(loanCustomerDO);
+                    }
+                }catch (Exception ex){
+                    LOG.info(e.getCustomerName()+"：图片合成失败["+fileName+"]");
+                }
             });
 
+            Process exec = Runtime.getRuntime().exec("tar -cPf " + "/tmp/" + resultName + " " + localPath);
+            exec.waitFor();
+            if(exec.exitValue()!=0){
+                throw new BizException("压缩文件出错啦");
+            }
 
-            //打包
+            File file = new File("/tmp/" + resultName);
+
+
+
+            OSSUnit.uploadObject2OSS(ossUnit, file, ossConfig.getBucketName(), ossConfig.getDownLoadDiskName()+File.separator);
             long end = System.currentTimeMillis();
             LOG.info("图片合成 结束时间："+end);
             LOG.info("总用时："+(end-start)/1000);
 
-            Runtime.getRuntime().exec("tar -zcvf "+localPath+".tar.gz "+localPath);
             LOG.info("打包结束啦啦啦啦啦啦啦");
+
         } catch (Exception e) {
-            e.printStackTrace();
+           throw new BizException(e.getMessage());
         }
-        return "压缩完成";
+
+        return ResultBean.ofSuccess(ossConfig.getDownLoadDiskName()+File.separator+resultName);
 
     }
 }
