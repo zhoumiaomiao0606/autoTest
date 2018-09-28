@@ -158,7 +158,7 @@ public class UniversalController {
                     urls.addAll(V.getUrls());
                 }
                 try{
-//                    ImageUtil.mergetImage2PicByConvert(localPath+ File.separator,fileName,urls);
+                    ImageUtil.mergetImage2PicByConvert(localPath+ File.separator,fileName,urls);
                     LoanCustomerDO loanCustomerDO = loanCustomerDOMapper.selectByPrimaryKey(e.getLoanCustomerId(), VALID_STATUS);
                     if(loanCustomerDO!=null){
                         loanCustomerDO.setCreditExpFlag(IDict.K_CREDIT_PIC_EXP.K_SUFFIX_JPG_YES);
