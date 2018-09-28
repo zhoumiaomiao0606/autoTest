@@ -174,9 +174,9 @@ public class UniversalController {
             LOG.info("图片合成 结束时间："+end);
             LOG.info("总用时："+(end-start)/1000);
 
-            Runtime.getRuntime().exec("tar -zcPf "+"/tmp/"+resultName+" "+localPath);
+            Runtime.getRuntime().exec("tar -cPf "+"/tmp/"+resultName+" "+localPath);
             LOG.info("打包结束啦啦啦啦啦啦啦");
-            LOG.info("tar -zcvf "+"/tmp/"+resultName+" "+localPath);
+            LOG.info("tar -cvf "+"/tmp/"+resultName+" "+localPath);
             File file = new File("/tmp/"+resultName);
             //上传至OSS
             LOG.info("TEST0-本地文件名："+"/tmp/"+resultName);
