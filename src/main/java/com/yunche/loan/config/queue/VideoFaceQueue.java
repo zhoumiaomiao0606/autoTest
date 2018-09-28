@@ -1,11 +1,18 @@
 package com.yunche.loan.config.queue;
 
+import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.redis.core.*;
+import org.springframework.data.redis.core.script.DefaultRedisScript;
+import org.springframework.data.redis.core.script.RedisScript;
+import org.springframework.scripting.support.ResourceScriptSource;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
+import sun.jvm.hotspot.debugger.LongHashMap;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -26,9 +33,9 @@ public class VideoFaceQueue {
      */
     public static final String SEPARATOR = ":";
     /**
-     * 排队过期时间：10s
+     * todo 排队过期时间：10s
      */
-    private static final Long VIDEO_FACE_ROOM_CACHE_KEY_EXPIRE = 10L;
+    private static final Long VIDEO_FACE_ROOM_CACHE_KEY_EXPIRE = 600L;
 
 
     @Autowired
@@ -54,12 +61,22 @@ public class VideoFaceQueue {
         String key = VIDEO_FACE_QUEUE_PREFIX + queueId + SEPARATOR + clientType + SEPARATOR + anyChatUserId
                 + SEPARATOR + wsSessionId + SEPARATOR + userId + SEPARATOR + orderId;
 
-        BoundValueOperations<String, String> boundValueOps = stringRedisTemplate.boundValueOps(key);
+        DefaultRedisScript<Long> redisScript = new DefaultRedisScript<>();
+        redisScript.setScriptSource(new ResourceScriptSource(new ClassPathResource("lua/addQueue.lua")));
+        redisScript.setResultType(Long.class);
 
-        // 不存在，则更新排队时间
-        boundValueOps.setIfAbsent(String.valueOf(startTime));
-        // 设置过期时间
-        boundValueOps.expire(VIDEO_FACE_ROOM_CACHE_KEY_EXPIRE, TimeUnit.SECONDS);
+        Object result = stringRedisTemplate.execute(redisScript, Lists.newArrayList(key),
+                String.valueOf(VIDEO_FACE_ROOM_CACHE_KEY_EXPIRE), String.valueOf(startTime));
+
+        Preconditions.checkArgument((long) result == 1, "排队出错");
+
+
+//        BoundValueOperations<String, String> boundValueOps = stringRedisTemplate.boundValueOps(key);
+//
+//        // 不存在，则更新排队时间
+//        boundValueOps.setIfAbsent(String.valueOf(startTime));
+//        // 设置过期时间
+//        boundValueOps.expire(VIDEO_FACE_ROOM_CACHE_KEY_EXPIRE, TimeUnit.SECONDS);
     }
 
     /**
@@ -78,7 +95,15 @@ public class VideoFaceQueue {
         String key = VIDEO_FACE_QUEUE_PREFIX + queueId + SEPARATOR + clientType + SEPARATOR + anyChatUserId
                 + SEPARATOR + wsSessionId + SEPARATOR + userId + SEPARATOR + orderId;
 
-        stringRedisTemplate.delete(key);
+        String scriptText = "return redis.call('DEL', KEYS[1])";
+
+        DefaultRedisScript<Long> redisScript = new DefaultRedisScript<>();
+        redisScript.setScriptText(scriptText);
+        redisScript.setResultType(Long.class);
+
+        stringRedisTemplate.execute(redisScript, Lists.newArrayList(key));
+
+//        stringRedisTemplate.delete(key);
     }
 
     /**
@@ -91,13 +116,22 @@ public class VideoFaceQueue {
     public Map<String, Long> listSessionInQueue(Long queueId, Byte clientType) {
 
         // prefix  +  queue_id  +  client_type  +
-        String keyPrefix = VIDEO_FACE_QUEUE_PREFIX + queueId + SEPARATOR + clientType + SEPARATOR;
+        String keyPattern = VIDEO_FACE_QUEUE_PREFIX + queueId + SEPARATOR + clientType + SEPARATOR + "**";
 
-        Set<String> keys = stringRedisTemplate.keys(keyPrefix + "*");
+        String scriptText = "return redis.call('KEYS', KEYS[1])";
+
+        DefaultRedisScript<List> redisScript = new DefaultRedisScript<>();
+        redisScript.setScriptText(scriptText);
+        redisScript.setResultType(List.class);
+
+        List<String> keys = (List<String>) stringRedisTemplate.execute(redisScript, Lists.newArrayList(keyPattern));
 
         Map<String, Long> sessionIdStartTimeMap = Maps.newHashMap();
 
         if (!CollectionUtils.isEmpty(keys)) {
+
+            String[] keyPatternArr = keyPattern.split("\\*\\*");
+            String keyPrefix = keyPatternArr[0];
 
             keys.stream()
                     .filter(StringUtils::isNotBlank)
@@ -137,7 +171,15 @@ public class VideoFaceQueue {
         // prefix  +  queue_id  +  client_type  +  anyChat_userId
         String keyPrefix = VIDEO_FACE_QUEUE_PREFIX + queueId + SEPARATOR + clientType + SEPARATOR + anyChatUserId + SEPARATOR;
 
-        Set<String> keys = stringRedisTemplate.keys(keyPrefix + "*");
+//        Set<String> keys = stringRedisTemplate.keys(keyPrefix + "*");
+
+        String scriptText = "return redis.call('KEYS', KEYS[1])";
+
+        DefaultRedisScript<List> redisScript = new DefaultRedisScript<>();
+        redisScript.setScriptText(scriptText);
+        redisScript.setResultType(List.class);
+
+        List<String> keys = stringRedisTemplate.execute(redisScript, Lists.newArrayList(keyPrefix + "**"));
 
         if (!CollectionUtils.isEmpty(keys)) {
 
@@ -174,16 +216,18 @@ public class VideoFaceQueue {
         String key = VIDEO_FACE_QUEUE_PREFIX + queueId + SEPARATOR + clientType + SEPARATOR + anyChatUserId
                 + SEPARATOR + wsSessionId + SEPARATOR + userId + SEPARATOR + orderId;
 
-        BoundValueOperations<String, String> boundValueOps = stringRedisTemplate.boundValueOps(key);
+        String scriptText = "return redis.call('GET', KEYS[1])";
 
-        String waitTime = boundValueOps.get();
+        DefaultRedisScript<Long> redisScript = new DefaultRedisScript<>();
+        redisScript.setScriptText(scriptText);
+        redisScript.setResultType(Long.class);
 
-        if (StringUtils.isNotBlank(waitTime)) {
+        Long waitTime = stringRedisTemplate.execute(redisScript, Lists.newArrayList(key));
 
-            return Long.valueOf(waitTime);
-        }
+//        BoundValueOperations<String, String> boundValueOps = stringRedisTemplate.boundValueOps(key);
+//        String waitTime = boundValueOps.get();
 
-        return null;
+        return waitTime;
     }
 
 }
