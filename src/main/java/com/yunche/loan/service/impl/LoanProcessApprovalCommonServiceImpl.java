@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.lang.reflect.Method;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
@@ -99,6 +100,9 @@ public class LoanProcessApprovalCommonServiceImpl implements LoanProcessApproval
     @Autowired
     private JpushService jpushService;
 
+    @Autowired
+    private CurrentNodeManagerDOMapper currentNodeManagerDOMapper;
+
 
     /**
      * 流程操作日志记录
@@ -145,6 +149,328 @@ public class LoanProcessApprovalCommonServiceImpl implements LoanProcessApproval
 
         int count = loanProcessLogDOMapper.insertSelective(loanProcessLogDO);
         Preconditions.checkArgument(count > 0, "操作日志记录失败");
+        updateCurrentNodeTimeAndUser(loanProcessLogDO);
+    }
+    public void updateCurrentNodeTimeAndUser(LoanProcessLogDO loanProcessLogDO){
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        if("1".equals(loanProcessLogDO.getAction()+"")){
+            if("usertask_credit_apply".equals(loanProcessLogDO.getTaskDefinitionKey())){
+                CurrentNodeManagerDO currentNodeManagerDO = currentNodeManagerDOMapper.selectByPrimaryKey(loanProcessLogDO.getOrderId());
+                if(currentNodeManagerDO == null){
+                    CurrentNodeManagerDO insert = new CurrentNodeManagerDO();
+                    insert.setOrderId(loanProcessLogDO.getOrderId());
+                    insert.setUsertaskCreditApplyCreateTime(sdf.format(loanProcessLogDO.getCreateTime()));
+                    insert.setUsertaskCreditApplyGmtUserName(loanProcessLogDO.getUserName());
+                    currentNodeManagerDOMapper.insertSelective(insert);
+                }else{
+                    CurrentNodeManagerDO update = new CurrentNodeManagerDO();
+                    update.setOrderId(loanProcessLogDO.getOrderId());
+                    update.setUsertaskCreditApplyCreateTime(sdf.format(loanProcessLogDO.getCreateTime()));
+                    update.setUsertaskCreditApplyGmtUserName(loanProcessLogDO.getUserName());
+                    currentNodeManagerDOMapper.updateByPrimaryKeySelective(update);
+                }
+            }else if("usertask_bank_credit_record".equals(loanProcessLogDO.getTaskDefinitionKey())){
+                CurrentNodeManagerDO currentNodeManagerDO = currentNodeManagerDOMapper.selectByPrimaryKey(loanProcessLogDO.getOrderId());
+                if(currentNodeManagerDO == null){
+                    CurrentNodeManagerDO insert = new CurrentNodeManagerDO();
+                    insert.setOrderId(loanProcessLogDO.getOrderId());
+                    insert.setUsertaskBankCreditRecordCreateTime(sdf.format(loanProcessLogDO.getCreateTime()));
+                    insert.setUsertaskBankCreditRecordGmtUserName(loanProcessLogDO.getUserName());
+                    currentNodeManagerDOMapper.insertSelective(insert);
+                }else{
+                    CurrentNodeManagerDO update = new CurrentNodeManagerDO();
+                    update.setOrderId(loanProcessLogDO.getOrderId());
+                    update.setUsertaskBankCreditRecordCreateTime(sdf.format(loanProcessLogDO.getCreateTime()));
+                    update.setUsertaskBankCreditRecordGmtUserName(loanProcessLogDO.getUserName());
+                    currentNodeManagerDOMapper.updateByPrimaryKeySelective(update);
+                }
+            }else if("usertask_social_credit_record".equals(loanProcessLogDO.getTaskDefinitionKey())){
+                CurrentNodeManagerDO currentNodeManagerDO = currentNodeManagerDOMapper.selectByPrimaryKey(loanProcessLogDO.getOrderId());
+                if(currentNodeManagerDO == null){
+                    CurrentNodeManagerDO insert = new CurrentNodeManagerDO();
+                    insert.setOrderId(loanProcessLogDO.getOrderId());
+                    insert.setUsertaskSocialCreditRecordCreateTime(sdf.format(loanProcessLogDO.getCreateTime()));
+                    insert.setUsertaskSocialCreditRecordGmtUserName(loanProcessLogDO.getUserName());
+                    currentNodeManagerDOMapper.insertSelective(insert);
+                }else{
+                    CurrentNodeManagerDO update = new CurrentNodeManagerDO();
+                    update.setOrderId(loanProcessLogDO.getOrderId());
+                    update.setUsertaskSocialCreditRecordCreateTime(sdf.format(loanProcessLogDO.getCreateTime()));
+                    update.setUsertaskSocialCreditRecordGmtUserName(loanProcessLogDO.getUserName());
+                    currentNodeManagerDOMapper.updateByPrimaryKeySelective(update);
+                }
+            }else if("usertask_loan_apply".equals(loanProcessLogDO.getTaskDefinitionKey())){
+                CurrentNodeManagerDO currentNodeManagerDO = currentNodeManagerDOMapper.selectByPrimaryKey(loanProcessLogDO.getOrderId());
+                if(currentNodeManagerDO == null){
+                    CurrentNodeManagerDO insert = new CurrentNodeManagerDO();
+                    insert.setOrderId(loanProcessLogDO.getOrderId());
+                    insert.setUsertaskLoanApplyCreateTime(sdf.format(loanProcessLogDO.getCreateTime()));
+                    insert.setUsertaskLoanApplyGmtUserName(loanProcessLogDO.getUserName());
+                    currentNodeManagerDOMapper.insertSelective(insert);
+                }else{
+                    CurrentNodeManagerDO update = new CurrentNodeManagerDO();
+                    update.setOrderId(loanProcessLogDO.getOrderId());
+                    update.setUsertaskLoanApplyCreateTime(sdf.format(loanProcessLogDO.getCreateTime()));
+                    update.setUsertaskLoanApplyGmtUserName(loanProcessLogDO.getUserName());
+                    currentNodeManagerDOMapper.updateByPrimaryKeySelective(update);
+                }
+            }else if("usertask_visit_verify".equals(loanProcessLogDO.getTaskDefinitionKey())){
+                CurrentNodeManagerDO currentNodeManagerDO = currentNodeManagerDOMapper.selectByPrimaryKey(loanProcessLogDO.getOrderId());
+                if(currentNodeManagerDO == null){
+                    CurrentNodeManagerDO insert = new CurrentNodeManagerDO();
+                    insert.setOrderId(loanProcessLogDO.getOrderId());
+                    insert.setUsertaskVisitVerifyCreateTime(sdf.format(loanProcessLogDO.getCreateTime()));
+                    insert.setUsertaskVisitVerifyGmtUserName(loanProcessLogDO.getUserName());
+                    currentNodeManagerDOMapper.insertSelective(insert);
+                }else{
+                    CurrentNodeManagerDO update = new CurrentNodeManagerDO();
+                    update.setOrderId(loanProcessLogDO.getOrderId());
+                    update.setUsertaskVisitVerifyCreateTime(sdf.format(loanProcessLogDO.getCreateTime()));
+                    update.setUsertaskVisitVerifyGmtUserName(loanProcessLogDO.getUserName());
+                    currentNodeManagerDOMapper.updateByPrimaryKeySelective(update);
+                }
+            }else if("usertask_telephone_verify".equals(loanProcessLogDO.getTaskDefinitionKey())){
+                CurrentNodeManagerDO currentNodeManagerDO = currentNodeManagerDOMapper.selectByPrimaryKey(loanProcessLogDO.getOrderId());
+                if(currentNodeManagerDO == null){
+                    CurrentNodeManagerDO insert = new CurrentNodeManagerDO();
+                    insert.setOrderId(loanProcessLogDO.getOrderId());
+                    insert.setUsertaskTelephoneVerifyCreateTime(sdf.format(loanProcessLogDO.getCreateTime()));
+                    insert.setUsertaskTelephoneVerifyGmtUserName(loanProcessLogDO.getUserName());
+                    currentNodeManagerDOMapper.insertSelective(insert);
+                }else{
+                    CurrentNodeManagerDO update = new CurrentNodeManagerDO();
+                    update.setOrderId(loanProcessLogDO.getOrderId());
+                    update.setUsertaskTelephoneVerifyCreateTime(sdf.format(loanProcessLogDO.getCreateTime()));
+                    update.setUsertaskTelephoneVerifyGmtUserName(loanProcessLogDO.getUserName());
+                    currentNodeManagerDOMapper.updateByPrimaryKeySelective(update);
+                }
+            }else if("usertask_vehicle_information".equals(loanProcessLogDO.getTaskDefinitionKey())){
+                CurrentNodeManagerDO currentNodeManagerDO = currentNodeManagerDOMapper.selectByPrimaryKey(loanProcessLogDO.getOrderId());
+                if(currentNodeManagerDO == null){
+                    CurrentNodeManagerDO insert = new CurrentNodeManagerDO();
+                    insert.setOrderId(loanProcessLogDO.getOrderId());
+                    insert.setUsertaskVehicleInformationCreateTime(sdf.format(loanProcessLogDO.getCreateTime()));
+                    insert.setUsertaskVehicleInformationGmtUserName(loanProcessLogDO.getUserName());
+                    currentNodeManagerDOMapper.insertSelective(insert);
+                }else{
+                    CurrentNodeManagerDO update = new CurrentNodeManagerDO();
+                    update.setOrderId(loanProcessLogDO.getOrderId());
+                    update.setUsertaskVehicleInformationCreateTime(sdf.format(loanProcessLogDO.getCreateTime()));
+                    update.setUsertaskVehicleInformationGmtUserName(loanProcessLogDO.getUserName());
+                    currentNodeManagerDOMapper.updateByPrimaryKeySelective(update);
+                }
+            }else if("usertask_material_review".equals(loanProcessLogDO.getTaskDefinitionKey())){
+                CurrentNodeManagerDO currentNodeManagerDO = currentNodeManagerDOMapper.selectByPrimaryKey(loanProcessLogDO.getOrderId());
+                if(currentNodeManagerDO == null){
+                    CurrentNodeManagerDO insert = new CurrentNodeManagerDO();
+                    insert.setOrderId(loanProcessLogDO.getOrderId());
+                    insert.setUsertaskMaterialReviewCreateTime(sdf.format(loanProcessLogDO.getCreateTime()));
+                    insert.setUsertaskMaterialReviewGmtUserName(loanProcessLogDO.getUserName());
+                    currentNodeManagerDOMapper.insertSelective(insert);
+                }else{
+                    CurrentNodeManagerDO update = new CurrentNodeManagerDO();
+                    update.setOrderId(loanProcessLogDO.getOrderId());
+                    update.setUsertaskMaterialReviewCreateTime(sdf.format(loanProcessLogDO.getCreateTime()));
+                    update.setUsertaskMaterialReviewGmtUserName(loanProcessLogDO.getUserName());
+                    currentNodeManagerDOMapper.updateByPrimaryKeySelective(update);
+                }
+            }else if("usertask_material_print_review".equals(loanProcessLogDO.getTaskDefinitionKey())){
+                CurrentNodeManagerDO currentNodeManagerDO = currentNodeManagerDOMapper.selectByPrimaryKey(loanProcessLogDO.getOrderId());
+                if(currentNodeManagerDO == null){
+                    CurrentNodeManagerDO insert = new CurrentNodeManagerDO();
+                    insert.setOrderId(loanProcessLogDO.getOrderId());
+                    insert.setUsertaskMaterialPrintReviewCreateTime(sdf.format(loanProcessLogDO.getCreateTime()));
+                    insert.setUsertaskMaterialPrintReviewGmtUserName(loanProcessLogDO.getUserName());
+                    currentNodeManagerDOMapper.insertSelective(insert);
+                }else{
+                    CurrentNodeManagerDO update = new CurrentNodeManagerDO();
+                    update.setOrderId(loanProcessLogDO.getOrderId());
+                    update.setUsertaskMaterialPrintReviewCreateTime(sdf.format(loanProcessLogDO.getCreateTime()));
+                    update.setUsertaskMaterialPrintReviewGmtUserName(loanProcessLogDO.getUserName());
+                    currentNodeManagerDOMapper.updateByPrimaryKeySelective(update);
+                }
+            }else if("usertask_install_gps".equals(loanProcessLogDO.getTaskDefinitionKey())){
+                CurrentNodeManagerDO currentNodeManagerDO = currentNodeManagerDOMapper.selectByPrimaryKey(loanProcessLogDO.getOrderId());
+                if(currentNodeManagerDO == null){
+                    CurrentNodeManagerDO insert = new CurrentNodeManagerDO();
+                    insert.setOrderId(loanProcessLogDO.getOrderId());
+                    insert.setUsertaskInstallGpsCreateTime(sdf.format(loanProcessLogDO.getCreateTime()));
+                    insert.setUsertaskInstallGpsGmtUserName(loanProcessLogDO.getUserName());
+                    currentNodeManagerDOMapper.insertSelective(insert);
+                }else{
+                    CurrentNodeManagerDO update = new CurrentNodeManagerDO();
+                    update.setOrderId(loanProcessLogDO.getOrderId());
+                    update.setUsertaskInstallGpsCreateTime(sdf.format(loanProcessLogDO.getCreateTime()));
+                    update.setUsertaskInstallGpsGmtUserName(loanProcessLogDO.getUserName());
+                    currentNodeManagerDOMapper.updateByPrimaryKeySelective(update);
+                }
+            }else if("usertask_apply_license_plate_deposit_info".equals(loanProcessLogDO.getTaskDefinitionKey())){
+                CurrentNodeManagerDO currentNodeManagerDO = currentNodeManagerDOMapper.selectByPrimaryKey(loanProcessLogDO.getOrderId());
+                if(currentNodeManagerDO == null){
+                    CurrentNodeManagerDO insert = new CurrentNodeManagerDO();
+                    insert.setOrderId(loanProcessLogDO.getOrderId());
+                    insert.setUsertaskApplyLicensePlateDepositInfoCreateTime(sdf.format(loanProcessLogDO.getCreateTime()));
+                    insert.setUsertaskApplyLicensePlateDepositInfoGmtUserName(loanProcessLogDO.getUserName());
+                    currentNodeManagerDOMapper.insertSelective(insert);
+                }else{
+                    CurrentNodeManagerDO update = new CurrentNodeManagerDO();
+                    update.setOrderId(loanProcessLogDO.getOrderId());
+                    update.setUsertaskApplyLicensePlateDepositInfoCreateTime(sdf.format(loanProcessLogDO.getCreateTime()));
+                    update.setUsertaskApplyLicensePlateDepositInfoGmtUserName(loanProcessLogDO.getUserName());
+                    currentNodeManagerDOMapper.updateByPrimaryKeySelective(update);
+                }
+            }else if("usertask_car_insurance".equals(loanProcessLogDO.getTaskDefinitionKey())){
+                CurrentNodeManagerDO currentNodeManagerDO = currentNodeManagerDOMapper.selectByPrimaryKey(loanProcessLogDO.getOrderId());
+                if(currentNodeManagerDO == null){
+                    CurrentNodeManagerDO insert = new CurrentNodeManagerDO();
+                    insert.setOrderId(loanProcessLogDO.getOrderId());
+                    insert.setUsertaskCarInsuranceCreateTime(sdf.format(loanProcessLogDO.getCreateTime()));
+                    insert.setUsertaskCarInsuranceGmtUserName(loanProcessLogDO.getUserName());
+                    currentNodeManagerDOMapper.insertSelective(insert);
+                }else{
+                    CurrentNodeManagerDO update = new CurrentNodeManagerDO();
+                    update.setOrderId(loanProcessLogDO.getOrderId());
+                    update.setUsertaskCarInsuranceCreateTime(sdf.format(loanProcessLogDO.getCreateTime()));
+                    update.setUsertaskCarInsuranceGmtUserName(loanProcessLogDO.getUserName());
+                    currentNodeManagerDOMapper.updateByPrimaryKeySelective(update);
+                }
+            }else if("usertask_business_pay".equals(loanProcessLogDO.getTaskDefinitionKey())){
+                CurrentNodeManagerDO currentNodeManagerDO = currentNodeManagerDOMapper.selectByPrimaryKey(loanProcessLogDO.getOrderId());
+                if(currentNodeManagerDO == null){
+                    CurrentNodeManagerDO insert = new CurrentNodeManagerDO();
+                    insert.setOrderId(loanProcessLogDO.getOrderId());
+                    insert.setUsertaskBusinessPayCreateTime(sdf.format(loanProcessLogDO.getCreateTime()));
+                    insert.setUsertaskBusinessPayGmtUserName(loanProcessLogDO.getUserName());
+                    currentNodeManagerDOMapper.insertSelective(insert);
+                }else{
+                    CurrentNodeManagerDO update = new CurrentNodeManagerDO();
+                    update.setOrderId(loanProcessLogDO.getOrderId());
+                    update.setUsertaskBusinessPayCreateTime(sdf.format(loanProcessLogDO.getCreateTime()));
+                    update.setUsertaskBusinessPayGmtUserName(loanProcessLogDO.getUserName());
+                    currentNodeManagerDOMapper.updateByPrimaryKeySelective(update);
+                }
+            }else if("usertask_business_review".equals(loanProcessLogDO.getTaskDefinitionKey())){
+                CurrentNodeManagerDO currentNodeManagerDO = currentNodeManagerDOMapper.selectByPrimaryKey(loanProcessLogDO.getOrderId());
+                if(currentNodeManagerDO == null){
+                    CurrentNodeManagerDO insert = new CurrentNodeManagerDO();
+                    insert.setOrderId(loanProcessLogDO.getOrderId());
+                    insert.setUsertaskBusinessReviewCreateTime(sdf.format(loanProcessLogDO.getCreateTime()));
+                    insert.setUsertaskBusinessReviewGmtUserName(loanProcessLogDO.getUserName());
+                    currentNodeManagerDOMapper.insertSelective(insert);
+                }else{
+                    CurrentNodeManagerDO update = new CurrentNodeManagerDO();
+                    update.setOrderId(loanProcessLogDO.getOrderId());
+                    update.setUsertaskBusinessReviewCreateTime(sdf.format(loanProcessLogDO.getCreateTime()));
+                    update.setUsertaskBusinessReviewGmtUserName(loanProcessLogDO.getUserName());
+                    currentNodeManagerDOMapper.updateByPrimaryKeySelective(update);
+                }
+            }else if("usertask_loan_review".equals(loanProcessLogDO.getTaskDefinitionKey())){
+                CurrentNodeManagerDO currentNodeManagerDO = currentNodeManagerDOMapper.selectByPrimaryKey(loanProcessLogDO.getOrderId());
+                if(currentNodeManagerDO == null){
+                    CurrentNodeManagerDO insert = new CurrentNodeManagerDO();
+                    insert.setOrderId(loanProcessLogDO.getOrderId());
+                    insert.setUsertaskLoanReviewCreateTime(sdf.format(loanProcessLogDO.getCreateTime()));
+                    insert.setUsertaskLoanReviewGmtUserName(loanProcessLogDO.getUserName());
+                    currentNodeManagerDOMapper.insertSelective(insert);
+                }else{
+                    CurrentNodeManagerDO update = new CurrentNodeManagerDO();
+                    update.setOrderId(loanProcessLogDO.getOrderId());
+                    update.setUsertaskLoanReviewCreateTime(sdf.format(loanProcessLogDO.getCreateTime()));
+                    update.setUsertaskLoanReviewGmtUserName(loanProcessLogDO.getUserName());
+                    currentNodeManagerDOMapper.updateByPrimaryKeySelective(update);
+                }
+            }else if("usertask_remit_review".equals(loanProcessLogDO.getTaskDefinitionKey())){
+                CurrentNodeManagerDO currentNodeManagerDO = currentNodeManagerDOMapper.selectByPrimaryKey(loanProcessLogDO.getOrderId());
+                if(currentNodeManagerDO == null){
+                    CurrentNodeManagerDO insert = new CurrentNodeManagerDO();
+                    insert.setOrderId(loanProcessLogDO.getOrderId());
+                    insert.setUsertaskRemitReviewCreateTime(sdf.format(loanProcessLogDO.getCreateTime()));
+                    insert.setUsertaskRemitReviewGmtUserName(loanProcessLogDO.getUserName());
+                    currentNodeManagerDOMapper.insertSelective(insert);
+                }else{
+                    CurrentNodeManagerDO update = new CurrentNodeManagerDO();
+                    update.setOrderId(loanProcessLogDO.getOrderId());
+                    update.setUsertaskRemitReviewCreateTime(sdf.format(loanProcessLogDO.getCreateTime()));
+                    update.setUsertaskRemitReviewGmtUserName(loanProcessLogDO.getUserName());
+                    currentNodeManagerDOMapper.updateByPrimaryKeySelective(update);
+                }
+            }else if("usertask_material_manage".equals(loanProcessLogDO.getTaskDefinitionKey())){
+                CurrentNodeManagerDO currentNodeManagerDO = currentNodeManagerDOMapper.selectByPrimaryKey(loanProcessLogDO.getOrderId());
+                if(currentNodeManagerDO == null){
+                    CurrentNodeManagerDO insert = new CurrentNodeManagerDO();
+                    insert.setOrderId(loanProcessLogDO.getOrderId());
+                    insert.setUsertaskMaterialManageCreateTime(sdf.format(loanProcessLogDO.getCreateTime()));
+                    insert.setUsertaskMaterialManageGmtUserName(loanProcessLogDO.getUserName());
+                    currentNodeManagerDOMapper.insertSelective(insert);
+                }else{
+                    CurrentNodeManagerDO update = new CurrentNodeManagerDO();
+                    update.setOrderId(loanProcessLogDO.getOrderId());
+                    update.setUsertaskMaterialManageCreateTime(sdf.format(loanProcessLogDO.getCreateTime()));
+                    update.setUsertaskMaterialManageGmtUserName(loanProcessLogDO.getUserName());
+                    currentNodeManagerDOMapper.updateByPrimaryKeySelective(update);
+                }
+            }else if("usertask_bank_lend_record".equals(loanProcessLogDO.getTaskDefinitionKey())){
+                CurrentNodeManagerDO currentNodeManagerDO = currentNodeManagerDOMapper.selectByPrimaryKey(loanProcessLogDO.getOrderId());
+                if(currentNodeManagerDO == null){
+                    CurrentNodeManagerDO insert = new CurrentNodeManagerDO();
+                    insert.setOrderId(loanProcessLogDO.getOrderId());
+                    insert.setUsertaskBankLendRecordCreateTime(sdf.format(loanProcessLogDO.getCreateTime()));
+                    insert.setUsertaskBankLendRecordGmtUserName(loanProcessLogDO.getUserName());
+                    currentNodeManagerDOMapper.insertSelective(insert);
+                }else{
+                    CurrentNodeManagerDO update = new CurrentNodeManagerDO();
+                    update.setOrderId(loanProcessLogDO.getOrderId());
+                    update.setUsertaskBankLendRecordCreateTime(sdf.format(loanProcessLogDO.getCreateTime()));
+                    update.setUsertaskBankLendRecordGmtUserName(loanProcessLogDO.getUserName());
+                    currentNodeManagerDOMapper.updateByPrimaryKeySelective(update);
+                }
+            }else if("usertask_bank_card_send".equals(loanProcessLogDO.getTaskDefinitionKey())){
+                CurrentNodeManagerDO currentNodeManagerDO = currentNodeManagerDOMapper.selectByPrimaryKey(loanProcessLogDO.getOrderId());
+                if(currentNodeManagerDO == null){
+                    CurrentNodeManagerDO insert = new CurrentNodeManagerDO();
+                    insert.setOrderId(loanProcessLogDO.getOrderId());
+                    insert.setUsertaskBankCardSendCreateTime(sdf.format(loanProcessLogDO.getCreateTime()));
+                    insert.setUsertaskBankCardSendGmtUserName(loanProcessLogDO.getUserName());
+                    currentNodeManagerDOMapper.insertSelective(insert);
+                }else{
+                    CurrentNodeManagerDO update = new CurrentNodeManagerDO();
+                    update.setOrderId(loanProcessLogDO.getOrderId());
+                    update.setUsertaskBankCardSendCreateTime(sdf.format(loanProcessLogDO.getCreateTime()));
+                    update.setUsertaskBankCardSendGmtUserName(loanProcessLogDO.getUserName());
+                    currentNodeManagerDOMapper.updateByPrimaryKeySelective(update);
+                }
+            }else if("usertask_refund_apply".equals(loanProcessLogDO.getTaskDefinitionKey())){
+                CurrentNodeManagerDO currentNodeManagerDO = currentNodeManagerDOMapper.selectByPrimaryKey(loanProcessLogDO.getOrderId());
+                if(currentNodeManagerDO == null){
+                    CurrentNodeManagerDO insert = new CurrentNodeManagerDO();
+                    insert.setOrderId(loanProcessLogDO.getOrderId());
+                    insert.setUsertaskRefundApplyCreateTime(sdf.format(loanProcessLogDO.getCreateTime()));
+                    insert.setUsertaskRefundApplyGmtUserName(loanProcessLogDO.getUserName());
+                    currentNodeManagerDOMapper.insertSelective(insert);
+                }else{
+                    CurrentNodeManagerDO update = new CurrentNodeManagerDO();
+                    update.setOrderId(loanProcessLogDO.getOrderId());
+                    update.setUsertaskRefundApplyCreateTime(sdf.format(loanProcessLogDO.getCreateTime()));
+                    update.setUsertaskRefundApplyGmtUserName(loanProcessLogDO.getUserName());
+                    currentNodeManagerDOMapper.updateByPrimaryKeySelective(update);
+                }
+            }else if("usertask_financial_scheme_modify_apply".equals(loanProcessLogDO.getTaskDefinitionKey())){
+                CurrentNodeManagerDO currentNodeManagerDO = currentNodeManagerDOMapper.selectByPrimaryKey(loanProcessLogDO.getOrderId());
+                if(currentNodeManagerDO == null){
+                    CurrentNodeManagerDO insert = new CurrentNodeManagerDO();
+                    insert.setOrderId(loanProcessLogDO.getOrderId());
+                    insert.setUsertaskFinancialSchemeModifyApplyCreateTime(sdf.format(loanProcessLogDO.getCreateTime()));
+                    insert.setUsertaskFinancialSchemeModifyApplyGmtUserName(loanProcessLogDO.getUserName());
+                    currentNodeManagerDOMapper.insertSelective(insert);
+                }else{
+                    CurrentNodeManagerDO update = new CurrentNodeManagerDO();
+                    update.setOrderId(loanProcessLogDO.getOrderId());
+                    update.setUsertaskFinancialSchemeModifyApplyCreateTime(sdf.format(loanProcessLogDO.getCreateTime()));
+                    update.setUsertaskFinancialSchemeModifyApplyGmtUserName(loanProcessLogDO.getUserName());
+                    currentNodeManagerDOMapper.updateByPrimaryKeySelective(update);
+                }
+            }
+        }
     }
 
     /**
