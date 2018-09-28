@@ -175,7 +175,7 @@ public class UniversalController {
             LOG.info("图片合成 结束时间："+end);
             LOG.info("总用时："+(end-start)/1000);
 
-            Runtime.getRuntime().exec("tar -zcvf "+resultName+" "+localPath);
+            Runtime.getRuntime().exec("tar -zcvf "+"/tmp/"+resultName+" "+localPath);
             LOG.info("打包结束啦啦啦啦啦啦啦");
             File file = new File(resultName);
             //上传至OSS
