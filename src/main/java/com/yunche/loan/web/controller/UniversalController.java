@@ -31,6 +31,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.io.File;
+import java.lang.Process;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -126,7 +127,7 @@ public class UniversalController {
             //查询符合要求的数据
             List<CreditPicExportVO> creditPicExportVOS = loanStatementDOMapper.selectCreditPicExport(loanCreditExportQuery);
             if(CollectionUtils.isEmpty(creditPicExportVOS)){
-                return ResultBean.ofSuccess("无记录");
+                return ResultBean.ofError("无记录");
             }
             long start = System.currentTimeMillis();
             String name = SessionUtils.getLoginUser().getName();
@@ -158,7 +159,7 @@ public class UniversalController {
                     urls.addAll(V.getUrls());
                 }
                 try{
-//                    ImageUtil.mergetImage2PicByConvert(localPath+ File.separator,fileName,urls);
+                    ImageUtil.mergetImage2PicByConvert(localPath+ File.separator,fileName,urls);
                     LoanCustomerDO loanCustomerDO = loanCustomerDOMapper.selectByPrimaryKey(e.getLoanCustomerId(), VALID_STATUS);
                     if(loanCustomerDO!=null){
                         loanCustomerDO.setCreditExpFlag(IDict.K_CREDIT_PIC_EXP.K_SUFFIX_JPG_YES);
@@ -169,22 +170,22 @@ public class UniversalController {
                 }
             });
 
-            //打包
+            Process exec = Runtime.getRuntime().exec("tar -cPf " + "/tmp/" + resultName + " " + localPath);
+            exec.waitFor();
+            if(exec.exitValue()!=0){
+                throw new BizException("压缩文件出错啦");
+            }
+
+            File file = new File("/tmp/" + resultName);
+
+
+
+            OSSUnit.uploadObject2OSS(ossUnit, file, ossConfig.getBucketName(), ossConfig.getDownLoadDiskName()+File.separator);
             long end = System.currentTimeMillis();
             LOG.info("图片合成 结束时间："+end);
             LOG.info("总用时："+(end-start)/1000);
 
-            Runtime.getRuntime().exec("tar -cPf "+"/tmp/"+resultName+" "+localPath);
             LOG.info("打包结束啦啦啦啦啦啦啦");
-            LOG.info("tar -cvf "+"/tmp/"+resultName+" "+localPath);
-            File file = new File("/tmp/"+resultName);
-            //上传至OSS
-            LOG.info("TEST0-本地文件名："+"/tmp/"+resultName);
-            if(file==null){
-                LOG.info("TEST0-file不存在"+"/tmp/"+resultName);
-            }
-            OSSUnit.uploadObject2OSS(ossUnit, file, ossConfig.getBucketName(), ossConfig.getDownLoadDiskName()+File.separator);
-//            OSSUnit.uploadObject2OSS(ossClient, file, ossConfig.getBucketName(), ossConfig.getDownLoadDiskName()+File.separator);
 
         } catch (Exception e) {
            throw new BizException(e.getMessage());
