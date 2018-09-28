@@ -1845,10 +1845,10 @@
                 AND result.employee_id =#{employeeId}
             </if>
             <if test="creditStatus !=null">
-                case when #{creditStatus} = 1 then result.credit_exp_flag =1
-                     when #{creditStatus} = 2 then result.credit_exp_flag =2
-                     when #{creditStatus} = 3 then result.bank_credit_time IS NOT NULL
-                end
+                AND CASE WHEN #{creditStatus} = 1 THEN result.credit_exp_flag =1
+                         WHEN #{creditStatus} = 2 THEN result.credit_exp_flag =2
+                         WHEN #{creditStatus} = 3 THEN result.bank_credit_time IS NOT NULL
+                END
             </if>
 
     </select>
