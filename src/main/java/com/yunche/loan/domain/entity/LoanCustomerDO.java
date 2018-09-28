@@ -209,4 +209,9 @@ public class LoanCustomerDO {
      * 是否可编辑：0-否;1-是;   默认：否
      */
     private Byte enable;
+
+    /**
+     * 银行征信打回标记：0-否；1-是；
+     */
+    private Byte bankCreditReject;
 }

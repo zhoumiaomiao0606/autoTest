@@ -159,6 +159,9 @@ public class BankSolutionServiceImpl implements BankSolutionService {
             throw new BizException("贷款银行不存在");
         }
 
+        // 内部担保
+
+
 
         //紧急联系人不推送
         Set types = Sets.newHashSet();
@@ -326,7 +329,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         violationUtil.violation(multimediaUpload, MultimediaUploadValidated.class);
 
 
-        bankInterfaceLog(orderId,IDict.K_TRANS_CODE.MULTIMEDIAUPLOAD);
+        bankInterfaceLog(orderId, IDict.K_TRANS_CODE.MULTIMEDIAUPLOAD);
 
         asyncUpload.execute(new Process() {
             @Override
@@ -681,7 +684,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         applyDiviGeneral.setPictures(pictures);
         violationUtil.violation(applyDiviGeneral, ApplyDiviGeneralValidated.class);
         //记录日志
-        bankInterfaceLog(orderId,IDict.K_TRANS_CODE.APPLYDIVIGENERAL);
+        bankInterfaceLog(orderId, IDict.K_TRANS_CODE.APPLYDIVIGENERAL);
 
         asyncUpload.execute(new Process() {
             @Override
@@ -819,7 +822,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         violationUtil.violation(applyCredit, ApplyCreditValidated.class);
 
         //记录日志
-        bankInterfaceLog(orderId,IDict.K_TRANS_CODE.APPLYCREDIT);
+        bankInterfaceLog(orderId, IDict.K_TRANS_CODE.APPLYCREDIT);
 
         asyncUpload.execute(new Process() {
             @Override
@@ -834,18 +837,19 @@ public class BankSolutionServiceImpl implements BankSolutionService {
 
     /**
      * 记录银行接口交互操作日志
+     *
      * @param orderId
      * @param transCode
      */
     private void bankInterfaceLog(Long orderId, String transCode) {
 
         EmployeeDO loginUser = SessionUtils.getLoginUser();
-        String name=null;
+        String name = null;
 
-        if(loginUser!=null){
+        if (loginUser != null) {
             name = loginUser.getName();
-        }else{
-            name ="未知";
+        } else {
+            name = "未知";
         }
 
 
@@ -856,26 +860,27 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         bankInterfaceLogDO.setTransCode(transCode);
 
         BankInterfaceLogDO logDO = bankInterfaceLogDOMapper.selectByPrimaryKey(bankInterfaceLogDO);
-        if(logDO==null){
+        if (logDO == null) {
             int count = bankInterfaceLogDOMapper.insertSelective(bankInterfaceLogDO);
-            Preconditions.checkArgument(count>0,transCode+":日志保存失败");
-        }else{
+            Preconditions.checkArgument(count > 0, transCode + ":日志保存失败");
+        } else {
             int count = bankInterfaceLogDOMapper.updateByPrimaryKeySelective(bankInterfaceLogDO);
-            Preconditions.checkArgument(count>0,transCode+":日志保存失败");
+            Preconditions.checkArgument(count > 0, transCode + ":日志保存失败");
         }
     }
 
 
     /**
      * 银行拒绝直接打回到征信申请（待定）
+     *
      * @param orderId
      * @param customers
      */
     private void back2creditpply(Long orderId, List<LoanCustomerDO> customers) {
 
-        for(LoanCustomerDO customerDO:customers){
+        for (LoanCustomerDO customerDO : customers) {
             UniversalBankInterfaceSerialVO universalBankInterfaceSerialVO = loanQueryDOMapper.selectUniversalLatestBankInterfaceSerial(customerDO.getId(), IDict.K_TRANS_CODE.APPLYCREDIT);
-            if(!"2".equals(universalBankInterfaceSerialVO.getStatus()) && !"1".equals(universalBankInterfaceSerialVO.getStatus())){
+            if (!"2".equals(universalBankInterfaceSerialVO.getStatus()) && !"1".equals(universalBankInterfaceSerialVO.getStatus())) {
                 LOG.info("征信查询 自动打回开始 ===============================================================");
                 ApprovalParam approvalParam = new ApprovalParam();
                 approvalParam.setAction(new Byte("0"));
@@ -1060,7 +1065,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         violationUtil.violation(applyBankOpenCard);
         violationUtil.violation(customer);
         //记录日志
-        bankInterfaceLog(bankOpenCardParam.getOrderId(),IDict.K_TRANS_CODE.CREDITCARDAPPLY);
+        bankInterfaceLog(bankOpenCardParam.getOrderId(), IDict.K_TRANS_CODE.CREDITCARDAPPLY);
 
         asyncUpload.execute(new Process() {
 

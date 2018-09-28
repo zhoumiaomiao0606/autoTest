@@ -101,12 +101,11 @@ public class BankCreditRecordScheduledTask {
                         // 审核参数设置
                         setApprovalParam(approval, bankInterfaceSerialDO);
 
-                        // 更新可编辑状态
-                        updateCustomerEnable(bankInterfaceSerialDO.getCustomerId());
+                        // 更新 可编辑状态 & 银行征信打回标记
+                        updateCustomerEnableAndBankCreditReject(bankInterfaceSerialDO.getCustomerId());
 
                         // 提交打回
                         autoReject(approval, bankInterfaceSerialDO);
-
                     });
         }
 
@@ -147,17 +146,18 @@ public class BankCreditRecordScheduledTask {
     }
 
     /**
-     * 更新可编辑状态
+     * 更新 可编辑状态 & 银行征信打回标记
      *
      * @param customerId
      */
-    private void updateCustomerEnable(Long customerId) {
+    private void updateCustomerEnableAndBankCreditReject(Long customerId) {
 
         if (null != customerId) {
 
             LoanCustomerDO loanCustomerDO = new LoanCustomerDO();
             loanCustomerDO.setId(customerId);
             loanCustomerDO.setEnable(BaseConst.K_YORN_YES);
+            loanCustomerDO.setBankCreditReject(BaseConst.K_YORN_YES);
 
             ResultBean<Void> updateResult = loanCustomerService.update(loanCustomerDO);
             Preconditions.checkArgument(updateResult.getSuccess(), updateResult.getMsg());
