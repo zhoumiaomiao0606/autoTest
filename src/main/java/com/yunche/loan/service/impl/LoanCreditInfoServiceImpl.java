@@ -37,13 +37,11 @@ import static com.yunche.loan.config.constant.LoanCustomerConst.*;
  * @date 2018/3/7
  */
 @Service
-@Transactional
 public class LoanCreditInfoServiceImpl implements LoanCreditInfoService {
 
 
     @Resource
     private LoanQueryDOMapper loanQueryDOMapper;
-
 
     @Autowired
     private LoanCreditInfoDOMapper loanCreditInfoDOMapper;
@@ -52,51 +50,64 @@ public class LoanCreditInfoServiceImpl implements LoanCreditInfoService {
     private LoanCustomerDOMapper loanCustomerDOMapper;
 
     @Autowired
-    private LoanFileService loanFileService;
+    private LoanOrderDOMapper loanOrderDOMapper;
 
     @Autowired
-    private LoanOrderDOMapper loanOrderDOMapper;
+    private LoanFileService loanFileService;
 
     @Autowired
     private LoanQueryService loanQueryService;
 
 
     @Override
-    public ResultBean<Long> create(LoanCreditInfoDO loanCreditInfoDO) {
+    public void save(LoanCreditInfoDO loanCreditInfoDO) {
+
+        create(loanCreditInfoDO);
+    }
+
+    @Override
+    @Transactional
+    public Long create(LoanCreditInfoDO loanCreditInfoDO) {
         Preconditions.checkNotNull(loanCreditInfoDO.getCustomerId(), "客户ID不能为空");
         Preconditions.checkNotNull(loanCreditInfoDO.getType(), "征信类型不能为空");
         Preconditions.checkNotNull(loanCreditInfoDO.getResult(), "征信结果不能为空");
 
         List<LoanCreditInfoDO> loanCreditInfoDOS = loanCreditInfoDOMapper.getByCustomerIdAndType(loanCreditInfoDO.getCustomerId(), loanCreditInfoDO.getType());
+
+        // 前端存在重复create    变更为save
         if (!CollectionUtils.isEmpty(loanCreditInfoDOS)) {
+
             // update
             LoanCreditInfoDO existLoanCreditInfoDO = loanCreditInfoDOS.get(0);
             BeanUtils.copyProperties(loanCreditInfoDO, existLoanCreditInfoDO);
             update(existLoanCreditInfoDO);
+
+        } else {
+
+            loanCreditInfoDO.setStatus(VALID_STATUS);
+            loanCreditInfoDO.setGmtCreate(new Date());
+            loanCreditInfoDO.setGmtModify(new Date());
+            int count = loanCreditInfoDOMapper.insertSelective(loanCreditInfoDO);
+            Preconditions.checkArgument(count > 0, "征信结果录入失败");
         }
 
-        loanCreditInfoDO.setStatus(VALID_STATUS);
-        loanCreditInfoDO.setGmtCreate(new Date());
-        loanCreditInfoDO.setGmtModify(new Date());
-        int count = loanCreditInfoDOMapper.insertSelective(loanCreditInfoDO);
-        Preconditions.checkArgument(count > 0, "征信结果录入失败");
-
-        return ResultBean.ofSuccess(loanCreditInfoDO.getId(), "征信结果录入成功");
+        return loanCreditInfoDO.getId();
     }
 
     @Override
-    public ResultBean<Long> update(LoanCreditInfoDO loanCreditInfoDO) {
+    @Transactional
+    public Long update(LoanCreditInfoDO loanCreditInfoDO) {
         Preconditions.checkNotNull(loanCreditInfoDO.getId(), "征信信息ID不能为空");
 
         loanCreditInfoDO.setGmtModify(new Date());
         int count = loanCreditInfoDOMapper.updateByPrimaryKeySelective(loanCreditInfoDO);
         Preconditions.checkArgument(count > 0, "征信结果修改失败");
 
-        return ResultBean.ofSuccess(loanCreditInfoDO.getId(), "征信结果修改成功");
+        return loanCreditInfoDO.getId();
     }
 
     @Override
-    public ResultBean<LoanCreditInfoVO> getByCustomerId(Long customerId, Byte type) {
+    public LoanCreditInfoVO getByCustomerId(Long customerId, Byte type) {
         Preconditions.checkNotNull(customerId, "客户ID不能为空");
         Preconditions.checkNotNull(type, "征信类型不能为空");
 
@@ -108,11 +119,11 @@ public class LoanCreditInfoServiceImpl implements LoanCreditInfoService {
                 BeanUtils.copyProperties(loanCreditInfoDO, loanCreditInfoVO);
             }
         }
-        return ResultBean.ofSuccess(loanCreditInfoVO);
+        return loanCreditInfoVO;
     }
 
     @Override
-    public ResultBean<CreditRecordVO> detailAll(Long customerId, Byte creditType) {
+    public CreditRecordVO detailAll(Long customerId, Byte creditType) {
         Preconditions.checkNotNull(customerId, "客户ID不能为空");
         Preconditions.checkNotNull(creditType, "征信类型不能为空");
 
@@ -126,7 +137,7 @@ public class LoanCreditInfoServiceImpl implements LoanCreditInfoService {
             fillCustInfoAndCreditRecord(creditRecordVO, loanCustomerDOList, creditType);
         }
 
-        return ResultBean.ofSuccess(creditRecordVO);
+        return creditRecordVO;
     }
 
     /**
@@ -228,27 +239,26 @@ public class LoanCreditInfoServiceImpl implements LoanCreditInfoService {
     }
 
     /**
-     *
      * @param creditRecord
      */
     private void fillBankCreditMsg(CreditRecordVO.CustomerCreditRecord creditRecord) {
-       try{
-           BankInterfaceSerialReturnVO returnVO = loanQueryService.selectLastBankInterfaceSerialByTransCode(creditRecord.getCustomerId(), IDict.K_TRANS_CODE.APPLYCREDIT);
-           if(returnVO!=null){
-               if(StringUtil.isEmpty(returnVO.getReject_reason())){
-                   String api_msg = returnVO.getApi_msg();
-                   ObjectMapper objectMapper = new ObjectMapper();
-                   Map map = objectMapper.readValue(api_msg, Map.class);
-                   Map pub = (Map)map.get("pub");
-                   String result = (String)pub.get("retmsg");
-                   creditRecord.setBankCreditResponse(result);
-               }else{
-                   creditRecord.setBankCreditResponse(returnVO.getReject_reason());
-               }
-           }
-       }catch (Exception e){
-           creditRecord.setBankCreditResponse("json解析异常,请联系管理员");
-       }
+        try {
+            BankInterfaceSerialReturnVO returnVO = loanQueryService.selectLastBankInterfaceSerialByTransCode(creditRecord.getCustomerId(), IDict.K_TRANS_CODE.APPLYCREDIT);
+            if (returnVO != null) {
+                if (StringUtil.isEmpty(returnVO.getReject_reason())) {
+                    String api_msg = returnVO.getApi_msg();
+                    ObjectMapper objectMapper = new ObjectMapper();
+                    Map map = objectMapper.readValue(api_msg, Map.class);
+                    Map pub = (Map) map.get("pub");
+                    String result = (String) pub.get("retmsg");
+                    creditRecord.setBankCreditResponse(result);
+                } else {
+                    creditRecord.setBankCreditResponse(returnVO.getReject_reason());
+                }
+            }
+        } catch (Exception e) {
+            creditRecord.setBankCreditResponse("json解析异常,请联系管理员");
+        }
 
 
     }
@@ -277,8 +287,8 @@ public class LoanCreditInfoServiceImpl implements LoanCreditInfoService {
             customerCreditRecord.setCustomerId(loanCustomerDO.getId());
             customerCreditRecord.setCustomerName(loanCustomerDO.getName());
             customerCreditRecord.setGuaranteeType(loanCustomerDO.getGuaranteeType());
-            customerCreditRecord.setBankCreditNote(loanQueryDOMapper.selectLastBankInterfaceSerialNoteByTransCode(loanCustomerDO.getId(),"applyCredit"));
-            customerCreditRecord.setBankCreditStatus(loanQueryDOMapper.selectLastBankInterfaceSerialStatusByTransCode(loanCustomerDO.getId(),"applyCredit"));
+            customerCreditRecord.setBankCreditNote(loanQueryDOMapper.selectLastBankInterfaceSerialNoteByTransCode(loanCustomerDO.getId(), "applyCredit"));
+            customerCreditRecord.setBankCreditStatus(loanQueryDOMapper.selectLastBankInterfaceSerialStatusByTransCode(loanCustomerDO.getId(), "applyCredit"));
         }
     }
 
@@ -289,13 +299,12 @@ public class LoanCreditInfoServiceImpl implements LoanCreditInfoService {
      * @param creditType
      */
     private void fillCreditMsg(CreditRecordVO.CustomerCreditRecord customerCreditRecord, Byte creditType) {
-        ResultBean<LoanCreditInfoVO> resultBean = getByCustomerId(customerCreditRecord.getCustomerId(), creditType);
-        Preconditions.checkArgument(resultBean.getSuccess(), resultBean.getMsg());
-        LoanCreditInfoVO loanCreditInfoVO = resultBean.getData();
+
+        LoanCreditInfoVO loanCreditInfoVO = getByCustomerId(customerCreditRecord.getCustomerId(), creditType);
 
         customerCreditRecord.setCreditId(loanCreditInfoVO.getId());
         customerCreditRecord.setCreditResult(loanCreditInfoVO.getResult());
         customerCreditRecord.setCreditInfo(loanCreditInfoVO.getInfo());
-        customerCreditRecord.setBankCreditStatus(loanQueryDOMapper.selectLastBankInterfaceSerialStatusByTransCode(customerCreditRecord.getCustomerId(),"applyCredit"));
+        customerCreditRecord.setBankCreditStatus(loanQueryDOMapper.selectLastBankInterfaceSerialStatusByTransCode(customerCreditRecord.getCustomerId(), "applyCredit"));
     }
 }
