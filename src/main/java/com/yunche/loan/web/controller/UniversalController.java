@@ -120,7 +120,6 @@ public class UniversalController {
     public ResultBean downreport(@RequestBody LoanCreditExportQuery loanCreditExportQuery) {
 
         OSSClient ossUnit=null;
-        String resultNamePath = null;
         String resultName= null;
         String diskName =null;
         List<CreditPicExportVO> exportVOS =Lists.newLinkedList();
