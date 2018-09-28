@@ -5,6 +5,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.yunche.loan.config.common.OSSConfig;
 import com.yunche.loan.config.constant.BaseConst;
+import com.yunche.loan.config.constant.ExpressCompanyEnum;
 import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.DateTimeFormatUtils;
@@ -178,7 +179,7 @@ public class LoanBankCardSendServiceImpl implements LoanBankCardSendService {
 
                     try {
                         rowVal = row[line++];
-                        loanBankCardSendDO.setExpressCom(new Byte(rowVal));
+                        loanBankCardSendDO.setExpressCom(ExpressCompanyEnum.getKeyByValue(rowVal));
                     } catch (Exception e) {
                         throw new BizException("第" + rowNum + "行，第" + (line) + "列格式有误：" + rowVal);
                     }
@@ -248,7 +249,7 @@ public class LoanBankCardSendServiceImpl implements LoanBankCardSendService {
 
 
             ArrayList<String> header = Lists.newArrayList("业务编号","收卡人姓名","收卡人电话","收卡人地址",
-                    "还款卡号","邮寄公司","邮寄单号","邮寄日期"
+                    "还款卡号","邮寄公司","邮寄单号","邮寄日期(yyyy-MM-dd)"
             );
             //申请单号	客户名称	证件类型	证件号	业务员	合伙人团队	贷款金额	gps数量	申请单状态	提交状态	备注	审核员	审核时间
             XSSFRow headRow = sheet.createRow(0);
@@ -280,7 +281,7 @@ public class LoanBankCardSendServiceImpl implements LoanBankCardSendService {
                 cell.setCellValue(loanBankCardSendDO.getRepayCardNum());
 
                 cell = row.createCell(5);
-                cell.setCellValue(loanBankCardSendDO.getExpressCom()+"");
+                cell.setCellValue(ExpressCompanyEnum.getValueByKey(loanBankCardSendDO.getExpressCom()));
 
                 cell = row.createCell(6);
                 cell.setCellValue(loanBankCardSendDO.getExpressSendNum());
