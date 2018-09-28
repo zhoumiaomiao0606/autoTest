@@ -121,14 +121,22 @@ public class UniversalController {
         String resultNamePath = null;
         String resultName= null;
         String diskName =null;
+        List<CreditPicExportVO> exportVOS =Lists.newLinkedList();
         try {
 
             ossUnit = OSSUnit.getOSSClient();
             //查询符合要求的数据
             List<CreditPicExportVO> creditPicExportVOS = loanStatementDOMapper.selectCreditPicExport(loanCreditExportQuery);
+
+
             if(CollectionUtils.isEmpty(creditPicExportVOS)){
-                return ResultBean.ofError("无记录");
+                return ResultBean.ofError("筛选条件查询记录为空空");
             }
+            if(creditPicExportVOS.size()>100){
+                exportVOS = creditPicExportVOS.subList(0, 100);
+            }
+
+
             long start = System.currentTimeMillis();
             String name = SessionUtils.getLoginUser().getName();
             diskName = name+ DateUtil.getTime();
@@ -138,7 +146,7 @@ public class UniversalController {
 
             RuntimeUtils.exe("mkdir "+localPath);
             LOG.info("图片合成 开始时间："+start);
-            creditPicExportVOS.stream().filter(Objects::nonNull).forEach(e->{
+            exportVOS.stream().filter(Objects::nonNull).forEach(e->{
                 //查图片
                 Set types = Sets.newHashSet();
                 //1:合成身份证图片 , 2:合成图片
