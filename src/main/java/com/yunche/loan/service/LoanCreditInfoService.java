@@ -1,6 +1,5 @@
 package com.yunche.loan.service;
 
-import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.entity.LoanCreditInfoDO;
 import com.yunche.loan.domain.vo.CreditRecordVO;
 import com.yunche.loan.domain.vo.LoanCreditInfoVO;
@@ -10,11 +9,14 @@ import com.yunche.loan.domain.vo.LoanCreditInfoVO;
  * @date 2018/3/7
  */
 public interface LoanCreditInfoService {
-    ResultBean<Long> create(LoanCreditInfoDO loanCreditInfoDO);
 
-    ResultBean<Long> update(LoanCreditInfoDO loanCreditInfoDO);
+    void save(LoanCreditInfoDO loanCreditInfoDO);
 
-    ResultBean<LoanCreditInfoVO> getByCustomerId(Long id, Byte type);
+    Long create(LoanCreditInfoDO loanCreditInfoDO);
 
-    ResultBean<CreditRecordVO> detailAll(Long loanCustomerId, Byte creditType);
+    Long update(LoanCreditInfoDO loanCreditInfoDO);
+
+    LoanCreditInfoVO getByCustomerId(Long id, Byte type);
+
+    CreditRecordVO detailAll(Long loanCustomerId, Byte creditType);
 }

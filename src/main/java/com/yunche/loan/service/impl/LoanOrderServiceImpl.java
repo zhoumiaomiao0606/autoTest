@@ -311,10 +311,7 @@ public class LoanOrderServiceImpl implements LoanOrderService {
         Preconditions.checkNotNull(loanOrderDO, "业务单号不存在");
 
         // 客户信息 & 征信信息
-        ResultBean<CreditRecordVO> resultBean = loanCreditInfoService.detailAll(loanOrderDO.getLoanCustomerId(), creditType);
-        Preconditions.checkArgument(resultBean.getSuccess(), resultBean.getMsg());
-
-        CreditRecordVO creditRecordVO = resultBean.getData();
+        CreditRecordVO creditRecordVO = loanCreditInfoService.detailAll(loanOrderDO.getLoanCustomerId(), creditType);
 
         // 贷款基本信息
         ResultBean<LoanBaseInfoVO> loanBaseInfoResultBean = loanBaseInfoService.getLoanBaseInfoById(loanOrderDO.getLoanBaseInfoId());
@@ -404,9 +401,8 @@ public class LoanOrderServiceImpl implements LoanOrderService {
         LoanCreditInfoDO loanCreditInfoDO = new LoanCreditInfoDO();
         BeanUtils.copyProperties(creditRecordParam, loanCreditInfoDO);
 
-        ResultBean<Long> resultBean = loanCreditInfoService.create(loanCreditInfoDO);
-        Preconditions.checkArgument(resultBean.getSuccess(), resultBean.getMsg());
-        return ResultBean.ofSuccess(resultBean.getData(), "征信结果录入成功");
+        Long id = loanCreditInfoService.create(loanCreditInfoDO);
+        return ResultBean.ofSuccess(id, "征信结果录入成功");
     }
 
     @Override
@@ -415,9 +411,8 @@ public class LoanOrderServiceImpl implements LoanOrderService {
         LoanCreditInfoDO loanCreditInfoDO = new LoanCreditInfoDO();
         BeanUtils.copyProperties(creditRecordParam, loanCreditInfoDO);
 
-        ResultBean<Long> resultBean = loanCreditInfoService.update(loanCreditInfoDO);
-        Preconditions.checkArgument(resultBean.getSuccess(), resultBean.getMsg());
-        return ResultBean.ofSuccess(resultBean.getData(), "征信结果修改成功");
+        Long count = loanCreditInfoService.update(loanCreditInfoDO);
+        return ResultBean.ofSuccess(count, "征信结果修改成功");
     }
 
     @Override
