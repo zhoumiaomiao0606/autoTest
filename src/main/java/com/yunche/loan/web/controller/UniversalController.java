@@ -31,7 +31,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.io.File;
-import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -115,7 +114,7 @@ public class UniversalController {
 
     // 文件下载
     @PostMapping(value = "/downreport", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultBean downreport(@RequestBody LoanCreditExportQuery loanCreditExportQuery) throws UnsupportedEncodingException {
+    public ResultBean downreport(@RequestBody LoanCreditExportQuery loanCreditExportQuery) {
 
         OSSClient ossUnit=null;
         String resultNamePath = null;
@@ -159,7 +158,7 @@ public class UniversalController {
                     urls.addAll(V.getUrls());
                 }
                 try{
-                    ImageUtil.mergetImage2PicByConvert(localPath+ File.separator,fileName,urls);
+//                    ImageUtil.mergetImage2PicByConvert(localPath+ File.separator,fileName,urls);
                     LoanCustomerDO loanCustomerDO = loanCustomerDOMapper.selectByPrimaryKey(e.getLoanCustomerId(), VALID_STATUS);
                     if(loanCustomerDO!=null){
                         loanCustomerDO.setCreditExpFlag(IDict.K_CREDIT_PIC_EXP.K_SUFFIX_JPG_YES);
@@ -179,7 +178,9 @@ public class UniversalController {
             LOG.info("打包结束啦啦啦啦啦啦啦");
             File file = new File("/tmp/"+resultName);
             //上传至OSS
-            OSSUnit.uploadObject2OSS(ossUnit, file, ossConfig.getBucketName(), ossConfig.getDownLoadDiskName());
+            OSSUnit.uploadObject2OSS(ossUnit, file, ossConfig.getBucketName(), ossConfig.getDownLoadDiskName()+File.separator);
+//            OSSUnit.uploadObject2OSS(ossClient, file, ossConfig.getBucketName(), ossConfig.getDownLoadDiskName()+File.separator);
+
         } catch (Exception e) {
            throw new BizException(e.getMessage());
         }
