@@ -132,8 +132,8 @@ public class UniversalController {
             if(CollectionUtils.isEmpty(creditPicExportVOS)){
                 return ResultBean.ofError("筛选条件查询记录为空");
             }
-            if(creditPicExportVOS.size()>100){
-                exportVOS = creditPicExportVOS.subList(0, 100);
+            if(creditPicExportVOS.size()>50){
+                exportVOS = creditPicExportVOS.subList(0, 50);
             }
 
 
