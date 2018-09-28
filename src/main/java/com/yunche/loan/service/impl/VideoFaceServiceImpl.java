@@ -318,7 +318,7 @@ public class VideoFaceServiceImpl implements VideoFaceService {
         VideoFaceQuestionAnswerVO videoFaceQuestionAnswerVO = setAndGetVideoFaceQuestionAnswerVO(bankId, orderId);
         String question_1 = "1、您好，请问是" + redText(videoFaceQuestionAnswerVO.getCustomerName()) + "先生/女士吗？您的身份证号码多少？参考答案：是。"+redText(videoFaceQuestionAnswerVO.getCustomerIdCard());
         String question_2 = "2、您是否通过哈尔滨云车汽车服务有限公司向工商银行哈尔滨顾乡支行申请一笔汽车专项分期付款？参考答案：是";
-        String question_3 = "3、您现在的工作单位是什么？"+videoFaceQuestionAnswerVO.getIncomeCertificateCompanyName()+"月收入多少？"+videoFaceQuestionAnswerVO.getMonthIncome();
+        String question_3 = "3、您现在的工作单位是什么？"+redText(videoFaceQuestionAnswerVO.getIncomeCertificateCompanyName())+"月收入多少？"+redText(videoFaceQuestionAnswerVO.getMonthIncome());
         String question_4 = "4、您所购车辆为"+redText(videoFaceQuestionAnswerVO.getCarBrandName())+redText(videoFaceQuestionAnswerVO.getCarName())
                 +",车辆价格为"+redText(videoFaceQuestionAnswerVO.getCarPrice())+"元，分期金额为"+redText(videoFaceQuestionAnswerVO.getBankPeriodPrincipal())
                 +"元，分期期限为"+redText(videoFaceQuestionAnswerVO.getLoanTime())+"月，每月还款"+redText(videoFaceQuestionAnswerVO.getEachMonthRepay())+"元。以上信息是否确认无误?" +
