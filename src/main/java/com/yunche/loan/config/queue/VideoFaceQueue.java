@@ -33,9 +33,9 @@ public class VideoFaceQueue {
      */
     public static final String SEPARATOR = ":";
     /**
-     * todo 排队过期时间：10s
+     * 排队过期时间：10s
      */
-    private static final Long VIDEO_FACE_ROOM_CACHE_KEY_EXPIRE = 600L;
+    private static final Long VIDEO_FACE_ROOM_CACHE_KEY_EXPIRE = 10L;
 
 
     @Autowired
