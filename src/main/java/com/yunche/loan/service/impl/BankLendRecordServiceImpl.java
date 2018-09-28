@@ -127,9 +127,9 @@ public class BankLendRecordServiceImpl implements BankLendRecordService {
                     int count = bankLendRecordDOMapper.updateByPrimaryKey(bankLendRecordDO);
                     Preconditions.checkArgument(count > 0, "身份证号:" + tmp[1].trim() + ",对应记录更新出错");
                 }
-                bankLendRecordDO = bankLendRecordDOMapper.selectByLoanOrder(orderId);
+
                 LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
-                loanOrderDO.setBankLendRecordId((long) bankLendRecordDO.getId());
+                loanOrderDO.setBankLendRecordId((long)  bankLendRecordDO.getId());
                 int count = loanOrderDOMapper.updateByPrimaryKey(loanOrderDO);
                 Preconditions.checkArgument(count > 0, "业务单号为:" + orderId + ",对应记录更新出错");
 
