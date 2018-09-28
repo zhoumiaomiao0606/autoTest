@@ -136,6 +136,8 @@ public class UniversalController {
             }
             if(creditPicExportVOS.size()>50){
                 exportVOS = creditPicExportVOS.subList(0, 50);
+            }else{
+                exportVOS = creditPicExportVOS;
             }
 
 

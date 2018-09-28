@@ -138,6 +138,9 @@ public class BankLendRecordServiceImpl implements BankLendRecordService {
                 approvalParam.setOrderId(orderId);
                 approvalParam.setTaskDefinitionKey(LoanProcessEnum.BANK_LEND_RECORD.getCode());
                 approvalParam.setAction(ProcessApprovalConst.ACTION_PASS);
+
+                approvalParam.setNeedLog(true);
+                approvalParam.setCheckPermission(false);
                 ResultBean<Void> approvalResultBean = loanProcessService.approval(approvalParam);
                 Preconditions.checkArgument(approvalResultBean.getSuccess(), approvalResultBean.getMsg());
             }
