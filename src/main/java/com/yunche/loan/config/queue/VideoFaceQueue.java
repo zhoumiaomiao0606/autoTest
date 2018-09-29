@@ -60,7 +60,7 @@ public class VideoFaceQueue {
         redisScript.setResultType(Long.class);
 
         Object result = stringRedisTemplate.execute(redisScript, Lists.newArrayList(key),
-                String.valueOf(VIDEO_FACE_ROOM_CACHE_KEY_EXPIRE), String.valueOf(startTime));
+                String.valueOf(startTime), String.valueOf(VIDEO_FACE_ROOM_CACHE_KEY_EXPIRE));
 
         Preconditions.checkArgument((long) result == 1, "排队出错");
 

@@ -7,12 +7,12 @@
 --
 
 local key = KEYS[1]
-local expire = ARGV[1]
-local startTime = tonumber(ARGV[2])
+local startTime = ARGV[1]
+local expire = ARGV[2]
 
-if redis.call("SETEX", key, expire, startTime) then
+if redis.call("SET", key, startTime, "NX", "EX", expire) then
     return 1
-elseif redis.call("TTL", key) == -1 then
-    redis.call("EXPIRE", key, expire)
+elseif redis.call("EXPIRE", key, expire) then
+    return 1
 end
 return 0
