@@ -666,7 +666,7 @@
         WHERE
         loan_info_supplement.order_id = orders.id
         ) AS supplementTime,
-        ( SELECT create_time FROM loan_process_log WHERE orders.id = loan_process_log.order_id AND task_definition_key = 'usertask_vehicle_information' ) AS carMaterialCreateTime,
+        ( SELECT create_time FROM loan_process_log WHERE orders.id = loan_process_log.order_id AND task_definition_key = 'usertask_vehicle_information' ORDER BY id DESC LIMIT 1 ) AS carMaterialCreateTime,
         ( SELECT loan_data_flow.express_send_date FROM loan_data_flow WHERE orders.id = loan_data_flow.order_id AND type = 3 ORDER BY id DESC LIMIT 1 ) AS express_sendbank_date
         FROM
         loan_order orders
