@@ -197,6 +197,7 @@ public class ShiroConfig {
     public RedisSessionDAO redisSessionDAO() {
         RedisSessionDAO redisSessionDAO = new RedisSessionDAO();
         redisSessionDAO.setRedisManager(redisManager());
+        redisSessionDAO.setExpire(SESSION_EXPIRE);
         return redisSessionDAO;
     }
 
@@ -226,7 +227,6 @@ public class ShiroConfig {
         redisManager.setHost(host);
         redisManager.setPort(port);
         redisManager.setPassword(password);
-//        redisManager.setExpire(SESSION_EXPIRE);
         redisManager.setTimeout(CONNECT_TO_REDIS_TIMEOUT);
         return redisManager;
     }

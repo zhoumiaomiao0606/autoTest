@@ -1197,7 +1197,7 @@
         UPDATE loan_customer
         SET enable = #{enable,jdbcType=TINYINT}
         WHERE
-        <if test="idList != null">
+        <if test="idList != null and idList.size() > 0">
             id IN
             <foreach collection="idList" item="item" open="(" separator="," close=")">
                 #{item}
