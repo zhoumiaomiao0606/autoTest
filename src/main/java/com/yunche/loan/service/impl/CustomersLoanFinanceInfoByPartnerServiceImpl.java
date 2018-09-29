@@ -3,6 +3,7 @@ package com.yunche.loan.service.impl;
 import com.google.common.base.Preconditions;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.entity.LoanApplyCompensationDO;
+import com.yunche.loan.domain.param.CustomerInfoByCustomerNameParam;
 import com.yunche.loan.domain.param.CustomersLoanFinanceInfoByPartnerParam;
 import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.mapper.CustomersLoanFinanceInfoByPartnerMapper;
@@ -180,5 +181,12 @@ public class CustomersLoanFinanceInfoByPartnerServiceImpl implements CustomersLo
                     });
         }
         return ResultBean.ofSuccess(list);
+    }
+
+    @Override
+    public ResultBean getCustomerInfoByCustomerName(CustomerInfoByCustomerNameParam customerInfoByCustomerNameParam)
+    {
+        CustomerInfoForFinanceSys customerInfoForFinanceSys =customersLoanFinanceInfoByPartnerMapper.getCustomerInfoByCustomerName(customerInfoByCustomerNameParam);
+        return null;
     }
 }
