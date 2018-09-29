@@ -278,7 +278,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         loanProcessApprovalCommonService.asyncPush(loanOrderDO, approval);
 
         // 如果是打款确认 和 代偿确认 则通知财务系统
-        EventBusCenter.eventBus.post(approval);
+        /*EventBusCenter.eventBus.post(approval);*/
 
         return ResultBean.ofSuccess(null, "[" + LoanProcessEnum.getNameByCode(approval.getOriginalTaskDefinitionKey()) + "]任务执行成功");
     }
@@ -893,7 +893,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
                 loanProcessApprovalCommonService.updateLoanProcess(loanProcessDO);
 
                 // 异步同步财务数据
-                EventBusCenter.eventBus.post(approval);
+               /* EventBusCenter.eventBus.post(approval);*/
 
             } else if (ACTION_REJECT_MANUAL.equals(approval.getAction())) {
 
