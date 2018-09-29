@@ -205,30 +205,31 @@
         gmt_modify = #{gmtModify,jdbcType=TIMESTAMP}
         where order_id = #{orderId,jdbcType=BIGINT}
     </update>
-    <select id="loanBankCardSendExp" parameterType="com.yunche.loan.domain.param.LoanBankCardSendExpParam" resultMap="BaseResultMap">
+    <select id="loanBankCardSendExp" parameterType="com.yunche.loan.domain.param.LoanBankCardSendExpParam" resultType="com.yunche.loan.domain.entity.LoanBankCardSendDO">
         SELECT
-        a.order_id,
+        a.order_id      AS orderId,
         case when  b.cardholder_name is null then d.name
              else b.cardholder_name
-        end                             AS cardholder_name,
+        end                             AS cardholderName,
         case when  b.cardholder_phone is null then d.mobile
         else b.cardholder_phone
-        end                             AS cardholder_phone,
+        end                             AS cardholderPhone,
 
         case when  b.cardholder_address is null then d.bank_card_transmit_address
         else b.cardholder_address
-        end                             AS cardholder_address,
-        b.repay_card_num,
-        b.express_com,
-        b.express_send_num,
-        b.express_send_date,
-        b.express_send_address
+        end                             AS cardholderAddress,
+        f.repay_card_id     AS repayCardNum,
+        b.expressCom,
+        b.expressSendNum,
+        b.expressSendDate,
+        b.expressSendAddress
     FROM
         loan_process a
         LEFT JOIN loan_bank_card_send b ON a.order_id = b.order_id
         LEFT JOIN loan_order c ON c.id = a.order_id
         left join loan_customer d on d.id = c.loan_customer_id
         left join loan_base_info e on e.id = c.loan_base_info_id
+        left join bank_card_record f on f.order_id = c.id
     WHERE
         a.bank_card_send = 2
         AND a.order_status =1
