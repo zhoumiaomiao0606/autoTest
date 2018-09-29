@@ -219,10 +219,10 @@
         else b.cardholder_address
         end                             AS cardholderAddress,
         f.repay_card_id     AS repayCardNum,
-        b.expressCom,
-        b.expressSendNum,
-        b.expressSendDate,
-        b.expressSendAddress
+        b.express_com AS expressCom,
+        b.express_send_num AS expressSendNum,
+        b.express_send_date AS expressSendDate,
+        b.express_send_address AS expressSendAddress
     FROM
         loan_process a
         LEFT JOIN loan_bank_card_send b ON a.order_id = b.order_id
