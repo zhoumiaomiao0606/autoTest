@@ -572,14 +572,17 @@ public class WebSocketServiceImpl implements WebSocketService {
                                 return;
                             }
 
-                            Long waitTime = videoFaceQueue.getWaitTime(webSocketParam, wsSessionId);
-                            if (null == waitTime) {
+                            Long startWaitTime = videoFaceQueue.getStartWaitTime(webSocketParam, wsSessionId);
+                            if (null == startWaitTime) {
 
                                 // 进入排队队列：人工面签
                                 result[0] = true;
                                 return;
 
-                            } else if (waitTime > maxWaitTime * 60 * 1000) {
+                            }
+
+                            long waitTime = System.currentTimeMillis() - startWaitTime;
+                            if (waitTime > maxWaitTime * 60 * 1000) {
 
                                 // 等待超过maxWaitTime
                                 result[0] = false;
@@ -643,7 +646,7 @@ public class WebSocketServiceImpl implements WebSocketService {
             if (match_time) {
 
                 // 排队时间
-                Long startWaitTime = videoFaceQueue.getWaitTime(webSocketParam, wsSessionId);
+                Long startWaitTime = videoFaceQueue.getStartWaitTime(webSocketParam, wsSessionId);
 
                 if (null != startWaitTime) {
 
@@ -695,7 +698,7 @@ public class WebSocketServiceImpl implements WebSocketService {
         else if (bankPeriodPrincipal >= 100000) {
 
             // 排队时间
-            Long startWaitTime = videoFaceQueue.getWaitTime(webSocketParam, wsSessionId);
+            Long startWaitTime = videoFaceQueue.getStartWaitTime(webSocketParam, wsSessionId);
 
             if (null != startWaitTime) {
 

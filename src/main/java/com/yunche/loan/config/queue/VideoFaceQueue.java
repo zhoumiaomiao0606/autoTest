@@ -188,13 +188,13 @@ public class VideoFaceQueue {
     }
 
     /**
-     * 排队时间     单位：毫秒
+     * 开始排队时间     单位：毫秒
      *
      * @param webSocketParam
      * @param wsSessionId
      * @return
      */
-    public Long getWaitTime(WebSocketParam webSocketParam, String wsSessionId) {
+    public Long getStartWaitTime(WebSocketParam webSocketParam, String wsSessionId) {
 
 //        String key_ = VIDEO_FACE_QUEUE_PREFIX + queueId + SEPARATOR + clientType + SEPARATOR + anyChatUserId
 //                + SEPARATOR + wsSessionId + SEPARATOR + userId + SEPARATOR + orderId;
@@ -209,11 +209,11 @@ public class VideoFaceQueue {
         redisScript.setScriptText(scriptText);
         redisScript.setResultType(String.class);
 
-        String waitTime = stringRedisTemplate.execute(redisScript, Lists.newArrayList(key));
+        String startWaitTime = stringRedisTemplate.execute(redisScript, Lists.newArrayList(key));
 
-        if (StringUtils.isBlank(waitTime)) {
+        if (StringUtils.isBlank(startWaitTime)) {
             return null;
         }
-        return Long.valueOf(waitTime);
+        return Long.valueOf(startWaitTime);
     }
 }
