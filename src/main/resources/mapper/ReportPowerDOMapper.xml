@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yunche.loan.mapper.ReportPowerDOMapper" >
+  <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.ReportPowerDO" >
+    <result column="group_name" property="groupName" jdbcType="VARCHAR" />
+    <result column="report_dep" property="reportDep" jdbcType="VARCHAR" />
+  </resultMap>
+  <insert id="insert" parameterType="com.yunche.loan.domain.entity.ReportPowerDO" >
+    insert into report_power (group_name, report_dep)
+    values (#{groupName,jdbcType=VARCHAR}, #{reportDep,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.ReportPowerDO" >
+    insert into report_power
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="groupName != null" >
+        group_name,
+      </if>
+      <if test="reportDep != null" >
+        report_dep,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="groupName != null" >
+        #{groupName,jdbcType=VARCHAR},
+      </if>
+      <if test="reportDep != null" >
+        #{reportDep,jdbcType=VARCHAR},
+      </if>
+    </trim>
+
+  </insert>
+  <select id="selectPointByGroupName" resultType="java.lang.String">
+    select a.report_dep from report_power a where 1=1
+    <if test="groupNames !=null and groupNames.size() > 0">
+      and a.group_name in
+      <foreach item="item" index="index" collection="groupNames" open="(" separator="," close=")">
+        #{item}
+      </foreach>
+    </if>
+  </select>
+</mapper>

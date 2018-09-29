@@ -55,6 +55,11 @@ public class AuthController {
         return authService.listMenu_();
     }
 
+    @GetMapping("/listreport")
+    public ResultBean<Map<String, Boolean>> listReport() {
+        return authService.listReport();
+    }
+
     /**
      * 当前用户组 - 所有的operation权限列表 - 对应的(选中状态展示)  -分页条件查询
      * <p>
