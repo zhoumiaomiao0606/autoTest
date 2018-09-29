@@ -48,14 +48,10 @@ public class Log2OSSTask {
         int day = yesterday.getDayOfMonth();
 
         String monthStr = String.valueOf(month);
-        String dayStr = String.valueOf(day);
         if (month < 10) {
             monthStr = 0 + monthStr;
         }
-        if (day < 10) {
-            dayStr = 0 + dayStr;
-        }
-        String logPath = year + "-" + monthStr + "/" + dayStr;
+        String logPath = year + "-" + monthStr + "/" + day;
         String logDirPath = LOG_CLASSPATH + logPath;
 
         File file = new File(logDirPath);
