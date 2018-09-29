@@ -56,6 +56,9 @@ public class AuthServiceImpl implements AuthService {
     @Autowired
     private ActivitiCache activitiCache;
 
+    @Autowired
+    private ReportPowerDOMapper reportPowerDOMapper;
+
 
     @Override
     public ResultBean<List<CascadeVO>> listMenu() {
@@ -232,6 +235,45 @@ public class AuthServiceImpl implements AuthService {
             });
 
             taskAuthMap.put("configure_center", false);
+        }
+
+        return ResultBean.ofSuccess(taskAuthMap);
+    }
+
+    @Override
+    public ResultBean<Map<String, Boolean>> listReport() {
+        // LoginUser 拥有的所有角色权限
+        Map<String, Boolean> taskAuthMap = Maps.newHashMap();
+        Set<String> loginUserHasUserGroups = permissionService.getLoginUserHasUserGroups();
+        List<String> total = new ArrayList<>();
+        total.add("bank_dep");
+        total.add("tel_exam_dep");
+        total.add("channel_dep");
+        total.add("finance_dep");
+        total.add("mortgage_dep");
+        if(loginUserHasUserGroups == null){
+            for(String s:total){
+                taskAuthMap.put(s,false);
+            }
+        }else{
+            List<String> list = reportPowerDOMapper.selectPointByGroupName(loginUserHasUserGroups);
+            if(list !=null){
+                HashSet h = new HashSet(list);
+                list.clear();
+                list.addAll(h);
+                for(String s:list){
+                    taskAuthMap.put(s,true);
+                }
+                for(String s:total){
+                    if(!taskAuthMap.containsKey(s)){
+                        taskAuthMap.put(s,false);
+                    }
+                }
+            }else{
+                for(String s:total){
+                    taskAuthMap.put(s,false);
+                }
+            }
         }
 
         return ResultBean.ofSuccess(taskAuthMap);

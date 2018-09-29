@@ -22,4 +22,6 @@ public interface AuthService {
     ResultBean<List<PageVO>> listUnbindOperation(AuthQuery query);
 
     ResultBean<Map<String, Boolean>> listMenu_();
+
+    ResultBean<Map<String, Boolean>> listReport();
 }
