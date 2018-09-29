@@ -186,7 +186,7 @@ public class CustomersLoanFinanceInfoByPartnerServiceImpl implements CustomersLo
     @Override
     public ResultBean getCustomerInfoByCustomerName(CustomerInfoByCustomerNameParam customerInfoByCustomerNameParam)
     {
-        CustomerInfoForFinanceSys customerInfoForFinanceSys =customersLoanFinanceInfoByPartnerMapper.getCustomerInfoByCustomerName(customerInfoByCustomerNameParam);
-        return null;
+        List<CustomerInfoForFinanceSys> customerInfoForFinanceSys =customersLoanFinanceInfoByPartnerMapper.getCustomerInfoByCustomerName(customerInfoByCustomerNameParam);
+        return ResultBean.ofSuccess(customerInfoForFinanceSys);
     }
 }
