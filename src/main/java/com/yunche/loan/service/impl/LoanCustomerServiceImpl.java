@@ -4,6 +4,7 @@ import com.aliyun.oss.OSSClient;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.yunche.loan.config.common.OSSConfig;
+import com.yunche.loan.config.constant.BaseConst;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.ImageUtil;
 import com.yunche.loan.config.util.OSSUnit;
@@ -412,6 +413,19 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
         long count = loanCustomerDOMapper.batchUpdateEnable(idList, enable);
 
         return count;
+    }
+
+    /**
+     * 重置订单下所有客户的可编辑标记
+     *
+     * @param principalId
+     */
+    @Override
+    public void updateCustomerEnable(Long principalId) {
+
+        List<Long> customerIdList = loanCustomerDOMapper.listIdByPrincipalCustIdAndType(principalId, null, VALID_STATUS);
+
+        loanCustomerDOMapper.batchUpdateEnable(customerIdList, BaseConst.K_YORN_YES);
     }
 
 

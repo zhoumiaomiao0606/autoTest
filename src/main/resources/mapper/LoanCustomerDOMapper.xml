@@ -1133,6 +1133,20 @@
         </if>
     </select>
 
+    <!--listIdByPrincipalCustIdAndType-->
+    <select id="listByPrincipalCustIdAndType" resultType="java.lang.Long">
+        SELECT
+        id
+        FROM loan_customer
+        WHERE principal_cust_id = #{principalCustId,jdbcType=BIGINT}
+        <if test="custType != null">
+            AND cust_type = #{custType}
+        </if>
+        <if test="status != null">
+            AND status = #{status}
+        </if>
+    </select>
+
     <!--getFilesById-->
     <select id="getFilesById" parameterType="java.lang.Long" resultType="java.lang.String">
         SELECT files
