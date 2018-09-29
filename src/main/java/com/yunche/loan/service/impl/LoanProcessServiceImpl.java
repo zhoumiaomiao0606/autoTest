@@ -3,7 +3,6 @@ package com.yunche.loan.service.impl;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.yunche.loan.config.constant.BaseConst;
 import com.yunche.loan.config.constant.IDict;
 import com.yunche.loan.config.constant.LoanProcessEnum;
 import com.yunche.loan.config.exception.BizException;
@@ -128,6 +127,9 @@ public class LoanProcessServiceImpl implements LoanProcessService {
     private RemitDetailsDOMapper remitDetailsDOMapper;
 
     @Autowired
+    private ConfThirdRealBridgeProcessDOMapper confThirdRealBridgeProcessDOMapper;
+
+    @Autowired
     private RuntimeService runtimeService;
 
     @Autowired
@@ -159,9 +161,6 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
     @Autowired
     private LoanProcessApprovalRollBackService loanProcessApprovalRollBackService;
-
-    @Autowired
-    private ConfThirdRealBridgeProcessDOMapper confThirdRealBridgeProcessDOMapper;
 
 
     @Override
@@ -3169,7 +3168,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      */
     private void doCurrentNodeAttachTask(ApprovalParam approval, LoanOrderDO loanOrderDO, LoanProcessDO loanProcessDO) {
 
-        // TODO 附带任务-[征信申请] ： 通过银行接口  ->  自动查询征信
+        // 附带任务-[征信申请]
         doAttachTask_creditApply(approval, loanOrderDO);
 
         // 附带任务-[打款确认]

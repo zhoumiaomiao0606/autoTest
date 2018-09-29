@@ -79,6 +79,32 @@ public class ChartServiceImpl implements ChartService
     }
 
     @Override
+    public String expertSocialCreditQueryForChart(SocialCreditChartParam param) {
+        //大区
+        if (param.getBiz_areaId() !=null)
+        {
+            List<Long> selfAndChildBiz_area = getSelfAndChildBiz_area(param.getBiz_areaId());
+            selfAndChildBiz_area.add(param.getBiz_areaId());
+            param.setBizAreaList(selfAndChildBiz_area);
+
+        }
+        Long loginUserId = SessionUtils.getLoginUser().getId();
+
+        param.setJuniorIds(employeeService.getSelfAndCascadeChildIdList(loginUserId));
+        param.setMaxGroupLevel(taskSchedulingDOMapper.selectMaxGroupLevel(loginUserId));
+        PageHelper.startPage(param.getPageIndex(),1000000, true);
+        List list = chartDOMapper.selectSocialCreditChartVO(param);
+
+        ArrayList<String> header = Lists.newArrayList("大区","业务区域", "业务关系", "客户姓名", "身份证号",
+                "手机号", "贷款银行", "业务团队", "业务员", "主贷人姓名", "与主贷人关系", "征信结果", "征信申请时间", "征信查询时间", "提交人"
+        );
+
+
+        String ossResultKey = POIUtil.createExcelFile("SocialCredit",list,header,SocialCreditChartVO.class,ossConfig);
+        return ossResultKey;
+    }
+
+    @Override
     public ResultBean getBankCreditChart(BankCreditChartParam param)
     {
         Long loginUserId = SessionUtils.getLoginUser().getId();

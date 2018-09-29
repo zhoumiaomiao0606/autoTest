@@ -7,6 +7,8 @@ public interface ChartService
 {
     ResultBean getSocialCreditChart(SocialCreditChartParam param);
 
+    String expertSocialCreditQueryForChart(SocialCreditChartParam param);
+
 
     ResultBean getBankCreditChart(BankCreditChartParam param);
 
