@@ -205,16 +205,15 @@ public class VideoFaceQueue {
 
         String scriptText = "return redis.call('GET', KEYS[1])";
 
-        DefaultRedisScript<Long> redisScript = new DefaultRedisScript<>();
+        DefaultRedisScript<String> redisScript = new DefaultRedisScript<>();
         redisScript.setScriptText(scriptText);
-        redisScript.setResultType(Long.class);
+        redisScript.setResultType(String.class);
 
-        Long waitTime = stringRedisTemplate.execute(redisScript, Lists.newArrayList(key));
+        String waitTime = stringRedisTemplate.execute(redisScript, Lists.newArrayList(key));
 
-//        BoundValueOperations<String, String> boundValueOps = stringRedisTemplate.boundValueOps(key);
-//        String waitTime = boundValueOps.get();
-
-        return waitTime;
+        if (StringUtils.isBlank(waitTime)) {
+            return null;
+        }
+        return Long.valueOf(waitTime);
     }
-
 }

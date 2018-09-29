@@ -562,7 +562,7 @@ public class WebSocketServiceImpl implements WebSocketService {
 
                         boolean match = match_time && (match_loan || match_loan_);
                         if (match) {
-
+                            // 分钟
                             Integer maxWaitTime = e.getMaxWaitTime();
                             // -1：无限等待
                             if (maxWaitTime == -1) {
@@ -579,7 +579,7 @@ public class WebSocketServiceImpl implements WebSocketService {
                                 result[0] = true;
                                 return;
 
-                            } else if (waitTime > maxWaitTime) {
+                            } else if (waitTime > maxWaitTime * 60 * 1000) {
 
                                 // 等待超过maxWaitTime
                                 result[0] = false;
