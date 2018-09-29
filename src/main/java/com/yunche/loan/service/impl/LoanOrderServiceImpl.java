@@ -575,6 +575,17 @@ public class LoanOrderServiceImpl implements LoanOrderService {
 
             }
 
+
+            diskName = name+ DateUtil.getTime();
+            final String localPath ="/tmp/"+diskName;
+
+            ossUnit = OSSUnit.getOSSClient();
+            //查询符合要求的数据
+            List<CreditPicExportVO> creditPicExportVOS = loanStatementDOMapper.selectCreditPicExport(loanCreditExportQuery);
+            if(CollectionUtils.isEmpty(creditPicExportVOS)){
+                return ResultBean.ofError("筛选条件查询记录为空");
+            }
+
             //先将文件状态改为进行中
             List<LoanFileDO> loanFileDOS = loanFileDOMapper.listByCustomerIdAndType(loginUser.getId(), BANK_CREDIT_PIC.getType(), UPLOAD_TYPE_NORMAL);
             if (CollectionUtils.isEmpty(loanFileDOS)) {
@@ -590,19 +601,6 @@ public class LoanOrderServiceImpl implements LoanOrderService {
                     loanFileDOMapper.updateByPrimaryKeySelective(e);
                 });
             }
-
-            diskName = name+ DateUtil.getTime();
-            final String localPath ="/tmp/"+diskName;
-
-            ossUnit = OSSUnit.getOSSClient();
-            //查询符合要求的数据
-            List<CreditPicExportVO> creditPicExportVOS = loanStatementDOMapper.selectCreditPicExport(loanCreditExportQuery);
-
-
-            if(CollectionUtils.isEmpty(creditPicExportVOS)){
-                return ResultBean.ofError("筛选条件查询记录为空");
-            }
-
 
             resultName = diskName+".tar.gz";
 
