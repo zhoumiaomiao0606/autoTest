@@ -149,4 +149,11 @@ public class CustomersLoanFinanceInfoByPartnerServiceImpl implements CustomersLo
         //统计
         return ResultBean.ofSuccess(totalLoanFinanceInfoByPartnerVO);
     }
+
+    @Override
+    public ResultBean getOrderByCustomerId(Long customerId)
+    {
+        List<OrderByCustomerIdVO> list = customersLoanFinanceInfoByPartnerMapper.getOrderByCustomerId(customerId);
+        return null;
+    }
 }

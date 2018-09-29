@@ -9,4 +9,6 @@ public interface CustomersLoanFinanceInfoByPartnerService
     ResultBean selectCustomersLoanFinanceInfoByPartner(CustomersLoanFinanceInfoByPartnerParam customersLoanFinanceInfoByPartnerParam);
 
     ResultBean selectTotalLoanFinanceInfoByPartner(Long partnerId);
+
+    ResultBean getOrderByCustomerId(Long customerId);
 }
