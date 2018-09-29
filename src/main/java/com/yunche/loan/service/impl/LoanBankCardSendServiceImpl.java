@@ -302,7 +302,7 @@ public class LoanBankCardSendServiceImpl implements LoanBankCardSendService {
                 cell.setCellValue(loanBankCardSendDO.getCardholderPhone());
 
                 cell = row.createCell(3);
-                cell.setCellValue(loanBankCardSendDO.getExpressSendAddress());
+                cell.setCellValue(loanBankCardSendDO.getCardholderAddress());
 
                 cell = row.createCell(4);
                 cell.setCellValue(loanBankCardSendDO.getRepayCardNum());
