@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" xmlns:tns="http://www.activiti.org/test" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.activiti.org/test" id="m1534823801056" name="">
   <process id="loan_process_legal" name="法务处理流程" isExecutable="true" isClosed="false" processType="None">
-    <userTask id="usertask_legal_review" name="法务审核" activiti:candidateGroups="管理员,总经理,培训经理,贷后主管,贷后监管"></userTask>
+    <userTask id="usertask_legal_review" name="法务审核" activiti:candidateGroups="管理员,总经理,培训经理,贷后主管,贷后管理"></userTask>
     <sequenceFlow id="flow9" sourceRef="exclusivegateway6" targetRef="usertask_legal_record">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1}]]></conditionExpression>
     </sequenceFlow>
-    <userTask id="usertask_legal_record" name="法务登记" activiti:candidateGroups="管理员,总经理,培训经理,贷后主管,贷后监管"></userTask>
+    <userTask id="usertask_legal_record" name="法务登记" activiti:candidateGroups="管理员,总经理,培训经理,贷后主管,贷后管理"></userTask>
     <endEvent id="endevent1" name="End"></endEvent>
     <sequenceFlow id="flow12" name="取消诉讼" sourceRef="exclusivegateway7" targetRef="endevent1">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 2}]]></conditionExpression>
