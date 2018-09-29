@@ -55,7 +55,7 @@
         cardholder_address = VALUES(cardholder_address),
         repay_card_num = VALUES(repay_card_num),
         express_send_address = VALUES(express_send_address),
-        express_com = VALUES(expressCom),
+        express_com = VALUES(express_com),
         express_send_num = VALUES(express_send_num),
         express_send_date = VALUES(express_send_date),
         gmt_modify = VALUES(gmt_modify)
