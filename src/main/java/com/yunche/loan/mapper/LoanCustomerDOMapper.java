@@ -35,7 +35,13 @@ public interface LoanCustomerDOMapper {
      * @return
      */
     List<LoanCustomerDO> listByPrincipalCustIdAndType(@Param("principalCustId") Long principalLenderId,
-                                                      @Param("custType") Byte custType, @Param("status") Byte status);
+                                                      @Param("custType") Byte custType,
+                                                      @Param("status") Byte status);
+
+
+    List<Long> listIdByPrincipalCustIdAndType(@Param("principalCustId") Long principalLenderId,
+                                              @Param("custType") Byte custType,
+                                              @Param("status") Byte status);
 
     /**
      * 编辑贷款人

@@ -3,6 +3,7 @@ package com.yunche.loan.service.impl;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.yunche.loan.config.constant.BaseConst;
 import com.yunche.loan.config.constant.IDict;
 import com.yunche.loan.config.constant.LoanProcessEnum;
 import com.yunche.loan.config.exception.BizException;
@@ -146,6 +147,9 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
     @Autowired
     private BankSolutionService bankSolutionService;
+
+    @Autowired
+    private LoanCustomerService loanCustomerService;
 
     @Autowired
     private LoanProcessBridgeService loanProcessBridgeService;
@@ -3166,7 +3170,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
     private void doCurrentNodeAttachTask(ApprovalParam approval, LoanOrderDO loanOrderDO, LoanProcessDO loanProcessDO) {
 
         // TODO 附带任务-[征信申请] ： 通过银行接口  ->  自动查询征信
-        doAttachTask_creditApply(approval);
+        doAttachTask_creditApply(approval, loanOrderDO);
 
         // 附带任务-[打款确认]
         doAttachTask_RemitReview(approval, loanOrderDO);
@@ -3179,11 +3183,15 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      * 附带任务-[征信申请]
      *
      * @param approval
+     * @param loanOrderDO
      */
-    private void doAttachTask_creditApply(ApprovalParam approval) {
+    private void doAttachTask_creditApply(ApprovalParam approval, LoanOrderDO loanOrderDO) {
 
         // 征信申请 && PASS
         if (CREDIT_APPLY.getCode().equals(approval.getTaskDefinitionKey()) && ACTION_PASS.equals(approval.getAction())) {
+
+            // 重置订单下所有客户的可编辑标记
+            loanCustomerService.updateCustomerEnable(loanOrderDO.getLoanCustomerId());
 
             // 通过银行接口  ->  自动查询征信
             bankSolutionService.creditAutomaticCommit(approval.getOrderId());
