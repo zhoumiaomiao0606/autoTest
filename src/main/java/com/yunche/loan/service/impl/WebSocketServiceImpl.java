@@ -89,8 +89,7 @@ public class WebSocketServiceImpl implements WebSocketService {
         }
 
         // 加入队列排队
-        videoFaceQueue.addQueue(webSocketParam.getBankId(), webSocketParam.getUserId(), webSocketParam.getType(),
-                webSocketParam.getAnyChatUserId(), webSocketParam.getOrderId(), wsSessionId);
+        videoFaceQueue.addQueue(webSocketParam, wsSessionId);
 
         // 推送     -> APP /  PC
         sendMsg(webSocketParam.getBankId());
@@ -111,8 +110,7 @@ public class WebSocketServiceImpl implements WebSocketService {
         String wsSessionId = SessionUtils.getWebSocketSessionId();
 
         // 退出队列排队
-        videoFaceQueue.exitQueue(webSocketParam.getBankId(), webSocketParam.getUserId(), webSocketParam.getType(),
-                webSocketParam.getAnyChatUserId(), webSocketParam.getOrderId(), wsSessionId);
+        videoFaceQueue.exitQueue(webSocketParam, wsSessionId);
 
         // 推送    -> APP /  PC
         sendMsg(webSocketParam.getBankId());
@@ -347,21 +345,22 @@ public class WebSocketServiceImpl implements WebSocketService {
         // 日期匹配是：holiday
         if (match_holiday_date(webSocketParam, type_holiday_list)) {
 
-            // 匹配时间
+            // 匹配时间段
             if (match_holiday_time(webSocketParam, type_holiday_list)) {
-
-                // (无限)排队：人工面签
-                return true;
-
-            } else {
 
                 // 直接机器面签
                 return false;
+
+            } else {
+
+                // 匹配 work / weekend
+                return doWaitTeam_work_weekend(webSocketParam, wsSessionId, type_work_list, type_weekend_list);
             }
         }
         // 否
         else {
 
+            // 匹配 work / weekend
             return doWaitTeam_work_weekend(webSocketParam, wsSessionId, type_work_list, type_weekend_list);
         }
     }
@@ -564,9 +563,28 @@ public class WebSocketServiceImpl implements WebSocketService {
                         boolean match = match_time && (match_loan || match_loan_);
                         if (match) {
 
-                            // (无限)排队：人工面签
-                            result[0] = true;
-                            return;
+                            Integer maxWaitTime = e.getMaxWaitTime();
+                            // -1：无限等待
+                            if (maxWaitTime == -1) {
+
+                                // (无限)排队：人工面签
+                                result[0] = true;
+                                return;
+                            }
+
+                            Long waitTime = videoFaceQueue.getWaitTime(webSocketParam, wsSessionId);
+                            if (waitTime > maxWaitTime) {
+
+                                // 等待超过maxWaitTime
+                                result[0] = false;
+                                return;
+
+                            } else {
+
+                                // (无限)排队：人工面签
+                                result[0] = true;
+                                return;
+                            }
                         }
                     });
 
@@ -619,8 +637,7 @@ public class WebSocketServiceImpl implements WebSocketService {
             if (match_time) {
 
                 // 排队时间
-                Long startWaitTime = videoFaceQueue.getWaitTime(webSocketParam.getBankId(), webSocketParam.getUserId(), webSocketParam.getType(),
-                        webSocketParam.getAnyChatUserId(), webSocketParam.getOrderId(), wsSessionId);
+                Long startWaitTime = videoFaceQueue.getWaitTime(webSocketParam, wsSessionId);
 
                 if (null != startWaitTime) {
 
@@ -672,8 +689,7 @@ public class WebSocketServiceImpl implements WebSocketService {
         else if (bankPeriodPrincipal >= 100000) {
 
             // 排队时间
-            Long startWaitTime = videoFaceQueue.getWaitTime(webSocketParam.getBankId(), webSocketParam.getUserId(), webSocketParam.getType(),
-                    webSocketParam.getAnyChatUserId(), webSocketParam.getOrderId(), wsSessionId);
+            Long startWaitTime = videoFaceQueue.getWaitTime(webSocketParam, wsSessionId);
 
             if (null != startWaitTime) {
 

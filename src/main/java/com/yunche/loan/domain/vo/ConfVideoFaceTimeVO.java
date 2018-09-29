@@ -32,6 +32,11 @@ public class ConfVideoFaceTimeVO {
 
         private Byte type;
 
+        /**
+         * 人工面签-最大等待时间（单位：分钟；   -1表示无限等待）
+         */
+        private Integer maxWaitTime;
+
         private List<Time> timeList = Lists.newArrayList();
     }
 
@@ -43,5 +48,3 @@ public class ConfVideoFaceTimeVO {
         private String endTime;
     }
 }
-
-

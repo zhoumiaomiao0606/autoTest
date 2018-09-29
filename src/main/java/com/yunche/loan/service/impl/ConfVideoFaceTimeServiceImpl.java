@@ -96,18 +96,19 @@ public class ConfVideoFaceTimeServiceImpl implements ConfVideoFaceTimeService {
         return Collections.EMPTY_LIST;
     }
 
-    private void doBBB(ConfVideoFaceTimeDO e, Map<String, Object> kvMap) {
+    private void doBBB(ConfVideoFaceTimeDO confVideoFaceTimeDO, Map<String, Object> kvMap) {
 
-        Long bankId = e.getBankId();
-        BigDecimal startLoanAmount = e.getStartLoanAmount();
-        BigDecimal endLoanAmount = e.getEndLoanAmount();
-        Byte type = e.getType();
-        String startTime = e.getStartTime();
-        String endTime = e.getEndTime();
+        Long bankId = confVideoFaceTimeDO.getBankId();
+        BigDecimal startLoanAmount = confVideoFaceTimeDO.getStartLoanAmount();
+        BigDecimal endLoanAmount = confVideoFaceTimeDO.getEndLoanAmount();
+        Byte type = confVideoFaceTimeDO.getType();
+        Integer maxWaitTime = confVideoFaceTimeDO.getMaxWaitTime();
+        String startTime = confVideoFaceTimeDO.getStartTime();
+        String endTime = confVideoFaceTimeDO.getEndTime();
 
         String key_bankId = "" + bankId;
         String key_detail = key_bankId + SEPARATOR + startLoanAmount + SEPARATOR + endLoanAmount;
-        String key_type = key_detail + SEPARATOR + type;
+        String key_type = key_detail + SEPARATOR + type + SEPARATOR + maxWaitTime;
         String key_time = key_type + SEPARATOR + startTime + SEPARATOR + endTime;
 
 
@@ -126,6 +127,7 @@ public class ConfVideoFaceTimeServiceImpl implements ConfVideoFaceTimeService {
 
             ConfVideoFaceTimeVO.Type typeVO = new ConfVideoFaceTimeVO.Type();
             typeVO.setType(type);
+            typeVO.setMaxWaitTime(maxWaitTime);
             kvMap.put(key_type, typeVO);
 
             ConfVideoFaceTimeVO.Detail detailVO = (ConfVideoFaceTimeVO.Detail) kvMap.get(key_detail);
@@ -151,12 +153,13 @@ public class ConfVideoFaceTimeServiceImpl implements ConfVideoFaceTimeService {
         BigDecimal startLoanAmount = e.getStartLoanAmount();
         BigDecimal endLoanAmount = e.getEndLoanAmount();
         Byte type = e.getType();
+        Integer maxWaitTime = e.getMaxWaitTime();
         String startTime = e.getStartTime();
         String endTime = e.getEndTime();
 
         String key_bankId = "" + bankId;
         String key_detail = key_bankId + SEPARATOR + startLoanAmount + SEPARATOR + endLoanAmount;
-        String key_type = key_detail + SEPARATOR + type;
+        String key_type = key_detail + SEPARATOR + type + SEPARATOR + maxWaitTime;
         String key_time = key_type + SEPARATOR + startTime + SEPARATOR + endTime;
 
 
@@ -178,6 +181,7 @@ public class ConfVideoFaceTimeServiceImpl implements ConfVideoFaceTimeService {
         // type
         ConfVideoFaceTimeVO.Type typeVO = new ConfVideoFaceTimeVO.Type();
         typeVO.setType(type);
+        typeVO.setMaxWaitTime(maxWaitTime);
         detailVO.setTypeList(Lists.newArrayList(typeVO));
         kvMap.put(key_type, typeVO);
 
@@ -292,7 +296,7 @@ public class ConfVideoFaceTimeServiceImpl implements ConfVideoFaceTimeService {
                     List<ConfVideoFaceTimeVO.Time> timeList = t.getTimeList();
                     if (!CollectionUtils.isEmpty(timeList)) {
 
-                        doInsert_time(timeList, bankId, startLoanAmount, endLoanAmount, t.getType());
+                        doInsert_time(timeList, bankId, startLoanAmount, endLoanAmount, t.getType(), t.getMaxWaitTime());
                     }
                 });
     }
@@ -305,9 +309,10 @@ public class ConfVideoFaceTimeServiceImpl implements ConfVideoFaceTimeService {
      * @param startLoanAmount
      * @param endLoanAmount
      * @param type
+     * @param maxWaitTime
      */
     private void doInsert_time(List<ConfVideoFaceTimeVO.Time> timeList, Long bankId, BigDecimal startLoanAmount,
-                               BigDecimal endLoanAmount, Byte type) {
+                               BigDecimal endLoanAmount, Byte type, Integer maxWaitTime) {
 
         timeList.stream()
                 .filter(Objects::nonNull)
@@ -328,6 +333,8 @@ public class ConfVideoFaceTimeServiceImpl implements ConfVideoFaceTimeService {
                     confVideoFaceTimeDO.setEndLoanAmount(endLoanAmount);
                     // 时间/日期类型
                     confVideoFaceTimeDO.setType(type);
+                    // 人工最大等待时长
+                    confVideoFaceTimeDO.setMaxWaitTime(maxWaitTime);
                     // 时间/日期
                     confVideoFaceTimeDO.setStartTime(startTime);
                     confVideoFaceTimeDO.setEndTime(endTime);

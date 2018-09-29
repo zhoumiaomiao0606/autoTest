@@ -8,14 +8,15 @@
         <result column="end_loan_amount" property="endLoanAmount" jdbcType="DECIMAL"/>
         <result column="start_time" property="startTime" jdbcType="VARCHAR"/>
         <result column="end_time" property="endTime" jdbcType="VARCHAR"/>
+        <result column="max_wait_time" property="maxWaitTime" jdbcType="INTEGER"/>
         <result column="type" property="type" jdbcType="TINYINT"/>
         <result column="gmt_create" property="gmtCreate" jdbcType="TIMESTAMP"/>
         <result column="gmt_modify" property="gmtModify" jdbcType="TIMESTAMP"/>
     </resultMap>
     <sql id="Base_Column_List">
-    id, bank_id, start_loan_amount, end_loan_amount, start_time, end_time, type, gmt_create, 
-    gmt_modify
-  </sql>
+        id, bank_id, start_loan_amount, end_loan_amount, start_time, end_time, max_wait_time,
+        type, gmt_create, gmt_modify
+    </sql>
     <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
         select
         <include refid="Base_Column_List"/>
@@ -23,22 +24,20 @@
         where id = #{id,jdbcType=BIGINT}
     </select>
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
-    delete from conf_video_face_time
-    where id = #{id,jdbcType=BIGINT}
-  </delete>
-    <insert id="insert" parameterType="com.yunche.loan.domain.entity.ConfVideoFaceTimeDO"
-            useGeneratedKeys="true" keyColumn="id" keyProperty="id">
-    insert into conf_video_face_time (id, bank_id, start_loan_amount, 
-      end_loan_amount, start_time, end_time, 
-      type, gmt_create, gmt_modify
-      )
-    values (#{id,jdbcType=BIGINT}, #{bankId,jdbcType=BIGINT}, #{startLoanAmount,jdbcType=DECIMAL}, 
-      #{endLoanAmount,jdbcType=DECIMAL}, #{startTime,jdbcType=VARCHAR}, #{endTime,jdbcType=VARCHAR}, 
-      #{type,jdbcType=TINYINT}, #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModify,jdbcType=TIMESTAMP}
-      )
-  </insert>
-    <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.ConfVideoFaceTimeDO"
-            useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+        delete from conf_video_face_time
+        where id = #{id,jdbcType=BIGINT}
+    </delete>
+    <insert id="insert" parameterType="com.yunche.loan.domain.entity.ConfVideoFaceTimeDO">
+        insert into conf_video_face_time (id, bank_id, start_loan_amount,
+        end_loan_amount, start_time, end_time,
+        max_wait_time, type, gmt_create,
+        gmt_modify)
+        values (#{id,jdbcType=BIGINT}, #{bankId,jdbcType=BIGINT}, #{startLoanAmount,jdbcType=DECIMAL},
+        #{endLoanAmount,jdbcType=DECIMAL}, #{startTime,jdbcType=VARCHAR}, #{endTime,jdbcType=VARCHAR},
+        #{maxWaitTime,jdbcType=INTEGER}, #{type,jdbcType=TINYINT}, #{gmtCreate,jdbcType=TIMESTAMP},
+        #{gmtModify,jdbcType=TIMESTAMP})
+    </insert>
+    <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.ConfVideoFaceTimeDO">
         insert into conf_video_face_time
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="id != null">
@@ -58,6 +57,9 @@
             </if>
             <if test="endTime != null">
                 end_time,
+            </if>
+            <if test="maxWaitTime != null">
+                max_wait_time,
             </if>
             <if test="type != null">
                 type,
@@ -88,6 +90,9 @@
             <if test="endTime != null">
                 #{endTime,jdbcType=VARCHAR},
             </if>
+            <if test="maxWaitTime != null">
+                #{maxWaitTime,jdbcType=INTEGER},
+            </if>
             <if test="type != null">
                 #{type,jdbcType=TINYINT},
             </if>
@@ -117,6 +122,9 @@
             <if test="endTime != null">
                 end_time = #{endTime,jdbcType=VARCHAR},
             </if>
+            <if test="maxWaitTime != null">
+                max_wait_time = #{maxWaitTime,jdbcType=INTEGER},
+            </if>
             <if test="type != null">
                 type = #{type,jdbcType=TINYINT},
             </if>
@@ -130,17 +138,18 @@
         where id = #{id,jdbcType=BIGINT}
     </update>
     <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.ConfVideoFaceTimeDO">
-    update conf_video_face_time
-    set bank_id = #{bankId,jdbcType=BIGINT},
-      start_loan_amount = #{startLoanAmount,jdbcType=DECIMAL},
-      end_loan_amount = #{endLoanAmount,jdbcType=DECIMAL},
-      start_time = #{startTime,jdbcType=VARCHAR},
-      end_time = #{endTime,jdbcType=VARCHAR},
-      type = #{type,jdbcType=TINYINT},
-      gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
-      gmt_modify = #{gmtModify,jdbcType=TIMESTAMP}
-    where id = #{id,jdbcType=BIGINT}
-  </update>
+        update conf_video_face_time
+        set bank_id = #{bankId,jdbcType=BIGINT},
+        start_loan_amount = #{startLoanAmount,jdbcType=DECIMAL},
+        end_loan_amount = #{endLoanAmount,jdbcType=DECIMAL},
+        start_time = #{startTime,jdbcType=VARCHAR},
+        end_time = #{endTime,jdbcType=VARCHAR},
+        max_wait_time = #{maxWaitTime,jdbcType=INTEGER},
+        type = #{type,jdbcType=TINYINT},
+        gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+        gmt_modify = #{gmtModify,jdbcType=TIMESTAMP}
+        where id = #{id,jdbcType=BIGINT}
+    </update>
 
     <!--listByBankId-->
     <select id="listByBankId" resultMap="BaseResultMap">

@@ -384,7 +384,7 @@
 -->
 
 
-        <table tableName="loan_customer" domainObjectName="LoanCustomerDO"
+        <table tableName="conf_video_face_time" domainObjectName="ConfVideoFaceTimeDO"
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
         </table>

@@ -41,4 +41,11 @@ public interface LoanCustomerService {
     BankAndSocietyResultVO societyPicExport(List<Long> list);
 
     Long enable(String ids, Byte enable);
+
+    /**
+     * 重置订单下所有客户的可编辑标记
+     *
+     * @param principalId
+     */
+    void updateCustomerEnable(Long principalId);
 }
