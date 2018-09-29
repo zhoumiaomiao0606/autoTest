@@ -114,7 +114,7 @@
         <where>
             and ((loan_process.order_status = 1 and credit_info.type = 2)
             or(loan_process.order_status = 1 and loan_process.social_credit_record =2 and if((select count(*) from loan_credit_info where customer_id = customer.id and type =2) = 1,false,true)))
-            <if test="startDate !=null and endDate !=null">
+            <if test="startDate !=null and startDate != '' and endDate != null and endDate !=''">
                 and credit_info.gmt_modify between #{startDate} and #{endDate}
             </if>
             <if test="partnerList != null and partnerList.size() > 0">
@@ -273,7 +273,7 @@
         <where>
             and (credit_info.type = 1 OR credit_info.type is NULL) AND loan_process.bank_credit_record IN (1,2)
 
-            <if test="startDate !=null and endDate !=null">
+            <if test="startDate !=null and startDate !=''  and endDate !=null and endDate !=''">
                 and credit_info.gmt_modify between #{startDate} and #{endDate}
             </if>
 
@@ -418,17 +418,17 @@
                 #{item}
             </foreach>
         </if>
-        <if test="startDate !=null or endDate !=null"  >
+        <if test="(startDate !=null and  startDate != '')or (endDate !=null and endDate != '')"  >
             having
-            <if test="startDate !=null" >
+            <if test="startDate !=null and  startDate != ''" >
                 gmt_create &gt;= #{startDate}
             </if>
 
-            <if test="startDate !=null and endDate !=null" >
+            <if test="startDate !=null and endDate !=null and endDate != '' and startDate != ''" >
                 AND
             </if>
 
-            <if test="endDate !=null" >
+            <if test="endDate !=null and endDate != ''" >
                 gmt_create &lt;= #{endDate}
             </if>
 
@@ -568,17 +568,17 @@
                 </foreach>
             </if>
         </where>
-        <if test="startDate !=null or endDate !=null"  >
+        <if test="(startDate !=null and  startDate != '')or (endDate !=null and endDate != '')"  >
             having
-            <if test="startDate !=null" >
+            <if test="startDate !=nulland  startDate != '' " >
                 credit_apply_time &gt;= #{startDate}
             </if>
 
-            <if test="startDate !=null and endDate !=null" >
+            <if test="startDate !=null and  startDate != '' and endDate !=null and endDate != ''" >
                 AND
             </if>
 
-            <if test="endDate !=null" >
+            <if test="endDate !=null and endDate != ''" >
                 credit_apply_time &lt;= #{endDate}
             </if>
 
@@ -723,10 +723,10 @@
                 #{item}
             </foreach>
         </if>
-        <if test="startDate != null">
+        <if test="startDate != null and startDate != ''">
             AND TO_DAYS(t.credit_apply_time) &gt;= TO_DAYS(#{startDate})
         </if>
-        <if test="endDate != null">
+        <if test="endDate != null and endDate !=''">
             AND TO_DAYS(t.credit_apply_time) &lt;= TO_DAYS(#{endDate})
         </if>
         order by t.express_receive_date desc

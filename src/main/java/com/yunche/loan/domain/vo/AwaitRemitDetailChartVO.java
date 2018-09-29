@@ -31,17 +31,14 @@ public class AwaitRemitDetailChartVO
     private String operationUser;
     //经办时间
     private Date operationDate;
+    //打款金额
+    private BigDecimal remit_amount;
+    //贷款金额
+    private BigDecimal loan_amount;
     //执行利率
     private String sign_rate;
 
-
-    //贷款金额
-    private BigDecimal loan_amount;
-
     //银行分期本金
     private BigDecimal bank_period_principal;
-
-    //打款金额
-    private BigDecimal remit_amount;
 
 }

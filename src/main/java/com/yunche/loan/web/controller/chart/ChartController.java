@@ -46,7 +46,7 @@ public class ChartController
     @PostMapping(value = "/exportSocialCreditQuery")
     public ResultBean expertSocialCreditQuery(@RequestBody @Validated SocialCreditChartParam param)
     {
-        return ResultBean.ofSuccess(exportQueryService.expertSocialCreditQueryForChart(param)
+        return ResultBean.ofSuccess(chartService.expertSocialCreditQueryForChart(param)
         );
     }
 

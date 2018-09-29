@@ -127,6 +127,9 @@ public class LoanProcessServiceImpl implements LoanProcessService {
     private RemitDetailsDOMapper remitDetailsDOMapper;
 
     @Autowired
+    private ConfThirdRealBridgeProcessDOMapper confThirdRealBridgeProcessDOMapper;
+
+    @Autowired
     private RuntimeService runtimeService;
 
     @Autowired
@@ -148,6 +151,9 @@ public class LoanProcessServiceImpl implements LoanProcessService {
     private BankSolutionService bankSolutionService;
 
     @Autowired
+    private LoanCustomerService loanCustomerService;
+
+    @Autowired
     private LoanProcessBridgeService loanProcessBridgeService;
 
     @Autowired
@@ -155,9 +161,6 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
     @Autowired
     private LoanProcessApprovalRollBackService loanProcessApprovalRollBackService;
-
-    @Autowired
-    private ConfThirdRealBridgeProcessDOMapper confThirdRealBridgeProcessDOMapper;
 
 
     @Override
@@ -3165,8 +3168,8 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      */
     private void doCurrentNodeAttachTask(ApprovalParam approval, LoanOrderDO loanOrderDO, LoanProcessDO loanProcessDO) {
 
-        // TODO 附带任务-[征信申请] ： 通过银行接口  ->  自动查询征信
-        doAttachTask_creditApply(approval);
+        // 附带任务-[征信申请]
+        doAttachTask_creditApply(approval, loanOrderDO);
 
         // 附带任务-[打款确认]
         doAttachTask_RemitReview(approval, loanOrderDO);
@@ -3179,11 +3182,15 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      * 附带任务-[征信申请]
      *
      * @param approval
+     * @param loanOrderDO
      */
-    private void doAttachTask_creditApply(ApprovalParam approval) {
+    private void doAttachTask_creditApply(ApprovalParam approval, LoanOrderDO loanOrderDO) {
 
         // 征信申请 && PASS
         if (CREDIT_APPLY.getCode().equals(approval.getTaskDefinitionKey()) && ACTION_PASS.equals(approval.getAction())) {
+
+            // 重置订单下所有客户的可编辑标记
+            loanCustomerService.updateCustomerEnable(loanOrderDO.getLoanCustomerId());
 
             // 通过银行接口  ->  自动查询征信
             bankSolutionService.creditAutomaticCommit(approval.getOrderId());
