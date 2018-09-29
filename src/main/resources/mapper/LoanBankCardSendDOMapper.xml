@@ -208,9 +208,16 @@
     <select id="loanBankCardSendExp" parameterType="com.yunche.loan.domain.param.LoanBankCardSendExpParam" resultMap="BaseResultMap">
         SELECT
         a.order_id,
-        b.cardholder_name,
-        b.cardholder_phone,
-        b.cardholder_address,
+        case when  b.cardholder_name is null then d.name
+             else b.cardholder_name
+        end                             AS cardholder_name,
+        case when  b.cardholder_phone is null then d.mobile
+        else b.cardholder_phone
+        end                             AS cardholder_phone,
+
+        case when  b.cardholder_address is null then d.bank_card_transmit_address
+        else b.cardholder_address
+        end                             AS cardholder_address,
         b.repay_card_num,
         b.express_com,
         b.express_send_num,
