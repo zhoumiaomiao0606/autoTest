@@ -83,9 +83,9 @@ public class Log2OSSTask {
     }
 
     /**
-     * 定期清理log      -上个月的日志
+     * TODO 定期清理log      -上个月的日志
      */
-    @Scheduled(cron = "0 0 3 1,2,3,4,5 * ?")
+//    @Scheduled(cron = "0 0 3 1,2,3,4,5 * ?")
     @DistributedLock(60)
     public void delLogTask() {
 
