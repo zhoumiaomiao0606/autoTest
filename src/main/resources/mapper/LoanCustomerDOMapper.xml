@@ -1134,7 +1134,7 @@
     </select>
 
     <!--listIdByPrincipalCustIdAndType-->
-    <select id="listByPrincipalCustIdAndType" resultType="java.lang.Long">
+    <select id="listIdByPrincipalCustIdAndType" resultType="java.lang.Long">
         SELECT
         id
         FROM loan_customer
