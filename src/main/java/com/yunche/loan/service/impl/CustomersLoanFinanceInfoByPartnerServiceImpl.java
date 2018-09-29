@@ -2,9 +2,11 @@ package com.yunche.loan.service.impl;
 
 import com.google.common.base.Preconditions;
 import com.yunche.loan.config.result.ResultBean;
+import com.yunche.loan.domain.entity.LoanApplyCompensationDO;
 import com.yunche.loan.domain.param.CustomersLoanFinanceInfoByPartnerParam;
 import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.mapper.CustomersLoanFinanceInfoByPartnerMapper;
+import com.yunche.loan.mapper.LoanApplyCompensationDOMapper;
 import com.yunche.loan.service.CustomersLoanFinanceInfoByPartnerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,6 +20,9 @@ public class CustomersLoanFinanceInfoByPartnerServiceImpl implements CustomersLo
 {
     @Autowired
     private CustomersLoanFinanceInfoByPartnerMapper customersLoanFinanceInfoByPartnerMapper;
+
+    @Autowired
+    private LoanApplyCompensationDOMapper loanApplyCompensationDOMapper;
     public static enum CustomersLoanFinance {
         BADBALANCE(1,"不良余额"),
         OVERDUEBALANCE(2,"逾期余额"),
@@ -154,6 +159,26 @@ public class CustomersLoanFinanceInfoByPartnerServiceImpl implements CustomersLo
     public ResultBean getOrderByCustomerId(Long customerId)
     {
         List<OrderByCustomerIdVO> list = customersLoanFinanceInfoByPartnerMapper.getOrderByCustomerId(customerId);
-        return null;
+        //根据订单查询代偿
+        if (list!=null && list.size()>0)
+        {
+            list.stream()
+                    .forEach(orderByCustomerIdVO ->
+                    {
+                        if (orderByCustomerIdVO.getNum()!=null)
+                        {
+                            List<LoanApplyCompensationDO> loanApplyCompensationDOS = loanApplyCompensationDOMapper.selectByOrderId(orderByCustomerIdVO.getNum());
+                            for (LoanApplyCompensationDO loanApplyCompensationDO :loanApplyCompensationDOS)
+                            {
+                                PartnerCompensations partnerCompensations =new PartnerCompensations();
+                                partnerCompensations.setCompensatoryAmount(loanApplyCompensationDO.getPartnerCompensationAmount());
+                                partnerCompensations.setCompensatoryTime(loanApplyCompensationDO.getPartnerDcReviewDate());
+                                orderByCustomerIdVO.getPartnerCompensationsList().add(partnerCompensations);
+                            }
+
+                        }
+                    });
+        }
+        return ResultBean.ofSuccess(list);
     }
 }
