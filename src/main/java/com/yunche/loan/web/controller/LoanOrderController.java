@@ -108,6 +108,15 @@ public class LoanOrderController {
     public ResultBean createCreditDownreport(@RequestBody LoanCreditExportQuery loanCreditExportQuery){
         return loanOrderService.createCreditDownreport(loanCreditExportQuery);
     }
+
+    /**
+     * 银行征信图片压缩包检测
+     * @return
+     */
+    @GetMapping("/creditrecord/picCheck")
+    public ResultBean createCreditDownreport(){
+        return loanOrderService.picCheck();
+    }
     /**
      * 保存贷款车辆信息 -新增
      *
