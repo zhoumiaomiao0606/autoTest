@@ -180,4 +180,32 @@ FROM
 
 
     </select>
+
+    <select id="getCustomerInfoByCustomerName" parameterType="com.yunche.loan.domain.param.CustomerInfoByCustomerNameParam" resultType="com.yunche.loan.domain.vo.CustomerInfoForFinanceSys" >
+        SELECT
+        o.id AS orderId,
+        c.NAME AS customerName,
+        c.id_card  AS customerIdCard,
+        c.id AS customerId
+        FROM
+        loan_order o
+        LEFT JOIN loan_customer c ON c.id = o.loan_customer_id
+        LEFT JOIN loan_process p ON o.id = p.order_id
+        LEFT JOIN loan_base_info b ON o.loan_base_info_id = b.id
+        <where>
+            <if test="customerName!=null">
+                 c.name like concat(concat('%',#{customerName}),'%')
+            </if>
+        <if test="type == 1">
+            and  p.remit_review = 1
+        </if>
+        <if test="type == 2">
+            and p.bank_lend_record = 1
+        </if>
+
+
+        </where>
+
+
+    </select>
 </mapper>

@@ -199,10 +199,10 @@
     <sequenceFlow id="flow174" sourceRef="parallelgateway8" targetRef="endevent29">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1}]]></conditionExpression>
     </sequenceFlow>
-    <userTask id="usertask_customer_repay_plan" name="客户还款计划" activiti:candidateGroups="管理员,总经理,培训经理,台州主管,电催主管,电催专员,电话催收组"></userTask>
+    <userTask id="usertask_customer_repay_plan" name="客户还款计划" activiti:candidateGroups="管理员,总经理,培训经理,台州主管,电催主管,电催专员,电话催收组,贷后管理"></userTask>
     <sequenceFlow id="flow175" sourceRef="parallelgateway13" targetRef="usertask_customer_repay_plan"></sequenceFlow>
     <userTask id="usertask_info_supplement" name="资料增补" activiti:candidateGroups="管理员,总经理,培训经理,台州主管,业务内勤,大区经理,浙江区大区经理,华中区大区经理,华东区大区经理,华南区大区经理,华北区大区经理,西南区大区经理,西北区大区经理,看车网大区经理"></userTask>
-    <userTask id="usertask_customer_repay_plan_record" name="银行还款计划记录" activiti:candidateGroups="管理员,总经理,培训经理,台州主管,电催主管,电催专员,电话催收组"></userTask>
+    <userTask id="usertask_customer_repay_plan_record" name="银行还款计划记录" activiti:candidateGroups="管理员,总经理,培训经理,台州主管,电催主管,电催专员,电话催收组,贷后管理"></userTask>
     <sequenceFlow id="flow176" name="金额变动，补充生成[社会征信]" sourceRef="exclusivegateway20" targetRef="usertask_social_credit_record">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${ action == 1 && target == "usertask_social_credit_record" }]]></conditionExpression>
     </sequenceFlow>

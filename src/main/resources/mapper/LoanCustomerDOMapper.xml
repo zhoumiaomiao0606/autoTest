@@ -122,7 +122,8 @@
         delete from loan_customer
         where id = #{id,jdbcType=BIGINT}
     </delete>
-    <insert id="insert" parameterType="com.yunche.loan.domain.entity.LoanCustomerDO">
+    <insert id="insert" parameterType="com.yunche.loan.domain.entity.LoanCustomerDO"
+            useGeneratedKeys="true" keyColumn="id" keyProperty="id">
         insert into loan_customer (id, name, nation,
         birth, identity_validity, lend_card,
         id_card, mobile, age, sex,
@@ -188,7 +189,8 @@
         #{creditExpFlag,jdbcType=TINYINT}, #{enable,jdbcType=TINYINT}, #{bankCreditReject,jdbcType=TINYINT}
         )
     </insert>
-    <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.LoanCustomerDO">
+    <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.LoanCustomerDO"
+            useGeneratedKeys="true" keyColumn="id" keyProperty="id">
         insert into loan_customer
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="id != null">

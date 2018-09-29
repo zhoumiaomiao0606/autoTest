@@ -1,5 +1,6 @@
 package com.yunche.loan.mapper;
 
+import com.yunche.loan.domain.param.CustomerInfoByCustomerNameParam;
 import com.yunche.loan.domain.param.CustomersLoanFinanceInfoByPartnerParam;
 import com.yunche.loan.domain.vo.*;
 import org.apache.ibatis.annotations.Mapper;
@@ -24,4 +25,6 @@ public interface CustomersLoanFinanceInfoByPartnerMapper
     List<LoanBalanceByPartnerVO> selectLoanBalance(Long partnerId);
 
     List<OrderByCustomerIdVO> getOrderByCustomerId(Long customerId);
+
+    List<CustomerInfoForFinanceSys> getCustomerInfoByCustomerName(CustomerInfoByCustomerNameParam customerInfoByCustomerNameParam);
 }

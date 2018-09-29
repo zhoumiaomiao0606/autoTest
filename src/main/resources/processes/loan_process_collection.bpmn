@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" xmlns:tns="http://www.activiti.org/test" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.activiti.org/test" id="m1534823801056" name="">
   <process id="loan_process_collection" name="上门催收流程" isExecutable="true" isClosed="false" processType="None">
-    <userTask id="usertask_visit_collection_review" name="上门拖车审核" activiti:candidateGroups="管理员,总经理,培训经理,贷后主管"></userTask>
+    <userTask id="usertask_visit_collection_review" name="上门拖车审核" activiti:candidateGroups="管理员,总经理,培训经理,贷后主管,贷后管理"></userTask>
     <sequenceFlow id="flow8" sourceRef="exclusivegateway7" targetRef="usertask_visit_collection">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1}]]></conditionExpression>
     </sequenceFlow>
-    <userTask id="usertask_visit_collection" name="上门拖车" activiti:candidateGroups="管理员,总经理,培训经理,贷后主管"></userTask>
-    <userTask id="usertask_car_handle" name="车辆处理" activiti:candidateGroups="管理员,总经理,培训经理,贷后主管"></userTask>
+    <userTask id="usertask_visit_collection" name="上门拖车" activiti:candidateGroups="管理员,总经理,培训经理,贷后主管,贷后管理"></userTask>
+    <userTask id="usertask_car_handle" name="车辆处理" activiti:candidateGroups="管理员,总经理,培训经理,贷后主管,贷后管理"></userTask>
     <sequenceFlow id="flow14" name="拖车成功" sourceRef="exclusivegateway5" targetRef="usertask_car_handle">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1 && target == 'usertask_car_handle'}]]></conditionExpression>
     </sequenceFlow>
-    <userTask id="usertask_settle_order" name="结清" activiti:candidateGroups="管理员,总经理,培训经理,贷后主管"></userTask>
+    <userTask id="usertask_settle_order" name="结清" activiti:candidateGroups="管理员,总经理,培训经理,贷后主管,贷后管理"></userTask>
     <sequenceFlow id="flow15" name="客户结清" sourceRef="exclusivegateway5" targetRef="usertask_settle_order">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1 && target == 'usertask_settle_order'}]]></conditionExpression>
     </sequenceFlow>
-    <userTask id="usertask_car_out" name="车辆出库" activiti:candidateGroups="管理员,总经理,培训经理,贷后主管"></userTask>
+    <userTask id="usertask_car_out" name="车辆出库" activiti:candidateGroups="管理员,总经理,培训经理,贷后主管,贷后管理"></userTask>
     <sequenceFlow id="flow16" sourceRef="usertask_car_handle" targetRef="usertask_car_out">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1}]]></conditionExpression>
     </sequenceFlow>
