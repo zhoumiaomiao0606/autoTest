@@ -290,7 +290,7 @@ public class ExportQueryServiceImpl implements ExportQueryService
 
         List list = chartDOMapper.selectMaterialReviewChartVO(param);
         ArrayList<String> header = Lists.newArrayList("大区","业务区域", "业务团队", "客户姓名", "身份证号",
-                "贷款银行", "银行分期本金", "垫款日期", "资料接收日期", "资料齐全日期", "资料审核提交日期", "资料审核状态", "资料增补次数", "资料增补内容",
+                "贷款银行","申请征信时间", "银行分期本金", "垫款日期", "资料接收日期", "资料齐全日期", "资料审核提交日期", "资料审核状态", "资料增补次数", "资料增补内容",
                 "提车资料提交时间","资料增补时间","合同上交银行日期","垫款超期天数","纸审超期天数","备注"
         );
 
@@ -637,7 +637,7 @@ public class ExportQueryServiceImpl implements ExportQueryService
         param.setJuniorIds(employeeService.getSelfAndCascadeChildIdList(loginUserId));
         param.setMaxGroupLevel(taskSchedulingDOMapper.selectMaxGroupLevel(loginUserId));
 
-        List list = chartDOMapper.selectCompanyRemitDetailChartVO(param);
+        List<CompanyRemitDetailChartVO> list = chartDOMapper.selectCompanyRemitDetailChartVO(param);
         ArrayList<String> header = Lists.newArrayList("客户编号", "主贷姓名", "身份证号", "业务员","大区",
                 "省份", "业务团队", "按揭银行", "执行利率%", "车型", "首付款", "分期总额", "打款金额", "垫款时间"
 

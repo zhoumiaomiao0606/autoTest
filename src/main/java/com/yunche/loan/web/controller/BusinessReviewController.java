@@ -55,15 +55,15 @@ public class BusinessReviewController {
      * 财务系统对接-----页面渲染--初始计算
      */
     @PostMapping(value = "/parternerRule", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultBean parternerRule(@RequestBody @Validated ParternerRuleParam param) {
-        return ResultBean.ofSuccess(businessReviewManager.parternerRule(param));
+    public String parternerRule(@RequestBody @Validated ParternerRuleParam param) {
+        return businessReviewManager.financeUnisal(param,"/costcalculation");
     }
 
     /**
      * 财务系统对接-----微调参数--重新计算
      */
     @PostMapping(value = "/parternerRuleSharpTuning", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultBean parternerRuleSharpTuning(@RequestBody @Validated ParternerRuleSharpTuningeParam param) {
-        return ResultBean.ofSuccess(businessReviewManager.parternerRuleSharpTuning(param));
+    public String parternerRuleSharpTuning(@RequestBody @Validated ParternerRuleSharpTuningeParam param) {
+        return businessReviewManager.financeUnisal(param,"/costcalculation/detailn");
     }
 }

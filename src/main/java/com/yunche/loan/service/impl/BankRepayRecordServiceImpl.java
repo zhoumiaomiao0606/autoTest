@@ -283,6 +283,7 @@ public class BankRepayRecordServiceImpl implements BankRepayRecordService {
         bankFileListRecordDO.setConsecutiveBreachNumber(Integer.parseInt(split[12].trim()));//连续违约次数
         bankFileListRecordDO.setRunBank(split[13].trim());//经办支行
         bankFileListRecordDO.setInstalmentTypes(split[14].trim());//分期业务种类
+        bankFileListRecordDO.setInGuaranteeBalance(new BigDecimal(split[15].trim()));//在保金额
         bankFileListRecordDO.setBankFileListId(Long.valueOf(bankFileListId));
         bankFileListRecordDO.setIsCustomer(isCustomer(Long.valueOf(split[4].trim())));
         return bankFileListRecordDO;
@@ -435,6 +436,7 @@ public class BankRepayRecordServiceImpl implements BankRepayRecordService {
                 bankFileListRecordDO.setConsecutiveBreachNumber(Integer.parseInt(tmp[5].trim()));
                 bankFileListRecordDO.setCumulativeBreachNumber(Integer.parseInt(tmp[6].trim()));
                 bankFileListRecordDO.setBatchDate(DateUtil.getDate10(tmp[7].trim()));
+                bankFileListRecordDO.setInGuaranteeBalance(new BigDecimal(tmp[8].trim()));
                 bankFileListRecordDO.setStatus(VALID_STATUS);
                 bankRepayList.add(bankFileListRecordDO);
             }

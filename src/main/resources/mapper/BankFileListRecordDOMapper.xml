@@ -20,6 +20,7 @@
     <result column="status" jdbcType="TINYINT" property="status" />
     <result column="card_balance" jdbcType="DECIMAL" property="cardBalance" />
     <result column="optimal_return" jdbcType="DECIMAL" property="optimalReturn" />
+    <result column="in_guarantee_balance" jdbcType="DECIMAL" property="inGuaranteeBalance" />
     <result column="cumulative_breach_number" jdbcType="INTEGER" property="cumulativeBreachNumber" />
     <result column="consecutive_breach_number" jdbcType="INTEGER" property="consecutiveBreachNumber" />
     <result column="run_bank" jdbcType="VARCHAR" property="runBank" />
@@ -34,7 +35,7 @@
   <sql id="Base_Column_List">
     bank_file_list_id, customer_id, order_id, area_id, plat_no, guaranty_unit, opencard_date, 
     card_number, name, card_type, credential_no, hairpin_flag, account_statement, repay_date, 
-    gmt_greate, status, card_balance, optimal_return, cumulative_breach_number, consecutive_breach_number, 
+    gmt_greate, status, card_balance, optimal_return,in_guarantee_balance, cumulative_breach_number, consecutive_breach_number,
     run_bank, instalment_types, instalment_amount, sum_number, sum_amount, reminders, 
     is_customer, batch_date
   </sql>
@@ -60,7 +61,7 @@
       opencard_date, card_number, name, 
       card_type, credential_no, hairpin_flag, 
       account_statement, repay_date, gmt_greate, 
-      status, card_balance, optimal_return, 
+      status, card_balance, optimal_return,in_guarantee_balance,
       cumulative_breach_number, consecutive_breach_number, 
       run_bank, instalment_types, instalment_amount, 
       sum_number, sum_amount, reminders, 
@@ -70,7 +71,7 @@
       #{opencardDate,jdbcType=TIMESTAMP}, #{cardNumber,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, 
       #{cardType,jdbcType=VARCHAR}, #{credentialNo,jdbcType=VARCHAR}, #{hairpinFlag,jdbcType=VARCHAR}, 
       #{accountStatement,jdbcType=VARCHAR}, #{repayDate,jdbcType=VARCHAR}, #{gmtGreate,jdbcType=TIMESTAMP}, 
-      #{status,jdbcType=TINYINT}, #{cardBalance,jdbcType=DECIMAL}, #{optimalReturn,jdbcType=DECIMAL}, 
+      #{status,jdbcType=TINYINT}, #{cardBalance,jdbcType=DECIMAL}, #{optimalReturn,jdbcType=DECIMAL}, #{inGuaranteeBalance,jdbcType=DECIMAL},
       #{cumulativeBreachNumber,jdbcType=INTEGER}, #{consecutiveBreachNumber,jdbcType=INTEGER}, 
       #{runBank,jdbcType=VARCHAR}, #{instalmentTypes,jdbcType=VARCHAR}, #{instalmentAmount,jdbcType=DECIMAL}, 
       #{sumNumber,jdbcType=INTEGER}, #{sumAmount,jdbcType=DECIMAL}, #{reminders,jdbcType=VARCHAR}, 
@@ -132,6 +133,9 @@
       </if>
       <if test="optimalReturn != null">
         optimal_return,
+      </if>
+      <if test="inGuaranteeBalance != null">
+        in_guarantee_balance,
       </if>
       <if test="cumulativeBreachNumber != null">
         cumulative_breach_number,
@@ -302,6 +306,9 @@
       <if test="optimalReturn != null">
         optimal_return = #{optimalReturn,jdbcType=DECIMAL},
       </if>
+      <if test="inGuaranteeBalance != null">
+        in_guarantee_balance = #{inGuaranteeBalance,jdbcType=DECIMAL},
+      </if>
       <if test="cumulativeBreachNumber != null">
         cumulative_breach_number = #{cumulativeBreachNumber,jdbcType=INTEGER},
       </if>
@@ -354,6 +361,7 @@
       status = #{status,jdbcType=TINYINT},
       card_balance = #{cardBalance,jdbcType=DECIMAL},
       optimal_return = #{optimalReturn,jdbcType=DECIMAL},
+      in_guarantee_balance = #{inGuaranteeBalance,jdbcType=DECIMAL},
       cumulative_breach_number = #{cumulativeBreachNumber,jdbcType=INTEGER},
       consecutive_breach_number = #{consecutiveBreachNumber,jdbcType=INTEGER},
       run_bank = #{runBank,jdbcType=VARCHAR},
@@ -374,7 +382,7 @@
     opencard_date, card_number, name,
     card_type, credential_no, hairpin_flag,
     account_statement, repay_date, gmt_greate,
-    status, card_balance, optimal_return,
+    status, card_balance, optimal_return,in_guarantee_balance,
     cumulative_breach_number, consecutive_breach_number,
     run_bank, instalment_types, instalment_amount,
     sum_number, sum_amount, reminders, is_customer, batch_date)
@@ -385,7 +393,7 @@
       #{item.opencardDate,jdbcType=TIMESTAMP}, #{item.cardNumber,jdbcType=VARCHAR}, #{item.name,jdbcType=VARCHAR},
       #{item.cardType,jdbcType=VARCHAR}, #{item.credentialNo,jdbcType=VARCHAR}, #{item.hairpinFlag,jdbcType=VARCHAR},
       #{item.accountStatement,jdbcType=VARCHAR}, #{item.repayDate,jdbcType=VARCHAR}, #{item.gmtGreate,jdbcType=TIMESTAMP},
-      #{item.status,jdbcType=TINYINT}, #{item.cardBalance,jdbcType=DECIMAL}, #{item.optimalReturn,jdbcType=DECIMAL},
+      #{item.status,jdbcType=TINYINT}, #{item.cardBalance,jdbcType=DECIMAL}, #{item.optimalReturn,jdbcType=DECIMAL}, #{item.inGuaranteeBalance,jdbcType=DECIMAL},
       #{item.cumulativeBreachNumber,jdbcType=INTEGER}, #{item.consecutiveBreachNumber,jdbcType=INTEGER},
       #{item.runBank,jdbcType=VARCHAR}, #{item.instalmentTypes,jdbcType=VARCHAR}, #{item.instalmentAmount,jdbcType=DECIMAL},
       #{item.sumNumber,jdbcType=INTEGER}, #{item.sumAmount,jdbcType=DECIMAL}, #{item.reminders,jdbcType=VARCHAR},

@@ -42,6 +42,9 @@ public class POIUtil {
     private final static String xls = "xls";
     private final static String xlsx = "xlsx";
 
+    private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd  HH:mm:ss");
+
+
 
     /**
      * 读取EXCEL
@@ -413,7 +416,7 @@ public class POIUtil {
                     //判断----将Date特殊处理
                     if(getMethods.get(j).invoke(data) instanceof Date)
                     {
-                        cell.setCellValue((Date) getMethods.get(j).invoke(data));
+                        cell.setCellValue(sdf.format(getMethods.get(j).invoke(data)));
                     }
                     else if (getMethods.get(j).invoke(data) instanceof BigDecimal)
                         {

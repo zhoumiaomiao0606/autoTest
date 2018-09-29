@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yunche.loan.mapper.CustomersLoanFinanceInfoByPartnerMapper" >
+    <select id="selectBadBalance" parameterType="java.lang.Long" resultType="com.yunche.loan.domain.vo.BadBalanceByPartnerVO" >
+          SELECT
+          customer.NAME AS customerName,
+                  customer.id_card as customerCardId,
+          				customer.mobile as customerPhone,
+          				 loan_financial_plan.bank_period_principal as financialBankPeriodPrincipal,
+          base.total_compensation_amount as badBalance
+          FROM
+          (
+          SELECT tab.order_id,sum(partner_compensation_amount) AS total_compensation_amount
+          FROM
+          (
+          SELECT order_id,bank_repay_imp_record_id
+          FROM loan_process_instead_pay
+          WHERE partner_instead_pay = 1 AND partner_instead_pay_review = 2
+          ) tab
+          LEFT JOIN loan_apply_compensation lac ON lac.id = tab.bank_repay_imp_record_id AND lac.order_id = tab.order_id
+          GROUP BY tab.order_id
+          ) base
+          LEFT JOIN loan_order orders ON base.order_id = orders.id
+           LEFT JOIN loan_customer customer ON orders.loan_customer_id = customer.id
+           LEFT JOIN loan_base_info ON orders.loan_base_info_id = loan_base_info.id
+           LEFT JOIN loan_financial_plan ON orders.loan_financial_plan_id = loan_financial_plan.id
+           WHERE loan_base_info.partner_id = #{partnerId}
+
+    </select>
+
+    <select id="selectOverdueBalance" parameterType="java.lang.Long" resultType="com.yunche.loan.domain.vo.OverdueBalanceByPartnerVO" >
+          SELECT
+          customer.NAME AS customerName,
+                  customer.id_card as customerCardId,
+          				customer.mobile as customerPhone,
+          				 loan_financial_plan.bank_period_principal as financialBankPeriodPrincipal,
+          bank_file_list_record.optimal_return as overdueBalance
+          FROM
+          (
+          SELECT
+          order_id,max(bank_file_list_id) AS bank_file_list_id
+          FROM bank_file_list_record
+          WHERE status = 0
+          GROUP BY order_id
+          ) tab
+          LEFT JOIN bank_file_list_record ON tab.order_id = bank_file_list_record.order_id AND tab.bank_file_list_id = bank_file_list_record.bank_file_list_id
+          LEFT JOIN loan_order orders ON tab.order_id = orders.id
+           LEFT JOIN loan_customer customer ON orders.loan_customer_id = customer.id
+           LEFT JOIN loan_base_info ON orders.loan_base_info_id = loan_base_info.id
+           LEFT JOIN loan_financial_plan ON orders.loan_financial_plan_id = loan_financial_plan.id
+           WHERE loan_base_info.partner_id = #{partnerId}
+
+
+    </select>
+
+    <select id="selectInGuaranteeBalance" parameterType="java.lang.Long" resultType="com.yunche.loan.domain.vo.InGuaranteeBalanceByPartnerVO" >
+          SELECT
+          customer.NAME AS customerName,
+                  customer.id_card as customerCardId,
+          				customer.mobile as customerPhone,
+          				 loan_financial_plan.bank_period_principal as financialBankPeriodPrincipal,
+           bank_file_list_record.in_guarantee_balance as inGuaranteeBalance
+          FROM
+          (
+          SELECT
+          order_id,max(bank_file_list_id) AS bank_file_list_id
+          FROM bank_file_list_record
+          WHERE status = 0
+          GROUP BY order_id
+          ) tab
+          LEFT JOIN bank_file_list_record ON tab.order_id = bank_file_list_record.order_id AND tab.bank_file_list_id = bank_file_list_record.bank_file_list_id
+          LEFT JOIN loan_order orders ON tab.order_id = orders.id
+           LEFT JOIN loan_customer customer ON orders.loan_customer_id = customer.id
+           LEFT JOIN loan_base_info ON orders.loan_base_info_id = loan_base_info.id
+           LEFT JOIN loan_financial_plan ON orders.loan_financial_plan_id = loan_financial_plan.id
+          WHERE tab.order_id NOT IN
+          (
+          SELECT DISTINCT order_id
+          FROM loan_process_instead_pay
+          WHERE partner_instead_pay = 1 AND partner_instead_pay_review = 2
+          )
+          AND loan_base_info.partner_id = #{partnerId}
+
+
+    </select>
+
+    <select id="selectLoanBalance" parameterType="java.lang.Long" resultType="com.yunche.loan.domain.vo.LoanBalanceByPartnerVO" >
+           SELECT
+        customer.NAME AS customerName,
+                  customer.id_card as customerCardId,
+          				customer.mobile as customerPhone,
+          				 loan_financial_plan.bank_period_principal as financialBankPeriodPrincipal,
+				lend.lend_date																		as lendDate
+           FROM
+        loan_order orders
+        LEFT JOIN loan_customer customer ON orders.loan_customer_id = customer.id
+        LEFT JOIN loan_base_info ON orders.loan_base_info_id = loan_base_info.id
+        LEFT JOIN loan_financial_plan ON orders.loan_financial_plan_id = loan_financial_plan.id
+		INNER JOIN bank_lend_record lend on lend.id = orders.bank_lend_record_id
+       WHERE loan_base_info.partner_id = #{partnerId}
+
+
+    </select>
+</mapper>

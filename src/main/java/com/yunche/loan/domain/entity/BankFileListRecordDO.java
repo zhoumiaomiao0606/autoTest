@@ -39,6 +39,8 @@ public class BankFileListRecordDO extends BankFileListRecordDOKey {
 
     private BigDecimal optimalReturn;//最优还款额
 
+    private BigDecimal inGuaranteeBalance;//在保金额
+
     private Integer cumulativeBreachNumber;//累计违约次数
 
     private Integer consecutiveBreachNumber;//连续违约次数

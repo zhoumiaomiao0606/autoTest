@@ -113,4 +113,6 @@ public class RecombinationVO<T> {
     private VisitDoorDO visitDoor;
 
     private ThirdPartyFundBusinessDO partyFundBusinessVO;
+
+    private FinanceResult financeResult1;
 }
