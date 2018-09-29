@@ -296,7 +296,7 @@ public class ConfVideoFaceTimeServiceImpl implements ConfVideoFaceTimeService {
                     List<ConfVideoFaceTimeVO.Time> timeList = t.getTimeList();
                     if (!CollectionUtils.isEmpty(timeList)) {
 
-                        doInsert_time(timeList, bankId, startLoanAmount, endLoanAmount, t.getType());
+                        doInsert_time(timeList, bankId, startLoanAmount, endLoanAmount, t.getType(), t.getMaxWaitTime());
                     }
                 });
     }
@@ -309,9 +309,10 @@ public class ConfVideoFaceTimeServiceImpl implements ConfVideoFaceTimeService {
      * @param startLoanAmount
      * @param endLoanAmount
      * @param type
+     * @param maxWaitTime
      */
     private void doInsert_time(List<ConfVideoFaceTimeVO.Time> timeList, Long bankId, BigDecimal startLoanAmount,
-                               BigDecimal endLoanAmount, Byte type) {
+                               BigDecimal endLoanAmount, Byte type, Integer maxWaitTime) {
 
         timeList.stream()
                 .filter(Objects::nonNull)
@@ -332,6 +333,8 @@ public class ConfVideoFaceTimeServiceImpl implements ConfVideoFaceTimeService {
                     confVideoFaceTimeDO.setEndLoanAmount(endLoanAmount);
                     // 时间/日期类型
                     confVideoFaceTimeDO.setType(type);
+                    // 人工最大等待时长
+                    confVideoFaceTimeDO.setMaxWaitTime(maxWaitTime);
                     // 时间/日期
                     confVideoFaceTimeDO.setStartTime(startTime);
                     confVideoFaceTimeDO.setEndTime(endTime);
