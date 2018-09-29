@@ -1,6 +1,7 @@
 package com.yunche.loan.web.controller.ext;
 
 import com.yunche.loan.config.result.ResultBean;
+import com.yunche.loan.domain.param.CustomerInfoByCustomerNameParam;
 import com.yunche.loan.domain.param.CustomersLoanFinanceInfoByPartnerParam;
 import com.yunche.loan.service.CustomersLoanFinanceInfoByPartnerService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,5 +46,12 @@ public class FinancialSystemExtController {
     public ResultBean getOrderByCustomerId(@RequestParam("customerId") Long customerId)
     {
         return customersLoanFinanceInfoByPartnerservice.getOrderByCustomerId(customerId);
+    }
+
+    //模糊查询客户
+    @PostMapping("/getCustomerInfoByCustomerName")
+    public ResultBean getCustomerInfoByCustomerName(@RequestBody CustomerInfoByCustomerNameParam customerInfoByCustomerNameParam)
+    {
+        return customersLoanFinanceInfoByPartnerservice.getCustomerInfoByCustomerName(customerInfoByCustomerNameParam);
     }
 }
