@@ -251,24 +251,31 @@ public class AuthServiceImpl implements AuthService {
         total.add("channel_dep");
         total.add("finance_dep");
         total.add("mortgage_dep");
-        List<String> list = reportPowerDOMapper.selectPointByGroupName(loginUserHasUserGroups);
-        if(list !=null){
-            HashSet h = new HashSet(list);
-            list.clear();
-            list.addAll(h);
-            for(String s:list){
-                taskAuthMap.put(s,true);
-            }
-            for(String s:total){
-                if(!taskAuthMap.containsKey(s)){
-                    taskAuthMap.put(s,false);
-                }
-            }
-        }else{
+        if(loginUserHasUserGroups == null){
             for(String s:total){
                 taskAuthMap.put(s,false);
             }
+        }else{
+            List<String> list = reportPowerDOMapper.selectPointByGroupName(loginUserHasUserGroups);
+            if(list !=null){
+                HashSet h = new HashSet(list);
+                list.clear();
+                list.addAll(h);
+                for(String s:list){
+                    taskAuthMap.put(s,true);
+                }
+                for(String s:total){
+                    if(!taskAuthMap.containsKey(s)){
+                        taskAuthMap.put(s,false);
+                    }
+                }
+            }else{
+                for(String s:total){
+                    taskAuthMap.put(s,false);
+                }
+            }
         }
+
         return ResultBean.ofSuccess(taskAuthMap);
     }
 
