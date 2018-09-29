@@ -315,7 +315,12 @@ public class LoanBankCardSendServiceImpl implements LoanBankCardSendService {
 
                 cell = row.createCell(7);
                 cell.setCellType(HSSFCell.CELL_TYPE_STRING);
-                cell.setCellValue(sdf.format(loanBankCardSendDO.getExpressSendDate()));
+                if(loanBankCardSendDO.getExpressSendDate() == null){
+                    cell.setCellValue("");
+                }else{
+                    cell.setCellValue(sdf.format(loanBankCardSendDO.getExpressSendDate()));
+                }
+
             }
             //文件宽度自适应
             sheet.autoSizeColumn((short) 0);
