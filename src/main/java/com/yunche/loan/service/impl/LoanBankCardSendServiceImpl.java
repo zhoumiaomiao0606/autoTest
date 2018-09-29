@@ -308,8 +308,11 @@ public class LoanBankCardSendServiceImpl implements LoanBankCardSendService {
                 cell.setCellValue(loanBankCardSendDO.getRepayCardNum());
 
                 cell = row.createCell(5);
-                cell.setCellValue(ExpressCompanyEnum.getValueByKey(loanBankCardSendDO.getExpressCom()));
-
+                if(loanBankCardSendDO.getExpressCom() == null){
+                    cell.setCellValue("");
+                }else {
+                    cell.setCellValue(ExpressCompanyEnum.getValueByKey(loanBankCardSendDO.getExpressCom()));
+                }
                 cell = row.createCell(6);
                 cell.setCellValue(loanBankCardSendDO.getExpressSendNum());
 
