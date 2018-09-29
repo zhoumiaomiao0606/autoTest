@@ -582,7 +582,7 @@ public class LoanOrderServiceImpl implements LoanOrderService {
                 LoanFileDO loanFileDO = new LoanFileDO();
                 loanFileDO.setStatus(DOING_STATUS);
                 loanFileDO.setUploadType(UPLOAD_TYPE_NORMAL);
-                loanFileDO.setType(ZIP_PACK.getType());
+                loanFileDO.setType(BANK_CREDIT_PIC.getType());
                 loanFileDO.setCustomerId(loginUser.getId());
                 loanFileDOMapper.insertSelective(loanFileDO);
             } else {
