@@ -20,5 +20,7 @@ public class LoanCreditExportQuery  {
     //导出标志
     String mergeFlag;//1:合成身份证图片 , 2:合成图片
 
+    Byte isForce;//0:否，1：是
+
 
 }

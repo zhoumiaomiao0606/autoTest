@@ -1,10 +1,12 @@
 package com.yunche.loan.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.aliyun.oss.OSSClient;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.yunche.loan.config.common.OSSConfig;
+import com.yunche.loan.config.constant.BaseConst;
 import com.yunche.loan.config.constant.IDict;
 import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.result.ResultBean;
@@ -30,11 +32,14 @@ import java.lang.Process;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.yunche.loan.config.constant.BaseConst.DOING_STATUS;
 import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
 import static com.yunche.loan.config.constant.GuaranteeRelaConst.GUARANTOR_PERSONAL;
 import static com.yunche.loan.config.constant.LoanCustomerConst.*;
 import static com.yunche.loan.config.constant.LoanCustomerEnum.*;
 import static com.yunche.loan.config.constant.LoanFileConst.UPLOAD_TYPE_NORMAL;
+import static com.yunche.loan.config.constant.LoanFileEnum.BANK_CREDIT_PIC;
+import static com.yunche.loan.config.constant.LoanFileEnum.ZIP_PACK;
 import static com.yunche.loan.config.constant.LoanOrderProcessConst.TASK_PROCESS_REJECT;
 import static com.yunche.loan.config.constant.LoanProcessEnum.CREDIT_APPLY;
 
@@ -130,6 +135,9 @@ public class LoanOrderServiceImpl implements LoanOrderService {
 
     @Autowired
     private OSSConfig ossConfig;
+
+    @Autowired
+    private LoanFileDOMapper loanFileDOMapper;
 
 
     @Override
@@ -532,13 +540,60 @@ public class LoanOrderServiceImpl implements LoanOrderService {
         return ResultBean.ofSuccess(loanSimpleCustomerInfoVOS);
     }
 
+    /**
+     * 银行征信图片合成压缩包
+     * @param loanCreditExportQuery
+     * @return
+     */
     @Override
     public ResultBean createCreditDownreport(LoanCreditExportQuery loanCreditExportQuery) {
         OSSClient ossUnit=null;
         String resultName= null;
         String diskName =null;
-        List<CreditPicExportVO> exportVOS =Lists.newLinkedList();
+        List<CreditPicExportVO> exportVOS ;
+        EmployeeDO loginUser = SessionUtils.getLoginUser();
         try {
+
+
+            long start = System.currentTimeMillis();
+
+            String name = loginUser.getName();
+
+            if(IDict.K_YORN.K_YORN_NO.equals(loanCreditExportQuery.getIsForce())){
+                List<LoanFileDO> loanFileDOS = loanFileDOMapper.listByCustomerIdAndType(loginUser.getId(), BANK_CREDIT_PIC.getType(), UPLOAD_TYPE_NORMAL);
+                if (!CollectionUtils.isEmpty(loanFileDOS)) {
+                    LoanFileDO loanFileDO = loanFileDOS.get(0);
+                    if (null != loanFileDO) {
+                        String path = loanFileDO.getPath();
+                        List<String> url = JSON.parseArray(path, String.class);
+
+                        loanFileDOMapper.deleteByPrimaryKey(loanFileDO.getId());
+                        if (!CollectionUtils.isEmpty(url)) {
+                            return ResultBean.ofSuccess(url.get(0));
+                        }
+                    }
+                }
+
+            }
+
+            //先将文件状态改为进行中
+            List<LoanFileDO> loanFileDOS = loanFileDOMapper.listByCustomerIdAndType(loginUser.getId(), BANK_CREDIT_PIC.getType(), UPLOAD_TYPE_NORMAL);
+            if (CollectionUtils.isEmpty(loanFileDOS)) {
+                LoanFileDO loanFileDO = new LoanFileDO();
+                loanFileDO.setStatus(DOING_STATUS);
+                loanFileDO.setUploadType(UPLOAD_TYPE_NORMAL);
+                loanFileDO.setType(ZIP_PACK.getType());
+                loanFileDO.setCustomerId(loginUser.getId());
+                loanFileDOMapper.insertSelective(loanFileDO);
+            } else {
+                loanFileDOS.parallelStream().forEach(e -> {
+                    e.setStatus(DOING_STATUS);
+                    loanFileDOMapper.updateByPrimaryKeySelective(e);
+                });
+            }
+
+            diskName = name+ DateUtil.getTime();
+            final String localPath ="/tmp/"+diskName;
 
             ossUnit = OSSUnit.getOSSClient();
             //查询符合要求的数据
@@ -555,10 +610,7 @@ public class LoanOrderServiceImpl implements LoanOrderService {
             }
 
 
-            long start = System.currentTimeMillis();
-            String name = SessionUtils.getLoginUser().getName();
-            diskName = name+ DateUtil.getTime();
-            final String localPath ="/tmp/"+diskName;
+
 
             resultName = diskName+".tar.gz";
 
@@ -617,10 +669,55 @@ public class LoanOrderServiceImpl implements LoanOrderService {
             throw new BizException(e.getMessage());
         }
 
+        saveToLoanFile(loginUser.getId(),ossConfig.getDownLoadDiskName()+File.separator+resultName);
         return ResultBean.ofSuccess(ossConfig.getDownLoadDiskName()+File.separator+resultName);
     }
 
+    /**
+     * 检测图片是否合并完成
+     * @return
+     */
+    @Override
+    public ResultBean picCheck() {
+        MaterialDownloadParam materialDownloadParam = new MaterialDownloadParam();
+        Long aLong = SessionUtils.getLoginUser().getId();
+        // 是否已经存在文件了
+        List<LoanFileDO> loanFileDOS = loanFileDOMapper.listByCustomerIdAndType(aLong, BANK_CREDIT_PIC.getType(), UPLOAD_TYPE_NORMAL);
+        if (CollectionUtils.isEmpty(loanFileDOS)) {
+            materialDownloadParam.setFileStatus("2");//文件不存在,需要强制重新打包
+        } else {
+            materialDownloadParam.setFileStatus("1");//文件处理中
+            loanFileDOS.stream().filter(Objects::nonNull).forEach(e -> {
+                if (e.getStatus() != null && e.getStatus().equals(BaseConst.VALID_STATUS)) {
+                    materialDownloadParam.setFileStatus("0");//文件已经打包完成
+                }
+            });
+        }
+        return ResultBean.ofSuccess(materialDownloadParam);
+    }
 
+    /**
+     * zip包路径，存储到loan_file表
+     *
+     * @param customerId
+     * @param path
+     */
+    private void saveToLoanFile(Long customerId, String path) {
+
+        //先将文件状态改为进行中
+        List<LoanFileDO> loanFileDOS = loanFileDOMapper.listByCustomerIdAndType(customerId, ZIP_PACK.getType(), UPLOAD_TYPE_NORMAL);
+
+        loanFileDOS.parallelStream().filter(Objects::nonNull).forEach(e -> {
+            e.setCustomerId(customerId);
+            e.setUploadType(UPLOAD_TYPE_NORMAL);
+            String s = JSON.toJSONString(path);
+            e.setPath("[" + s + "]");
+            e.setType(ZIP_PACK.getType());
+            e.setStatus(VALID_STATUS);
+            e.setGmtCreate(new Date());
+            loanFileDOMapper.updateByPrimaryKeySelective(e);
+        });
+    }
     @Override
     public ResultBean<LoanCarInfoVO> loanCarInfoDetail(Long orderId) {
         Preconditions.checkNotNull(orderId, "业务单号不能为空");
@@ -1063,5 +1160,7 @@ public class LoanOrderServiceImpl implements LoanOrderService {
 
         loanSimpleCustomerInfoVOS.add(simpleCustomerInfoVO);
     }
+
+
 
 }
