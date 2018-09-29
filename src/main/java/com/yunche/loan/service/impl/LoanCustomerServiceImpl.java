@@ -416,7 +416,7 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
     }
 
     /**
-     * 重置订单下所有客户的可编辑标记
+     * 重置订单下所有客户的可编辑标记  ： 0-否；
      *
      * @param principalId
      */
@@ -425,7 +425,7 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
 
         List<Long> customerIdList = loanCustomerDOMapper.listIdByPrincipalCustIdAndType(principalId, null, VALID_STATUS);
 
-        loanCustomerDOMapper.batchUpdateEnable(customerIdList, BaseConst.K_YORN_YES);
+        loanCustomerDOMapper.batchUpdateEnable(customerIdList, BaseConst.K_YORN_NO);
     }
 
 
