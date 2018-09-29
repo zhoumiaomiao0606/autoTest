@@ -22,4 +22,6 @@ public interface CustomersLoanFinanceInfoByPartnerMapper
 
 
     List<LoanBalanceByPartnerVO> selectLoanBalance(Long partnerId);
+
+    List<OrderByCustomerIdVO> getOrderByCustomerId(Long customerId);
 }

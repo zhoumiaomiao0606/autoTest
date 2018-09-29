@@ -39,7 +39,6 @@ import static com.yunche.loan.config.constant.LoanCustomerConst.*;
 import static com.yunche.loan.config.constant.LoanCustomerEnum.*;
 import static com.yunche.loan.config.constant.LoanFileConst.UPLOAD_TYPE_NORMAL;
 import static com.yunche.loan.config.constant.LoanFileEnum.BANK_CREDIT_PIC;
-import static com.yunche.loan.config.constant.LoanFileEnum.ZIP_PACK;
 import static com.yunche.loan.config.constant.LoanOrderProcessConst.TASK_PROCESS_REJECT;
 import static com.yunche.loan.config.constant.LoanProcessEnum.CREDIT_APPLY;
 
@@ -576,6 +575,17 @@ public class LoanOrderServiceImpl implements LoanOrderService {
 
             }
 
+
+            diskName = name+ DateUtil.getTime();
+            final String localPath ="/tmp/"+diskName;
+
+            ossUnit = OSSUnit.getOSSClient();
+            //查询符合要求的数据
+            List<CreditPicExportVO> creditPicExportVOS = loanStatementDOMapper.selectCreditPicExport(loanCreditExportQuery);
+            if(CollectionUtils.isEmpty(creditPicExportVOS)){
+                return ResultBean.ofError("筛选条件查询记录为空");
+            }
+
             //先将文件状态改为进行中
             List<LoanFileDO> loanFileDOS = loanFileDOMapper.listByCustomerIdAndType(loginUser.getId(), BANK_CREDIT_PIC.getType(), UPLOAD_TYPE_NORMAL);
             if (CollectionUtils.isEmpty(loanFileDOS)) {
@@ -592,31 +602,11 @@ public class LoanOrderServiceImpl implements LoanOrderService {
                 });
             }
 
-            diskName = name+ DateUtil.getTime();
-            final String localPath ="/tmp/"+diskName;
-
-            ossUnit = OSSUnit.getOSSClient();
-            //查询符合要求的数据
-            List<CreditPicExportVO> creditPicExportVOS = loanStatementDOMapper.selectCreditPicExport(loanCreditExportQuery);
-
-
-            if(CollectionUtils.isEmpty(creditPicExportVOS)){
-                return ResultBean.ofError("筛选条件查询记录为空");
-            }
-            if(creditPicExportVOS.size()>50){
-                exportVOS = creditPicExportVOS.subList(0, 50);
-            }else{
-                exportVOS = creditPicExportVOS;
-            }
-
-
-
-
             resultName = diskName+".tar.gz";
 
             RuntimeUtils.exe("mkdir "+localPath);
             LOG.info("图片合成 开始时间："+start);
-            exportVOS.stream().filter(Objects::nonNull).forEach(e->{
+            creditPicExportVOS.stream().filter(Objects::nonNull).forEach(e->{
                 //查图片
                 Set types = Sets.newHashSet();
                 //1:合成身份证图片 , 2:合成图片
@@ -705,9 +695,10 @@ public class LoanOrderServiceImpl implements LoanOrderService {
     private void saveToLoanFile(Long customerId, String path) {
 
         //先将文件状态改为进行中
-        List<LoanFileDO> loanFileDOS = loanFileDOMapper.listByCustomerIdAndType(customerId, ZIP_PACK.getType(), UPLOAD_TYPE_NORMAL);
+        List<LoanFileDO> loanFileDOS = loanFileDOMapper.listByCustomerIdAndType(customerId, BANK_CREDIT_PIC.getType(), UPLOAD_TYPE_NORMAL);
 
         loanFileDOS.parallelStream().filter(Objects::nonNull).forEach(e -> {
+            LOG.info("");
             e.setCustomerId(customerId);
             e.setUploadType(UPLOAD_TYPE_NORMAL);
             String s = JSON.toJSONString(path);

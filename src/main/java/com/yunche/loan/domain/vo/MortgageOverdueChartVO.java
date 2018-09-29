@@ -72,6 +72,4 @@ public class MortgageOverdueChartVO
     //抵押超期天数
     private String depositOverdueTime;
 
-    //提交人
-    private String submitUser;
 }
