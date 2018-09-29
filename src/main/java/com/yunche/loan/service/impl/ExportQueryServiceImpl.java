@@ -486,9 +486,9 @@ public class ExportQueryServiceImpl implements ExportQueryService
         param.setMaxGroupLevel(taskSchedulingDOMapper.selectMaxGroupLevel(loginUserId));
 
         List list = chartDOMapper.selectMortgageOverdueChartVO(param);
-        ArrayList<String> header = Lists.newArrayList("业务区域", "业务团队", "客户姓名", "身份证号","手机号",
+        ArrayList<String> header = Lists.newArrayList("大区","业务区域", "业务团队", "客户姓名", "身份证号","手机号","征信申请时间",
                 "贷款银行", "车辆型号", "车牌号", "车价", "贷款金融", "银行分期本金", "垫款日期", "银行放款日期", "抵押资料公司寄合伙人",
-                "抵押资料合伙人接收时间","抵押状态","抵押日期","抵押超期天数","提交人"
+                "抵押资料合伙人接收时间","抵押状态","抵押日期","抵押超期天数"
         );
 
 
@@ -776,7 +776,7 @@ public class ExportQueryServiceImpl implements ExportQueryService
 
         List<CompanyRemitDetailChartVO> list = chartDOMapper.selectCompanyRemitDetailChartVO(param);
         ArrayList<String> header = Lists.newArrayList("客户编号", "主贷姓名", "身份证号", "业务员","大区",
-                "省份", "业务团队", "按揭银行", "执行利率%", "车型", "首付款", "分期总额", "打款金额", "贷款金额","垫款时间","提交人"
+                "省份", "业务团队", "按揭银行", "执行利率%", "车型", "首付款", "分期总额", "打款金额", "垫款时间"
 
         );
 

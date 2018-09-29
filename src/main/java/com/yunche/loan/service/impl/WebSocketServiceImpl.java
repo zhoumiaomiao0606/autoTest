@@ -562,7 +562,7 @@ public class WebSocketServiceImpl implements WebSocketService {
 
                         boolean match = match_time && (match_loan || match_loan_);
                         if (match) {
-
+                            // 分钟
                             Integer maxWaitTime = e.getMaxWaitTime();
                             // -1：无限等待
                             if (maxWaitTime == -1) {
@@ -572,8 +572,17 @@ public class WebSocketServiceImpl implements WebSocketService {
                                 return;
                             }
 
-                            Long waitTime = videoFaceQueue.getWaitTime(webSocketParam, wsSessionId);
-                            if (waitTime > maxWaitTime) {
+                            Long startWaitTime = videoFaceQueue.getStartWaitTime(webSocketParam, wsSessionId);
+                            if (null == startWaitTime) {
+
+                                // 进入排队队列：人工面签
+                                result[0] = true;
+                                return;
+
+                            }
+
+                            long waitTime = System.currentTimeMillis() - startWaitTime;
+                            if (waitTime > maxWaitTime * 60 * 1000) {
 
                                 // 等待超过maxWaitTime
                                 result[0] = false;
@@ -637,7 +646,7 @@ public class WebSocketServiceImpl implements WebSocketService {
             if (match_time) {
 
                 // 排队时间
-                Long startWaitTime = videoFaceQueue.getWaitTime(webSocketParam, wsSessionId);
+                Long startWaitTime = videoFaceQueue.getStartWaitTime(webSocketParam, wsSessionId);
 
                 if (null != startWaitTime) {
 
@@ -689,7 +698,7 @@ public class WebSocketServiceImpl implements WebSocketService {
         else if (bankPeriodPrincipal >= 100000) {
 
             // 排队时间
-            Long startWaitTime = videoFaceQueue.getWaitTime(webSocketParam, wsSessionId);
+            Long startWaitTime = videoFaceQueue.getStartWaitTime(webSocketParam, wsSessionId);
 
             if (null != startWaitTime) {
 

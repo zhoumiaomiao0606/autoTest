@@ -21,6 +21,7 @@ public class CompanyRemitDetailChartVO
     //身份证号
     private String customer_id_card;
 
+
     //业务员
     private String salesman_name;
 
@@ -33,8 +34,10 @@ public class CompanyRemitDetailChartVO
     //业务团队
     private String partner_name;
 
+
     //贷款银行
     private String bank;
+
 
     //执行利率
     private String sign_rate;
@@ -42,8 +45,11 @@ public class CompanyRemitDetailChartVO
     //车型
     private String car_type;
 
+
+
     //首付款
     private String down_payment_money;
+
 
     //银行分期本金
     private BigDecimal bank_period_principal;
@@ -51,12 +57,7 @@ public class CompanyRemitDetailChartVO
     //打款金额
     private BigDecimal remit_amount;
 
-    //贷款金额
-    private BigDecimal loan_amount;
-
     //提交时间
     private Date submitTime;
 
-    //提交人
-    private String username;
 }
