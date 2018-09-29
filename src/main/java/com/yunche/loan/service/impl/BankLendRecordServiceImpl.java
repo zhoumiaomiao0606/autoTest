@@ -97,7 +97,7 @@ public class BankLendRecordServiceImpl implements BankLendRecordService {
         try {
 
             returnList = POIUtil.readExcelFromOSS(0, 1, key);
-            BankLendRecordDO bankLendRecordDO = new BankLendRecordDO();
+
             SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
             for (String[] tmp : returnList) {
 //                tmp[0].trim();//客户姓名
@@ -111,6 +111,7 @@ public class BankLendRecordServiceImpl implements BankLendRecordService {
                 if (orderId == null) {
                     continue;
                 }
+                BankLendRecordDO bankLendRecordDO = new BankLendRecordDO();
                 bankLendRecordDO.setLoanOrder(orderId);
                 bankLendRecordDO.setLendDate(df.parse(tmp[2].trim()));
                 bankLendRecordDO.setLendAmount(new BigDecimal(tmp[3].trim()));

@@ -40,4 +40,8 @@ public interface LoanOrderService {
 
 
     ResultBean createCreditDownreport(LoanCreditExportQuery loanCreditExportQuery);
+
+    ResultBean picCheck();
+
+
 }
