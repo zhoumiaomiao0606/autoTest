@@ -173,6 +173,7 @@ public class LoanBankCardSendServiceImpl implements LoanBankCardSendService {
                     try {
                         rowVal = row[line++];
                         loanBankCardSendDO.setExpressSendAddress(rowVal);
+                        loanBankCardSendDO.setCardholderAddress(rowVal);
                     } catch (Exception e) {
                         throw new BizException("第" + rowNum + "行，第" + (line) + "列格式有误：" + rowVal);
                     }
