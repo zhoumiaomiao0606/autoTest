@@ -568,9 +568,9 @@
                 </foreach>
             </if>
         </where>
-        <if test="(startDate !=null and  startDate != '')or (endDate !=null and endDate != '')"  >
+        <if test="(startDate !=null and  startDate != '') or (endDate !=null and endDate != '')"  >
             having
-            <if test="startDate !=nulland  startDate != '' " >
+            <if test="startDate !=null and  startDate != '' " >
                 credit_apply_time &gt;= #{startDate}
             </if>
 
