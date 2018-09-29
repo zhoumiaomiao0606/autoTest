@@ -199,4 +199,19 @@ public class LoanCustomerDO {
     private String ctelzone;
 
     private Byte signatureType;
+
+    /**
+     * 征信图片标志    1：未导出 2：已导出
+     */
+    private Byte creditExpFlag;
+
+    /**
+     * 是否可编辑：0-否;1-是;   默认：否
+     */
+    private Byte enable;
+
+    /**
+     * 银行征信打回标记：0-否；1-是；
+     */
+    private Byte bankCreditReject;
 }

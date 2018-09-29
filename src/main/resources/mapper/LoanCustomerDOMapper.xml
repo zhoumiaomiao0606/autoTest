@@ -91,7 +91,9 @@
         <result column="open_card_order" property="openCardOrder" jdbcType="VARCHAR"/>
         <result column="ctelzone" property="ctelzone" jdbcType="VARCHAR"/>
         <result column="signature_type" property="signatureType" jdbcType="TINYINT"/>
-
+        <result column="credit_exp_flag" property="creditExpFlag" jdbcType="TINYINT"/>
+        <result column="enable" property="enable" jdbcType="TINYINT"/>
+        <result column="bank_credit_reject" property="bankCreditReject" jdbcType="TINYINT"/>
     </resultMap>
     <sql id="Base_Column_List">
         id, name, nation, birth, identity_validity, lend_card, id_card, mobile, age, sex,
@@ -108,7 +110,7 @@
         card_send_addr_type, balance_change_remind, open_email, email, occupation, issuing_department,
         master_card_tel, bell_tel, balance_change_tel, open_card_status, open_card_curr_status,
         bill_send_type, bill_send_addr, cprovince, ccity, ccounty, hprovince, hcity, hcounty,
-        open_card_order, ctelzone, signature_type
+        open_card_order, ctelzone, signature_type, credit_exp_flag, enable, bank_credit_reject
     </sql>
     <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
         select
@@ -116,19 +118,11 @@
         from loan_customer
         where id = #{id,jdbcType=BIGINT}
     </select>
-
-    <select id="selectByIdCard" resultMap="BaseResultMap" parameterType="java.lang.String">
-        select
-        <include refid="Base_Column_List"/>
-        from loan_customer
-        where id_card = #{idCard,jdbcType=VARCHAR} and status='0'
-    </select>
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
         delete from loan_customer
         where id = #{id,jdbcType=BIGINT}
     </delete>
-    <insert id="insert" parameterType="com.yunche.loan.domain.entity.LoanCustomerDO"
-            useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+    <insert id="insert" parameterType="com.yunche.loan.domain.entity.LoanCustomerDO">
         insert into loan_customer (id, name, nation,
         birth, identity_validity, lend_card,
         id_card, mobile, age, sex,
@@ -158,7 +152,9 @@
         open_card_curr_status, bill_send_type, bill_send_addr,
         cprovince, ccity, ccounty,
         hprovince, hcity, hcounty,
-        open_card_order, ctelzone, signature_type)
+        open_card_order, ctelzone, signature_type,
+        credit_exp_flag, enable, bank_credit_reject
+        )
         values (#{id,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{nation,jdbcType=VARCHAR},
         #{birth,jdbcType=DATE}, #{identityValidity,jdbcType=VARCHAR}, #{lendCard,jdbcType=VARCHAR},
         #{idCard,jdbcType=CHAR}, #{mobile,jdbcType=VARCHAR}, #{age,jdbcType=TINYINT}, #{sex,jdbcType=TINYINT},
@@ -188,10 +184,11 @@
         #{openCardCurrStatus,jdbcType=VARCHAR}, #{billSendType,jdbcType=VARCHAR}, #{billSendAddr,jdbcType=VARCHAR},
         #{cprovince,jdbcType=VARCHAR}, #{ccity,jdbcType=VARCHAR}, #{ccounty,jdbcType=VARCHAR},
         #{hprovince,jdbcType=VARCHAR}, #{hcity,jdbcType=VARCHAR}, #{hcounty,jdbcType=VARCHAR},
-        #{openCardOrder,jdbcType=VARCHAR}, #{ctelzone,jdbcType=VARCHAR},#{signatureType,jdbcType=TINYINT})
+        #{openCardOrder,jdbcType=VARCHAR}, #{ctelzone,jdbcType=VARCHAR}, #{signatureType,jdbcType=TINYINT},
+        #{creditExpFlag,jdbcType=TINYINT}, #{enable,jdbcType=TINYINT}, #{bankCreditReject,jdbcType=TINYINT}
+        )
     </insert>
-    <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.LoanCustomerDO"
-            useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+    <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.LoanCustomerDO">
         insert into loan_customer
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="id != null">
@@ -458,7 +455,15 @@
             <if test="signatureType != null">
                 signature_type,
             </if>
-
+            <if test="creditExpFlag != null">
+                credit_exp_flag,
+            </if>
+            <if test="enable != null">
+                enable,
+            </if>
+            <if test="bankCreditReject != null">
+                bank_credit_reject,
+            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="id != null">
@@ -725,7 +730,15 @@
             <if test="signatureType != null">
                 #{signatureType,jdbcType=TINYINT},
             </if>
-
+            <if test="creditExpFlag != null">
+                #{creditExpFlag,jdbcType=TINYINT},
+            </if>
+            <if test="enable != null">
+                #{enable,jdbcType=TINYINT},
+            </if>
+            <if test="bankCreditReject != null">
+                #{bankCreditReject,jdbcType=TINYINT},
+            </if>
         </trim>
     </insert>
     <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.LoanCustomerDO">
@@ -992,7 +1005,15 @@
             <if test="signatureType != null">
                 signature_type = #{signatureType,jdbcType=TINYINT},
             </if>
-
+            <if test="creditExpFlag != null">
+                credit_exp_flag = #{creditExpFlag,jdbcType=TINYINT},
+            </if>
+            <if test="enable != null">
+                enable = #{enable,jdbcType=TINYINT},
+            </if>
+            <if test="bankCreditReject != null">
+                bank_credit_reject = #{bankCreditReject,jdbcType=TINYINT},
+            </if>
         </set>
         where id = #{id,jdbcType=BIGINT}
     </update>
@@ -1084,10 +1105,12 @@
         hcounty = #{hcounty,jdbcType=VARCHAR},
         open_card_order = #{openCardOrder,jdbcType=VARCHAR},
         ctelzone = #{ctelzone,jdbcType=VARCHAR},
-        signature_type = #{signatureType,jdbcType=TINYINT}
+        signature_type = #{signatureType,jdbcType=TINYINT},
+        credit_exp_flag = #{creditExpFlag,jdbcType=TINYINT},
+        enable = #{enable,jdbcType=TINYINT},
+        bank_credit_reject = #{bankCreditReject,jdbcType=TINYINT}
         where id = #{id,jdbcType=BIGINT}
     </update>
-
 
     <!--listPrincipalCustIdByIdCard-->
     <select id="listPrincipalCustIdByIdCard" resultType="java.lang.Long">
@@ -1141,12 +1164,31 @@
                 #{item}
             </foreach>
         </if>
-
     </select>
 
     <select id="selectCusByOrderId" resultMap="BaseResultMap">
-    select b.* from  loan_customer b where b.principal_cust_id =(
-      select a.loan_customer_id  from loan_order a where a.id = #{orderId,jdbcType=BIGINT}) and b.`status` =0 and b.cust_type != 4
-  </select>
+        select b.* from loan_customer b where b.principal_cust_id =(
+        select a.loan_customer_id from loan_order a where a.id = #{orderId,jdbcType=BIGINT}) and b.`status` =0 and
+        b.cust_type != 4
+    </select>
+
+    <select id="selectByIdCard" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select
+        <include refid="Base_Column_List"/>
+        from loan_customer
+        where id_card = #{idCard,jdbcType=VARCHAR} and status='0'
+    </select>
+
+    <update id="batchUpdateEnable">
+        UPDATE loan_customer
+        SET enable = #{enable,jdbcType=TINYINT}
+        WHERE
+        <if test="idList != null">
+            id IN
+            <foreach collection="idList" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+    </update>
 
 </mapper>

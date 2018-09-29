@@ -2,7 +2,11 @@ package com.yunche.loan.web.controller;
 
 import com.yunche.loan.config.anno.Limiter;
 import com.yunche.loan.config.result.ResultBean;
-import com.yunche.loan.domain.param.*;
+import com.yunche.loan.domain.param.CreditApplyOrderParam;
+import com.yunche.loan.domain.param.CreditRecordParam;
+import com.yunche.loan.domain.param.LoanCarInfoParam;
+import com.yunche.loan.domain.param.LoanHomeVisitParam;
+import com.yunche.loan.domain.query.LoanCreditExportQuery;
 import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.service.LoanOrderService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -95,6 +99,24 @@ public class LoanOrderController {
         return loanOrderService.updateCreditRecord(creditRecordParam);
     }
 
+    /**
+     * 银行征信图片导出
+     * @param loanCreditExportQuery
+     * @return
+     */
+    @PostMapping(value = "/creditrecord/downreport", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResultBean createCreditDownreport(@RequestBody LoanCreditExportQuery loanCreditExportQuery){
+        return loanOrderService.createCreditDownreport(loanCreditExportQuery);
+    }
+
+    /**
+     * 银行征信图片压缩包检测
+     * @return
+     */
+    @GetMapping("/creditrecord/picCheck")
+    public ResultBean picCheck(){
+        return loanOrderService.picCheck();
+    }
     /**
      * 保存贷款车辆信息 -新增
      *

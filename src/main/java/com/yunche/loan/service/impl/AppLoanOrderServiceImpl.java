@@ -727,19 +727,14 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
             // 征信情况
             if (null != loanOrderDO.getLoanCustomerId()) {
                 // 银行征信
-                ResultBean<LoanCreditInfoVO> bankLoanCreditInfoVOResultBean = loanCreditInfoService.getByCustomerId(loanOrderDO.getLoanCustomerId(), CREDIT_TYPE_BANK);
-                Preconditions.checkArgument(bankLoanCreditInfoVOResultBean.getSuccess(), bankLoanCreditInfoVOResultBean.getMsg());
-                LoanCreditInfoVO bankLoanCreditInfoVO = bankLoanCreditInfoVOResultBean.getData();
+                LoanCreditInfoVO bankLoanCreditInfoVO = loanCreditInfoService.getByCustomerId(loanOrderDO.getLoanCustomerId(), CREDIT_TYPE_BANK);
                 if (null != bankLoanCreditInfoVO) {
                     businessInfoVO.setBankCreditResult(bankLoanCreditInfoVO.getResult());
                     businessInfoVO.setBankCreditInfo(bankLoanCreditInfoVO.getInfo());
                 }
 
                 // 社会征信
-                ResultBean<LoanCreditInfoVO> socialLoanCreditInfoVOResultBean = loanCreditInfoService.getByCustomerId(loanOrderDO.getLoanCustomerId(), CREDIT_TYPE_SOCIAL);
-                Preconditions.checkArgument(socialLoanCreditInfoVOResultBean.getSuccess(), socialLoanCreditInfoVOResultBean.getMsg());
-                // 银行征信
-                LoanCreditInfoVO socialLoanCreditInfoVO = socialLoanCreditInfoVOResultBean.getData();
+                LoanCreditInfoVO socialLoanCreditInfoVO = loanCreditInfoService.getByCustomerId(loanOrderDO.getLoanCustomerId(), CREDIT_TYPE_SOCIAL);
                 if (null != socialLoanCreditInfoVO) {
                     businessInfoVO.setSocialCreditResult(socialLoanCreditInfoVO.getResult());
                     businessInfoVO.setSocialCreditInfo(socialLoanCreditInfoVO.getInfo());

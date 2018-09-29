@@ -868,6 +868,7 @@
     <!--=======================================导出 EXCEL 抵押超期=========================================-->
     <select id="exportMortgageOverdueQuerys" parameterType="com.yunche.loan.domain.param.ExportMortgageOverdueQueryVerifyParam"  resultType="com.yunche.loan.domain.vo.ExportMortgageOverdueQueryVO" >
         SELECT
+        loanbaseinfo.area_id,
         base_area.area_name,
         partner.NAME AS partner_name,
         customer.NAME AS customer_name,
@@ -882,6 +883,7 @@
         '二手车' ELSE '其他'
         END AS car_type,
         vehicle_information.license_plate_number,
+        vehicle_information.vehicle_identification_number,
         cardetail.price,
         loan_financial_plan.loan_amount,
         loan_financial_plan.bank_period_principal,
@@ -1792,6 +1794,62 @@
         FROM
         loan_customer
         WHERE principal_cust_id = #{pCustomerId} AND (cust_type = 2  OR   (guarantee_type = 2 AND cust_type = 3 ))
+
+    </select>
+
+
+    <select id="selectCreditPicExport" parameterType="com.yunche.loan.domain.query.LoanCreditExportQuery" resultType="com.yunche.loan.domain.vo.CreditPicExportVO">
+        SELECT
+            result.order_id AS orderId,
+            result.id       AS loanCustomerId,
+            result.name     AS customerName,
+            result.employee_id AS employeeId,
+            result.id_card     AS idCard
+        FROM
+        (
+            SELECT
+                process.order_id,
+                customer.id,
+                customer.`name`,
+                customer.credit_exp_flag,
+                customer.id_card,
+                process.credit_apply,
+                process.bank_credit_record,
+                ( SELECT create_time FROM loan_process_log log WHERE log.task_definition_key = 'usertask_credit_apply' AND order_id = process.order_id ORDER BY create_time DESC LIMIT 1 ) AS credit_apply_time,
+                ( SELECT create_time FROM loan_process_log log WHERE log.task_definition_key = 'usertask_bank_credit_record' AND order_id = process.order_id ORDER BY create_time DESC LIMIT 1 ) AS bank_credit_time,
+                ( SELECT user_id FROM loan_process_log log WHERE log.task_definition_key = 'usertask_bank_credit_record' AND order_id = process.order_id ORDER BY create_time DESC LIMIT 1 ) AS employee_id
+            FROM
+                loan_process process
+                LEFT JOIN loan_order loan ON process.order_id = loan.id
+                LEFT JOIN loan_base_info base ON base.id=loan.loan_base_info_id
+                LEFT JOIN loan_customer customer ON ( loan.loan_customer_id = customer.principal_cust_id AND customer.cust_type != 4 )
+            WHERE
+                process.loan_apply = 0
+                and base.bank in('中国工商银行南京江宁支行','中国工商银行哈尔滨顾乡支行')
+        ) result
+        WHERE
+            1=1
+            <if test="creditApplyStartTime != null">
+                AND result.credit_apply_time &gt;= #{creditApplyStartTime}
+            </if>
+            <if test="creditApplyEndTime != null">
+                AND result.credit_apply_time &lt;= #{creditApplyEndTime}
+            </if>
+            <if test="creditQueryStartTime !=null">
+                AND result.bank_credit_time &gt;=  #{creditQueryStartTime}
+            </if>
+            <if test="creditQueryEndTime !=null">
+                AND result.bank_credit_time &gt;=  #{creditQueryEndTime}
+            </if>
+            <if test="employeeId !=null">
+                AND result.employee_id =#{employeeId}
+            </if>
+            <if test="creditStatus !=null">
+                AND CASE WHEN #{creditStatus} = 1 THEN result.credit_exp_flag =1
+                         WHEN #{creditStatus} = 2 THEN result.credit_exp_flag =2
+                         WHEN #{creditStatus} = 3 THEN result.bank_credit_time IS NOT NULL
+                END
+            </if>
 
     </select>
 

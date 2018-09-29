@@ -5,6 +5,7 @@ import com.aliyun.oss.model.Bucket;
 import com.aliyun.oss.model.OSSObject;
 import com.aliyun.oss.model.ObjectMetadata;
 import com.aliyun.oss.model.PutObjectResult;
+import com.yunche.loan.config.exception.BizException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -108,6 +109,7 @@ public class OSSUnit {
             resultStr = putResult.getETag();
         } catch (Exception e) {
             LOG.error("上传阿里云OSS服务器异常." + e.getMessage(), e);
+            throw new BizException("上传阿里云OSS服务器异常." + e.getMessage());
         }
         return resultStr;
     }

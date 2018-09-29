@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 @Service
@@ -41,6 +42,9 @@ public class LoanInfoRegisterServiceImpl implements LoanInfoRegisterService {
 
     @Autowired
     private LoanCustomerService loanCustomerService;
+
+    @Autowired
+    private LoanCustomerDOMapper loanCustomerDOMapper;
 
 
     @Override
@@ -169,9 +173,16 @@ public class LoanInfoRegisterServiceImpl implements LoanInfoRegisterService {
             int count2 = loanOrderDOMapper.updateByPrimaryKeySelective(loanOrderDO);
             Preconditions.checkArgument(count2 > 0, "插入金融方案计划失败");
         }
-
-        // 客户信息
-        loanCustomerService.update(loanInfoRegisterParam.getLoanCustomerDO());
+        if(loanInfoRegisterParam.getWorkCompanyName() !=null){
+            Long cusId = loanOrderDO.getLoanCustomerId();
+            LoanCustomerDO loanCustomerDO = new LoanCustomerDO();
+            loanCustomerDO.setId(cusId);
+            if(loanInfoRegisterParam.getMonthIncome() !=null && !"".equals(loanInfoRegisterParam.getMonthIncome())){
+                loanCustomerDO.setMonthIncome(new BigDecimal(loanInfoRegisterParam.getMonthIncome()));
+            }
+            loanCustomerDO.setIncomeCertificateCompanyName(loanInfoRegisterParam.getWorkCompanyName());
+            loanCustomerDOMapper.updateByPrimaryKeySelective(loanCustomerDO);
+        }
 
         return ResultBean.ofSuccess(null, "保存成功");
     }

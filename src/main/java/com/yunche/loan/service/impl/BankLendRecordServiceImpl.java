@@ -97,7 +97,7 @@ public class BankLendRecordServiceImpl implements BankLendRecordService {
         try {
 
             returnList = POIUtil.readExcelFromOSS(0, 1, key);
-            BankLendRecordDO bankLendRecordDO = new BankLendRecordDO();
+
             SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
             for (String[] tmp : returnList) {
 //                tmp[0].trim();//客户姓名
@@ -111,6 +111,7 @@ public class BankLendRecordServiceImpl implements BankLendRecordService {
                 if (orderId == null) {
                     continue;
                 }
+                BankLendRecordDO bankLendRecordDO = new BankLendRecordDO();
                 bankLendRecordDO.setLoanOrder(orderId);
                 bankLendRecordDO.setLendDate(df.parse(tmp[2].trim()));
                 bankLendRecordDO.setLendAmount(new BigDecimal(tmp[3].trim()));
@@ -127,9 +128,9 @@ public class BankLendRecordServiceImpl implements BankLendRecordService {
                     int count = bankLendRecordDOMapper.updateByPrimaryKey(bankLendRecordDO);
                     Preconditions.checkArgument(count > 0, "身份证号:" + tmp[1].trim() + ",对应记录更新出错");
                 }
-                bankLendRecordDO = bankLendRecordDOMapper.selectByLoanOrder(orderId);
+
                 LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
-                loanOrderDO.setBankLendRecordId((long) bankLendRecordDO.getId());
+                loanOrderDO.setBankLendRecordId((long)  bankLendRecordDO.getId());
                 int count = loanOrderDOMapper.updateByPrimaryKey(loanOrderDO);
                 Preconditions.checkArgument(count > 0, "业务单号为:" + orderId + ",对应记录更新出错");
 
@@ -138,6 +139,9 @@ public class BankLendRecordServiceImpl implements BankLendRecordService {
                 approvalParam.setOrderId(orderId);
                 approvalParam.setTaskDefinitionKey(LoanProcessEnum.BANK_LEND_RECORD.getCode());
                 approvalParam.setAction(ProcessApprovalConst.ACTION_PASS);
+
+                approvalParam.setNeedLog(true);
+                approvalParam.setCheckPermission(false);
                 ResultBean<Void> approvalResultBean = loanProcessService.approval(approvalParam);
                 Preconditions.checkArgument(approvalResultBean.getSuccess(), approvalResultBean.getMsg());
             }

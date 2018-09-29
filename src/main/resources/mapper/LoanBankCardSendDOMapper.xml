@@ -55,7 +55,7 @@
         cardholder_address = VALUES(cardholder_address),
         repay_card_num = VALUES(repay_card_num),
         express_send_address = VALUES(express_send_address),
-        express_com = VALUES(expressCom),
+        express_com = VALUES(express_com),
         express_send_num = VALUES(express_send_num),
         express_send_date = VALUES(express_send_date),
         gmt_modify = VALUES(gmt_modify)
@@ -205,4 +205,50 @@
         gmt_modify = #{gmtModify,jdbcType=TIMESTAMP}
         where order_id = #{orderId,jdbcType=BIGINT}
     </update>
+    <select id="loanBankCardSendExp" parameterType="com.yunche.loan.domain.param.LoanBankCardSendExpParam" resultMap="BaseResultMap">
+        SELECT
+        a.order_id,
+        b.cardholder_name,
+        b.cardholder_phone,
+        b.cardholder_address,
+        b.repay_card_num,
+        b.express_com,
+        b.express_send_num,
+        b.express_send_date,
+        b.express_send_address
+    FROM
+        loan_process a
+        LEFT JOIN loan_bank_card_send b ON a.order_id = b.order_id
+        LEFT JOIN loan_order c ON c.id = a.order_id
+        left join loan_customer d on d.id = c.loan_customer_id
+        left join loan_base_info e on e.id = c.loan_base_info_id
+    WHERE
+        a.bank_card_send = 2
+        AND a.order_status =1
+        <if test="name !=null and name !=''">
+            and d.name LIKE CONCAT('%',#{name},'%')
+        </if>
+        <if test="idCard !=null and idCard !=''">
+            and d.id_card LIKE CONCAT('%',#{idCard},'%')
+        </if>
+        <if test="bankList != null and bankList.size() > 0">
+            and
+            e.bank in
+            <foreach item="item" index="index" collection="bankList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="partnerList != null and partnerList.size() > 0">
+            and
+            e.partner_id in
+            <foreach item="item" index="index" collection="partnerList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+    </select>
+    <select id="countByorderId" resultType="java.lang.Integer">
+        select count(order_id) from loan_process where order_id = #{orderId}
+            and bank_card_send = 1
+            AND order_status =1
+    </select>
 </mapper>

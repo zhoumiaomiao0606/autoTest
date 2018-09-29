@@ -39,4 +39,6 @@ public interface LoanCustomerService {
     BankAndSocietyResultVO bankPicExport(List<Long> list);
 
     BankAndSocietyResultVO societyPicExport(List<Long> list);
+
+    Long enable(String ids, Byte enable);
 }

@@ -112,7 +112,8 @@
         LEFT JOIN employee employee ON employee.id = principal_base.salesman_id
         LEFT JOIN loan_process ON principal_orders.id = loan_process.order_id
         <where>
-            and (credit_info.type = 2 OR credit_info.type is NULL) AND loan_process.social_credit_record IN (1,2)
+            and ((loan_process.order_status = 1 and credit_info.type = 2)
+            or(loan_process.order_status = 1 and loan_process.social_credit_record =2 and if((select count(*) from loan_credit_info where customer_id = customer.id and type =2) = 1,false,true)))
             <if test="startDate !=null and endDate !=null">
                 and credit_info.gmt_modify between #{startDate} and #{endDate}
             </if>

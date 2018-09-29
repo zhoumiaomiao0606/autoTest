@@ -137,7 +137,9 @@ public class BankSolutionProcessServiceImpl implements BankSolutionProcessServic
             if(CollectionUtils.isEmpty(loanCreditInfoDOS)){
                 LoanCreditInfoDO up = new LoanCreditInfoDO();
                 up.setCustomerId(D.getCustomerId());
-                up.setResult(CreditEnum.getValueByKey(applyCreditCallback.getReq().getResult()));
+                if(bankNoByCusId(D.getCustomerId())){
+                    up.setResult(CreditEnum.getValueByKey(applyCreditCallback.getReq().getResult()));
+                }
                 up.setType(new Byte("1"));
                 up.setStatus(new Byte("0"));
                 up.setGmtCreate(new Date());
@@ -145,7 +147,9 @@ public class BankSolutionProcessServiceImpl implements BankSolutionProcessServic
             }else {
                 LoanCreditInfoDO up = loanCreditInfoDOS.get(0);
                 up.setCustomerId(D.getCustomerId());
-                up.setResult(CreditEnum.getValueByKey(applyCreditCallback.getReq().getResult()));
+                if(bankNoByCusId(D.getCustomerId())){
+                    up.setResult(CreditEnum.getValueByKey(applyCreditCallback.getReq().getResult()));
+                }
                 up.setGmtModify(new Date());
                 loanCreditInfoDOMapper.updateByPrimaryKeySelective(up);
             }
@@ -157,7 +161,9 @@ public class BankSolutionProcessServiceImpl implements BankSolutionProcessServic
             if(CollectionUtils.isEmpty(loanCreditInfoDOS)){
                 LoanCreditInfoDO up = new LoanCreditInfoDO();
                 up.setCustomerId(D.getCustomerId());
-                up.setResult(CreditEnum.getValueByKey(applyCreditCallback.getReq().getResult()));
+                if(bankNoByCusId(D.getCustomerId())){
+                    up.setResult(CreditEnum.getValueByKey(applyCreditCallback.getReq().getResult()));
+                }
                 up.setType(new Byte("1"));
                 up.setStatus(new Byte("0"));
                 up.setGmtCreate(new Date());
@@ -165,7 +171,9 @@ public class BankSolutionProcessServiceImpl implements BankSolutionProcessServic
             }else {
                 LoanCreditInfoDO up = loanCreditInfoDOS.get(0);
                 up.setCustomerId(D.getCustomerId());
-                up.setResult(CreditEnum.getValueByKey(applyCreditCallback.getReq().getResult()));
+                if(bankNoByCusId(D.getCustomerId())){
+                    up.setResult(CreditEnum.getValueByKey(applyCreditCallback.getReq().getResult()));
+                }
                 up.setGmtModify(new Date());
                 loanCreditInfoDOMapper.updateByPrimaryKeySelective(up);
             }
@@ -196,7 +204,9 @@ public class BankSolutionProcessServiceImpl implements BankSolutionProcessServic
             if(CollectionUtils.isEmpty(loanCreditInfoDOS)){
                 LoanCreditInfoDO up = new LoanCreditInfoDO();
                 up.setCustomerId(D.getCustomerId());
-                up.setResult(CreditEnum.getValueByKey(applyCreditCallback.getReq().getResult()));
+                if(bankNoByCusId(D.getCustomerId())){
+                    up.setResult(CreditEnum.getValueByKey(applyCreditCallback.getReq().getResult()));
+                }
                 up.setType(new Byte("1"));
                 up.setStatus(new Byte("0"));
                 up.setGmtCreate(new Date());
@@ -204,7 +214,9 @@ public class BankSolutionProcessServiceImpl implements BankSolutionProcessServic
             }else {
                 LoanCreditInfoDO up = loanCreditInfoDOS.get(0);
                 up.setCustomerId(D.getCustomerId());
-                up.setResult(CreditEnum.getValueByKey(applyCreditCallback.getReq().getResult()));
+                if(bankNoByCusId(D.getCustomerId())){
+                    up.setResult(CreditEnum.getValueByKey(applyCreditCallback.getReq().getResult()));
+                }
                 up.setGmtModify(new Date());
                 loanCreditInfoDOMapper.updateByPrimaryKeySelective(up);
             }
@@ -250,6 +262,14 @@ public class BankSolutionProcessServiceImpl implements BankSolutionProcessServic
         }
 
         logger.info("存储数据 结束  ===============================================================");
+    }
+    public boolean bankNoByCusId(Long cusId){
+        boolean flag = false;
+        String bankName = loanCreditInfoDOMapper.bankNoByCusId(cusId);
+        if(!"中国工商银行杭州城站支行".equals(bankName)){
+            flag = true;
+        }
+        return flag;
     }
 
     @Override

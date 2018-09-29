@@ -35,6 +35,7 @@ public class LoanProcessLegalController {
         approval.setCheckPermission(true);
         approval.setNeedLog(true);
         approval.setNeedPush(true);
+        approval.setAutoTask(false);
         return loanProcessLegalService.approval(approval);
     }
 

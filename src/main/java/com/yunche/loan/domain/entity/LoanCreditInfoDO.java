@@ -11,6 +11,9 @@ public class LoanCreditInfoDO {
 
     private Long customerId;
 
+    /**
+     * 征信结果: 0-不通过;1-通过;2-关注;
+     */
     private Byte result;
 
     private String info;
