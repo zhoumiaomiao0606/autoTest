@@ -6,6 +6,8 @@ import com.google.common.collect.Lists;
 import com.yunche.loan.config.common.OSSConfig;
 import com.yunche.loan.config.constant.BaseConst;
 import com.yunche.loan.config.constant.ExpressCompanyEnum;
+import com.yunche.loan.config.constant.LoanProcessEnum;
+import com.yunche.loan.config.constant.ProcessApprovalConst;
 import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.DateTimeFormatUtils;
@@ -15,6 +17,7 @@ import com.yunche.loan.config.util.SessionUtils;
 import com.yunche.loan.domain.entity.LoanBankCardSendDO;
 import com.yunche.loan.domain.entity.LoanCustomerDO;
 import com.yunche.loan.domain.entity.LoanOrderDO;
+import com.yunche.loan.domain.param.ApprovalParam;
 import com.yunche.loan.domain.param.LoanBankCardSendExpParam;
 import com.yunche.loan.domain.vo.UniversalBankCardSendVO;
 import com.yunche.loan.mapper.LoanBankCardSendDOMapper;
@@ -22,6 +25,7 @@ import com.yunche.loan.mapper.LoanCustomerDOMapper;
 import com.yunche.loan.mapper.LoanOrderDOMapper;
 import com.yunche.loan.mapper.LoanQueryDOMapper;
 import com.yunche.loan.service.LoanBankCardSendService;
+import com.yunche.loan.service.LoanProcessService;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFCell;
@@ -62,6 +66,9 @@ public class LoanBankCardSendServiceImpl implements LoanBankCardSendService {
 
     @Autowired
     private OSSConfig ossConfig;
+
+    @Autowired
+    private LoanProcessService loanProcessService;
 
 
     @Override
@@ -217,11 +224,31 @@ public class LoanBankCardSendServiceImpl implements LoanBankCardSendService {
                 int num =loanBankCardSendDOMapper.countByorderId(loanBankCardSendDO.getOrderId());
                 if(num == 0){
                     loanBankCardSendDOMapper.updateByPrimaryKeySelective(loanBankCardSendDO);
+                    ApprovalParam approvalParam = new ApprovalParam();
+                    approvalParam.setOrderId(loanBankCardSendDO.getOrderId());
+                    approvalParam.setTaskDefinitionKey(LoanProcessEnum.BANK_CARD_SEND.getCode());
+                    approvalParam.setAction(ProcessApprovalConst.ACTION_PASS);
+                    approvalParam.setNeedLog(true);
+                    approvalParam.setCheckPermission(false);
+                    ResultBean<Void> approvalResultBean = loanProcessService.approval(approvalParam);
+                    Preconditions.checkArgument(approvalResultBean.getSuccess(), approvalResultBean.getMsg());
                 }
+
             }
         }
         // batchInsert
         int count = batchInsert(insertList);
+        for(LoanBankCardSendDO loanBankCardSendDO:insertList){
+            ApprovalParam approvalParam = new ApprovalParam();
+            approvalParam.setOrderId(loanBankCardSendDO.getOrderId());
+            approvalParam.setTaskDefinitionKey(LoanProcessEnum.BANK_CARD_SEND.getCode());
+            approvalParam.setAction(ProcessApprovalConst.ACTION_PASS);
+            approvalParam.setNeedLog(true);
+            approvalParam.setCheckPermission(false);
+            ResultBean<Void> approvalResultBean = loanProcessService.approval(approvalParam);
+            Preconditions.checkArgument(approvalResultBean.getSuccess(), approvalResultBean.getMsg());
+
+        }
 
         return ResultBean.ofSuccess(count, "导入成功");
     }

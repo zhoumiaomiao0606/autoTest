@@ -127,9 +127,9 @@ public class BankLendRecordServiceImpl implements BankLendRecordService {
                     int count = bankLendRecordDOMapper.updateByPrimaryKey(bankLendRecordDO);
                     Preconditions.checkArgument(count > 0, "身份证号:" + tmp[1].trim() + ",对应记录更新出错");
                 }
-                bankLendRecordDO = bankLendRecordDOMapper.selectByLoanOrder(orderId);
+
                 LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
-                loanOrderDO.setBankLendRecordId((long) bankLendRecordDO.getId());
+                loanOrderDO.setBankLendRecordId((long)  bankLendRecordDO.getId());
                 int count = loanOrderDOMapper.updateByPrimaryKey(loanOrderDO);
                 Preconditions.checkArgument(count > 0, "业务单号为:" + orderId + ",对应记录更新出错");
 
@@ -138,6 +138,9 @@ public class BankLendRecordServiceImpl implements BankLendRecordService {
                 approvalParam.setOrderId(orderId);
                 approvalParam.setTaskDefinitionKey(LoanProcessEnum.BANK_LEND_RECORD.getCode());
                 approvalParam.setAction(ProcessApprovalConst.ACTION_PASS);
+
+                approvalParam.setNeedLog(true);
+                approvalParam.setCheckPermission(false);
                 ResultBean<Void> approvalResultBean = loanProcessService.approval(approvalParam);
                 Preconditions.checkArgument(approvalResultBean.getSuccess(), approvalResultBean.getMsg());
             }

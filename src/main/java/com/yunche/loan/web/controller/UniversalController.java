@@ -120,7 +120,6 @@ public class UniversalController {
     public ResultBean downreport(@RequestBody LoanCreditExportQuery loanCreditExportQuery) {
 
         OSSClient ossUnit=null;
-        String resultNamePath = null;
         String resultName= null;
         String diskName =null;
         List<CreditPicExportVO> exportVOS =Lists.newLinkedList();
@@ -136,6 +135,8 @@ public class UniversalController {
             }
             if(creditPicExportVOS.size()>50){
                 exportVOS = creditPicExportVOS.subList(0, 50);
+            }else{
+                exportVOS = creditPicExportVOS;
             }
 
 

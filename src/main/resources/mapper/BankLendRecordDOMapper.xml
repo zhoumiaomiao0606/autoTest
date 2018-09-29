@@ -24,7 +24,7 @@
     delete from bank_lend_record
     where id = #{id,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" parameterType="com.yunche.loan.domain.entity.BankLendRecordDO" >
+  <insert id="insert" parameterType="com.yunche.loan.domain.entity.BankLendRecordDO"  useGeneratedKeys="true" keyColumn="id" keyProperty="id">
     insert into bank_lend_record (id, loan_order, lend_date, 
       lend_amount, status, record_status, 
       gmt_create, feature)
@@ -32,7 +32,7 @@
       #{lendAmount,jdbcType=DECIMAL}, #{status,jdbcType=TINYINT}, #{recordStatus,jdbcType=TINYINT}, 
       #{gmtCreate,jdbcType=TIMESTAMP}, #{feature,jdbcType=VARCHAR})
   </insert>
-  <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.BankLendRecordDO" >
+  <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.BankLendRecordDO"  useGeneratedKeys="true" keyColumn="id" keyProperty="id">
     insert into bank_lend_record
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="id != null" >
