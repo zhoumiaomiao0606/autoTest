@@ -64,6 +64,7 @@ public class UniversalInfoVO {
     private String vehicle_color;
     private String vehicle_now_driving_license_owner;
     private String vehicle_license_plate_type;
+    private String vehicle_apply_license_plate_area_id;
     private String vehicle_apply_license_plate_area;
     private String vehicle_old_driving_license_owner;
     private String bank_credit_gmt_create;
@@ -97,6 +98,7 @@ public class UniversalInfoVO {
     private String remit_beneficiary_account_number;
     private String remit_amount;
     private String remit_return_rate_amount;
+    private String pay_month;
 
     private String process_apply_license_plate_deposit_info;
     private String process_bank_lend_record;
@@ -114,6 +116,7 @@ public class UniversalInfoVO {
     private String hcity;
     private String hcounty;
     private String remit_review_time;
+    private String bank_id;
 
     private String customer_ctelzone;
     private String remit_application_date;

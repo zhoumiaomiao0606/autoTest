@@ -1,5 +1,6 @@
 package com.yunche.loan.config.util;
 
+import com.yunche.loan.config.result.ResultBean;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.*;
 import org.apache.http.client.CookieStore;
@@ -336,26 +337,37 @@ public class HttpUtils {
     }
 
 
-    public static HttpResponse doPost(String host, String path,
-                                      Map<String, String> headers,
-                                      Map<String, String> urlParas,
-                                      String body)
+    public static String doPost(String host, String path,
+                                          Map<String, String> urlParas,
+                                          String body)
             throws Exception {
-        HttpClient httpClient = wrapClient(host);
+        CloseableHttpClient httpClient = HttpClients.createDefault();
 
-        HttpPost request = new HttpPost(buildUrl(host, path, urlParas));
-        for (Map.Entry<String, String> e : headers.entrySet()) {
-            request.addHeader(e.getKey(), e.getValue());
-        }
+        HttpPost httpPost = new HttpPost(buildUrl(host, path, urlParas));
+       /* for (Map.Entry<String, String> e : headers.entrySet()) {
+            httpPost.addHeader(e.getKey(), e.getValue());
+        }*/
 
         //设置cookie
        /* request.setHeader(new BasicHeader("Cookie",cookie));*/
 
         if (StringUtils.isNotBlank(body)) {
-            request.setEntity(new StringEntity(body, "utf-8"));
+            StringEntity s = new StringEntity(body);
+            s.setContentEncoding("UTF-8");
+            //发送json数据需要设置contentType
+            s.setContentType("application/json");
+            httpPost.setEntity(s);
         }
 
-        return httpClient.execute(request);
+        HttpResponse httpResponse =httpClient.execute(httpPost);
+
+        String result =null;
+        if(httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK){
+             result = EntityUtils.toString(httpResponse.getEntity());// 返回json格式：
+            LOG.error("数据读取！！！！"+result);
+        }
+
+        return  result;
     }
 
 

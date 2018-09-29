@@ -1,5 +1,7 @@
 package com.yunche.loan.domain.param;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -8,23 +10,33 @@ import java.math.BigDecimal;
 public class ParternerRuleParam
 {
     //合伙人id
-    private Integer partnerId;
+    private Long partnerId;
     //收费是否月结(0:否;1:是)
-    private Boolean payMonth;
+    private String payMonth;
     //车辆类型：0-新车; 1-二手车; 2-不限;
-    private Integer carType;
+    private String carType;
     //贷款金额
-    private Integer financialLoanAmount;
+    private String financialLoanAmount;
     //银行分期本金
-    private Integer financialBankPeriodPrincipal;
+    private String financialBankPeriodPrincipal;
     //贷款利率
-    private BigDecimal rate;
+    private String rate;
     //年限
-    private Integer year;
+    private String year;
     //GPS数量
-    private Integer carGpsNum;
+    private String carGpsNum;
     //银行ID
-    private Long bankAreaId;
+    private String bankAreaId;
     //上牌地城市ID
-    private Long areaId;
+    private String areaId;
+
+    private String bail;
+
+    @Override
+    public String toString() {
+        return JSON.toJSONString(this, new SerializerFeature[]{SerializerFeature.WriteMapNullValue, SerializerFeature.WriteNullListAsEmpty,
+                SerializerFeature.WriteNullStringAsEmpty, SerializerFeature.WriteNullNumberAsZero, SerializerFeature.WriteNullBooleanAsFalse,
+                SerializerFeature.UseISO8601DateFormat });
+
+    }
 }

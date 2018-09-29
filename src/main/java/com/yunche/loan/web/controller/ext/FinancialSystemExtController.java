@@ -1,10 +1,10 @@
 package com.yunche.loan.web.controller.ext;
 
 import com.yunche.loan.config.result.ResultBean;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import com.yunche.loan.domain.param.CustomersLoanFinanceInfoByPartnerParam;
+import com.yunche.loan.service.CustomersLoanFinanceInfoByPartnerService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * 外部-财务系统
@@ -17,10 +17,26 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/ext/financialSystem")
 public class FinancialSystemExtController {
 
+    @Autowired
+    private CustomersLoanFinanceInfoByPartnerService customersLoanFinanceInfoByPartnerservice;
 
     @GetMapping("/list")
     public ResultBean list() {
 
         return ResultBean.ofSuccess(null);
+    }
+
+    //获取财务信息
+    @PostMapping("/customersLoanFinanceInfoByPartner")
+    public ResultBean selectCustomersLoanFinanceInfoByPartner(@RequestBody CustomersLoanFinanceInfoByPartnerParam customersLoanFinanceInfoByPartnerParam)
+    {
+        return customersLoanFinanceInfoByPartnerservice.selectCustomersLoanFinanceInfoByPartner(customersLoanFinanceInfoByPartnerParam);
+    }
+
+    //获取统计数据
+    @GetMapping("/totalLoanFinanceInfoByPartner")
+    public ResultBean selectTotalLoanFinanceInfoByPartner(@RequestParam("partnerId") Long partnerId)
+    {
+        return customersLoanFinanceInfoByPartnerservice.selectTotalLoanFinanceInfoByPartner(partnerId);
     }
 }

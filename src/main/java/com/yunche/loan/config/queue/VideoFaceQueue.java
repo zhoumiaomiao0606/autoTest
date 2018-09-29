@@ -3,6 +3,7 @@ package com.yunche.loan.config.queue;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.yunche.loan.domain.param.WebSocketParam;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
@@ -42,21 +43,17 @@ public class VideoFaceQueue {
     /**
      * 进入（队列）排队    or  刷新过期时间
      *
-     * @param queueId
-     * @param userId
-     * @param clientType    1-PC; 2-APP;
-     * @param anyChatUserId
-     * @param orderId
-     * @param wsSessionId   WebSocket 会话ID
+     * @param webSocketParam
+     * @param wsSessionId    WebSocket 会话ID
      */
-    public void addQueue(Long queueId, Long userId, Byte clientType, Long anyChatUserId, Long orderId, String wsSessionId) {
+    public void addQueue(WebSocketParam webSocketParam, String wsSessionId) {
 
         // 队列排名依据   -> val ： 开始排队时间
         long startTime = System.currentTimeMillis();
 
         // prefix  +  queue_id  +  client_type  +  anyChat_user_id  +  ws_session_id  +  user_id  +  order_id
-        String key = VIDEO_FACE_QUEUE_PREFIX + queueId + SEPARATOR + clientType + SEPARATOR + anyChatUserId
-                + SEPARATOR + wsSessionId + SEPARATOR + userId + SEPARATOR + orderId;
+        String key = VIDEO_FACE_QUEUE_PREFIX + webSocketParam.getBankId() + SEPARATOR + webSocketParam.getType() + SEPARATOR + webSocketParam.getAnyChatUserId()
+                + SEPARATOR + wsSessionId + SEPARATOR + webSocketParam.getUserId() + SEPARATOR + webSocketParam.getOrderId();
 
         DefaultRedisScript<Long> redisScript = new DefaultRedisScript<>();
         redisScript.setScriptSource(new ResourceScriptSource(new ClassPathResource("lua/addQueue.lua")));
@@ -79,18 +76,14 @@ public class VideoFaceQueue {
     /**
      * 退出（队列）排队
      *
-     * @param queueId
-     * @param userId
-     * @param clientType
-     * @param anyChatUserId
-     * @param orderId
+     * @param webSocketParam
      * @param wsSessionId
      */
-    public void exitQueue(Long queueId, Long userId, Byte clientType, Long anyChatUserId, Long orderId, String wsSessionId) {
+    public void exitQueue(WebSocketParam webSocketParam, String wsSessionId) {
 
         // prefix  +  queue_id  +  client_type  +  anyChat_user_id  +  ws_session_id  +  user_id  +  order_id
-        String key = VIDEO_FACE_QUEUE_PREFIX + queueId + SEPARATOR + clientType + SEPARATOR + anyChatUserId
-                + SEPARATOR + wsSessionId + SEPARATOR + userId + SEPARATOR + orderId;
+        String key = VIDEO_FACE_QUEUE_PREFIX + webSocketParam.getBankId() + SEPARATOR + webSocketParam.getType() + SEPARATOR + webSocketParam.getAnyChatUserId()
+                + SEPARATOR + wsSessionId + SEPARATOR + webSocketParam.getUserId() + SEPARATOR + webSocketParam.getOrderId();
 
         String scriptText = "return redis.call('DEL', KEYS[1])";
 
@@ -99,8 +92,6 @@ public class VideoFaceQueue {
         redisScript.setResultType(Long.class);
 
         stringRedisTemplate.execute(redisScript, Lists.newArrayList(key));
-
-//        stringRedisTemplate.delete(key);
     }
 
     /**
@@ -199,19 +190,18 @@ public class VideoFaceQueue {
     /**
      * 排队时间     单位：毫秒
      *
-     * @param queueId
-     * @param userId
-     * @param clientType
-     * @param anyChatUserId
-     * @param orderId
+     * @param webSocketParam
      * @param wsSessionId
      * @return
      */
-    public Long getWaitTime(Long queueId, Long userId, Byte clientType, Long anyChatUserId, Long orderId, String wsSessionId) {
+    public Long getWaitTime(WebSocketParam webSocketParam, String wsSessionId) {
+
+//        String key_ = VIDEO_FACE_QUEUE_PREFIX + queueId + SEPARATOR + clientType + SEPARATOR + anyChatUserId
+//                + SEPARATOR + wsSessionId + SEPARATOR + userId + SEPARATOR + orderId;
 
         // prefix  +  queue_id  +  client_type  +  anyChat_user_id  +  ws_session_id  +  user_id  +  order_id
-        String key = VIDEO_FACE_QUEUE_PREFIX + queueId + SEPARATOR + clientType + SEPARATOR + anyChatUserId
-                + SEPARATOR + wsSessionId + SEPARATOR + userId + SEPARATOR + orderId;
+        String key = VIDEO_FACE_QUEUE_PREFIX + webSocketParam.getBankId() + SEPARATOR + webSocketParam.getType() + SEPARATOR + webSocketParam.getAnyChatUserId()
+                + SEPARATOR + wsSessionId + SEPARATOR + webSocketParam.getUserId() + SEPARATOR + webSocketParam.getOrderId();
 
         String scriptText = "return redis.call('GET', KEYS[1])";
 

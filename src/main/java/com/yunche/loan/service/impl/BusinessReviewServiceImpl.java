@@ -1,11 +1,15 @@
 package com.yunche.loan.service.impl;
 
+import com.google.gson.Gson;
 import com.yunche.loan.config.exception.BizException;
+import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.BeanPlasticityUtills;
 import com.yunche.loan.domain.entity.*;
 import com.yunche.loan.domain.param.BusinessReviewCalculateParam;
 import com.yunche.loan.domain.param.BusinessReviewUpdateParam;
+import com.yunche.loan.domain.param.ParternerRuleParam;
 import com.yunche.loan.domain.vo.*;
+import com.yunche.loan.manager.finance.BusinessReviewManager;
 import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.BusinessReviewService;
 import com.yunche.loan.service.LoanQueryService;
@@ -50,6 +54,9 @@ public class BusinessReviewServiceImpl implements BusinessReviewService {
     @Autowired
     private BaseAreaDOMapper baseAreaDOMapper;
 
+    @Resource
+    private BusinessReviewManager businessReviewManager;
+
 
     @Override
     public RecombinationVO detail(Long orderId) {
@@ -91,6 +98,35 @@ public class BusinessReviewServiceImpl implements BusinessReviewService {
         recombinationVO.setTelephone_des(loanTelephoneVerifyDOMapper.selectByPrimaryKey(orderId));
         recombinationVO.setSupplement(loanQueryService.selectUniversalInfoSupplementHistory(orderId));
         recombinationVO.setCustomers(customers);
+
+        //请求财务系统初始数据
+        ParternerRuleParam param =new ParternerRuleParam();
+        param.setPartnerId(loanBaseInfoDO.getPartnerId());
+        param.setPayMonth(universalInfoVO.getPay_month());
+        param.setCarType(universalInfoVO.getCar_type());
+        param.setFinancialLoanAmount(universalInfoVO.getFinancial_loan_amount());
+        param.setFinancialBankPeriodPrincipal(universalInfoVO.getFinancial_bank_period_principal());
+        param.setRate(universalInfoVO.getFinancial_sign_rate());
+        param.setYear(universalInfoVO.getFinancial_loan_time());
+        param.setCarGpsNum(universalInfoVO.getCar_gps_num());
+        param.setBankAreaId(universalInfoVO.getBank_id());
+
+        //加收保证金
+        param.setBail(universalInfoVO.getFinancial_cash_deposit());
+        //上牌地城市id
+        param.setAreaId(universalInfoVO.getVehicle_apply_license_plate_area_id());
+
+
+        String financeResult = businessReviewManager.financeUnisal(param, "/costcalculation");
+        FinanceResult financeResult1 = new FinanceResult();
+        if (financeResult !=null && !"".equals(financeResult))
+        {
+            Gson gson = new Gson();
+             financeResult1 = gson.fromJson(financeResult, FinanceResult.class);
+        }
+
+        recombinationVO.setFinanceResult1(financeResult1);
+
         return recombinationVO;
     }
 

@@ -431,11 +431,13 @@
             car.vehicle_property                                                                    AS car_vehicle_property,
             car.car_key                                                                             AS car_key,
             car.info                                                                                AS car_info,
+            car.pay_month                                                                                AS pay_month,
             vehicle.color                                                                           AS vehicle_color,
             vehicle.now_driving_license_owner                                                       AS vehicle_now_driving_license_owner,
             vehicle.old_driving_license_owner                                                       AS vehicle_old_driving_license_owner,
             vehicle.license_plate_type                                                              AS vehicle_license_plate_type,
             CONCAT(area.parent_area_name,area.area_name)                                            AS vehicle_apply_license_plate_area,
+            vehicle.apply_license_plate_area                                           AS vehicle_apply_license_plate_area_id,
             DATE_FORMAT(bank_credit.gmt_create,'%Y-%m-%d %H:%i:%S')                                 AS bank_credit_gmt_create,
             society_credit.gmt_create                                                               AS society_credit_gmt_create,
             financial.id                                                                            AS financial_id,
@@ -480,6 +482,7 @@
             cost.performance_fee                                                                    AS performance_fee,
             repay.overdue_amount                                                                    AS overdue_amount,
             remit.remit_time                                                                        AS remit_review_time,
+            bank.id                                                    as bank_id,
             bank_lend.lend_date                                                                     AS bank_lend_date
 
     from (select * from loan_order where id = #{orderId,jdbcType=BIGINT}) main_order
@@ -503,6 +506,7 @@
     left join cost_details cost on main_order.cost_details_id = cost.id
     left join bank_repay_record repay on repay.order_id = main_order.id
     left join bank_lend_record bank_lend on main_order.bank_lend_record_id = bank_lend.id
+    LEFT JOIN   bank                            bk      ON   bk.name = loan.bank
 
   </select>
 
