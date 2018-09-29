@@ -712,7 +712,7 @@ public class LoanOrderServiceImpl implements LoanOrderService {
             e.setUploadType(UPLOAD_TYPE_NORMAL);
             String s = JSON.toJSONString(path);
             e.setPath("[" + s + "]");
-            e.setType(ZIP_PACK.getType());
+            e.setType(BANK_CREDIT_PIC.getType());
             e.setStatus(VALID_STATUS);
             e.setGmtCreate(new Date());
             loanFileDOMapper.updateByPrimaryKeySelective(e);
