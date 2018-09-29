@@ -573,7 +573,13 @@ public class WebSocketServiceImpl implements WebSocketService {
                             }
 
                             Long waitTime = videoFaceQueue.getWaitTime(webSocketParam, wsSessionId);
-                            if (waitTime > maxWaitTime) {
+                            if (null == waitTime) {
+
+                                // 进入排队队列：人工面签
+                                result[0] = true;
+                                return;
+
+                            } else if (waitTime > maxWaitTime) {
 
                                 // 等待超过maxWaitTime
                                 result[0] = false;
