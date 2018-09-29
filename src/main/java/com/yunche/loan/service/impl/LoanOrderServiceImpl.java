@@ -39,7 +39,6 @@ import static com.yunche.loan.config.constant.LoanCustomerConst.*;
 import static com.yunche.loan.config.constant.LoanCustomerEnum.*;
 import static com.yunche.loan.config.constant.LoanFileConst.UPLOAD_TYPE_NORMAL;
 import static com.yunche.loan.config.constant.LoanFileEnum.BANK_CREDIT_PIC;
-import static com.yunche.loan.config.constant.LoanFileEnum.ZIP_PACK;
 import static com.yunche.loan.config.constant.LoanOrderProcessConst.TASK_PROCESS_REJECT;
 import static com.yunche.loan.config.constant.LoanProcessEnum.CREDIT_APPLY;
 
@@ -705,7 +704,7 @@ public class LoanOrderServiceImpl implements LoanOrderService {
     private void saveToLoanFile(Long customerId, String path) {
 
         //先将文件状态改为进行中
-        List<LoanFileDO> loanFileDOS = loanFileDOMapper.listByCustomerIdAndType(customerId, ZIP_PACK.getType(), UPLOAD_TYPE_NORMAL);
+        List<LoanFileDO> loanFileDOS = loanFileDOMapper.listByCustomerIdAndType(customerId, BANK_CREDIT_PIC.getType(), UPLOAD_TYPE_NORMAL);
 
         loanFileDOS.parallelStream().filter(Objects::nonNull).forEach(e -> {
             e.setCustomerId(customerId);
