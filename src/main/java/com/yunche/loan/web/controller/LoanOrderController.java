@@ -114,7 +114,7 @@ public class LoanOrderController {
      * @return
      */
     @GetMapping("/creditrecord/picCheck")
-    public ResultBean createCreditDownreport(){
+    public ResultBean picCheck(){
         return loanOrderService.picCheck();
     }
     /**
