@@ -62,7 +62,6 @@ public class LoanCreditInfoServiceImpl implements LoanCreditInfoService {
     @Override
     public void save(LoanCreditInfoDO loanCreditInfoDO) {
 
-        // todo  wrong
         create(loanCreditInfoDO);
     }
 

@@ -105,7 +105,7 @@ public class BankCreditRecordScheduledTask {
                     .forEach(bankInterfaceSerialDO -> {
 
                         // 更新 可编辑状态 & 银行征信打回标记
-                        updateCustomerEnableAndBankCreditReject(bankInterfaceSerialDO.getCustomerId());
+//                        updateCustomerEnableAndBankCreditReject(bankInterfaceSerialDO.getCustomerId());
 
                         // 银行征信拒绝的客户，打回以后，直接将结果设定为“征信拒贷”
 //                        updateLoanCreditInfo(bankInterfaceSerialDO.getCustomerId());
@@ -132,7 +132,7 @@ public class BankCreditRecordScheduledTask {
 
             LoanCustomerDO loanCustomerDO = new LoanCustomerDO();
             loanCustomerDO.setId(customerId);
-// TODO            loanCustomerDO.setEnable(BaseConst.K_YORN_YES);
+            loanCustomerDO.setEnable(BaseConst.K_YORN_YES);
             loanCustomerDO.setBankCreditReject(BaseConst.K_YORN_YES);
 
             ResultBean<Void> updateResult = loanCustomerService.update(loanCustomerDO);
