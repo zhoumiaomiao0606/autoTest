@@ -25,9 +25,7 @@ import com.yunche.loan.domain.param.BankOpenCardParam;
 import com.yunche.loan.domain.vo.UniversalBankInterfaceSerialVO;
 import com.yunche.loan.domain.vo.UniversalMaterialRecordVO;
 import com.yunche.loan.mapper.*;
-import com.yunche.loan.service.BankSolutionService;
-import com.yunche.loan.service.LoanProcessService;
-import com.yunche.loan.service.LoanQueryService;
+import com.yunche.loan.service.*;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -121,13 +119,15 @@ public class BankSolutionServiceImpl implements BankSolutionService {
     @Resource
     private CarDetailDOMapper carDetailDOMapper;
 
+    @Resource
+    private BankInterfaceSerialDOMapper bankInterfaceSerialDOMapper;
+
 
     @Resource
     private LoanQueryService loanQueryService;
 
-
-    @Resource
-    private BankInterfaceSerialDOMapper bankInterfaceSerialDOMapper;
+    @Autowired
+    private LoanCreditInfoHisService loanCreditInfoHisService;
 
     @Autowired
     private LoanProcessService loanProcessService;
@@ -135,7 +135,12 @@ public class BankSolutionServiceImpl implements BankSolutionService {
     @Autowired
     private BankInterfaceLogDOMapper bankInterfaceLogDOMapper;
 
-    //征信自动提交
+
+    /**
+     * 征信自动提交
+     *
+     * @param orderId
+     */
     @Override
     public void creditAutomaticCommit(Long orderId) {
         LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
@@ -178,6 +183,10 @@ public class BankSolutionServiceImpl implements BankSolutionService {
 //                        && GUARANTEE_TYPE_INSIDE.equals(e.getGuaranteeType()))
 //                )
 //                .collect(Collectors.toList());
+
+
+        // 记录单个客户征信查询历史记录--银行征信查询
+        loanCreditInfoHisService.saveCreditInfoHis_BankCreditRecord(customers);
 
 
         int value = bankId.intValue();

@@ -12,6 +12,7 @@ import com.yunche.loan.domain.entity.LoanCustomerDO;
 import com.yunche.loan.domain.param.ApprovalParam;
 import com.yunche.loan.mapper.BankInterfaceSerialDOMapper;
 import com.yunche.loan.mapper.LoanCustomerDOMapper;
+import com.yunche.loan.service.LoanCreditInfoHisService;
 import com.yunche.loan.service.LoanCreditInfoService;
 import com.yunche.loan.service.LoanCustomerService;
 import com.yunche.loan.service.LoanProcessService;
@@ -49,6 +50,9 @@ public class BankCreditRecordScheduledTask {
 
     @Autowired
     private LoanCreditInfoService loanCreditInfoService;
+
+    @Autowired
+    private LoanCreditInfoHisService loanCreditInfoHisService;
 
     @Autowired
     private LoanProcessService loanProcessService;
@@ -112,6 +116,9 @@ public class BankCreditRecordScheduledTask {
 
                         // 审核参数设置
                         setApprovalParam(approval, bankInterfaceSerialDO);
+
+                        // 记录单个客户征信查询历史记录--银行征信打回
+                        loanCreditInfoHisService.saveCreditInfoHis_BankCreditReject(bankInterfaceSerialDO.getCustomerId(), approval.getInfo());
 
                         // 提交打回
                         autoReject(approval, bankInterfaceSerialDO);

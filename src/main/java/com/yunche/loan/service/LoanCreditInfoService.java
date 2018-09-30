@@ -1,8 +1,12 @@
 package com.yunche.loan.service;
 
 import com.yunche.loan.domain.entity.LoanCreditInfoDO;
+import com.yunche.loan.domain.entity.LoanCustomerDO;
+import com.yunche.loan.domain.param.ApprovalParam;
 import com.yunche.loan.domain.vo.CreditRecordVO;
 import com.yunche.loan.domain.vo.LoanCreditInfoVO;
+
+import java.util.List;
 
 /**
  * @author liuzhe
@@ -19,4 +23,6 @@ public interface LoanCreditInfoService {
     LoanCreditInfoVO getByCustomerId(Long id, Byte type);
 
     CreditRecordVO detailAll(Long loanCustomerId, Byte creditType);
+
+    void saveCreditInfoHis(Long principalCustId, ApprovalParam approval);
 }

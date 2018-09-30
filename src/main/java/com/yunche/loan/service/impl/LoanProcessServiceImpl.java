@@ -154,6 +154,9 @@ public class LoanProcessServiceImpl implements LoanProcessService {
     private LoanCustomerService loanCustomerService;
 
     @Autowired
+    private LoanCreditInfoHisService loanCreditInfoHisService;
+
+    @Autowired
     private LoanProcessBridgeService loanProcessBridgeService;
 
     @Autowired
@@ -728,6 +731,9 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      * @param loanProcessDO
      */
     private void autoReject2BusinessPay_passFinancialSchemeModifyApplyReviewTask(LoanProcessDO loanProcessDO) {
+        if (TASK_PROCESS_TODO.equals(loanProcessDO.getBusinessPay()) || TASK_PROCESS_REJECT.equals(loanProcessDO.getBusinessPay())) {
+            return;
+        }
         // BUSINESS_REVIEW -> [BUSINESS_PAY]
         if (TASK_PROCESS_TODO.equals(loanProcessDO.getBusinessReview())) {
             autoReject2BusinessPay(loanProcessDO.getOrderId(), BUSINESS_REVIEW.getCode(), loanProcessDO);
@@ -3171,12 +3177,16 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         // 附带任务-[征信申请]
         doAttachTask_creditApply(approval, loanOrderDO);
 
+        // 附带任务-[银行征信]
+        doAttachTask_BankCreditRecord(approval, loanOrderDO);
+
         // 附带任务-[打款确认]
         doAttachTask_RemitReview(approval, loanOrderDO);
 
         // 附带任务-[金融方案修改-审核]
         doAttachTask_FinancialSchemeModifyApplyReview(approval, loanProcessDO);
     }
+
 
     /**
      * 附带任务-[征信申请]
@@ -3192,8 +3202,27 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             // 重置订单下所有客户的可编辑标记
             loanCustomerService.updateCustomerEnable(loanOrderDO.getLoanCustomerId());
 
+            // 记录单个客户征信查询历史记录--征信申请
+            loanCreditInfoHisService.saveCreditInfoHis_CreditApply(loanOrderDO.getLoanCustomerId());
+
             // 通过银行接口  ->  自动查询征信
             bankSolutionService.creditAutomaticCommit(approval.getOrderId());
+        }
+    }
+
+    /**
+     * 附带任务-[银行征信]
+     *
+     * @param approval
+     * @param loanOrderDO
+     */
+    private void doAttachTask_BankCreditRecord(ApprovalParam approval, LoanOrderDO loanOrderDO) {
+
+        // 银行征信打回
+        if (BANK_CREDIT_RECORD.getCode().equals(approval.getTaskDefinitionKey()) && ACTION_REJECT_MANUAL.equals(approval.getAction())) {
+
+            // 记录单个客户征信查询历史记录--银行征信打回
+            loanCreditInfoHisService.saveCreditInfoHis_BankCreditReject(loanOrderDO.getLoanCustomerId(), approval.getInfo());
         }
     }
 
