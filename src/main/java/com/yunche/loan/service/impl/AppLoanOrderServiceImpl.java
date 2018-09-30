@@ -745,24 +745,25 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
             VehicleInformationDO vehicleInformationDO = vehicleInformationDOMapper.selectByPrimaryKey(vid);
 
             String tmpApplyLicensePlateArea = null;
-            if (vehicleInformationDO.getApply_license_plate_area() != null) {
-                BaseAreaDO baseAreaDO = baseAreaDOMapper.selectByPrimaryKey(Long.valueOf(vehicleInformationDO.getApply_license_plate_area()), VALID_STATUS);
-                //（个性化）如果上牌地是区县一级，则返回形式为 省+区
-                if ("3".equals(String.valueOf(baseAreaDO.getLevel()))) {
-                    Long parentAreaId = baseAreaDO.getParentAreaId();
-                    BaseAreaDO cityDO = baseAreaDOMapper.selectByPrimaryKey(parentAreaId, null);
-                    baseAreaDO.setParentAreaId(cityDO.getParentAreaId());
-                    baseAreaDO.setParentAreaName(cityDO.getParentAreaName());
-                }
-                if (baseAreaDO != null) {
-                    if (baseAreaDO.getParentAreaName() != null) {
-                        tmpApplyLicensePlateArea = baseAreaDO.getParentAreaName() + baseAreaDO.getAreaName();
-                    } else {
-                        tmpApplyLicensePlateArea = baseAreaDO.getAreaName();
+
+            if (vehicleInformationDO != null) {
+                if (vehicleInformationDO.getApply_license_plate_area() != null) {
+                    BaseAreaDO baseAreaDO = baseAreaDOMapper.selectByPrimaryKey(Long.valueOf(vehicleInformationDO.getApply_license_plate_area()), VALID_STATUS);
+                    //（个性化）如果上牌地是区县一级，则返回形式为 省+区
+                    if ("3".equals(String.valueOf(baseAreaDO.getLevel()))) {
+                        Long parentAreaId = baseAreaDO.getParentAreaId();
+                        BaseAreaDO cityDO = baseAreaDOMapper.selectByPrimaryKey(parentAreaId, null);
+                        baseAreaDO.setParentAreaId(cityDO.getParentAreaId());
+                        baseAreaDO.setParentAreaName(cityDO.getParentAreaName());
+                    }
+                    if (baseAreaDO != null) {
+                        if (baseAreaDO.getParentAreaName() != null) {
+                            tmpApplyLicensePlateArea = baseAreaDO.getParentAreaName() + baseAreaDO.getAreaName();
+                        } else {
+                            tmpApplyLicensePlateArea = baseAreaDO.getAreaName();
+                        }
                     }
                 }
-            }
-            if (vehicleInformationDO != null) {
                 //行驶证车主
                 businessInfoVO.setNowDrivingLicenseOwner(vehicleInformationDO.getNow_driving_license_owner());
                 //上牌方式
