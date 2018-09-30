@@ -62,6 +62,7 @@ public class LoanCreditInfoServiceImpl implements LoanCreditInfoService {
     @Override
     public void save(LoanCreditInfoDO loanCreditInfoDO) {
 
+        // todo  wrong
         create(loanCreditInfoDO);
     }
 
@@ -79,7 +80,9 @@ public class LoanCreditInfoServiceImpl implements LoanCreditInfoService {
 
             // update
             LoanCreditInfoDO existLoanCreditInfoDO = loanCreditInfoDOS.get(0);
+            Long id = existLoanCreditInfoDO.getId();
             BeanUtils.copyProperties(loanCreditInfoDO, existLoanCreditInfoDO);
+            existLoanCreditInfoDO.setId(id);
             update(existLoanCreditInfoDO);
 
         } else {
