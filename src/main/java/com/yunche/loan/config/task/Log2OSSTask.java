@@ -26,7 +26,7 @@ public class Log2OSSTask {
 
     private static final Logger logger = LoggerFactory.getLogger(Log2OSSTask.class);
 
-    private static String LOG_CLASSPATH = "/root/yunche-biz/logs/";
+    private static String LOG_CLASSPATH = "/root/yunche-biz/pub/logs/";
 
 //    private static String LOG_CLASSPATH = "/Users/liuzhe/Develop/JAVA/Project/Dev/loanBusiness/loanBusiness/logs/";
 

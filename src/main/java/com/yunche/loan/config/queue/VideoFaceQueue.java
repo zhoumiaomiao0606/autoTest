@@ -25,7 +25,7 @@ public class VideoFaceQueue {
     /**
      * 视频面签 -队列排队列表 前缀
      */
-    private static final String VIDEO_FACE_QUEUE_PREFIX = "video-face-queue:";
+    private static final String VIDEO_FACE_QUEUE_PREFIX = "video:face:queue:";
     /**
      * 分隔符
      */

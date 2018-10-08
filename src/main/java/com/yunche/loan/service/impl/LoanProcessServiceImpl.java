@@ -728,6 +728,9 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      * @param loanProcessDO
      */
     private void autoReject2BusinessPay_passFinancialSchemeModifyApplyReviewTask(LoanProcessDO loanProcessDO) {
+        if (TASK_PROCESS_TODO.equals(loanProcessDO.getBusinessPay()) || TASK_PROCESS_REJECT.equals(loanProcessDO.getBusinessPay())) {
+            return;
+        }
         // BUSINESS_REVIEW -> [BUSINESS_PAY]
         if (TASK_PROCESS_TODO.equals(loanProcessDO.getBusinessReview())) {
             autoReject2BusinessPay(loanProcessDO.getOrderId(), BUSINESS_REVIEW.getCode(), loanProcessDO);

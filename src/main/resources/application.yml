@@ -13,11 +13,11 @@ spring:
       max-idle: 16
       max-active: 20
       test-on-borrow: true
-    tomcat:
-      max-wait: 10000
-      max-idle: 8
-      max-active: 8
-      test-on-borrow: true
+#    tomcat:
+#      max-wait: 10000
+#      max-idle: 8
+#      max-active: 8
+#      test-on-borrow: true
 
   redis:
     host: 47.97.122.31
@@ -49,9 +49,9 @@ spring:
   profiles: prepub
   datasource:
     druid:
-      url: jdbc:mysql://rm-bp1uk11f20h4i65u90o.mysql.rds.aliyuncs.com:3306/yunche_loan_biz?useUnicode=true&characterEncoding=utf-8
+      url: jdbc:mysql://rm-bp1uk11f20h4i65u95o.mysql.rds.aliyuncs.com:3306/yunche_loan_biz?useUnicode=true&characterEncoding=utf-8
       username: yuncheadmin
-      password: hzzsqc@2020
+      password: ycjinfu@2099
       driver-class-name: com.mysql.jdbc.Driver
       max-wait: 10000
       initialSize: 8

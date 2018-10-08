@@ -79,7 +79,9 @@ public class LoanCreditInfoServiceImpl implements LoanCreditInfoService {
 
             // update
             LoanCreditInfoDO existLoanCreditInfoDO = loanCreditInfoDOS.get(0);
+            Long id = existLoanCreditInfoDO.getId();
             BeanUtils.copyProperties(loanCreditInfoDO, existLoanCreditInfoDO);
+            existLoanCreditInfoDO.setId(id);
             update(existLoanCreditInfoDO);
 
         } else {
