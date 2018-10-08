@@ -15,6 +15,7 @@ import com.yunche.loan.domain.vo.VehicleInformationVO;
 import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.LoanQueryService;
 import com.yunche.loan.service.VehicleInformationService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -73,7 +74,7 @@ public class VehicleInformationServiceImpl implements VehicleInformationService 
             if (vehicleInformationVO.getApply_license_plate_area() != null) {
                 BaseAreaDO baseAreaDO = baseAreaDOMapper.selectByPrimaryKey(Long.valueOf(vehicleInformationVO.getApply_license_plate_area()), VALID_STATUS);
                 String tmpApplyLicensePlateArea = null;
-                if("3".equals(String.valueOf(baseAreaDO.getLevel()))){
+                if ("3".equals(String.valueOf(baseAreaDO.getLevel()))) {
                     Long parentAreaId = baseAreaDO.getParentAreaId();
                     BaseAreaDO cityDO = baseAreaDOMapper.selectByPrimaryKey(parentAreaId, null);
                     baseAreaDO.setParentAreaId(cityDO.getParentAreaId());
@@ -113,10 +114,10 @@ public class VehicleInformationServiceImpl implements VehicleInformationService 
         LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(Long.valueOf(param.getOrder_id()));
 
         //使用年限自动计算
-        Integer month =null;
-        if(param.getTransfer_ownership_date()!=null && param.getRegister_date()!=null){
-            month =  assessUseYear(Long.valueOf(param.getOrder_id()),DateUtil.getDate10(param.getTransfer_ownership_date()),DateUtil.getDate10(param.getRegister_date()));
-            if(month !=null){
+        Integer month = null;
+        if (param.getTransfer_ownership_date() != null && param.getRegister_date() != null) {
+            month = assessUseYear(Long.valueOf(param.getOrder_id()), DateUtil.getDate10(param.getTransfer_ownership_date()), DateUtil.getDate10(param.getRegister_date()));
+            if (month != null) {
                 param.setAssess_use_year(String.valueOf(month));
             }
         }
@@ -148,12 +149,13 @@ public class VehicleInformationServiceImpl implements VehicleInformationService 
         }
 
         String s = param.getApply_license_plate_area();
-        LoanBaseInfoDO loanBaseInfoDO = new LoanBaseInfoDO();
-        loanBaseInfoDO.setAreaId(Long.valueOf(s));
-        LoanBaseInfoDO loanBaseInfoDO1 = loanBaseInfoDOMapper.getTotalInfoByOrderId(Long.valueOf(param.getOrder_id()));
-        loanBaseInfoDO.setId(loanBaseInfoDO1.getId());
-        loanBaseInfoDOMapper.updateByPrimaryKeySelective(loanBaseInfoDO);
-
+        if (StringUtils.isNotBlank(s)) {
+            LoanBaseInfoDO loanBaseInfoDO = new LoanBaseInfoDO();
+            loanBaseInfoDO.setAreaId(Long.valueOf(s));
+            LoanBaseInfoDO loanBaseInfoDO1 = loanBaseInfoDOMapper.getTotalInfoByOrderId(Long.valueOf(param.getOrder_id()));
+            loanBaseInfoDO.setId(loanBaseInfoDO1.getId());
+            loanBaseInfoDOMapper.updateByPrimaryKeySelective(loanBaseInfoDO);
+        }
 
         Long customerId = loanOrderDO.getLoanCustomerId();
 
@@ -180,12 +182,13 @@ public class VehicleInformationServiceImpl implements VehicleInformationService 
      * 台州要求使用前先最多为60个月，超过60月记为60
      * 其他银行按真实月数
      * 使用年限
+     *
      * @param orderId
      * @return
      */
-    private  Integer assessUseYear(Long orderId,Date transferOwnershipDate,Date registerDate){
-        Integer month =null;
-        if(transferOwnershipDate==null || registerDate==null){
+    private Integer assessUseYear(Long orderId, Date transferOwnershipDate, Date registerDate) {
+        Integer month = null;
+        if (transferOwnershipDate == null || registerDate == null) {
             return null;
         }
 
@@ -194,14 +197,14 @@ public class VehicleInformationServiceImpl implements VehicleInformationService 
         Long bankId = bankDOMapper.selectIdByName(loanBaseInfoDO.getBank());
         Preconditions.checkNotNull(bankId, "贷款银行不存在");
 
-        if(IDict.K_BANK.ICBC_TZLQ.equals(String.valueOf(bankId))){
-            month = DateUtil.getdiffMonth_TAIZHOU(transferOwnershipDate,registerDate);
-            month = month>60?60:month;
-        }else if(IDict.K_BANK.ICBC_HZCZ.equals(String.valueOf(bankId))){
-            month = DateUtil.getdiffMonth_CHENGZHAN(transferOwnershipDate,registerDate);
-        }else{
+        if (IDict.K_BANK.ICBC_TZLQ.equals(String.valueOf(bankId))) {
+            month = DateUtil.getdiffMonth_TAIZHOU(transferOwnershipDate, registerDate);
+            month = month > 60 ? 60 : month;
+        } else if (IDict.K_BANK.ICBC_HZCZ.equals(String.valueOf(bankId))) {
+            month = DateUtil.getdiffMonth_CHENGZHAN(transferOwnershipDate, registerDate);
+        } else {
             //其他银行
-            month = DateUtil.getdiffMonth_CHENGZHAN(transferOwnershipDate,registerDate);
+            month = DateUtil.getdiffMonth_CHENGZHAN(transferOwnershipDate, registerDate);
         }
         return month;
     }

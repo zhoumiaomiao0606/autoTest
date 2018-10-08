@@ -1,14 +1,15 @@
 package com.yunche.loan.service.impl;
 
-import com.google.gson.Gson;
 import com.yunche.loan.config.exception.BizException;
-import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.BeanPlasticityUtills;
 import com.yunche.loan.domain.entity.*;
 import com.yunche.loan.domain.param.BusinessReviewCalculateParam;
 import com.yunche.loan.domain.param.BusinessReviewUpdateParam;
 import com.yunche.loan.domain.param.ParternerRuleParam;
-import com.yunche.loan.domain.vo.*;
+import com.yunche.loan.domain.vo.RecombinationVO;
+import com.yunche.loan.domain.vo.UniversalCustomerFileVO;
+import com.yunche.loan.domain.vo.UniversalCustomerVO;
+import com.yunche.loan.domain.vo.UniversalInfoVO;
 import com.yunche.loan.manager.finance.BusinessReviewManager;
 import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.BusinessReviewService;
@@ -117,15 +118,15 @@ public class BusinessReviewServiceImpl implements BusinessReviewService {
         param.setAreaId(universalInfoVO.getVehicle_apply_license_plate_area_id());
 
 
-        String financeResult = businessReviewManager.financeUnisal(param, "/costcalculation");
-        FinanceResult financeResult1 = new FinanceResult();
-        if (financeResult !=null && !"".equals(financeResult))
-        {
-            Gson gson = new Gson();
-             financeResult1 = gson.fromJson(financeResult, FinanceResult.class);
-        }
-
-        recombinationVO.setFinanceResult1(financeResult1);
+//        String financeResult = businessReviewManager.financeUnisal(param, "/costcalculation");
+//        FinanceResult financeResult1 = new FinanceResult();
+//        if (financeResult !=null && !"".equals(financeResult))
+//        {
+//            Gson gson = new Gson();
+//             financeResult1 = gson.fromJson(financeResult, FinanceResult.class);
+//        }
+//
+//        recombinationVO.setFinanceResult1(financeResult1);
 
         return recombinationVO;
     }

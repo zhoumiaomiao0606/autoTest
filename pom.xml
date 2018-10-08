@@ -379,13 +379,26 @@
         </dependency>
         <!-- pinyin4j -->
 
-        <!--视频压缩-->
+        <!-- 视频压缩 -->
         <dependency>
             <groupId>net.bramp.ffmpeg</groupId>
             <artifactId>ffmpeg</artifactId>
             <version>0.6.2</version>
         </dependency>
-        <!--视频压缩-->
+        <!-- 视频压缩 -->
+
+        <!-- swagger2 -->
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger2</artifactId>
+            <version>2.9.2</version>
+        </dependency>
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger-ui</artifactId>
+            <version>2.9.2</version>
+        </dependency>
+        <!-- swagger2 -->
 
     </dependencies>
 
