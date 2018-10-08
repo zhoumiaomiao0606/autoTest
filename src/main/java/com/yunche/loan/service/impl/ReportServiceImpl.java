@@ -604,6 +604,12 @@ public class ReportServiceImpl implements ReportService {
         }
         return createTelPartnerExcelFile(list);
     }
+
+    @Override
+    public ResultBean<List<TelPartnerCountVO>> telCustomerDetail(BankCreditPrincipalQuery query) {
+        return null;
+    }
+
     private String createTelPartnerExcelFile(List<TelPartnerCountVO> list) {
         String timestamp = new SimpleDateFormat("yyyyMMdd").format(new Date());
         Long id = SessionUtils.getLoginUser().getId();
