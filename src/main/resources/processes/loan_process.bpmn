@@ -422,7 +422,7 @@
     <sequenceFlow id="flow275" name="反审" sourceRef="exclusivegateway9" targetRef="exclusivegateway39">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == -1 && target == '' }]]></conditionExpression>
     </sequenceFlow>
-    <userTask id="usertask_loan_info_record" name="贷款信息登记" activiti:candidateGroups="管理员,总经理,培训经理,台州主管,业务内勤"></userTask>
+    <userTask id="usertask_loan_info_record" name="视频面签登记" activiti:candidateGroups="管理员,总经理,培训经理,台州主管,业务内勤"></userTask>
     <sequenceFlow id="flow276" name="贷款额 &lt; 13W" sourceRef="exclusivegateway2" targetRef="usertask_bank_credit_record">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${expect_loan_amount == 1}]]></conditionExpression>
     </sequenceFlow>
