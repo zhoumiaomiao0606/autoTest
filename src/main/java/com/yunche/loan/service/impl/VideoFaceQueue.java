@@ -1,4 +1,4 @@
-package com.yunche.loan.config.queue;
+package com.yunche.loan.service.impl;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;

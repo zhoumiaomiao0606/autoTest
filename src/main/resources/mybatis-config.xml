@@ -23,7 +23,7 @@
 
 
     <typeHandlers>
-        <typeHandler handler="com.yunche.loan.web.aop.AmountTypeHandler"/>
+        <typeHandler handler="com.yunche.loan.web.aspect.AmountTypeHandler"/>
     </typeHandlers>
 
     <plugins>
@@ -45,7 +45,7 @@
             <property name="returnPageInfo" value="check"/>
         </plugin>
 
-        <plugin interceptor="com.yunche.loan.web.aop.SqlTimeInterceptor">
+        <plugin interceptor="com.yunche.loan.web.aspect.SqlTimeInterceptor">
         </plugin>
     </plugins>
 

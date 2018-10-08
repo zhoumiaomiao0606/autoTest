@@ -1,4 +1,4 @@
-package com.yunche.loan.web.aop;
+package com.yunche.loan.web.aspect;
 
 import com.alibaba.fastjson.JSON;
 

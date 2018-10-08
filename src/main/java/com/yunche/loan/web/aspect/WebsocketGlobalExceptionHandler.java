@@ -1,11 +1,11 @@
-package com.yunche.loan.web.aop;
+package com.yunche.loan.web.aspect;
 
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.stereotype.Component;
 
-import static com.yunche.loan.web.aop.GlobalExceptionHandler.doGlobalExceptionHandler;
+import static com.yunche.loan.web.aspect.GlobalExceptionHandler.doGlobalExceptionHandler;
 
 /**
  * @author liuzhe

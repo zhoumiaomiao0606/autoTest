@@ -5,7 +5,6 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.yunche.loan.config.cache.BankCache;
-import com.yunche.loan.config.queue.VideoFaceQueue;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.MapSortUtils;
 import com.yunche.loan.config.util.SessionUtils;
@@ -32,7 +31,7 @@ import static com.yunche.loan.config.constant.CarConst.CAR_DETAIL;
 import static com.yunche.loan.config.constant.CarConst.CAR_MODEL;
 import static com.yunche.loan.config.constant.FaceSignConst.FACE_SIGN_MACHINE;
 import static com.yunche.loan.config.constant.VideoFaceConst.*;
-import static com.yunche.loan.config.queue.VideoFaceQueue.SEPARATOR;
+import static com.yunche.loan.service.impl.VideoFaceQueue.SEPARATOR;
 import static com.yunche.loan.config.util.DateTimeFormatUtils.formatter_yyyyMMdd_HHmmss;
 
 @Service

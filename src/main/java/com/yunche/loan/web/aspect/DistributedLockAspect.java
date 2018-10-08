@@ -1,4 +1,4 @@
-package com.yunche.loan.web.aop;
+package com.yunche.loan.web.aspect;
 
 import com.yunche.loan.config.anno.DistributedLock;
 import com.yunche.loan.config.util.LockUtils;
@@ -24,9 +24,9 @@ import java.util.Random;
  */
 @Aspect
 @Component
-public class DistributedLockAop {
+public class DistributedLockAspect {
 
-    private static final Logger logger = LoggerFactory.getLogger(DistributedLockAop.class);
+    private static final Logger logger = LoggerFactory.getLogger(DistributedLockAspect.class);
 
     /**
      * 🔐KEY前缀
