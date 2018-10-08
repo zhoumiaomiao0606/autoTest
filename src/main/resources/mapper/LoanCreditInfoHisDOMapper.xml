@@ -248,6 +248,8 @@
         <include refid="Base_Column_List"/>
         FROM loan_credit_info_his
         WHERE customer_id = #{customerId,jdbcType=BIGINT}
+        ORDER BY id DESC
+        LIMIT 1
     </select>
 
 </mapper>
