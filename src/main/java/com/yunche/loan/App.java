@@ -20,12 +20,14 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
+import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 @SpringBootApplication(exclude = {SecurityAutoConfiguration.class, PageHelperAutoConfiguration.class})
 @EnableTransactionManagement
 @EnableFeignClients
 @EnableScheduling
 @EnableAsync
+@EnableSwagger2
 @MapperScan(basePackages = "com.yunche.loan.mapper")
 public class App {
 
