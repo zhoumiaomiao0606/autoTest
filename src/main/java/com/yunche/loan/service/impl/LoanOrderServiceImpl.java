@@ -549,7 +549,6 @@ public class LoanOrderServiceImpl implements LoanOrderService {
         OSSClient ossUnit=null;
         String resultName= null;
         String diskName =null;
-        List<CreditPicExportVO> exportVOS ;
         EmployeeDO loginUser = SessionUtils.getLoginUser();
         try {
 
@@ -576,8 +575,8 @@ public class LoanOrderServiceImpl implements LoanOrderService {
             }
 
 
-            diskName = name+ DateUtil.getTime();
-            final String localPath ="/tmp/"+diskName;
+            diskName = name+ DateUtil.getTime();//图片存放的文件夹名称
+            final String localPath ="/tmp/"+diskName;//文件夹绝对路径
 
             ossUnit = OSSUnit.getOSSClient();
             //查询符合要求的数据
@@ -602,7 +601,7 @@ public class LoanOrderServiceImpl implements LoanOrderService {
                 });
             }
 
-            resultName = diskName+".tar.gz";
+            resultName = diskName+".tar.gz";//压缩包文件名
 
             RuntimeUtils.exe("mkdir "+localPath);
             LOG.info("图片合成 开始时间："+start);
