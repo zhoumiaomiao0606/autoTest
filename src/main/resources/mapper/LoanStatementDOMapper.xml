@@ -312,7 +312,7 @@
             </choose>
             )
             else true end
-            <if test="startDate !=null and endDate !=null">
+            <if test="startDate !=null and endDate !=null and startDate !='' and endDate !='' ">
                 and credit_info.gmt_modify between #{startDate} and #{endDate}
             </if>
 
@@ -332,7 +332,7 @@
             </if>
             AND customer.cust_type  in  (1,2,3) and customer.status = 0
         </where>
-        <if test="startCreditGmtCreate != null and endCreditGmtCreate != null">
+        <if test="startCreditGmtCreate != null and endCreditGmtCreate != null and startCreditGmtCreate != '' and endCreditGmtCreate != '' ">
             having(
             TO_DAYS(credit_apply_time) &gt;= TO_DAYS(#{startCreditGmtCreate})
             AND TO_DAYS(credit_apply_time) &lt;= TO_DAYS(#{endCreditGmtCreate})

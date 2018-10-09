@@ -47,6 +47,11 @@ public class BusinessReviewManager {
             System.out.println("请求参数"+param.toString());
             System.out.println("请求结果"+result);
 
+            if (result == null)
+            {
+                throw new BizException("请求到财务数据为空");
+            }
+
         } catch (Exception e) {
             LOG.error("请求财务系统出错---！！",e);
             throw new BizException("请求财务系统出错");

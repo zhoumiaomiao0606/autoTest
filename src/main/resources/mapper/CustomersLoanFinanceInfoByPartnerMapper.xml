@@ -105,6 +105,11 @@
     <select id="getOrderByCustomerId" parameterType="java.lang.Long" resultType="com.yunche.loan.domain.vo.OrderByCustomerIdVO" >
           SELECT
 	main_order.id AS num,
+	partner.leader_name as leaderName,
+	partner.id as partnerId,
+	son.optimal_return as overdueMoney,
+	remit_details.remit_amount as remitAmount,
+
 	customer.id_card AS cardId,
 	customer.NAME AS customerName,
 	customer.address AS address,
@@ -131,8 +136,15 @@
 	loan_financial_plan.each_month_repay as monthlyPayments,
 	v.now_driving_license_owner AS driverLicense,
 	v.color AS carColor,
-	v.license_plate_type AS registrationWay,
-	v.apply_license_plate_area AS registration,
+	CASE
+
+		WHEN v.license_plate_type = 1 THEN
+		'公牌'
+		WHEN v.license_plate_type = 2 THEN
+		'私牌' ELSE null
+	END
+	 AS registrationWay,
+	b.area_name AS registration,
 	v.engine_number AS engineNo,
 	v.registration_certificate_number AS registrationCertificateNo,
 	v.vehicle_identification_number AS vin,
@@ -167,6 +179,8 @@ FROM
 	LEFT JOIN partner partner ON loan.partner_id = partner.id
 	LEFT JOIN loan_financial_plan ON main_order.loan_financial_plan_id = loan_financial_plan.id
 	LEFT JOIN vehicle_information v ON main_order.vehicle_information_id = v.id
+	left join base_area b on v.apply_license_plate_area = b.area_id
+	left join remit_details on main_order.remit_details_id = remit_details.id
 	LEFT JOIN (
 	SELECT
 		tab.order_id,

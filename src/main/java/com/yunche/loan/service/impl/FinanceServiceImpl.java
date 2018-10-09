@@ -1,12 +1,11 @@
 package com.yunche.loan.service.impl;
 
-import com.yunche.loan.domain.entity.BaseAreaDO;
-import com.yunche.loan.domain.entity.LoanBaseInfoDO;
-import com.yunche.loan.domain.entity.LoanProcessLogDO;
+import com.google.common.base.Preconditions;
+import com.yunche.loan.config.result.ResultBean;
+import com.yunche.loan.domain.entity.*;
+import com.yunche.loan.domain.param.RemitDetailsParam;
 import com.yunche.loan.domain.vo.*;
-import com.yunche.loan.mapper.BaseAreaDOMapper;
-import com.yunche.loan.mapper.LoanBaseInfoDOMapper;
-import com.yunche.loan.mapper.LoanQueryDOMapper;
+import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.FinanceService;
 import com.yunche.loan.service.LoanProcessLogService;
 import com.yunche.loan.service.LoanQueryService;
@@ -23,7 +22,8 @@ import static com.yunche.loan.config.constant.LoanProcessEnum.LOAN_REVIEW;
 import static com.yunche.loan.config.constant.LoanProcessEnum.TELEPHONE_VERIFY;
 
 @Service
-public class FinanceServiceImpl implements FinanceService {
+public class FinanceServiceImpl implements FinanceService
+{
 
     @Resource
     private LoanQueryDOMapper loanQueryDOMapper;
@@ -36,6 +36,12 @@ public class FinanceServiceImpl implements FinanceService {
 
     @Autowired
     private BaseAreaDOMapper baseAreaDOMapper;
+
+    @Autowired
+    private LoanOrderDOMapper loanOrderDOMapper;
+
+    @Autowired
+    private RemitDetailsDOMapper remitDetailsDOMapper;
 
 
     @Override
@@ -89,5 +95,32 @@ public class FinanceServiceImpl implements FinanceService {
         recombinationVO.setCredits(credits);
         recombinationVO.setCustomers(customers);
         return recombinationVO;
+    }
+
+    @Override
+    public ResultBean update(RemitDetailsParam remitDetailsParam)
+    {
+        Preconditions.checkNotNull(remitDetailsParam.getOrderId(),"订单id不能为空");
+
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(remitDetailsParam.getOrderId());
+
+        Preconditions.checkNotNull(loanOrderDO,"该单号订单不存在");
+
+        RemitDetailsDO remitDetailsDO = remitDetailsDOMapper.selectByPrimaryKey(loanOrderDO.getRemitDetailsId());
+
+        remitDetailsDO.setRemit_account(remitDetailsParam.getRemit_account());
+        remitDetailsDO.setRemit_bank(remitDetailsParam.getRemit_bank());
+        remitDetailsDO.setRemit_account_number(remitDetailsParam.getRemit_account_number());
+
+        int i = remitDetailsDOMapper.updateByPrimaryKeySelective(remitDetailsDO);
+
+        if (i == 1)
+        {
+            return ResultBean.ofSuccess("成功");
+        }else
+            {
+                return ResultBean.ofError("错误");
+            }
+
     }
 }

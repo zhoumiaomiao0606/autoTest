@@ -1,5 +1,6 @@
 package com.yunche.loan.domain.vo;
 
+import com.yunche.loan.domain.entity.LoanApplyCompensationDO;
 import lombok.Data;
 
 import java.util.ArrayList;
@@ -8,6 +9,13 @@ import java.util.List;
 @Data
 public class OrderByCustomerIdVO
 {
+
+            private String leaderName;//领导人姓名
+            private String partnerId;//合伙人id
+
+            private String overdueMoney;//逾期金额
+
+            private String remitAmount;//打款金额
 
             private String customerName;//主贷人姓名
             private String cardId;//身份证号
@@ -47,9 +55,10 @@ public class OrderByCustomerIdVO
             private String registrationCertificateNo;//登记证书号
             private String vin;//车架号
             private String carbrand;//品牌
-            private String overdueNumber;//逾期次数
-            private String overdueAmount;//逾期金额
+            /*private String overdueNumber;//逾期次数
+            private String overdueAmount;//逾期金额*/
 
             private List<PartnerCompensations> partnerCompensationsList =new ArrayList<>();
+         /* List<LoanApplyCompensationDO> loanApplyCompensationDOS;*/
 
 }

@@ -1,5 +1,7 @@
 package com.yunche.loan.service.impl;
 
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.google.common.base.Preconditions;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.entity.LoanApplyCompensationDO;
@@ -62,25 +64,42 @@ public class CustomersLoanFinanceInfoByPartnerServiceImpl implements CustomersLo
     {
         Preconditions.checkNotNull(customersLoanFinanceInfoByPartnerParam.getPartnerId(),"合伙人id不能为空");
         Preconditions.checkNotNull(customersLoanFinanceInfoByPartnerParam.getCode(),"查询类型不能为空");
+
         if (customersLoanFinanceInfoByPartnerParam.getCode() == CustomersLoanFinance.BADBALANCE.getCode())
         {
+            //分页
+            PageHelper.startPage(customersLoanFinanceInfoByPartnerParam.getPageIndex(),customersLoanFinanceInfoByPartnerParam.getPageSize(), true);
             List<BadBalanceByPartnerVO> badBalanceByPartnerVOS = customersLoanFinanceInfoByPartnerMapper.selectBadBalance(customersLoanFinanceInfoByPartnerParam.getPartnerId());
-            return ResultBean.ofSuccess(badBalanceByPartnerVOS);
+            // 取分页信息
+            PageInfo<BadBalanceByPartnerVO> pageInfo = new PageInfo<>(badBalanceByPartnerVOS);
+            return ResultBean.ofSuccess(pageInfo);
 
         }else if (customersLoanFinanceInfoByPartnerParam.getCode() == CustomersLoanFinance.OVERDUEBALANCE.getCode())
         {
+            //分页
+            PageHelper.startPage(customersLoanFinanceInfoByPartnerParam.getPageIndex(),customersLoanFinanceInfoByPartnerParam.getPageSize(), true);
             List<OverdueBalanceByPartnerVO> overdueBalanceByPartnerVOS = customersLoanFinanceInfoByPartnerMapper.selectOverdueBalance(customersLoanFinanceInfoByPartnerParam.getPartnerId());
-            return ResultBean.ofSuccess(overdueBalanceByPartnerVOS);
+            // 取分页信息
+            PageInfo<OverdueBalanceByPartnerVO> pageInfo = new PageInfo<>(overdueBalanceByPartnerVOS);
+            return ResultBean.ofSuccess(pageInfo);
 
         }else if (customersLoanFinanceInfoByPartnerParam.getCode() == CustomersLoanFinance.INGUARANTEEBALANCE.getCode())
         {
+            //分页
+            PageHelper.startPage(customersLoanFinanceInfoByPartnerParam.getPageIndex(),customersLoanFinanceInfoByPartnerParam.getPageSize(), true);
             List<InGuaranteeBalanceByPartnerVO> inGuaranteeBalanceByPartnerVOS = customersLoanFinanceInfoByPartnerMapper.selectInGuaranteeBalance(customersLoanFinanceInfoByPartnerParam.getPartnerId());
-            return ResultBean.ofSuccess(inGuaranteeBalanceByPartnerVOS);
+            // 取分页信息
+            PageInfo<InGuaranteeBalanceByPartnerVO> pageInfo = new PageInfo<>(inGuaranteeBalanceByPartnerVOS);
+            return ResultBean.ofSuccess(pageInfo);
 
         }else if (customersLoanFinanceInfoByPartnerParam.getCode() == CustomersLoanFinance.LOANBALANCE.getCode())
         {
+            //分页
+            PageHelper.startPage(customersLoanFinanceInfoByPartnerParam.getPageIndex(),customersLoanFinanceInfoByPartnerParam.getPageSize(), true);
             List<LoanBalanceByPartnerVO> loanBalanceByPartnerVOS = customersLoanFinanceInfoByPartnerMapper.selectLoanBalance(customersLoanFinanceInfoByPartnerParam.getPartnerId());
-            return ResultBean.ofSuccess(loanBalanceByPartnerVOS);
+            // 取分页信息
+            PageInfo<LoanBalanceByPartnerVO> pageInfo = new PageInfo<>(loanBalanceByPartnerVOS);
+            return ResultBean.ofSuccess(pageInfo);
 
         }
         else
@@ -172,10 +191,18 @@ public class CustomersLoanFinanceInfoByPartnerServiceImpl implements CustomersLo
                             for (LoanApplyCompensationDO loanApplyCompensationDO :loanApplyCompensationDOS)
                             {
                                 PartnerCompensations partnerCompensations =new PartnerCompensations();
+
                                 partnerCompensations.setCompensatoryAmount(loanApplyCompensationDO.getPartnerCompensationAmount());
                                 partnerCompensations.setCompensatoryTime(loanApplyCompensationDO.getPartnerDcReviewDate());
+                                partnerCompensations.setOverdueAmount(loanApplyCompensationDO.getCurrArrears());
+                                partnerCompensations.setOverdueDate(loanApplyCompensationDO.getGmtCreate());
+
                                 orderByCustomerIdVO.getPartnerCompensationsList().add(partnerCompensations);
                             }
+
+                            //逾期代偿---repayment_record
+                           /* List<LoanApplyCompensationDO> loanApplyCompensationDOS = loanApplyCompensationDOMapper.selectByOrderId(orderByCustomerIdVO.getNum());
+                            orderByCustomerIdVO.setLoanApplyCompensationDOS(loanApplyCompensationDOS);*/
 
                         }
                     });
