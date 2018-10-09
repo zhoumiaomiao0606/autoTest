@@ -70,7 +70,11 @@ public class LoanCreditInfoServiceImpl implements LoanCreditInfoService {
     @Override
     public void save(LoanCreditInfoDO loanCreditInfoDO) {
 
+        // save
         create(loanCreditInfoDO);
+
+        // 记录征信结果到 征信his表
+        saveCreditInfoHis_CreditResult(loanCreditInfoDO);
     }
 
     @Override
@@ -373,5 +377,22 @@ public class LoanCreditInfoServiceImpl implements LoanCreditInfoService {
         customerCreditRecord.setCreditResult(loanCreditInfoVO.getResult());
         customerCreditRecord.setCreditInfo(loanCreditInfoVO.getInfo());
         customerCreditRecord.setBankCreditStatus(loanQueryDOMapper.selectLastBankInterfaceSerialStatusByTransCode(customerCreditRecord.getCustomerId(), "applyCredit"));
+    }
+
+    /**
+     * 记录征信结果到 征信his表
+     *
+     * @param loanCreditInfoDO
+     */
+    private void saveCreditInfoHis_CreditResult(LoanCreditInfoDO loanCreditInfoDO) {
+
+        if (CREDIT_TYPE_BANK.equals(loanCreditInfoDO.getType())) {
+
+            loanCreditInfoHisService.saveCreditInfoHis_BankCreditResult(loanCreditInfoDO.getCustomerId(), loanCreditInfoDO.getResult());
+
+        } else if (CREDIT_TYPE_SOCIAL.equals(loanCreditInfoDO.getType())) {
+
+            loanCreditInfoHisService.saveCreditInfoHis_SocialCreditResult(loanCreditInfoDO.getCustomerId(), loanCreditInfoDO.getResult());
+        }
     }
 }
