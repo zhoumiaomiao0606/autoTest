@@ -568,6 +568,8 @@ public class LoanOrderServiceImpl implements LoanOrderService {
                         loanFileDOMapper.deleteByPrimaryKey(loanFileDO.getId());
                         if (!CollectionUtils.isEmpty(url)) {
                             return ResultBean.ofSuccess(url.get(0));
+                        }else{
+                            throw  new BizException("网络异常，请稍后重试");
                         }
                     }
                 }
