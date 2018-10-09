@@ -45,8 +45,9 @@ public interface LoanCreditInfoHisService {
      *
      * @param principalCustId
      * @param info
+     * @param isAutoTask
      */
-    void saveCreditInfoHis_BankCreditReject(Long principalCustId, String info);
+    void saveCreditInfoHis_BankCreditReject(Long principalCustId, String info, boolean isAutoTask);
 
     /**
      * 银行征信结果

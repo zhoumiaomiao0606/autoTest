@@ -8,6 +8,8 @@ import com.yunche.loan.domain.entity.LoanCustomerDO;
 import com.yunche.loan.mapper.LoanCreditInfoHisDOMapper;
 import com.yunche.loan.mapper.LoanCustomerDOMapper;
 import com.yunche.loan.service.LoanCreditInfoHisService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -17,6 +19,8 @@ import java.util.List;
 import java.util.Objects;
 
 import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
+import static com.yunche.loan.service.impl.LoanProcessApprovalCommonServiceImpl.AUTO_EMPLOYEE_ID;
+import static com.yunche.loan.service.impl.LoanProcessApprovalCommonServiceImpl.AUTO_EMPLOYEE_NAME;
 
 /**
  * @author liuzhe
@@ -24,6 +28,8 @@ import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
  */
 @Service
 public class LoanCreditInfoHisServiceImpl implements LoanCreditInfoHisService {
+
+    private static final Logger logger = LoggerFactory.getLogger(LoanCreditInfoHisServiceImpl.class);
 
     @Autowired
     private LoanCreditInfoHisDOMapper loanCreditInfoHisDOMapper;
@@ -157,7 +163,7 @@ public class LoanCreditInfoHisServiceImpl implements LoanCreditInfoHisService {
     }
 
     @Override
-    public void saveCreditInfoHis_BankCreditReject(Long principalCustId, String info) {
+    public void saveCreditInfoHis_BankCreditReject(Long principalCustId, String info, boolean isAutoTask) {
         Preconditions.checkNotNull(principalCustId, "主贷人ID不能为空");
 
         List<Long> customerIdList = loanCustomerDOMapper.listIdByPrincipalCustIdAndType(principalCustId, null, VALID_STATUS);
@@ -166,8 +172,15 @@ public class LoanCreditInfoHisServiceImpl implements LoanCreditInfoHisService {
             return;
         }
 
-        EmployeeDO loginUser = SessionUtils.getLoginUser();
+        EmployeeDO loginUser = null;
+        if (isAutoTask) {
+            loginUser.setId(AUTO_EMPLOYEE_ID);
+            loginUser.setName(AUTO_EMPLOYEE_NAME);
+        } else {
+            loginUser = SessionUtils.getLoginUser();
+        }
 
+        EmployeeDO finalLoginUser = loginUser;
         customerIdList.stream()
                 .filter(Objects::nonNull)
                 .forEach(customerId -> {
@@ -177,8 +190,8 @@ public class LoanCreditInfoHisServiceImpl implements LoanCreditInfoHisService {
                     // 银行征信打回
                     loanCreditInfoHisDO.setCustomerId(customerId);
                     loanCreditInfoHisDO.setBankCreditRejectTime(new Date());
-                    loanCreditInfoHisDO.setBankCreditRejectUserId(loginUser.getId());
-                    loanCreditInfoHisDO.setBankCreditRejectUserName(loginUser.getName());
+                    loanCreditInfoHisDO.setBankCreditRejectUserId(finalLoginUser.getId());
+                    loanCreditInfoHisDO.setBankCreditRejectUserName(finalLoginUser.getName());
                     loanCreditInfoHisDO.setBankCreditRejectInfo(info);
 
                     updateByCustomerId(loanCreditInfoHisDO);

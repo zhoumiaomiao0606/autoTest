@@ -3222,7 +3222,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         if (BANK_CREDIT_RECORD.getCode().equals(approval.getTaskDefinitionKey()) && ACTION_REJECT_MANUAL.equals(approval.getAction())) {
 
             // 记录单个客户征信查询历史记录--银行征信打回
-            loanCreditInfoHisService.saveCreditInfoHis_BankCreditReject(loanOrderDO.getLoanCustomerId(), approval.getInfo());
+            loanCreditInfoHisService.saveCreditInfoHis_BankCreditReject(loanOrderDO.getLoanCustomerId(), approval.getInfo(), approval.isAutoTask());
         }
     }
 

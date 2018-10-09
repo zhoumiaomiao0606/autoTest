@@ -118,7 +118,7 @@ public class BankCreditRecordScheduledTask {
                         setApprovalParam(approval, bankInterfaceSerialDO);
 
                         // 记录单个客户征信查询历史记录--银行征信打回
-                        loanCreditInfoHisService.saveCreditInfoHis_BankCreditReject(bankInterfaceSerialDO.getCustomerId(), approval.getInfo());
+                        loanCreditInfoHisService.saveCreditInfoHis_BankCreditReject(bankInterfaceSerialDO.getCustomerId(), approval.getInfo(), approval.isAutoTask());
 
                         // 提交打回
                         autoReject(approval, bankInterfaceSerialDO);
