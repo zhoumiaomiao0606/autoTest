@@ -40,12 +40,12 @@ import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
 
 import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
-import static com.yunche.loan.config.constant.LoanCustomerConst.CUST_TYPE_GUARANTOR;
-import static com.yunche.loan.config.constant.LoanCustomerConst.GUARANTEE_TYPE_INSIDE;
 import static com.yunche.loan.config.constant.LoanCustomerEnum.*;
 
 @Service
@@ -169,15 +169,15 @@ public class BankSolutionServiceImpl implements BankSolutionService {
             throw new BizException("贷款客户信息不存在");
         }
 
-        // 推送客户过滤
-        customers = customers.stream()
-                .filter(Objects::nonNull)
-                // 银行征信拒绝的客户（错误代码1XXX、2XXX、3XXX），打回以后，如果选择“内部担保”，可以不提交给银行，而是直接将结果设定为“征信拒贷”。
-                .filter(e -> !(BaseConst.K_YORN_YES.equals(e.getBankCreditReject())
-                        && CUST_TYPE_GUARANTOR.equals(e.getCustType())
-                        && GUARANTEE_TYPE_INSIDE.equals(e.getGuaranteeType()))
-                )
-                .collect(Collectors.toList());
+//        // 推送客户过滤
+//        customers = customers.stream()
+//                .filter(Objects::nonNull)
+//                // 银行征信拒绝的客户（错误代码1XXX、2XXX、3XXX），打回以后，如果选择“内部担保”，可以不提交给银行，而是直接将结果设定为“征信拒贷”。
+//                .filter(e -> BaseConst.K_YORN_YES.equals(e.getBankCreditReject())
+//                        && CUST_TYPE_GUARANTOR.equals(e.getCustType())
+//                        && GUARANTEE_TYPE_INSIDE.equals(e.getGuaranteeType())
+//                )
+//                .collect(Collectors.toList());
 
 
         int value = bankId.intValue();
