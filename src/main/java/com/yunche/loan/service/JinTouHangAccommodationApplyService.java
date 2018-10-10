@@ -35,5 +35,5 @@ public interface JinTouHangAccommodationApplyService {
 
     ResultBean exportJinTouHangInterestRegister(ExportApplyLoanPushParam param);
 
-
+    ResultBean calMoney(Long bridgeProcessId,Long orderId);
 }

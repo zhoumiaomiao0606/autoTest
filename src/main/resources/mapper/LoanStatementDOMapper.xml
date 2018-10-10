@@ -1377,16 +1377,19 @@
 
     <select id="exportJinTouHangRepayInfo" parameterType="com.yunche.loan.domain.param.ExportApplyLoanPushParam"  resultType="com.yunche.loan.domain.vo.JinTouHangRepayInfoVO">
         select
-        fund.lend_date            				AS lendDate,
-        fund.repay_date           				AS repayDate,
-        remit.remit_amount        				AS remitAmount,
         customer.`name`           				AS name,
         customer.id_card          				AS idCard,
+        fund.lend_date            				AS lendDate,
+        record.lend_date									AS bankLendDate,
+        fund.repay_date           				AS repayDate,
+        datediff( DATE_FORMAT( fund.repay_date, '%Y-%m-%d' ), DATE_FORMAT( fund.lend_date, '%Y-%m-%d' ) ) AS differTime,
+        remit.remit_amount        				AS remitAmount,
         financial.bank_period_principal   AS  bankPeriodPrincipal,
+        financial.bank_period_principal - remit.remit_amount  AS differMoney,
         fund.repay_type                   AS repayType,
-        fund.repay_remark                 AS repayRemark,
         fund.interest                     AS interest,
-        fund.poundage                     AS poundage
+        fund.poundage                     AS poundage,
+        fund.repay_remark                 AS repayRemark
         from
         (select * from loan_process_bridge where bridge_repay_info=2) process
         LEFT JOIN loan_order  loan ON process.order_id = loan.id
@@ -1395,6 +1398,7 @@
         LEFT JOIN loan_customer customer ON loan.loan_customer_id = customer.id
         LEFT JOIN loan_financial_plan financial ON financial.id = loan.loan_financial_plan_id
         LEFT JOIN remit_details remit  ON loan.remit_details_id =remit.id
+        left join bank_lend_record record on record.loan_order = loan.id
         where  1=1
         <if test="startRepayDate !=null">
             AND fund.repay_date &gt;= #{startRepayDate}
