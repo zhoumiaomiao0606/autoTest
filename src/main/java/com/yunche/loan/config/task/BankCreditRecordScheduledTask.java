@@ -3,6 +3,8 @@ package com.yunche.loan.config.task;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.yunche.loan.config.anno.DistributedLock;
 import com.yunche.loan.config.constant.BaseConst;
 import com.yunche.loan.config.result.ResultBean;
@@ -12,6 +14,7 @@ import com.yunche.loan.domain.entity.LoanCustomerDO;
 import com.yunche.loan.domain.param.ApprovalParam;
 import com.yunche.loan.mapper.BankInterfaceSerialDOMapper;
 import com.yunche.loan.mapper.LoanCustomerDOMapper;
+import com.yunche.loan.service.BankInterfaceSerialService;
 import com.yunche.loan.service.LoanCreditInfoService;
 import com.yunche.loan.service.LoanCustomerService;
 import com.yunche.loan.service.LoanProcessService;
@@ -23,7 +26,9 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 import static com.yunche.loan.config.constant.LoanCustomerConst.CREDIT_TYPE_BANK;
 import static com.yunche.loan.config.constant.LoanProcessEnum.BANK_CREDIT_RECORD;
@@ -55,6 +60,9 @@ public class BankCreditRecordScheduledTask {
 
     @Autowired
     private LoanCustomerService loanCustomerService;
+
+    @Autowired
+    private BankInterfaceSerialService bankInterfaceSerialService;
 
 
     /**
@@ -90,34 +98,88 @@ public class BankCreditRecordScheduledTask {
      */
     private void doAutoReject(List<BankInterfaceSerialDO> bankInterfaceSerialDOS) {
 
-        if (!CollectionUtils.isEmpty(bankInterfaceSerialDOS)) {
-
-            ApprovalParam approval = new ApprovalParam();
-            approval.setTaskDefinitionKey(BANK_CREDIT_RECORD.getCode());
-            approval.setAction(ACTION_REJECT_MANUAL);
-
-            approval.setCheckPermission(false);
-            approval.setNeedLog(true);
-            approval.setNeedPush(true);
-            approval.setAutoTask(true);
-
-            bankInterfaceSerialDOS.stream()
-                    .forEach(bankInterfaceSerialDO -> {
-
-                        // 更新 可编辑状态 & 银行征信打回标记
-                        updateCustomerEnableAndBankCreditReject(bankInterfaceSerialDO.getCustomerId());
-
-                        // 银行征信拒绝的客户，打回以后，直接将结果设定为“征信拒贷”
-                        updateLoanCreditInfo(bankInterfaceSerialDO.getCustomerId());
-
-                        // 审核参数设置
-                        setApprovalParam(approval, bankInterfaceSerialDO);
-
-                        // 提交打回
-                        autoReject(approval, bankInterfaceSerialDO);
-                    });
+        if (CollectionUtils.isEmpty(bankInterfaceSerialDOS)) {
+            return;
         }
 
+        // sortByOrderId
+        HashMap<Long, List<BankInterfaceSerialDO>> orderIdDOSMap = sortByOrderId(bankInterfaceSerialDOS);
+
+        // 通用打回param
+        ApprovalParam approval = getApprovalParam();
+
+        // 按customer打回
+        orderIdDOSMap.forEach((orderId, dos) -> {
+
+            dos.stream()
+                    .filter(Objects::nonNull)
+                    .forEach(bankInterfaceSerialDO -> {
+
+                        // 更新customer 可编辑状态 & 银行征信打回标记
+                        updateCustomerEnableAndBankCreditReject(bankInterfaceSerialDO.getCustomerId());
+
+                        // 银行征信拒绝的customer，打回以后，直接将结果设定为“征信拒贷”
+                        updateLoanCreditInfo(bankInterfaceSerialDO.getCustomerId());
+
+                        // 审核参数设置   客户info拼接
+                        setApprovalParam(approval, bankInterfaceSerialDO);
+
+                        // 更新：auto_reject --> 1-是;
+                        updateAutoReject(bankInterfaceSerialDO);
+                    });
+
+            // 提交打回
+            autoReject(approval);
+
+        });
+
+    }
+
+
+    /**
+     * 根据orderId排序
+     *
+     * @param bankInterfaceSerialDOS
+     * @return
+     */
+    private HashMap<Long, List<BankInterfaceSerialDO>> sortByOrderId(List<BankInterfaceSerialDO> bankInterfaceSerialDOS) {
+
+        // orderId - DOS
+        HashMap<Long, List<BankInterfaceSerialDO>> orderIdDOSMap = Maps.newHashMap();
+        bankInterfaceSerialDOS.stream()
+                .filter(Objects::nonNull)
+                .forEach(e -> {
+
+                    Long orderId = e.getOrderId();
+
+                    if (orderIdDOSMap.containsKey(orderId)) {
+                        orderIdDOSMap.get(orderId).add(e);
+                    } else {
+                        orderIdDOSMap.put(orderId, Lists.newArrayList(e));
+                    }
+
+                });
+
+        return orderIdDOSMap;
+    }
+
+    /**
+     * 通用打回param
+     *
+     * @return
+     */
+    public ApprovalParam getApprovalParam() {
+
+        ApprovalParam approval = new ApprovalParam();
+        approval.setTaskDefinitionKey(BANK_CREDIT_RECORD.getCode());
+        approval.setAction(ACTION_REJECT_MANUAL);
+
+        approval.setCheckPermission(false);
+        approval.setNeedLog(true);
+        approval.setNeedPush(true);
+        approval.setAutoTask(true);
+
+        return approval;
     }
 
 
@@ -174,9 +236,11 @@ public class BankCreditRecordScheduledTask {
         // {"ICBC_API_RETMSG":"success","ICBC_API_TIMESTAMP":"2018-08-27 08:23:52","pub":{"retcode":"22094","retmsg":"该客户为灰名单客户"},"ICBC_API_RETCODE":0}
         String apiMsg = bankInterfaceSerialDO.getApiMsg();
 
+        String info = StringUtils.isBlank(approval.getInfo()) ? "" : approval.getInfo();
+
         if (StringUtils.isNotBlank(rejectReason)) {
 
-            approval.setInfo(customerDO.getName() + ":" + rejectReason);
+            approval.setInfo(info + "   " + customerDO.getName() + ":" + rejectReason);
 
         } else if (StringUtils.isNotBlank(apiMsg)) {
 
@@ -185,18 +249,29 @@ public class BankCreditRecordScheduledTask {
 
             if (!CollectionUtils.isEmpty(pub)) {
                 String retmsg = pub.getString("retmsg");
-                approval.setInfo(customerDO.getName() + ":" + retmsg);
+                approval.setInfo(info + "   " + customerDO.getName() + ":" + retmsg);
             }
         }
+    }
+
+    /**
+     * 更新：auto_reject --> 1-是;
+     *
+     * @param bankInterfaceSerialDO
+     */
+    private void updateAutoReject(BankInterfaceSerialDO bankInterfaceSerialDO) {
+
+        bankInterfaceSerialDO.setAutoReject(BaseConst.K_YORN_YES);
+
+        bankInterfaceSerialService.update(bankInterfaceSerialDO);
     }
 
     /**
      * 提交打回
      *
      * @param approval
-     * @param bankInterfaceSerialDO
      */
-    private void autoReject(ApprovalParam approval, BankInterfaceSerialDO bankInterfaceSerialDO) {
+    private void autoReject(ApprovalParam approval) {
 
         Long orderId = approval.getOrderId();
 
@@ -208,11 +283,6 @@ public class BankCreditRecordScheduledTask {
 
                 logger.info("自动打回成功  >>>  orderId : {} , info : {} ", orderId, approval.getInfo());
 
-                // 更新：auto_reject --> 1-是;
-                bankInterfaceSerialDO.setAutoReject(BaseConst.K_YORN_YES);
-                int count = bankInterfaceSerialDOMapper.updateByPrimaryKeySelective(bankInterfaceSerialDO);
-                Preconditions.checkArgument(count > 0, "更新auto_reject失败");
-
             } else {
 
                 logger.error("自动打回失败  >>>  orderId : {} , errMsg : {} ", orderId, approvalResult.getMsg());
@@ -223,5 +293,4 @@ public class BankCreditRecordScheduledTask {
             logger.error("自动打回失败  >>>  orderId : {} , errMsg : {} ", orderId, e.getMessage(), e);
         }
     }
-
 }
