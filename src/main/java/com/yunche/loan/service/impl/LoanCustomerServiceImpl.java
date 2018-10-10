@@ -629,12 +629,13 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
         Preconditions.checkArgument(createCustomerResult.getSuccess(), "创建客户信息失败");
 
         // 文件信息保存
-        ResultBean<Void> fileResultBean = loanFileService.updateOrInsertByCustomerIdAndUploadType(customerParam.getId(), customerParam.getFiles(), UPLOAD_TYPE_NORMAL);
+        ResultBean<Void> fileResultBean = loanFileService.updateOrInsertByCustomerIdAndUploadType(createCustomerResult.getData(), customerParam.getFiles(), UPLOAD_TYPE_NORMAL);
         Preconditions.checkArgument(fileResultBean.getSuccess(), fileResultBean.getMsg());
 
         // 返回客户ID
         return createCustomerResult.getData();
     }
+
 
     /**
      * 身份证重复校验

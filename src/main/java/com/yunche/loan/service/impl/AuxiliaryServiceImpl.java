@@ -120,7 +120,7 @@ public class AuxiliaryServiceImpl implements AuxiliaryService {
                             }
                         }
                         for (Map<String, Object> map1 : list) {
-                            if ((map1.get("activationTime") != null || !"".equals(map1.get("activationTime")))
+                            if ((map1.get("activationTime") != null && !"".equals(map1.get("activationTime")))
                                     && (map1.get("vehicleName") == null || "".equals(map1.get("vehicleName")))
                                     && (map1.get("driverName") == null || "".equals(map1.get("driverName")))) {
                                 String account = (String)map1.get("account");
@@ -197,7 +197,7 @@ public class AuxiliaryServiceImpl implements AuxiliaryService {
                                     }
                                 }
                                 for (Map<String, Object> map1 : list) {
-                                    if ((map1.get("activationTime") != null || !"".equals(map1.get("activationTime")))
+                                    if ((map1.get("activationTime") != null && !"".equals(map1.get("activationTime")))
                                             && (map1.get("vehicleName") == null || "".equals(map1.get("vehicleName")))
                                             && (map1.get("driverName") == null || "".equals(map1.get("driverName")))) {
                                         String account = (String)map1.get("account");

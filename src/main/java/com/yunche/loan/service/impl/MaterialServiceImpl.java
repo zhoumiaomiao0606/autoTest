@@ -98,6 +98,9 @@ public class MaterialServiceImpl implements MaterialService {
     @Autowired
     private BaseAreaDOMapper baseAreaDOMapper;
 
+    @Autowired
+    private LoanTelephoneVerifyDOMapper loanTelephoneVerifyDOMapper;
+
 
     @Override
     public RecombinationVO detail(Long orderId) {
@@ -149,7 +152,18 @@ public class MaterialServiceImpl implements MaterialService {
         recombinationVO.setCredits(credits);
         recombinationVO.setLoanreview_msg(loanQueryDOMapper.selectUniversalApprovalInfo(LOAN_REVIEW.getCode(), orderId));
         recombinationVO.setBusinessreview_msg(loanQueryDOMapper.selectUniversalApprovalInfo(BUSINESS_REVIEW.getCode(), orderId));
-        recombinationVO.setTelephone_msg(loanQueryDOMapper.selectUniversalApprovalInfo(TELEPHONE_VERIFY.getCode(), orderId));
+
+        UniversalApprovalInfo universalApprovalInfo = loanQueryDOMapper.selectUniversalApprovalInfo(TELEPHONE_VERIFY.getCode(), orderId);
+        if (universalApprovalInfo !=null)
+        {
+            LoanTelephoneVerifyDO loanTelephoneVerifyDO = loanTelephoneVerifyDOMapper.selectByPrimaryKey(orderId);
+            if (loanTelephoneVerifyDO !=null)
+            {
+                universalApprovalInfo.setDecribe(loanTelephoneVerifyDO.getInfo());
+            }
+        }
+        recombinationVO.setTelephone_msg(universalApprovalInfo);
+
         recombinationVO.setSupplement(loanQueryService.selectUniversalInfoSupplementHistory(orderId));
         recombinationVO.setCustomers(customers);
         return recombinationVO;
