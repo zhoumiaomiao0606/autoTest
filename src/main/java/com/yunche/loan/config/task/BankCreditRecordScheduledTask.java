@@ -129,6 +129,9 @@ public class BankCreditRecordScheduledTask {
                         // 银行征信拒绝的customer，打回以后，直接将结果设定为“征信拒贷”
                         updateLoanCreditInfo(bankInterfaceSerialDO.getCustomerId());
 
+                        // 更新：auto_reject --> 1-是;
+                        updateAutoReject(bankInterfaceSerialDO);
+
                         // 审核参数设置   当前customer-info
                         setApprovalParam(approval, bankInterfaceSerialDO);
 
