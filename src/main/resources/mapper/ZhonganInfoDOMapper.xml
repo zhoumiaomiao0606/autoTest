@@ -801,6 +801,7 @@
   WHERE
       d.order_status != 3
       and d.bank_credit_record = 1
+      and a.cust_type ! = 4
     <if test="partnerList != null and partnerList.size() > 0">
       and
       c.partner_id in
@@ -845,6 +846,7 @@
     WHERE
     d.order_status != 3
       and d.bank_credit_record = 1
+    and a.cust_type ! = 4
     <if test="partnerList != null and partnerList.size() > 0">
       and
       c.partner_id in
@@ -896,6 +898,7 @@
     WHERE
     d.order_status != 3
       and d.bank_credit_record = 1
+    and a.cust_type ! = 4
     <if test="partnerList != null and partnerList.size() > 0">
       and
       c.partner_id in
