@@ -9,4 +9,12 @@ import lombok.Data;
  **/
 @Data
 public class LoanApplyOrdersByMonthChartParam {
+
+    private String startDate;
+
+    private String endDate;
+
+    private String selectYear;
+
+    private String selectMonth;
 }

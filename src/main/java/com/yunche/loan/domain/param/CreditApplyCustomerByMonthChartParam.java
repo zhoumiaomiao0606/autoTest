@@ -13,8 +13,8 @@ import java.util.List;
 public class CreditApplyCustomerByMonthChartParam
 {
 
-    private String startDate = "2016-10-01";
+    private String startDate;
 
-    private String endDate = "2019-01-01";
+    private String endDate;
 
 }

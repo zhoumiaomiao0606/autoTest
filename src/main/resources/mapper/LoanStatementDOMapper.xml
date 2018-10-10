@@ -1384,7 +1384,9 @@
         customer.id_card          				AS idCard,
         financial.bank_period_principal   AS  bankPeriodPrincipal,
         fund.repay_type                   AS repayType,
-        fund.repay_remark                 AS repayRemark
+        fund.repay_remark                 AS repayRemark,
+        fund.interest                     AS interest,
+        fund.poundage                     AS poundage
         from
         (select * from loan_process_bridge where bridge_repay_info=2) process
         LEFT JOIN loan_order  loan ON process.order_id = loan.id

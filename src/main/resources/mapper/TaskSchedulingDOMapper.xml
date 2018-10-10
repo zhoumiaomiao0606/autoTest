@@ -1112,9 +1112,28 @@
                                when #{lendStatus} = 2 then deputy_b.bridge_handle = 1
                                when #{lendStatus} = 3 then deputy_b.bridge_handle = 2 and third_party.lend_status = 3
                       end
+                      <if test="startLendDate !=null">
+                          AND third_party.lend_date &gt;= #{startLendDate}
+                      </if>
+                      <if test="endLendDate !=null">
+                          AND third_party.lend_date &lt;= #{endLendDate}
+                      </if>
                   </when>
                   <when test="taskDefinitionKey == 'usertask_bridge_repay_record'">
                       AND case when #{taskStatus} = 0 then deputy_b.bridge_repay_record !=0 else deputy_b.bridge_repay_record = #{taskStatus} end
+                      <if test="startLendDate !=null">
+                          AND third_party.lend_date &gt;= #{startLendDate}
+                      </if>
+                      <if test="endLendDate !=null">
+                          AND third_party.lend_date &lt;= #{endLendDate}
+                      </if>
+
+                      <if test="startRepayDate !=null">
+                          AND third_party.repay_date &gt;= #{startLendDate}
+                      </if>
+                      <if test="endRepayDate !=null">
+                          AND third_party.repay_date &lt;= #{endLendDate}
+                      </if>
                   </when>
                   <when test="taskDefinitionKey == 'usertask_bridge_interest_record'">
                       AND case when #{taskStatus} = 0 then deputy_b.bridge_interest_record !=0 else deputy_b.bridge_interest_record = #{taskStatus} end

@@ -12,4 +12,6 @@ public class JinTouHangRepayInfoVO {
     String bankPeriodPrincipal;
     String repayType;
     String repayRemark;
+    String interest;
+    String poundage;
 }

@@ -140,6 +140,14 @@ public class TaskListQuery {
 
     private String lendStatus;//出借状态 （用于第三方过桥资金）
 
+    private String startLendDate;//借款时间
+
+    private String endLendDate;//
+
+    private String startRepayDate;//还款时间
+
+    private String endRepayDate;
+
     /**
      * 区域合伙人ID列表
      */
