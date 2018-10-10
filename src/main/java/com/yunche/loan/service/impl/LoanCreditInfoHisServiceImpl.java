@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.util.Date;
@@ -27,6 +28,7 @@ import static com.yunche.loan.service.impl.LoanProcessApprovalCommonServiceImpl.
  * @date 2018/9/30
  */
 @Service
+@Transactional
 public class LoanCreditInfoHisServiceImpl implements LoanCreditInfoHisService {
 
     private static final Logger logger = LoggerFactory.getLogger(LoanCreditInfoHisServiceImpl.class);
