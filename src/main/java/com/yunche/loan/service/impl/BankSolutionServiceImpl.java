@@ -188,7 +188,6 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         // 记录单个客户征信查询历史记录--银行征信查询
         loanCreditInfoHisService.saveCreditInfoHis_BankCreditRecord(customers);
 
-
         int value = bankId.intValue();
         switch (value) {
             case 1:
