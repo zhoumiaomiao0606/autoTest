@@ -391,8 +391,8 @@ public class JinTouHangAccommodationApplyServiceImpl implements JinTouHangAccomm
             repayDate = thirdPartyFundBusinessDO.getRepayDate();
             timeNum=(int)((repayDate.getTime()-lendDate.getTime())/(1000*3600*24));
             lend_amount = thirdPartyFundBusinessDO.getLendAmount();
-            calMoneyVO.setInterest(String.valueOf(yearRate.multiply(lend_amount).multiply(BigDecimal.valueOf(timeNum)).divide(BigDecimal.valueOf(365))));
-            calMoneyVO.setPoundage(String.valueOf(singleRate.multiply(lend_amount).multiply(BigDecimal.valueOf(timeNum)).divide(BigDecimal.valueOf(365))));
+            calMoneyVO.setInterest(String.valueOf(yearRate.divide(BigDecimal.valueOf(100)).multiply(lend_amount).multiply(BigDecimal.valueOf(timeNum)).divide(BigDecimal.valueOf(365),2,BigDecimal.ROUND_HALF_UP)));
+            calMoneyVO.setPoundage(String.valueOf(singleRate.divide(BigDecimal.valueOf(100)).multiply(lend_amount).multiply(BigDecimal.valueOf(timeNum)).divide(BigDecimal.valueOf(365),2,BigDecimal.ROUND_HALF_UP)));
             calMoneyVO.setTimeNum(String.valueOf(timeNum));
             calMoneyVO.setSingleRate(String.valueOf(singleRate));
         }
