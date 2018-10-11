@@ -285,11 +285,11 @@
 
         <where>
             <if test="state == 1">
-                loan_credit_info_his.bank_credit_record_time !=null and
+                loan_credit_info_his.bank_credit_record_time is not null and
             </if>
 
             <if test="state == 2">
-                loan_credit_info_his.bank_credit_record_time == null and
+                loan_credit_info_his.bank_credit_record_time is null and
             </if>
             case when #{maxGroupLevel} = 0 then false
             when #{maxGroupLevel} = 1 then
@@ -436,11 +436,11 @@
         LEFT JOIN loan_process ON principal_orders.id = loan_process.order_id
         <where>
             <if test="state == 1">
-                loan_credit_info_his.social_credit_record_time !=null and
+                loan_credit_info_his.social_credit_record_time is not null and
             </if>
 
             <if test="state == 2">
-                loan_credit_info_his.social_credit_record_time == null and
+                loan_credit_info_his.social_credit_record_time is null and
             </if>
 
 
