@@ -7,6 +7,7 @@ import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.entity.LoanApplyCompensationDO;
 import com.yunche.loan.domain.param.CustomerInfoByCustomerNameParam;
 import com.yunche.loan.domain.param.CustomersLoanFinanceInfoByPartnerParam;
+import com.yunche.loan.domain.param.RefundOrderInfoByPartnerParam;
 import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.mapper.CustomersLoanFinanceInfoByPartnerMapper;
 import com.yunche.loan.mapper.LoanApplyCompensationDOMapper;
@@ -215,5 +216,17 @@ public class CustomersLoanFinanceInfoByPartnerServiceImpl implements CustomersLo
     {
         List<CustomerInfoForFinanceSys> customerInfoForFinanceSys =customersLoanFinanceInfoByPartnerMapper.getCustomerInfoByCustomerName(customerInfoByCustomerNameParam);
         return ResultBean.ofSuccess(customerInfoForFinanceSys);
+    }
+
+    @Override
+    public ResultBean selectRefundOrderInfoByPartner(RefundOrderInfoByPartnerParam refundOrderInfoByPartnerParam)
+    {
+        Preconditions.checkNotNull(refundOrderInfoByPartnerParam.getPartnerId(),"合伙人id不能为空");
+        //分页
+        PageHelper.startPage(refundOrderInfoByPartnerParam.getPageIndex(),refundOrderInfoByPartnerParam.getPageSize(), true);
+        List<RefundOrderInfoByPartnerVO> refundOrderInfoByPartnerVOS = customersLoanFinanceInfoByPartnerMapper.selectRefundOrderInfoByPartner(refundOrderInfoByPartnerParam.getPartnerId());
+        // 取分页信息
+        PageInfo<RefundOrderInfoByPartnerVO> pageInfo = new PageInfo<>(refundOrderInfoByPartnerVOS);
+        return ResultBean.ofSuccess(pageInfo);
     }
 }
