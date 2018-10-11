@@ -3180,6 +3180,9 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         // 附带任务-[银行征信]
         doAttachTask_BankCreditRecord(approval, loanOrderDO);
 
+        // 附带任务-[社会征信]
+        doAttachTask_SocialCreditRecord(approval, loanOrderDO);
+
         // 附带任务-[贷款申请]
         doAttachTask_LoanApply(approval, loanOrderDO);
 
@@ -3188,6 +3191,16 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
         // 附带任务-[金融方案修改-审核]
         doAttachTask_FinancialSchemeModifyApplyReview(approval, loanProcessDO);
+    }
+
+    private void doAttachTask_SocialCreditRecord(ApprovalParam approval, LoanOrderDO loanOrderDO) {
+
+        // 社会征信
+        if (SOCIAL_CREDIT_RECORD.getCode().equals(approval.getTaskDefinitionKey()) && ACTION_PASS.equals(approval.getAction())) {
+
+            // 记录单个客户征信查询历史记录--社会征信查询   查询时间/查询人
+            loanCreditInfoHisService.saveCreditInfoHis_SocialCreditRecord(loanOrderDO.getLoanCustomerId());
+        }
     }
 
     /**

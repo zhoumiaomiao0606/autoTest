@@ -176,7 +176,7 @@ public class LoanCreditInfoHisServiceImpl implements LoanCreditInfoHisService {
 
         EmployeeDO loginUser = null;
         if (isAutoTask) {
-            loginUser=new EmployeeDO();
+            loginUser = new EmployeeDO();
             loginUser.setId(AUTO_EMPLOYEE_ID);
             loginUser.setName(AUTO_EMPLOYEE_NAME);
         } else {
