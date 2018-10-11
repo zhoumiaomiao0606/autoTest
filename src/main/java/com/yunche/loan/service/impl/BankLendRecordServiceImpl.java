@@ -1,8 +1,9 @@
 package com.yunche.loan.service.impl;
 
 import com.google.common.base.Preconditions;
-import com.yunche.loan.config.constant.ProcessApprovalConst;
+import com.google.common.collect.Lists;
 import com.yunche.loan.config.constant.LoanProcessEnum;
+import com.yunche.loan.config.constant.ProcessApprovalConst;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.POIUtil;
 import com.yunche.loan.domain.entity.BankLendRecordDO;
@@ -20,6 +21,8 @@ import com.yunche.loan.mapper.LoanQueryDOMapper;
 import com.yunche.loan.service.BankLendRecordService;
 import com.yunche.loan.service.LoanProcessService;
 import com.yunche.loan.service.LoanQueryService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,6 +37,7 @@ import java.util.stream.Collectors;
 @Transactional
 public class BankLendRecordServiceImpl implements BankLendRecordService {
 
+    private static final Logger LOG = LoggerFactory.getLogger(BankLendRecordService.class);
 
     @Autowired
     LoanQueryDOMapper loanQueryDOMapper;
@@ -94,9 +98,12 @@ public class BankLendRecordServiceImpl implements BankLendRecordService {
         Preconditions.checkNotNull(key, "文件名不能为空（包含绝对路径）");
 
         List<String[]> returnList;
-        try {
+        List<String> unusualRecord = Lists.newArrayList();
+        String idCard=null;
 
+        try{
             returnList = POIUtil.readExcelFromOSS(0, 1, key);
+
 
             SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
             for (String[] tmp : returnList) {
@@ -107,7 +114,8 @@ public class BankLendRecordServiceImpl implements BankLendRecordService {
                 if (tmp.length != 4) {
                     continue;
                 }
-                Long orderId = loanQueryDOMapper.selectOrderIdByIDCard(tmp[1].trim());
+                idCard=tmp[1].trim();
+                Long orderId = loanQueryDOMapper.selectOrderIdByIDCard(idCard);
                 if (orderId == null) {
                     continue;
                 }
@@ -122,15 +130,15 @@ public class BankLendRecordServiceImpl implements BankLendRecordService {
                 BankLendRecordDO tmpBankLendRecordDO = bankLendRecordDOMapper.selectByLoanOrder(orderId);
                 if (tmpBankLendRecordDO == null) {
                     int count = bankLendRecordDOMapper.insert(bankLendRecordDO);
-                    Preconditions.checkArgument(count > 0, "身份证号:" + tmp[1].trim() + ",对应记录导入出错");
+                    Preconditions.checkArgument(count > 0, "身份证号:" + idCard + ",对应记录导入出错");
                 } else {
                     bankLendRecordDO.setId(tmpBankLendRecordDO.getId());
                     int count = bankLendRecordDOMapper.updateByPrimaryKey(bankLendRecordDO);
-                    Preconditions.checkArgument(count > 0, "身份证号:" + tmp[1].trim() + ",对应记录更新出错");
+                    Preconditions.checkArgument(count > 0, "身份证号:" + idCard + ",对应记录更新出错");
                 }
 
                 LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
-                loanOrderDO.setBankLendRecordId((long)  bankLendRecordDO.getId());
+                loanOrderDO.setBankLendRecordId((long) bankLendRecordDO.getId());
                 int count = loanOrderDOMapper.updateByPrimaryKey(loanOrderDO);
                 Preconditions.checkArgument(count > 0, "业务单号为:" + orderId + ",对应记录更新出错");
 
@@ -142,15 +150,21 @@ public class BankLendRecordServiceImpl implements BankLendRecordService {
 
                 approvalParam.setNeedLog(true);
                 approvalParam.setCheckPermission(false);
-                ResultBean<Void> approvalResultBean = loanProcessService.approval(approvalParam);
-                Preconditions.checkArgument(approvalResultBean.getSuccess(), approvalResultBean.getMsg());
-            }
+                try{
+                    ResultBean<Void> approvalResultBean = loanProcessService.approval(approvalParam);
+                    Preconditions.checkArgument(approvalResultBean.getSuccess(), approvalResultBean.getMsg());
+                }catch (Exception e){
+                    unusualRecord.add(idCard+":"+e.getMessage());
+                    LOG.info("导入失败:" + idCard+" "+ e.getMessage());
+                }
 
-        } catch (Exception e) {
-            Preconditions.checkArgument(false, e.getMessage());
+            }
+        }catch (Exception e){
+            unusualRecord.add(idCard+":"+e.getMessage());
+            LOG.info("导入失败:" + idCard+" "+ e.getMessage());
         }
 
-        return ResultBean.ofSuccess("导入成功");
+        return ResultBean.ofSuccess("导入成功，存在"+unusualRecord.size()+"条记录导入失败,失败原因：["+unusualRecord.toString()+"]");
     }
 
     @Override
