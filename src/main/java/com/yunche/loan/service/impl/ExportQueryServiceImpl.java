@@ -152,15 +152,8 @@ public class ExportQueryServiceImpl implements ExportQueryService
         exportSocialCreditQueryVerifyParam.setJuniorIds(employeeService.getSelfAndCascadeChildIdList(loginUserId));
         exportSocialCreditQueryVerifyParam.setMaxGroupLevel(taskSchedulingDOMapper.selectMaxGroupLevel(loginUserId));
         List<ExportSocialCreditQueryVO> list = new ArrayList<>();
-        if(exportSocialCreditQueryVerifyParam.getState() == null){
-            list = loanStatementDOMapper.exportSocialCreditQuerys1(exportSocialCreditQueryVerifyParam);
-            list.addAll(loanStatementDOMapper.exportSocialCreditQuerys2(exportSocialCreditQueryVerifyParam));
-        }else if(exportSocialCreditQueryVerifyParam.getState() == 1){
-            list = loanStatementDOMapper.exportSocialCreditQuerys1(exportSocialCreditQueryVerifyParam);
-        }else if(exportSocialCreditQueryVerifyParam.getState() == 2){
-            list = loanStatementDOMapper.exportSocialCreditQuerys2(exportSocialCreditQueryVerifyParam);
-        }
 
+            list = loanStatementDOMapper.exportSocialCreditQuerys1(exportSocialCreditQueryVerifyParam);
 
         ArrayList<String> header = Lists.newArrayList("业务区域", "业务关系", "客户姓名", "身份证号",
                 "手机号", "贷款银行","担保类型", "业务团队", "业务员", "主贷人姓名", "与主贷人关系", "征信结果", "征信申请时间", "征信查询时间", "提交人"
