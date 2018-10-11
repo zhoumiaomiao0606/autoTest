@@ -3216,7 +3216,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             // 贷款申请提交后，提交视频面签登记
             ApprovalParam approvalParam = new ApprovalParam();
             approvalParam.setOrderId(approval.getOrderId());
-            approvalParam.setTaskDefinitionKey(LOAN_APPLY.getCode());
+            approvalParam.setTaskDefinitionKey(LOAN_INFO_RECORD.getCode());
             approvalParam.setAction(TASK_PROCESS_DONE);
 
             approvalParam.setNeedLog(false);
