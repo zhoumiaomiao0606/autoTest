@@ -1812,7 +1812,7 @@
                 process.bank_credit_record,
                 ( SELECT create_time FROM loan_process_log log WHERE log.task_definition_key = 'usertask_credit_apply' AND order_id = process.order_id ORDER BY create_time DESC LIMIT 1 ) AS credit_apply_time,
                 ( SELECT create_time FROM loan_process_log log WHERE log.task_definition_key = 'usertask_bank_credit_record' AND order_id = process.order_id ORDER BY create_time DESC LIMIT 1 ) AS bank_credit_time,
-                ( SELECT user_id FROM loan_process_log log WHERE log.task_definition_key = 'usertask_bank_credit_record' AND order_id = process.order_id ORDER BY create_time DESC LIMIT 1 ) AS employee_id
+                ( SELECT user_id FROM loan_process_log log WHERE log.task_definition_key = 'usertask_credit_apply' AND order_id = process.order_id ORDER BY create_time DESC LIMIT 1 ) AS employee_id
             FROM
                 loan_process process
                 LEFT JOIN loan_order loan ON process.order_id = loan.id
