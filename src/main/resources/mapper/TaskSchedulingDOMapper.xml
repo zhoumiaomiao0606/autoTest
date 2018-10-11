@@ -1129,10 +1129,10 @@
                       </if>
 
                       <if test="startRepayDate !=null">
-                          AND third_party.repay_date &gt;= #{startLendDate}
+                          AND third_party.repay_date &gt;= #{startRepayDate}
                       </if>
                       <if test="endRepayDate !=null">
-                          AND third_party.repay_date &lt;= #{endLendDate}
+                          AND third_party.repay_date &lt;= #{endRepayDate}
                       </if>
                   </when>
                   <when test="taskDefinitionKey == 'usertask_bridge_interest_record'">

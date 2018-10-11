@@ -94,17 +94,17 @@ public class ParterChartServiceImpl implements ParterChartService
         OrdersSuccessVO ordersSuccess =new OrdersSuccessVO();
         Long long1 = parterChartDOMapper.totalCredit(param);
         if(long1 == 0){
-            ordersSuccess.setCreditNoPass("0.00%");
+            ordersSuccess.setCreditNoPass("0");
 
-            ordersSuccess.setRiskNoPass("0.00%");
+            ordersSuccess.setRiskNoPass("0");
 
-            ordersSuccess.setMortgageNoComplete("0.00%");
+            ordersSuccess.setMortgageNoComplete("0");
 
-            ordersSuccess.setRefund("0.00%");
+            ordersSuccess.setRefund("0");
 
-            ordersSuccess.setSuccess("0.00%");
+            ordersSuccess.setSuccess("0");
 
-            ordersSuccess.setOther("0.00%");
+            ordersSuccess.setOther("0");
         }else{
             Long long2 = parterChartDOMapper.totalRefuseLend(param);
 
@@ -117,7 +117,18 @@ public class ParterChartServiceImpl implements ParterChartService
             Long long6 = parterChartDOMapper.totalMortgage(param);
 
             Long long7 = long1-long2-long3-long4-long5-long6;
-            ordersSuccess.setCreditNoPass(String.format("%.2f", ((long2.doubleValue() / long1.doubleValue()) * 100)) + "%");
+            ordersSuccess.setCreditNoPass(long2+"");
+
+            ordersSuccess.setRiskNoPass(long3+"");
+
+            ordersSuccess.setMortgageNoComplete(long4+"");
+
+            ordersSuccess.setRefund(long5+"");
+
+            ordersSuccess.setSuccess(long6+"");
+
+            ordersSuccess.setOther(long7+"");
+            /*ordersSuccess.setCreditNoPass(String.format("%.2f", ((long2.doubleValue() / long1.doubleValue()) * 100)) + "%");
 
             ordersSuccess.setRiskNoPass(String.format("%.2f", ((long3.doubleValue() / long1.doubleValue()) * 100)) + "%");
 
@@ -127,7 +138,7 @@ public class ParterChartServiceImpl implements ParterChartService
 
             ordersSuccess.setSuccess(String.format("%.2f", ((long6.doubleValue() / long1.doubleValue()) * 100)) + "%");
 
-            ordersSuccess.setOther(String.format("%.2f", ((long7.doubleValue() / long1.doubleValue()) * 100)) + "%");
+            ordersSuccess.setOther(String.format("%.2f", ((long7.doubleValue() / long1.doubleValue()) * 100)) + "%");*/
         }
 
         return ResultBean.ofSuccess(ordersSuccess);
