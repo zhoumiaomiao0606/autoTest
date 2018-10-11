@@ -97,7 +97,7 @@ public class BankLendRecordServiceImpl implements BankLendRecordService {
 
     @Override
     public ResultBean importFile(String key) {
-        Preconditions.checkNotNull(key, "文件名不能为空（包含绝对路径）");
+        Preconditions.checkNotNull(key, "文件名不能为空");
 
         List<String[]> returnList;
         List<String> unusualRecord = Lists.newArrayList();
@@ -170,7 +170,7 @@ public class BankLendRecordServiceImpl implements BankLendRecordService {
             LOG.info("导入失败:" + idCard+" "+ e.getMessage());
         }
 
-        return ResultBean.ofSuccess("导入成功，存在"+unusualRecord.size()+"条记录导入失败,失败原因：["+unusualRecord.toString()+"]");
+        return ResultBean.ofSuccess("导入成功，存在"+unusualRecord.size()+"条记录导入失败,失败原因："+unusualRecord.toString());
     }
 
     @Autowired
