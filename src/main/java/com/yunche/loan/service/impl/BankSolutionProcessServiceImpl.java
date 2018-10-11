@@ -137,9 +137,6 @@ public class BankSolutionProcessServiceImpl implements BankSolutionProcessServic
             if(CollectionUtils.isEmpty(loanCreditInfoDOS)){
                 LoanCreditInfoDO up = new LoanCreditInfoDO();
                 up.setCustomerId(D.getCustomerId());
-                if(bankNoByCusId(D.getCustomerId())){
-                    up.setResult(CreditEnum.getValueByKey(applyCreditCallback.getReq().getResult()));
-                }
                 if(bankNoByCusId1(D.getCustomerId())){
                     up.setResult(CreditEnum.getValueByKey(applyCreditCallback.getReq().getResult()));
                 }
@@ -150,9 +147,6 @@ public class BankSolutionProcessServiceImpl implements BankSolutionProcessServic
             }else {
                 LoanCreditInfoDO up = loanCreditInfoDOS.get(0);
                 up.setCustomerId(D.getCustomerId());
-                if(bankNoByCusId(D.getCustomerId())){
-                    up.setResult(CreditEnum.getValueByKey(applyCreditCallback.getReq().getResult()));
-                }
                 if(bankNoByCusId1(D.getCustomerId())){
                     up.setResult(CreditEnum.getValueByKey(applyCreditCallback.getReq().getResult()));
                 }
@@ -167,9 +161,6 @@ public class BankSolutionProcessServiceImpl implements BankSolutionProcessServic
             if(CollectionUtils.isEmpty(loanCreditInfoDOS)){
                 LoanCreditInfoDO up = new LoanCreditInfoDO();
                 up.setCustomerId(D.getCustomerId());
-                if(bankNoByCusId(D.getCustomerId())){
-                    up.setResult(CreditEnum.getValueByKey(applyCreditCallback.getReq().getResult()));
-                }
                 if(bankNoByCusId1(D.getCustomerId())){
                     up.setResult(CreditEnum.getValueByKey(applyCreditCallback.getReq().getResult()));
                 }
@@ -180,9 +171,6 @@ public class BankSolutionProcessServiceImpl implements BankSolutionProcessServic
             }else {
                 LoanCreditInfoDO up = loanCreditInfoDOS.get(0);
                 up.setCustomerId(D.getCustomerId());
-                if(bankNoByCusId(D.getCustomerId())){
-                    up.setResult(CreditEnum.getValueByKey(applyCreditCallback.getReq().getResult()));
-                }
                 if(bankNoByCusId1(D.getCustomerId())){
                     up.setResult(CreditEnum.getValueByKey(applyCreditCallback.getReq().getResult()));
                 }
@@ -287,7 +275,7 @@ public class BankSolutionProcessServiceImpl implements BankSolutionProcessServic
     public boolean bankNoByCusId1(Long cusId){
         boolean flag = false;
         String bankName = loanCreditInfoDOMapper.bankNoByCusId(cusId);
-        if(!"中国工商银行台州路桥支行".equals(bankName)){
+        if((!"中国工商银行台州路桥支行".equals(bankName))&&(!"中国工商银行杭州城站支行".equals(bankName))){
             flag = true;
         }
         return flag;
