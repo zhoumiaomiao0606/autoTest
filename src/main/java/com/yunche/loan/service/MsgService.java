@@ -12,4 +12,6 @@ public interface MsgService {
     Map creditDetail(Long orderId);
 
     Map msgDetail(Long msgId);
+
+    String getPinYin(String chinese);
 }

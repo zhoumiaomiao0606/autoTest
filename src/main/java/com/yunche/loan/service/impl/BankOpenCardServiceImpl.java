@@ -106,6 +106,9 @@ public class BankOpenCardServiceImpl implements BankOpenCardService {
 
     @Autowired
     LoanProcessLogDOMapper loanProcessLogDOMapper;
+
+    @Autowired
+    MsgService msgService;
     /**
      * 银行开卡详情页
      *
@@ -168,6 +171,10 @@ public class BankOpenCardServiceImpl implements BankOpenCardService {
         for (UniversalCustomerVO universalCustomerVO : customers) {
             List<UniversalCustomerFileVO> files = loanQueryService.selectUniversalCustomerFile(Long.valueOf(universalCustomerVO.getCustomer_id()));
             universalCustomerVO.setFiles(files);
+        }
+        if(universalCustomerDetailVO.getCustomer_name_pinyin() ==null || "".equals(universalCustomerDetailVO.getCustomer_name_pinyin())){
+            universalCustomerDetailVO.setCustomer_name_pinyin(msgService.getPinYin(universalCustomerDetailVO.getCustomer_name()));
+
         }
         recombinationVO.setFinancial(financialSchemeVO);
         recombinationVO.setLoanBaseInfo(loanBaseInfoVOResultBean.getData());
