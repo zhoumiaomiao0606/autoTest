@@ -801,6 +801,7 @@
   WHERE
       d.order_status != 3
       and d.bank_credit_record = 1
+      and a.cust_type != 4
     <if test="partnerList != null and partnerList.size() > 0">
       and
       c.partner_id in
@@ -845,6 +846,7 @@
     WHERE
     d.order_status != 3
       and d.bank_credit_record = 1
+    and a.cust_type != 4
     <if test="partnerList != null and partnerList.size() > 0">
       and
       c.partner_id in
@@ -896,6 +898,7 @@
     WHERE
     d.order_status != 3
       and d.bank_credit_record = 1
+     and a.cust_type != 4
     <if test="partnerList != null and partnerList.size() > 0">
       and
       c.partner_id in
@@ -1168,45 +1171,29 @@
     SELECT DISTINCT
 	z.order_id			AS orderId,
 	c.NAME					AS name,
-	CASE
-	WHEN e.car_type = 0 THEN
-	'新车'
-	WHEN e.car_type = 1 THEN
-	'二手车' ELSE '其他'
-	END AS car_type  AS carType,
-	d.sign_rate			 AS signRate,
-	d.loan_amount		 AS loanAmount,
-	d.bank_period_principal AS bankPeriodPrincipal,
-	CASE
-	WHEN f.telephone_verify = 2 THEN
-	'未提交'
-	WHEN f.telephone_verify = 3 THEN
-	'打回'
-	WHEN f.telephone_verify = 12 THEN
-	'拒绝'
-	WHEN f.telephone_verify = 1 THEN
-	'通过'
-	WHEN f.telephone_verify = 4 or f.telephone_verify = 5 or f.telephone_verify = 6 or f.telephone_verify = 7 THEN
-	'审核中'
-	END AS telephone_verify  AS telephoneVerify,
-	CASE
-	WHEN f.remit_review = 1 THEN
-	'已垫款'
-	WHEN f.remit_review = 2 THEN
-	'待垫款'
-	END             		AS remitReview,
-	z.create_time					AS createTime
+    CASE
+    WHEN e.car_type = 0 THEN
+    '新车'
+    WHEN e.car_type = 1 THEN
+    '二手车' ELSE '其他'
+    END                  AS carType,
+    d.loan_amount		 AS loanAmount,
+    d.sign_rate			 AS signRate,
+    d.loan_time          AS loanTime,
+    d.bank_period_principal AS bankPeriodPrincipal,
+    emp.name                AS sName
   FROM
       loan_process_log z
-      INNER JOIN ( SELECT SUBSTRING_INDEX( GROUP_CONCAT( id ORDER BY create_time DESC SEPARATOR ',' ), ',', 1 ) AS id FROM loan_process_log WHERE task_definition_key = "usertask_loan_apply" GROUP BY order_id ) g ON g.id = z.id
+      INNER JOIN ( SELECT SUBSTRING_INDEX( GROUP_CONCAT( id ORDER BY create_time DESC SEPARATOR ',' ), ',', 1 ) AS id FROM loan_process_log WHERE task_definition_key = "usertask_loan_apply" and action = 1 GROUP BY order_id ) g ON g.id = z.id
       LEFT JOIN loan_order a on a.id = z.order_id
       LEFT JOIN loan_base_info b ON a.loan_base_info_id = b.id
       LEFT JOIN loan_customer c ON c.id = a.loan_customer_id
       LEFT JOIN loan_financial_plan d ON d.id = a.loan_financial_plan_id
       LEFT JOIN loan_car_info e ON e.id = a.loan_car_info_id
       LEFT JOIN loan_process f ON f.order_id = a.id
+      left join employee emp on emp.id = b.salesman_id
   WHERE
-      z.action = 1
+      1 = 1
       <if test="makeMoneyState !=null and makeMoneyState != ''">
         AND f.remit_review = #{makeMoneyState}
       </if>
@@ -1221,7 +1208,7 @@
     when #{maxGroupLevel} = 1 then
     <choose>
       <when test="juniorIds != null and juniorIds.size() > 0">
-        base.salesman_id in
+        b.salesman_id in
         <foreach item="item" index="index" collection="juniorIds" open="(" separator="," close=")">
           #{item}
         </foreach>
@@ -1231,6 +1218,13 @@
       </otherwise>
     </choose>
     else true end
+    <if test="partnerList != null and partnerList.size() > 0">
+      and
+      b.partner_id in
+      <foreach item="item" index="index" collection="partnerList" open="(" separator="," close=")">
+        #{item}
+      </foreach>
+    </if>
   ORDER BY
   z.create_time desc
   </select>
@@ -1260,6 +1254,7 @@
         LEFT JOIN loan_financial_plan d ON d.id = b.loan_financial_plan_id
         left join remit_details e on e.id = b.remit_details_id
         left join loan_process f on f.order_id = z.order_id
+        LEFT JOIN loan_base_info base ON b.loan_base_info_id = base.id
     WHERE
         f.business_pay = 1
         AND f.order_status = 1
@@ -1287,7 +1282,469 @@
       </otherwise>
     </choose>
     else true end
+    <if test="partnerList != null and partnerList.size() > 0">
+      and
+      base.partner_id in
+      <foreach item="item" index="index" collection="partnerList" open="(" separator="," close=")">
+        #{item}
+      </foreach>
+    </if>
         order by z.create_time desc
 
   </select>
+
+  <select id="telCusDetail" resultType="com.yunche.loan.domain.vo.TelCusDetailVO" parameterType="com.yunche.loan.domain.query.BankCreditPrincipalQuery">
+    SELECT DISTINCT
+    z.`order_id` AS orderId,
+    c.`name` AS cusName,
+    c.`id_card` AS idCard,
+    d.`bank` AS bank,
+    e.NAME AS pName,
+    h.NAME AS sName,
+    ( CASE WHEN car.car_type = 1 THEN '二手车' WHEN car.car_type = 0 THEN '新车' END ) AS carType,
+    useGetCarName ( car.car_detail_id ) AS carName,
+    model.NAME AS modelName,
+    f.car_price AS carPrice,
+    z.`create_time` AS createTime
+    FROM
+    loan_process_log z
+    INNER JOIN (
+    SELECT
+    SUBSTRING_INDEX( GROUP_CONCAT( id ORDER BY create_time DESC SEPARATOR ',' ), ',', 1 ) AS id
+    FROM
+    loan_process_log
+    WHERE
+    task_definition_key = "usertask_telephone_verify"
+    AND action = 1
+    GROUP BY
+    order_id
+    ) g ON g.id = z.id
+    LEFT JOIN `loan_order` b ON z.`order_id` = b.`id`
+    LEFT JOIN `loan_customer` c ON c.id = b.`loan_customer_id`
+    LEFT JOIN `loan_base_info` d ON d.id = b.`loan_base_info_id`
+    LEFT JOIN `partner` e ON e.id = d.`partner_id`
+    LEFT JOIN `loan_financial_plan` f ON f.id = b.`loan_financial_plan_id`
+    LEFT JOIN employee h ON h.id = d.salesman_id
+    LEFT JOIN loan_car_info car ON car.id = b.loan_car_info_id
+    LEFT JOIN car_detail detail ON detail.id = car.car_detail_id
+    LEFT JOIN car_model model ON model.id = detail.model_id
+    WHERE 1=1
+    <if test = "gmtCreateStart1 != null and gmtCreateStart1 != ''">
+      <![CDATA[ AND z.create_time >= #{gmtCreateStart1}]]>
+    </if>
+    <if test = "gmtCreateEnd1 != null and gmtCreateEnd1 != ''">
+      <![CDATA[ AND z.create_time <= #{gmtCreateEnd1} ]]>
+    </if>
+    and
+    case when #{maxGroupLevel} = 0 then false
+    when #{maxGroupLevel} = 1 then
+    <choose>
+      <when test="juniorIds != null and juniorIds.size() > 0">
+        d.salesman_id in
+        <foreach item="item" index="index" collection="juniorIds" open="(" separator="," close=")">
+          #{item}
+        </foreach>
+      </when>
+      <otherwise>
+        false
+      </otherwise>
+    </choose>
+    else true end
+    <if test="partnerList != null and partnerList.size() > 0">
+      and
+      d.partner_id in
+      <foreach item="item" index="index" collection="partnerList" open="(" separator="," close=")">
+        #{item}
+      </foreach>
+    </if>
+    <if test="bankList != null and bankList.size() > 0">
+      and
+      d.bank in
+      <foreach item="item" index="index" collection="bankList" open="(" separator="," close=")">
+        #{item}
+      </foreach>
+    </if>
+    order by z.`order_id`
+  </select>
+  <select id="appBussinessRankReport" resultType="com.yunche.loan.domain.vo.AppBussinessRankReportVO" parameterType="com.yunche.loan.domain.query.AppBusDetailQuery">
+    SELECT
+	info.NAME   AS name,
+	count( info.order_id ) AS bussNum,
+	sum( info.loan_amount ) AS totalAmount,
+	sum( info.loan_amount ) / count( info.order_id )  AS averageAmount
+    FROM
+	(
+	SELECT DISTINCT
+		z.order_id,e.id,e.NAME,financial.loan_amount
+	FROM
+		loan_process_log z
+		INNER JOIN (
+		SELECT
+			SUBSTRING_INDEX( GROUP_CONCAT( id ORDER BY create_time DESC SEPARATOR ',' ), ',', 1 ) AS id
+		FROM
+			loan_process_log
+		WHERE
+			task_definition_key = "usertask_remit_review"
+			AND action = 1
+		GROUP BY
+			order_id
+		) g ON g.id = z.id
+		LEFT JOIN loan_order loan ON loan.id = z.order_id
+		LEFT JOIN loan_base_info base ON base.id = loan.loan_base_info_id
+		LEFT JOIN employee e ON e.id = base.salesman_id
+		LEFT JOIN loan_financial_plan financial ON financial.id = loan.loan_financial_plan_id
+		where case when(SELECT count(id) from loan_refund_apply where order_id = z.order_id) = 0 then true
+		else false end
+    <if test = "gmtCreateStart1 != null and gmtCreateStart1 != ''">
+      <![CDATA[ AND z.create_time >= #{gmtCreateStart1}]]>
+    </if>
+    <if test = "gmtCreateEnd1 != null and gmtCreateEnd1 != ''">
+      <![CDATA[ AND z.create_time <= #{gmtCreateEnd1} ]]>
+    </if>
+    and
+    case when #{maxGroupLevel} = 0 then false
+    when #{maxGroupLevel} = 1 then
+    <choose>
+      <when test="juniorIds != null and juniorIds.size() > 0">
+        base.salesman_id in
+        <foreach item="item" index="index" collection="juniorIds" open="(" separator="," close=")">
+          #{item}
+        </foreach>
+      </when>
+      <otherwise>
+        false
+      </otherwise>
+    </choose>
+    else true end
+    <if test="partnerList != null and partnerList.size() > 0">
+      and
+      base.partner_id in
+      <foreach item="item" index="index" collection="partnerList" open="(" separator="," close=")">
+        #{item}
+      </foreach>
+    </if>
+	) info
+
+    GROUP BY
+	info.id
+  </select>
+
+    <select id="appNoMortgageCusReport" resultType="com.yunche.loan.domain.vo.AppNoMortgageCusReportVO" parameterType="com.yunche.loan.domain.query.AppBusDetailQuery">
+    SELECT DISTINCT
+	z.order_id  AS orderId,
+	cus.NAME    AS name,
+	useGetCarName ( car.car_detail_id ) AS carName,
+	e.NAME      AS sName,
+	financial.loan_amount  AS loanAmount,
+	z.create_time 		AS loanTime
+    FROM
+	loan_process_log z
+	INNER JOIN (
+	SELECT
+		SUBSTRING_INDEX( GROUP_CONCAT( id ORDER BY create_time DESC SEPARATOR ',' ), ',', 1 ) AS id
+	FROM
+		loan_process_log
+	WHERE
+		task_definition_key = "usertask_remit_review"
+		AND action = 1
+	GROUP BY
+		order_id
+	) g ON g.id = z.id
+	LEFT JOIN loan_order loan ON loan.id = z.order_id
+	LEFT JOIN loan_base_info base ON base.id = loan.loan_base_info_id
+	LEFT JOIN employee e ON e.id = base.salesman_id
+	LEFT JOIN loan_financial_plan financial ON financial.id = loan.loan_financial_plan_id
+	LEFT JOIN loan_customer cus ON cus.id = loan.loan_customer_id
+	LEFT JOIN loan_car_info car ON car.id = loan.loan_car_info_id
+    WHERE
+	CASE
+			WHEN ( SELECT count( id ) FROM loan_refund_apply WHERE order_id = z.order_id ) = 0 THEN
+	TRUE ELSE FALSE
+    END
+      <if test = "gmtCreateStart1 != null and gmtCreateStart1 != ''">
+        <![CDATA[ AND z.create_time >= #{gmtCreateStart1}]]>
+      </if>
+      <if test = "gmtCreateEnd1 != null and gmtCreateEnd1 != ''">
+        <![CDATA[ AND z.create_time <= #{gmtCreateEnd1} ]]>
+      </if>
+      and
+      case when #{maxGroupLevel} = 0 then false
+      when #{maxGroupLevel} = 1 then
+      <choose>
+        <when test="juniorIds != null and juniorIds.size() > 0">
+          base.salesman_id in
+          <foreach item="item" index="index" collection="juniorIds" open="(" separator="," close=")">
+            #{item}
+          </foreach>
+        </when>
+        <otherwise>
+          false
+        </otherwise>
+      </choose>
+      else true end
+      <if test="partnerList != null and partnerList.size() > 0">
+        and
+        base.partner_id in
+        <foreach item="item" index="index" collection="partnerList" open="(" separator="," close=")">
+          #{item}
+        </foreach>
+      </if>
+    </select>
+
+    <select id="appMortgageAndDataOverdueReport1" resultType="com.yunche.loan.domain.vo.AppMortgageAndDataOverdueReportVO" parameterType="com.yunche.loan.domain.query.AppBusDetailQuery">
+      SELECT DISTINCT
+      e.id,e.name,count(z.order_id) as noMortgageSum,sum(financial.loan_amount) as noMortgageAmountSum
+      FROM
+	loan_process_log z
+	INNER JOIN (
+	SELECT
+		SUBSTRING_INDEX( GROUP_CONCAT( id ORDER BY create_time DESC SEPARATOR ',' ), ',', 1 ) AS id
+	FROM
+		loan_process_log
+	WHERE
+		task_definition_key = "usertask_remit_review"
+		AND action = 1
+      <if test = "gmtCreateStart1 != null and gmtCreateStart1 != ''">
+        <![CDATA[ AND create_time >= #{gmtCreateStart1}]]>
+      </if>
+      <if test = "gmtCreateEnd1 != null and gmtCreateEnd1 != ''">
+        <![CDATA[ AND create_time <= #{gmtCreateEnd1} ]]>
+      </if>
+	GROUP BY
+		order_id
+	) g ON g.id = z.id
+	left join loan_process process on process.order_id = z.order_id
+	left join loan_order loan on loan.id = z.order_id
+	left join loan_financial_plan financial on financial.id = loan.loan_financial_plan_id
+	left join loan_base_info base on base.id = loan.loan_base_info_id
+	left join employee e on e.id = base.salesman_id
+	where process.apply_license_plate_deposit_info !=1
+        and
+        case when #{maxGroupLevel} = 0 then false
+        when #{maxGroupLevel} = 1 then
+        <choose>
+            <when test="juniorIds != null and juniorIds.size() > 0">
+                base.salesman_id in
+                <foreach item="item" index="index" collection="juniorIds" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </when>
+            <otherwise>
+                false
+            </otherwise>
+        </choose>
+        else true end
+        <if test="partnerList != null and partnerList.size() > 0">
+            and
+            base.partner_id in
+            <foreach item="item" index="index" collection="partnerList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+	group by e.id
+    </select>
+  <select id="appMortgageAndDataOverdueReport2" resultType="com.yunche.loan.domain.vo.AppMortgageAndDataOverdueReportVO" parameterType="com.yunche.loan.domain.query.AppBusDetailQuery">
+    SELECT DISTINCT
+	e.id,
+	e.NAME,
+	count(z.order_id) as overdueSum,
+	sum(financial.loan_amount) as overdueAmountSum
+
+    FROM
+        loan_process_log z
+        INNER JOIN (
+    SELECT
+        SUBSTRING_INDEX( GROUP_CONCAT( id ORDER BY create_time DESC SEPARATOR ',' ), ',', 1 ) AS id
+    FROM
+        loan_process_log
+    WHERE
+        task_definition_key = "usertask_remit_review"
+        AND action = 1
+      <if test = "gmtCreateStart1 != null and gmtCreateStart1 != ''">
+        <![CDATA[ AND create_time >= #{gmtCreateStart1}]]>
+      </if>
+      <if test = "gmtCreateEnd1 != null and gmtCreateEnd1 != ''">
+        <![CDATA[ AND create_time <= #{gmtCreateEnd1} ]]>
+      </if>
+    GROUP BY
+        order_id
+        ) g ON g.id = z.id
+        LEFT JOIN loan_process process ON process.order_id = z.order_id
+        LEFT JOIN loan_order loan ON loan.id = z.order_id
+        LEFT JOIN loan_financial_plan financial ON financial.id = loan.loan_financial_plan_id
+        LEFT JOIN loan_base_info base ON base.id = loan.loan_base_info_id
+        LEFT JOIN employee e ON e.id = base.salesman_id
+        LEFT JOIN material_audit audit ON audit.id = loan.material_audit_id
+    WHERE
+    1 = (
+    CASE
+        WHEN audit.complete_material_date IS NULL THEN
+    IF
+        ( datediff( DATE_FORMAT( now(), '%Y-%m-%d' ), DATE_FORMAT( z.create_time, '%Y-%m-%d' ) ) > 1, "1", "0" )
+        else
+    IF
+        ( datediff( DATE_FORMAT( audit.complete_material_date, '%Y-%m-%d' ), DATE_FORMAT( z.create_time, '%Y-%m-%d' ) )>1, "1", "0" )
+    end )
+      and
+      case when #{maxGroupLevel} = 0 then false
+      when #{maxGroupLevel} = 1 then
+      <choose>
+          <when test="juniorIds != null and juniorIds.size() > 0">
+              base.salesman_id in
+              <foreach item="item" index="index" collection="juniorIds" open="(" separator="," close=")">
+                  #{item}
+              </foreach>
+          </when>
+          <otherwise>
+              false
+          </otherwise>
+      </choose>
+      else true end
+      <if test="partnerList != null and partnerList.size() > 0">
+          and
+          base.partner_id in
+          <foreach item="item" index="index" collection="partnerList" open="(" separator="," close=")">
+              #{item}
+          </foreach>
+      </if>
+    group by e.id
+  </select>
+
+  <select id="appCardsTimeCheckReport" resultType="com.yunche.loan.domain.vo.AppCardsTimeCheckReportVO" parameterType="com.yunche.loan.domain.query.AppBusDetailQuery">
+    SELECT DISTINCT
+	z.order_id AS orderId,
+	e.NAME AS sName,
+	cus.NAME AS NAME,
+	useGetCarName ( car.car_detail_id ) AS carName,
+	info.license_plate_number AS carId,
+	z.create_time AS makeAdvancesTime,
+	info.apply_license_plate_date AS onTheCardsTime,
+	datediff( DATE_FORMAT( info.apply_license_plate_date, '%Y-%m-%d' ), DATE_FORMAT( z.create_time, '%Y-%m-%d' ) ) AS differTime
+    FROM
+	loan_process_log z
+	INNER JOIN (
+	SELECT
+		SUBSTRING_INDEX( GROUP_CONCAT( id ORDER BY create_time DESC SEPARATOR ',' ), ',', 1 ) AS id
+	FROM
+		loan_process_log
+	WHERE
+		task_definition_key = "usertask_remit_review"
+		AND action = 1
+	GROUP BY
+		order_id
+	) g ON g.id = z.id
+	LEFT JOIN loan_order loan ON loan.id = z.order_id
+	LEFT JOIN loan_base_info base ON base.id = loan.loan_base_info_id
+	LEFT JOIN employee e ON e.id = base.salesman_id
+	LEFT JOIN loan_customer cus ON cus.id = loan.loan_customer_id
+	LEFT JOIN loan_car_info car ON car.id = loan.loan_car_info_id
+	LEFT JOIN vehicle_information info ON info.id = loan.vehicle_information_id
+    WHERE
+    CASE
+            WHEN ( SELECT count( id ) FROM loan_refund_apply WHERE order_id = z.order_id ) = 0 THEN
+    TRUE ELSE FALSE
+    END
+      <if test = "gmtCreateStart1 != null and gmtCreateStart1 != ''">
+        <![CDATA[ AND z.create_time >= #{gmtCreateStart1}]]>
+      </if>
+      <if test = "gmtCreateEnd1 != null and gmtCreateEnd1 != ''">
+        <![CDATA[ AND z.create_time <= #{gmtCreateEnd1} ]]>
+      </if>
+      and
+      case when #{maxGroupLevel} = 0 then false
+      when #{maxGroupLevel} = 1 then
+      <choose>
+        <when test="juniorIds != null and juniorIds.size() > 0">
+          base.salesman_id in
+          <foreach item="item" index="index" collection="juniorIds" open="(" separator="," close=")">
+            #{item}
+          </foreach>
+        </when>
+        <otherwise>
+          false
+        </otherwise>
+      </choose>
+      else true end
+      <if test="partnerList != null and partnerList.size() > 0">
+        and
+        base.partner_id in
+        <foreach item="item" index="index" collection="partnerList" open="(" separator="," close=")">
+          #{item}
+        </foreach>
+      </if>
+    </select>
+
+    <select id="appDataTimeCheckReport" resultType="com.yunche.loan.domain.vo.AppDataTimeCheckReportVO" parameterType="com.yunche.loan.domain.query.AppBusDetailQuery">
+    select tal.orderId,tal.sName,tal.name,tal.carName,tal.contractTime,tal.makeAdvancesTime,
+    datediff( DATE_FORMAT( tal.contractTime, '%Y-%m-%d' ), DATE_FORMAT( tal.makeAdvancesTime, '%Y-%m-%d' ) ) AS differTime
+    from(
+    SELECT DISTINCT
+	z.order_id AS orderId,
+	e.name AS sName,
+	cus.NAME AS name,
+	useGetCarName ( car.car_detail_id ) AS carName,
+	(SELECT
+	create_time
+  FROM
+	loan_process_log
+  WHERE
+	 task_definition_key = 'usertask_data_flow_contract_p2c' and order_id = loan.id
+	order by create_time desc limit 1)  AS contractTime,
+	z.create_time AS makeAdvancesTime
+  FROM
+	loan_process_log z
+	INNER JOIN (
+	SELECT
+		SUBSTRING_INDEX( GROUP_CONCAT( id ORDER BY create_time DESC SEPARATOR ',' ), ',', 1 ) AS id
+	FROM
+		loan_process_log
+	WHERE
+		task_definition_key = "usertask_remit_review"
+		AND action = 1
+	GROUP BY
+		order_id
+	) g ON g.id = z.id
+	LEFT JOIN loan_order loan ON loan.id = z.order_id
+	LEFT JOIN loan_base_info base ON base.id = loan.loan_base_info_id
+	LEFT JOIN employee e ON e.id = base.salesman_id
+	LEFT JOIN loan_customer cus ON cus.id = loan.loan_customer_id
+	LEFT JOIN loan_car_info car ON car.id = loan.loan_car_info_id
+	LEFT JOIN vehicle_information info ON info.id = loan.vehicle_information_id
+    WHERE
+    CASE
+            WHEN ( SELECT count( id ) FROM loan_refund_apply WHERE order_id = z.order_id ) = 0 THEN
+    TRUE ELSE FALSE
+    END
+      <if test = "gmtCreateStart1 != null and gmtCreateStart1 != ''">
+        <![CDATA[ AND z.create_time >= #{gmtCreateStart1}]]>
+      </if>
+      <if test = "gmtCreateEnd1 != null and gmtCreateEnd1 != ''">
+        <![CDATA[ AND z.create_time <= #{gmtCreateEnd1} ]]>
+      </if>
+      and
+      case when #{maxGroupLevel} = 0 then false
+      when #{maxGroupLevel} = 1 then
+      <choose>
+        <when test="juniorIds != null and juniorIds.size() > 0">
+          base.salesman_id in
+          <foreach item="item" index="index" collection="juniorIds" open="(" separator="," close=")">
+            #{item}
+          </foreach>
+        </when>
+        <otherwise>
+          false
+        </otherwise>
+      </choose>
+      else true end
+      <if test="partnerList != null and partnerList.size() > 0">
+        and
+        base.partner_id in
+        <foreach item="item" index="index" collection="partnerList" open="(" separator="," close=")">
+          #{item}
+        </foreach>
+      </if>
+
+    )tal
+    order by tal.orderId
+    </select>
 </mapper>

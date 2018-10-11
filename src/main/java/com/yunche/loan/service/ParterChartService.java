@@ -12,10 +12,10 @@ import com.yunche.loan.domain.param.OrdersSuccessByMonthChartParam;
  **/
 public interface ParterChartService
 {
-    ResultBean getCreditApplyCustomerByMonthChart(CreditApplyCustomerByMonthChartParam param);
+    ResultBean getCreditApplyCustomerByMonthChart(LoanApplyOrdersByMonthChartParam param);
 
     ResultBean getLoanApplyOrdersByMonthChart(LoanApplyOrdersByMonthChartParam param);
 
-    ResultBean getOrdersSuccessByMonthChart(OrdersSuccessByMonthChartParam param);
+    ResultBean getOrdersSuccessByMonthChart(LoanApplyOrdersByMonthChartParam param);
 }
 

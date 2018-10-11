@@ -82,6 +82,13 @@ public class JinTouHangAccommodationApplyController {
     //--------------------------金投行过桥处理------------------------
 
     //--------------------------金投行还款登记------------------------
+    /*
+    *计算利息及手续费
+     */
+    @GetMapping(value = "/calmoney", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    ResultBean calMoney(@RequestParam("bridgeProcessId") Long bridgeProcessId,@RequestParam("orderId") Long orderId) {
+        return accommodationApplyService.calMoney(bridgeProcessId,orderId);
+    }
 
     /**
      * 异常还款

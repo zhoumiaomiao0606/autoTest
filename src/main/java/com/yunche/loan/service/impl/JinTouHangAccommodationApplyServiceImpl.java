@@ -10,8 +10,7 @@ import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.POIUtil;
 import com.yunche.loan.config.util.StringUtil;
-import com.yunche.loan.domain.entity.LoanOrderDO;
-import com.yunche.loan.domain.entity.ThirdPartyFundBusinessDO;
+import com.yunche.loan.domain.entity.*;
 import com.yunche.loan.domain.param.AccommodationApplyParam;
 import com.yunche.loan.domain.param.ApprovalParam;
 import com.yunche.loan.domain.param.ExportApplyLoanPushParam;
@@ -28,6 +27,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -38,6 +39,7 @@ import static com.yunche.loan.config.constant.ProcessApprovalConst.ACTION_ROLL_B
 
 @Service
 @Transactional
+
 public class JinTouHangAccommodationApplyServiceImpl implements JinTouHangAccommodationApplyService {
 
 
@@ -71,6 +73,9 @@ public class JinTouHangAccommodationApplyServiceImpl implements JinTouHangAccomm
 
     @Autowired
     private BankCache bankCache;
+
+    @Autowired
+    private BankLendRecordDOMapper bankLendRecordDOMapper;
 
 
 //    @Override
@@ -338,8 +343,8 @@ public class JinTouHangAccommodationApplyServiceImpl implements JinTouHangAccomm
     public ResultBean exportJinTouHangRepayInfo(ExportApplyLoanPushParam param) {
 
         List<JinTouHangRepayInfoVO> voList = loanStatementDOMapper.exportJinTouHangRepayInfo(param);
-        List<String> header = Lists.newArrayList("借款时间", "还款时间", "借款金额",
-                "主贷姓名", "身份证号", "分期本金", "还款类型", "备注"
+        List<String> header = Lists.newArrayList("主贷姓名", "身份证号", "借款时间",
+                "银行放款时间", "还款时间", "借款天数", "借款金额", "放款本金" ,"放款-借款","还款类型","利息","手续费","备注"
         );
 
         String ossResultKey = POIUtil.createExcelFile("金投行还款信息", voList, header, JinTouHangRepayInfoVO.class, ossConfig);
@@ -361,6 +366,48 @@ public class JinTouHangAccommodationApplyServiceImpl implements JinTouHangAccomm
 
         String ossResultKey = POIUtil.createExcelFile("金投行息费登记", voList, header, JinTouHangInterestRegisterVO.class, ossConfig);
         return ResultBean.ofSuccess(ossResultKey);
+    }
+
+    @Override
+    public ResultBean calMoney(Long bridgeProcessId, Long orderId) {
+        CalMoneyVO calMoneyVO = new CalMoneyVO();
+
+        BigDecimal yearRate ;
+        BigDecimal singleRate ;
+        BigDecimal lend_amount;
+        Date lendDate;
+        Date repayDate;
+        int timeNum;
+
+        Long conf_third_party_id ;
+        ConfThirdRealBridgeProcessDO confThirdRealBridgeProcessDO = confThirdRealBridgeProcessDOMapper.selectByPrimaryKey(bridgeProcessId);
+        if(confThirdRealBridgeProcessDO !=null){
+            conf_third_party_id = confThirdRealBridgeProcessDO.getConfThirdPartyId();
+            ConfThirdPartyMoneyDO confThirdPartyMoneyDO = confThirdPartyMoneyDOMapper.selectByPrimaryKey(conf_third_party_id);
+            yearRate = confThirdPartyMoneyDO.getYearRate();
+            singleRate = confThirdPartyMoneyDO.getSingleRate();
+            ThirdPartyFundBusinessDO thirdPartyFundBusinessDO = thirdPartyFundBusinessDOMapper.selectByPrimaryKey(bridgeProcessId);
+            lendDate = thirdPartyFundBusinessDO.getLendDate();
+            repayDate = thirdPartyFundBusinessDO.getRepayDate();
+            timeNum=(int)((repayDate.getTime()-lendDate.getTime())/(1000*3600*24));
+            lend_amount = thirdPartyFundBusinessDO.getLendAmount();
+            calMoneyVO.setInterest(String.valueOf(yearRate.multiply(lend_amount).multiply(BigDecimal.valueOf(timeNum)).divide(BigDecimal.valueOf(365))));
+            calMoneyVO.setPoundage(String.valueOf(singleRate.multiply(lend_amount).multiply(BigDecimal.valueOf(timeNum)).divide(BigDecimal.valueOf(365))));
+            calMoneyVO.setTimeNum(String.valueOf(timeNum));
+            calMoneyVO.setSingleRate(String.valueOf(singleRate));
+        }
+
+        BankLendRecordDO bankLendRecordDO = bankLendRecordDOMapper.selectByLoanOrder(orderId);
+        if(bankLendRecordDO !=null){
+            if(bankLendRecordDO.getLendDate()  != null){
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                Calendar c = Calendar.getInstance();
+                c.setTime(bankLendRecordDO.getLendDate());
+                c.add(Calendar.DAY_OF_MONTH, 1);
+                calMoneyVO.setBankDate(sdf.format(c.getTime()));
+            }
+        }
+        return ResultBean.ofSuccess(calMoneyVO);
     }
 
     @Override

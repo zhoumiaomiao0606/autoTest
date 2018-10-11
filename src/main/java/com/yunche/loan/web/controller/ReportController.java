@@ -109,10 +109,15 @@ public class ReportController {
     public ResultBean telPartnerCountExport(@RequestBody BankCreditPrincipalQuery query) {
         return ResultBean.ofSuccess(reportService.telPartnerCountExport(query));
     }
+
     //电审客户明细(待开发)
     @PostMapping(value = "/telcustomerdetail",consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean telCustomerDetail(@RequestBody BankCreditPrincipalQuery query) {
         return ResultBean.ofSuccess(reportService.telCustomerDetail(query));
+    }
+    @PostMapping(value = "/telcustomerdetailexport",consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResultBean telCustomerDetailExport(@RequestBody BankCreditPrincipalQuery query) {
+        return ResultBean.ofSuccess(reportService.telCustomerDetailExport(query));
     }
 
 }

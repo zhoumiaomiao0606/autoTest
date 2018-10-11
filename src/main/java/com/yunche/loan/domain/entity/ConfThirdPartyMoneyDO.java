@@ -20,6 +20,8 @@ public class ConfThirdPartyMoneyDO {
 
     private BigDecimal yearRate;
 
+    private BigDecimal singleRate;
+
     private BigDecimal singleCost;
 
     private Integer loanTime;

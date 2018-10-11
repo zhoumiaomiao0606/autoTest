@@ -14,11 +14,12 @@
         <result column="gmt_create" property="gmtCreate" jdbcType="TIMESTAMP"/>
         <result column="gmt_modify" property="gmtModify" jdbcType="TIMESTAMP"/>
         <result column="status" property="status" jdbcType="TINYINT"/>
+        <result column="single_rate" property="singleRate" jdbcType="DECIMAL"/>
     </resultMap>
 
     <sql id="Base_Column_List">
         id, name, contact, mobile, caution_money, year_rate, single_cost, loan_time, bank_id,
-        gmt_create, gmt_modify, status
+        gmt_create, gmt_modify, status, single_rate
     </sql>
 
     <sql id="Base_Query_List">
@@ -39,6 +40,9 @@
         </if>
         <if test="yearRate != null">
             AND year_rate = #{yearRate}
+        </if>
+        <if test="singleRate != null">
+            AND single_rate = #{singleRate}
         </if>
         <if test="singleCost != null">
             AND single_cost = #{singleCost}
@@ -92,12 +96,12 @@
         insert into conf_third_party_money (id, name, contact,
         mobile, caution_money, year_rate,
         single_cost, loan_time, bank_id,
-        gmt_create, gmt_modify, status
+        gmt_create, gmt_modify, status,single_rate
         )
         values (#{id,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{contact,jdbcType=VARCHAR},
         #{mobile,jdbcType=VARCHAR}, #{cautionMoney,jdbcType=DECIMAL}, #{yearRate,jdbcType=DECIMAL},
         #{singleCost,jdbcType=DECIMAL}, #{loanTime,jdbcType=INTEGER}, #{bankId,jdbcType=BIGINT},
-        #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModify,jdbcType=TIMESTAMP}, #{status,jdbcType=TINYINT}
+        #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModify,jdbcType=TIMESTAMP}, #{status,jdbcType=TINYINT}, #{singleRate,jdbcType=DECIMAL}
         )
     </insert>
     <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.ConfThirdPartyMoneyDO"
@@ -121,6 +125,9 @@
             </if>
             <if test="yearRate != null">
                 year_rate,
+            </if>
+            <if test="singleRate != null">
+                single_rate,
             </if>
             <if test="singleCost != null">
                 single_cost,
@@ -160,6 +167,9 @@
             <if test="yearRate != null">
                 #{yearRate,jdbcType=DECIMAL},
             </if>
+            <if test="singleRate != null">
+                #{singleRate,jdbcType=DECIMAL},
+            </if>
             <if test="singleCost != null">
                 #{singleCost,jdbcType=DECIMAL},
             </if>
@@ -198,6 +208,9 @@
             <if test="yearRate != null">
                 year_rate = #{yearRate,jdbcType=DECIMAL},
             </if>
+            <if test="singleRate != null">
+                single_rate = #{singleRate,jdbcType=DECIMAL},
+            </if>
             <if test="singleCost != null">
                 single_cost = #{singleCost,jdbcType=DECIMAL},
             </if>
@@ -226,6 +239,7 @@
       mobile = #{mobile,jdbcType=VARCHAR},
       caution_money = #{cautionMoney,jdbcType=DECIMAL},
       year_rate = #{yearRate,jdbcType=DECIMAL},
+      single_rate = #{singleRate,jdbcType=DECIMAL},
       single_cost = #{singleCost,jdbcType=DECIMAL},
       loan_time = #{loanTime,jdbcType=INTEGER},
       bank_id = #{bankId,jdbcType=BIGINT},

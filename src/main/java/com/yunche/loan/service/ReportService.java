@@ -50,5 +50,8 @@ public interface ReportService {
 
     String telPartnerCountExport(BankCreditPrincipalQuery query);
 
-    ResultBean<List<TelPartnerCountVO>> telCustomerDetail(BankCreditPrincipalQuery query);
+    ResultBean<List<TelCusDetailVO>> telCustomerDetail(BankCreditPrincipalQuery query);
+
+    String telCustomerDetailExport(BankCreditPrincipalQuery query);
+
 }

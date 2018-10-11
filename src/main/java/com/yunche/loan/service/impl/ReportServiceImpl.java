@@ -407,6 +407,30 @@ public class ReportServiceImpl implements ReportService {
     }
 
     @Override
+    public ResultBean<List<TelCusDetailVO>> telCustomerDetail(BankCreditPrincipalQuery query) {
+        Long loginUserId = SessionUtils.getLoginUser().getId();
+
+        query.setJuniorIds(employeeService.getSelfAndCascadeChildIdList(loginUserId));
+        query.setMaxGroupLevel(taskSchedulingDOMapper.selectMaxGroupLevel(loginUserId));
+        PageHelper.startPage(query.getPageIndex(), query.getPageSize(), true);
+        List<TelCusDetailVO> list = zhonganInfoDOMapper.telCusDetail(query);
+        PageInfo<TelCusDetailVO> pageInfo = new PageInfo<>(list);
+        Long totalNum = pageInfo.getTotal();
+
+        return ResultBean.ofSuccess(list, new Long(totalNum).intValue(), pageInfo.getPageNum(), pageInfo.getPageSize());
+    }
+
+    @Override
+    public String telCustomerDetailExport(BankCreditPrincipalQuery query) {
+        Long loginUserId = SessionUtils.getLoginUser().getId();
+
+        query.setJuniorIds(employeeService.getSelfAndCascadeChildIdList(loginUserId));
+        query.setMaxGroupLevel(taskSchedulingDOMapper.selectMaxGroupLevel(loginUserId));
+        List<TelCusDetailVO> list = zhonganInfoDOMapper.telCusDetail(query);
+        return createTelCusDEtailExcelFile(list);
+    }
+
+    @Override
     public ResultBean<List<TelUserCountVO>> telUserCount(BankCreditPrincipalQuery query) {
         Long loginUserId = SessionUtils.getLoginUser().getId();
 
@@ -605,10 +629,7 @@ public class ReportServiceImpl implements ReportService {
         return createTelPartnerExcelFile(list);
     }
 
-    @Override
-    public ResultBean<List<TelPartnerCountVO>> telCustomerDetail(BankCreditPrincipalQuery query) {
-        return null;
-    }
+
 
     private String createTelPartnerExcelFile(List<TelPartnerCountVO> list) {
         String timestamp = new SimpleDateFormat("yyyyMMdd").format(new Date());
@@ -1132,6 +1153,101 @@ public class ReportServiceImpl implements ReportService {
             sheet.autoSizeColumn((short) 9);
             sheet.autoSizeColumn((short) 10);
             sheet.autoSizeColumn((short) 11);
+
+            workbook.write(out);
+            //上传OSS
+            OSSClient ossClient = OSSUnit.getOSSClient();
+            String bucketName = ossConfig.getBucketName();
+            String diskName = ossConfig.getDownLoadDiskName();
+            OSSUnit.deleteFile(ossClient, bucketName, diskName + File.separator, fileName);
+            OSSUnit.uploadObject2OSS(ossClient, file, bucketName, diskName + File.separator);
+        } catch (Exception e) {
+            Preconditions.checkArgument(false, e.getMessage());
+        } finally {
+            try {
+                if (out != null) {
+                    out.close();
+                }
+            } catch (IOException e) {
+                Preconditions.checkArgument(false, e.getMessage());
+            }
+        }
+
+        return ossConfig.getDownLoadDiskName() + File.separator + fileName;
+    }
+
+    private String createTelCusDEtailExcelFile(List<TelCusDetailVO> list) {
+        String timestamp = new SimpleDateFormat("yyyyMMdd").format(new Date());
+        Long id = SessionUtils.getLoginUser().getId();
+        String fileName = "电审客户明细"+timestamp + id + ".xlsx";
+        //创建workbook
+        File file = new File(ossConfig.getDownLoadBasepath() + File.separator + fileName);
+        FileOutputStream out = null;
+        XSSFWorkbook workbook = null;
+        try {
+
+            out = new FileOutputStream(file);
+            workbook = new XSSFWorkbook();
+            XSSFSheet sheet = workbook.createSheet();
+
+
+            ArrayList<String> header = Lists.newArrayList("客户姓名", "身份证号", "贷款银行", "合伙人",
+                    "业务员", "车辆类型", "车系", "车型","购车价","电审通过时间"
+            );
+            //申请单号	客户名称	证件类型	证件号	业务员	合伙人团队	贷款金额	gps数量	申请单状态	提交状态	备注	审核员	审核时间
+            XSSFRow headRow = sheet.createRow(0);
+            for (int i = 0; i < header.size(); i++) {
+                XSSFCell cell = headRow.createCell(i);
+                cell.setCellValue(header.get(i));
+            }
+            XSSFRow row = null;
+            XSSFCell cell = null;
+            for (int i = 0; i < list.size(); i++) {
+                TelCusDetailVO telCusDetailVO = list.get(i);
+                //创建行
+                row = sheet.createRow(i + 1);
+
+                cell = row.createCell(0);
+                cell.setCellValue(telCusDetailVO.getCusName());
+
+                cell = row.createCell(1);
+                cell.setCellValue(telCusDetailVO.getIdCard());
+
+                cell = row.createCell(2);
+                cell.setCellValue(telCusDetailVO.getBank());
+
+                cell = row.createCell(3);
+                cell.setCellValue(telCusDetailVO.getPName());
+
+                cell = row.createCell(4);
+                cell.setCellValue(telCusDetailVO.getSName());
+
+                cell = row.createCell(5);
+                cell.setCellValue(telCusDetailVO.getCarType());
+
+                cell = row.createCell(6);
+                cell.setCellValue(telCusDetailVO.getModelName());
+
+                cell = row.createCell(7);
+                cell.setCellValue(telCusDetailVO.getCarName());
+
+                cell = row.createCell(8);
+                cell.setCellValue(telCusDetailVO.getCarPrice());
+
+                cell = row.createCell(9);
+                cell.setCellValue(telCusDetailVO.getCreateTime());
+            }
+            //文件宽度自适应
+            sheet.autoSizeColumn((short) 0);
+            sheet.autoSizeColumn((short) 1);
+            sheet.autoSizeColumn((short) 2);
+            sheet.autoSizeColumn((short) 3);
+            sheet.autoSizeColumn((short) 4);
+            sheet.autoSizeColumn((short) 5);
+            sheet.autoSizeColumn((short) 6);
+            sheet.autoSizeColumn((short) 7);
+            sheet.autoSizeColumn((short) 8);
+            sheet.autoSizeColumn((short) 9);
 
             workbook.write(out);
             //上传OSS

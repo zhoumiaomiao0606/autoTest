@@ -87,4 +87,19 @@ public interface ZhonganInfoDOMapper {
 
 
     List<AppMakeMoneyDetailReportVO> appMakeMoneyDetailReport(AppBusDetailQuery query);
+
+    List<AppBussinessRankReportVO> appBussinessRankReport(AppBusDetailQuery query);
+
+
+    List<AppNoMortgageCusReportVO> appNoMortgageCusReport(AppBusDetailQuery query);
+
+    List<AppMortgageAndDataOverdueReportVO> appMortgageAndDataOverdueReport1(AppBusDetailQuery query);
+
+    List<AppMortgageAndDataOverdueReportVO> appMortgageAndDataOverdueReport2(AppBusDetailQuery query);
+
+    List<AppCardsTimeCheckReportVO> appCardsTimeCheckReport(AppBusDetailQuery query);
+
+    List<AppDataTimeCheckReportVO> appDataTimeCheckReport(AppBusDetailQuery query);
+
+    List<TelCusDetailVO> telCusDetail(BankCreditPrincipalQuery query);
 }

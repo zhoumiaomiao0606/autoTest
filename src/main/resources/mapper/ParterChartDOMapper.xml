@@ -19,7 +19,7 @@
                    order_id
                    FROM
                    loan_process_log
-                   WHERE task_definition_key = 'usertask_credit_apply' AND action = 1 AND create_time BETWEEN '2016-10' AND '2019-01-01'
+                   WHERE task_definition_key = 'usertask_credit_apply' AND action = 1 AND create_time BETWEEN #{startDate} AND #{endDate}
                   )
           )
           ) ids
@@ -49,7 +49,7 @@
 
     <select id="selectLoanApplyOrdersByMonth" parameterType="com.yunche.loan.domain.param.LoanApplyOrdersByMonthChartParam"  resultType="com.yunche.loan.domain.vo.LoanApplyOrdersVO" >
           SELECT
-             order_id,task_definition_key
+             order_id  AS orderId,task_definition_key
              FROM
              loan_process_log
              WHERE order_id in(
@@ -57,8 +57,8 @@
              order_id
              FROM
              loan_process_log
-             WHERE action =1 AND task_definition_key = 'usertask_loan_apply' AND create_time BETWEEN '2016-10' AND '2019-01-01'
-             )  AND create_time BETWEEN '2016-10' AND '2019-01-01' AND action =1
+             WHERE action =1 AND task_definition_key = 'usertask_loan_apply' AND create_time BETWEEN #{startDate} AND #{endDate}
+             )  AND create_time BETWEEN #{startDate} AND #{endDate} AND action =1
     </select>
 
 
@@ -73,14 +73,236 @@
              FROM
              loan_process_log
              WHERE action =1 AND task_definition_key = 'usertask_credit_apply' AND create_time BETWEEN '2016-10' AND '2019-01-01'
-             )  AND create_time BETWEEN '2016-10' AND '2019-01-01' AND action !=1
+             )  AND create_time BETWEEN #{startDate} AND #{endDate} AND action !=1
+    </select>
+    <select id="totalCredit" resultType="java.lang.Long" parameterType="com.yunche.loan.domain.param.OrdersSuccessByMonthChartParam">
+        SELECT
+            count( a.order_id )
+        FROM
+            (
+        SELECT DISTINCT
+            z.*
+        FROM
+            loan_process_log z
+            INNER JOIN ( SELECT SUBSTRING_INDEX( GROUP_CONCAT( id ORDER BY create_time DESC SEPARATOR ',' ), ',', 1 ) AS id FROM loan_process_log WHERE task_definition_key = "usertask_credit_apply" GROUP BY order_id ) g ON g.id = z.id
+        WHERE
+            z.action = 1
+            ) a where a.create_time BETWEEN #{startDate} AND #{endDate}
     </select>
 
+    <select id="totalRefuseLend" resultType="java.lang.Long" parameterType="com.yunche.loan.domain.param.OrdersSuccessByMonthChartParam">
+      select count(a.order_id) from(
+	SELECT DISTINCT
+	z.*
+        FROM
+            loan_process_log z
+            INNER JOIN ( SELECT SUBSTRING_INDEX( GROUP_CONCAT( id ORDER BY create_time DESC SEPARATOR ',' ), ',', 1 ) AS id FROM loan_process_log
+            WHERE task_definition_key = "usertask_credit_apply" and action = 1 GROUP BY order_id ) g ON g.id = z.id
+            left join loan_order loan on loan.id = z.order_id
+            left join loan_customer cus on cus.id = loan.loan_customer_id
+            left join loan_credit_info credit on credit.customer_id = cus.id and credit.type =1
+            where  credit.result =0) a where a.create_time BETWEEN #{startDate} AND #{endDate}
+    </select>
 
+    <select id="totalTelGiveUp" resultType="java.lang.Long" parameterType="com.yunche.loan.domain.param.OrdersSuccessByMonthChartParam">
+        select count(a.order_id) from(
+            SELECT DISTINCT
+            z.*
+        FROM
+            loan_process_log z
+            INNER JOIN ( SELECT SUBSTRING_INDEX( GROUP_CONCAT( id ORDER BY create_time DESC SEPARATOR ',' ), ',', 1 ) AS id FROM loan_process_log
+            WHERE task_definition_key = "usertask_telephone_verify" GROUP BY order_id ) g ON g.id = z.id
+            left join loan_process process on process.order_id = z.order_id
+            where process.telephone_verify = 12 )a where a.create_time BETWEEN #{startDate} AND #{endDate}
+    </select>
 
+    <select id="totalmakeAdvances" resultType="java.lang.Long" parameterType="com.yunche.loan.domain.param.OrdersSuccessByMonthChartParam">
+      select count(a.order_id) from(
+        SELECT DISTINCT
+            z.*
+        FROM
+            loan_process_log z
+            INNER JOIN ( SELECT SUBSTRING_INDEX( GROUP_CONCAT( id ORDER BY create_time DESC SEPARATOR ',' ), ',', 1 ) AS id FROM loan_process_log
+            WHERE task_definition_key = "usertask_remit_review" and action = 1 GROUP BY order_id ) g ON g.id = z.id
+            left join loan_process process on process.order_id = z.order_id
+            where  process.apply_license_plate_deposit_info != 1 and process.order_status = 1)a
+            where a.create_time BETWEEN #{startDate} AND #{endDate}
+    </select>
 
+    <select id="totalRefund" resultType="java.lang.Long" parameterType="com.yunche.loan.domain.param.OrdersSuccessByMonthChartParam">
+            SELECT
+        count( a.order_id )
+        FROM
+        (
+        SELECT DISTINCT
+        z.*
+        FROM
+        loan_process_log z
+        INNER JOIN (
+        SELECT
+        SUBSTRING_INDEX( GROUP_CONCAT( id ORDER BY create_time DESC SEPARATOR ',' ), ',', 1 ) AS id
+        FROM
+        loan_process_log
+        WHERE
+        task_definition_key = "usertask_refund_apply_review"
+        AND action = 1
+        GROUP BY
+        order_id
+        ) g ON g.id = z.id
+        LEFT JOIN loan_process process ON process.order_id = z.order_id
+        AND process.remit_review != 1
+        ) a where a.create_time BETWEEN #{startDate} AND #{endDate}
+    </select>
 
+    <select id="totalMortgage" resultType="java.lang.Long" parameterType="com.yunche.loan.domain.param.OrdersSuccessByMonthChartParam">
+        select count(a.order_id) from(
+        SELECT DISTINCT
+            z.*
+        FROM
+            loan_process_log z
+            INNER JOIN ( SELECT SUBSTRING_INDEX( GROUP_CONCAT( id ORDER BY create_time DESC SEPARATOR ',' ), ',', 1 ) AS id FROM loan_process_log
+            WHERE task_definition_key = "usertask_apply_license_plate_deposit_info" and action = 1 GROUP BY order_id ) g ON g.id = z.id
+            left join loan_process process on process.order_id = z.order_id
+            where process.order_status =1)a
+            where a.create_time BETWEEN #{startDate} AND #{endDate}
+    </select>
 
+    <select id="inTheLoan" parameterType="com.yunche.loan.domain.param.LoanApplyOrdersByMonthChartParam" resultType="java.lang.String">
+          select sum(a.loan_amount) from (
+        SELECT DISTINCT
+        z.order_id,financial.loan_amount
+        FROM
+            loan_process_log z
+            INNER JOIN (
+            SELECT
+                SUBSTRING_INDEX( GROUP_CONCAT( id ORDER BY create_time DESC SEPARATOR ',' ), ',', 1 ) AS id
+            FROM
+                loan_process_log
+            WHERE
+                task_definition_key = "usertask_loan_apply"
+                AND action = 1  and create_time BETWEEN #{startDate} AND #{endDate}
+            GROUP BY
+                order_id
+            ) g ON g.id = z.id
+            left join loan_process process on process.order_id = z.order_id
+            left join loan_order loan on loan.id = z.order_id
+            left join loan_financial_plan financial on financial.id = loan.loan_financial_plan_id
+            where process.remit_review !=1 and process.order_status = 1)a
+    </select>
 
+    <select id="alreadyMat" parameterType="com.yunche.loan.domain.param.LoanApplyOrdersByMonthChartParam" resultType="java.lang.String">
+        select sum(a.loan_amount) from (
+            SELECT DISTINCT
+            z.order_id,financial.loan_amount
+            FROM
+                loan_process_log z
+                INNER JOIN (
+                SELECT
+                    SUBSTRING_INDEX( GROUP_CONCAT( id ORDER BY create_time DESC SEPARATOR ',' ), ',', 1 ) AS id
+                FROM
+                    loan_process_log
+                WHERE
+                    task_definition_key = "usertask_remit_review"
+                    AND action = 1  and create_time BETWEEN #{startDate} AND #{endDate}
+                GROUP BY
+                    order_id
+                ) g ON g.id = z.id
+                left join loan_process process on process.order_id = z.order_id
+                left join loan_order loan on loan.id = z.order_id
+                left join loan_financial_plan financial on financial.id = loan.loan_financial_plan_id
+                where process.order_status = 1)a
+    </select>
+
+    <select id="inTheContract" parameterType="com.yunche.loan.domain.param.LoanApplyOrdersByMonthChartParam" resultType="java.lang.String">
+  	select sum(a.loan_amount) from (
+        SELECT DISTINCT
+        z.order_id,financial.loan_amount
+        FROM
+            loan_process_log z
+            INNER JOIN (
+            SELECT
+                SUBSTRING_INDEX( GROUP_CONCAT( id ORDER BY create_time DESC SEPARATOR ',' ), ',', 1 ) AS id
+            FROM
+                loan_process_log
+            WHERE
+                task_definition_key = "usertask_remit_review"
+                AND action = 1  and create_time BETWEEN #{startDate} AND #{endDate}
+            GROUP BY
+                order_id
+            ) g ON g.id = z.id
+            left join loan_process process on process.order_id = z.order_id
+            left join loan_order loan on loan.id = z.order_id
+            left join loan_financial_plan financial on financial.id = loan.loan_financial_plan_id
+            where process.order_status = 1 and process.bank_lend_record !=1)a
+    </select>
+
+    <select id="alreadyLoan" parameterType="com.yunche.loan.domain.param.LoanApplyOrdersByMonthChartParam" resultType="java.lang.String">
+        	select sum(a.loan_amount) from (
+        SELECT DISTINCT
+        z.order_id,financial.loan_amount
+        FROM
+            loan_process_log z
+            INNER JOIN (
+            SELECT
+                SUBSTRING_INDEX( GROUP_CONCAT( id ORDER BY create_time DESC SEPARATOR ',' ), ',', 1 ) AS id
+            FROM
+                loan_process_log
+            WHERE
+                task_definition_key = "usertask_bank_lend_record"
+                AND action = 1  and create_time BETWEEN #{startDate} AND #{endDate}
+            GROUP BY
+                order_id
+            ) g ON g.id = z.id
+            left join loan_process process on process.order_id = z.order_id
+            left join loan_order loan on loan.id = z.order_id
+            left join loan_financial_plan financial on financial.id = loan.loan_financial_plan_id
+            where process.order_status = 1)a
+    </select>
+
+    <select id="inTheMortgage" parameterType="com.yunche.loan.domain.param.LoanApplyOrdersByMonthChartParam" resultType="java.lang.String">
+      	select sum(a.loan_amount) from (
+        SELECT DISTINCT
+        z.order_id,financial.loan_amount
+        FROM
+            loan_process_log z
+            INNER JOIN (
+            SELECT
+                SUBSTRING_INDEX( GROUP_CONCAT( id ORDER BY create_time DESC SEPARATOR ',' ), ',', 1 ) AS id
+            FROM
+                loan_process_log
+            WHERE
+                task_definition_key = "usertask_remit_review"
+                AND action = 1  and create_time BETWEEN #{startDate} AND #{endDate}
+            GROUP BY
+                order_id
+            ) g ON g.id = z.id
+            left join loan_process process on process.order_id = z.order_id
+            left join loan_order loan on loan.id = z.order_id
+            left join loan_financial_plan financial on financial.id = loan.loan_financial_plan_id
+            where process.order_status = 1 and process.bank_lend_record !=1)a
+    </select>
+
+    <select id="alreadyMortgage" parameterType="com.yunche.loan.domain.param.LoanApplyOrdersByMonthChartParam" resultType="java.lang.String">
+          select sum(a.loan_amount) from (
+        SELECT DISTINCT
+        z.order_id,financial.loan_amount
+        FROM
+            loan_process_log z
+            INNER JOIN (
+            SELECT
+                SUBSTRING_INDEX( GROUP_CONCAT( id ORDER BY create_time DESC SEPARATOR ',' ), ',', 1 ) AS id
+            FROM
+                loan_process_log
+            WHERE
+                task_definition_key = "usertask_apply_license_plate_deposit_info"
+                AND action = 1  and create_time BETWEEN #{startDate} AND #{endDate}
+            GROUP BY
+                order_id
+            ) g ON g.id = z.id
+            left join loan_process process on process.order_id = z.order_id
+            left join loan_order loan on loan.id = z.order_id
+            left join loan_financial_plan financial on financial.id = loan.loan_financial_plan_id
+            where process.order_status = 1)a
+    </select>
 
 </mapper>
