@@ -978,6 +978,19 @@
     <select id="exportOrders" resultType="com.yunche.loan.domain.vo.ExportOrdersVO" parameterType="com.yunche.loan.domain.param.ExportOrdersParam">
             select
              orders.id 																		    as order_id,
+        -- 征信结果: 0-不通过;1-通过;2-关注;
+        CASE
+        WHEN credit_info.result = 0 THEN
+        '不通过'
+        WHEN credit_info.result = 1 THEN
+        '通过'
+        WHEN credit_info.result = 2 THEN
+        '关注'
+        WHEN credit_info.result = 3 THEN
+        '银行退回'
+        ELSE
+        NULL
+        END AS credit_result,
              customer.name 																	    as customer_name,
              customer.id_card 																    as customer_id_card,
              customer.mobile 																    as customer_mobile,
@@ -1037,7 +1050,9 @@
         LEFT JOIN partner partner ON baseinfo.partner_id = partner.id
         LEFT JOIN employee saleman ON baseinfo.salesman_id = saleman.id
         LEFT JOIN department department ON saleman.department_id = department.id
+        LEFT JOIN loan_credit_info credit_info ON credit_info.customer_id = customer.id
         where 1=1
+        and (credit_info.type = 1 OR credit_info.type is NULL)
         AND
         case when #{maxGroupLevel} = 0 then false
         when #{maxGroupLevel} = 1 then
