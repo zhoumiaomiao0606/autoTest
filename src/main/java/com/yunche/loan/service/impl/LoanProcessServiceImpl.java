@@ -3193,13 +3193,30 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         doAttachTask_FinancialSchemeModifyApplyReview(approval, loanProcessDO);
     }
 
+    /**
+     * 附带任务-[社会征信]
+     *
+     * @param approval
+     * @param loanOrderDO
+     */
     private void doAttachTask_SocialCreditRecord(ApprovalParam approval, LoanOrderDO loanOrderDO) {
 
         // 社会征信
-        if (SOCIAL_CREDIT_RECORD.getCode().equals(approval.getTaskDefinitionKey()) && ACTION_PASS.equals(approval.getAction())) {
+        if (SOCIAL_CREDIT_RECORD.getCode().equals(approval.getTaskDefinitionKey())) {
 
-            // 记录单个客户征信查询历史记录--社会征信查询   查询时间/查询人
-            loanCreditInfoHisService.saveCreditInfoHis_SocialCreditRecord(loanOrderDO.getLoanCustomerId());
+            // PASS
+            if (ACTION_PASS.equals(approval.getAction())) {
+
+                // 记录客户社会征信查询历史记录 -- 提交时间/人
+                loanCreditInfoHisService.saveCreditInfoHis_SocialCreditRecord(loanOrderDO.getLoanCustomerId());
+            }
+
+            // 打回
+            else if (ACTION_REJECT_MANUAL.equals(approval.getAction()) || ACTION_REJECT_AUTO.equals(approval.getAction())) {
+
+                // 记录客户社会征信查询历史记录 -- 打回时间/人
+                loanCreditInfoHisService.saveCreditInfoHis_SocialCreditReject(loanOrderDO.getLoanCustomerId(), approval.getInfo(), approval.isAutoTask());
+            }
         }
     }
 
@@ -3240,14 +3257,11 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         // 征信申请 && PASS
         if (CREDIT_APPLY.getCode().equals(approval.getTaskDefinitionKey()) && ACTION_PASS.equals(approval.getAction())) {
 
-            // 重置订单下所有客户的可编辑标记
-            loanCustomerService.updateCustomerEnable(loanOrderDO.getLoanCustomerId());
-
-            // 记录单个客户征信查询历史记录--征信申请
-            loanCreditInfoHisService.saveCreditInfoHis_CreditApply(loanOrderDO.getLoanCustomerId());
-
-            // 通过银行接口  ->  自动查询征信
+            // 通过银行接口  ->  自动查询银行征信
             bankSolutionService.creditAutomaticCommit(approval.getOrderId());
+
+            // 创建征信查询历史记录  --> 银行/社会
+            loanCreditInfoHisService.saveCreditInfoHis_CreditApply(loanOrderDO.getLoanCustomerId(), getLoanBaseInfoDO(loanOrderDO.getLoanBaseInfoId()).getLoanAmount());
         }
     }
 
@@ -3259,11 +3273,22 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      */
     private void doAttachTask_BankCreditRecord(ApprovalParam approval, LoanOrderDO loanOrderDO) {
 
-        // 银行征信打回
-        if (BANK_CREDIT_RECORD.getCode().equals(approval.getTaskDefinitionKey()) && ACTION_REJECT_MANUAL.equals(approval.getAction())) {
+        // 银行征信
+        if (BANK_CREDIT_RECORD.getCode().equals(approval.getTaskDefinitionKey())) {
 
-            // 记录单个客户征信查询历史记录--银行征信打回
-            loanCreditInfoHisService.saveCreditInfoHis_BankCreditReject(loanOrderDO.getLoanCustomerId(), approval.getInfo(), approval.isAutoTask());
+            // PASS
+            if (ACTION_PASS.equals(approval.getAction())) {
+
+                // 记录客户银行征信查询历史记录 -- 提交时间/人
+                loanCreditInfoHisService.saveCreditInfoHis_BankCreditRecord(loanOrderDO.getLoanCustomerId());
+            }
+
+            // 打回
+            else if (ACTION_REJECT_MANUAL.equals(approval.getAction()) || ACTION_REJECT_AUTO.equals(approval.getAction())) {
+
+                // 记录客户银行征信查询历史记录 -- 打回时间/人
+                loanCreditInfoHisService.saveCreditInfoHis_BankCreditReject(loanOrderDO.getLoanCustomerId(), approval.getInfo(), approval.isAutoTask());
+            }
         }
     }
 

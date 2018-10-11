@@ -1197,7 +1197,8 @@
 
     <update id="batchUpdateEnable">
         UPDATE loan_customer
-        SET enable = #{enable,jdbcType=TINYINT}
+        SET enable = #{enable,jdbcType=TINYINT},
+        enable_type = #{enableType,jdbcType=TINYINT}
         WHERE
         <if test="idList != null and idList.size() > 0">
             id IN

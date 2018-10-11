@@ -7,6 +7,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.yunche.loan.config.anno.DistributedLock;
 import com.yunche.loan.config.constant.BaseConst;
+import com.yunche.loan.config.constant.LoanCustomerConst;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.entity.BankInterfaceSerialDO;
 import com.yunche.loan.domain.entity.LoanCreditInfoDO;
@@ -135,8 +136,8 @@ public class BankCreditRecordScheduledTask {
                         // 审核参数设置   当前customer-info
                         setApprovalParam(approval, bankInterfaceSerialDO);
 
-                        // 记录单个客户征信查询历史记录--银行征信打回
-                        loanCreditInfoHisService.saveCreditInfoHis_BankCreditReject(bankInterfaceSerialDO.getCustomerId(), approval.getInfo(), approval.isAutoTask());
+                        // 单个客户银行征信查询历史    -- 打回时间/人/备注
+                        loanCreditInfoHisService.saveCreditInfoHis_BankCreditReject_SingleCustomer(bankInterfaceSerialDO.getCustomerId(), approval.getInfo(), approval.isAutoTask());
 
                         // info拼接
                         if (StringUtils.isNotBlank(approval.getInfo())) {
@@ -219,6 +220,7 @@ public class BankCreditRecordScheduledTask {
             LoanCustomerDO loanCustomerDO = new LoanCustomerDO();
             loanCustomerDO.setId(customerId);
             loanCustomerDO.setEnable(BaseConst.K_YORN_YES);
+            loanCustomerDO.setEnableType(CREDIT_TYPE_BANK);
             loanCustomerDO.setBankCreditReject(BaseConst.K_YORN_YES);
 
             ResultBean<Void> updateResult = loanCustomerService.update(loanCustomerDO);
@@ -236,7 +238,7 @@ public class BankCreditRecordScheduledTask {
         LoanCreditInfoDO loanCreditInfoDO = new LoanCreditInfoDO();
         loanCreditInfoDO.setCustomerId(customerId);
         // 0-不通过
-        loanCreditInfoDO.setResult(new Byte("0"));
+        loanCreditInfoDO.setResult(BaseConst.K_YORN_NO);
         loanCreditInfoDO.setType(CREDIT_TYPE_BANK);
 
         loanCreditInfoService.save(loanCreditInfoDO);

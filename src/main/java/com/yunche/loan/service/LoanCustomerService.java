@@ -40,7 +40,7 @@ public interface LoanCustomerService {
 
     BankAndSocietyResultVO societyPicExport(List<Long> list);
 
-    Long enable(String ids, Byte enable);
+    Long enable(String ids, Byte enableType);
 
     /**
      * 重置订单下所有客户的可编辑标记

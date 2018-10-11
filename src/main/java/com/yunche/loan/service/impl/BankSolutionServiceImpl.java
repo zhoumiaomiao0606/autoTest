@@ -4,14 +4,11 @@ import com.github.pagehelper.util.StringUtil;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import com.yunche.loan.config.cache.AreaCache;
-import com.yunche.loan.config.cache.CarCache;
 import com.yunche.loan.config.cache.DictMapCache;
 import com.yunche.loan.config.common.SysConfig;
 import com.yunche.loan.config.constant.*;
 import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.feign.client.ICBCFeignClient;
-import com.yunche.loan.config.feign.client.ICBCFeignNormal;
 import com.yunche.loan.config.feign.request.ICBCApiRequest;
 import com.yunche.loan.config.feign.request.group.*;
 import com.yunche.loan.config.feign.response.ApplyStatusResponse;
@@ -84,9 +81,6 @@ public class BankSolutionServiceImpl implements BankSolutionService {
     private LoanCarInfoDOMapper loanCarInfoDOMapper;
 
     @Resource
-    private CarCache carCache;
-
-    @Resource
     private VehicleInformationDOMapper vehicleInformationDOMapper;
 
     @Resource
@@ -96,19 +90,10 @@ public class BankSolutionServiceImpl implements BankSolutionService {
     private FinancialProductDOMapper financialProductDOMapper;
 
     @Resource
-    private BankFileListRecordDOMapper bankFileListRecordDOMapper;
-
-    @Resource
     private AsyncUpload asyncUpload;
 
     @Autowired
-    private ICBCFeignNormal icbcFeignNormal;
-
-    @Autowired
     private DictMapCache dictMapCache;
-
-    @Autowired
-    private AreaCache areaCache;
 
     @Resource
     private CarBrandDOMapper carBrandDOMapper;
@@ -183,10 +168,6 @@ public class BankSolutionServiceImpl implements BankSolutionService {
                         && GUARANTEE_TYPE_INSIDE.equals(e.getGuaranteeType()))
                 )
                 .collect(Collectors.toList());
-
-
-        // 记录单个客户征信查询历史记录--银行征信查询
-        loanCreditInfoHisService.saveCreditInfoHis_BankCreditRecord(customers);
 
 
         int value = bankId.intValue();
@@ -1179,6 +1160,5 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         ApplycreditstatusResponse response = icbcFeignClient.applycreditstatus(applycreditstatus);
         return response;
     }
-
 
 }

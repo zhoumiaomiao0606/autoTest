@@ -103,8 +103,10 @@ public interface LoanCustomerDOMapper {
      *
      * @param idList
      * @param enable
+     * @param enableType
      * @return
      */
     long batchUpdateEnable(@Param("idList") List<Long> idList,
-                           @Param("enable") Byte enable);
+                           @Param("enable") Byte enable,
+                           @Param("enableType") Byte enableType);
 }

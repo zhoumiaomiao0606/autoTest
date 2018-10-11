@@ -101,22 +101,25 @@ public class LoanOrderController {
 
     /**
      * 银行征信图片导出
+     *
      * @param loanCreditExportQuery
      * @return
      */
     @PostMapping(value = "/creditrecord/downreport", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultBean createCreditDownreport(@RequestBody LoanCreditExportQuery loanCreditExportQuery){
+    public ResultBean createCreditDownreport(@RequestBody LoanCreditExportQuery loanCreditExportQuery) {
         return loanOrderService.createCreditDownreport(loanCreditExportQuery);
     }
 
     /**
      * 银行征信图片压缩包检测
+     *
      * @return
      */
     @GetMapping("/creditrecord/picCheck")
-    public ResultBean picCheck(){
+    public ResultBean picCheck() {
         return loanOrderService.picCheck();
     }
+
     /**
      * 保存贷款车辆信息 -新增
      *

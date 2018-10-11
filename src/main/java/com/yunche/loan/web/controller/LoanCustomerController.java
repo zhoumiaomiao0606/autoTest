@@ -117,15 +117,15 @@ public class LoanCustomerController {
     }
 
     /**
-     * 客户可编辑状态变更
+     * 客户征信打回           -> 打回后 前端作为可编辑标记
      *
-     * @param ids    客户ID列表，逗号分隔
-     * @param enable 0-否; 1-是;
+     * @param ids        客户ID列表，逗号分隔
+     * @param enableType 打回类型        1-银行征信打回； 2-社会征信打回；
      * @return
      */
     @GetMapping(value = "/enable")
     public ResultBean<Long> enable(@RequestParam String ids,
-                                   @RequestParam(required = false, defaultValue = "1") Byte enable) {
-        return ResultBean.ofSuccess(loanCustomerService.enable(ids, enable));
+                                   @RequestParam Byte enableType) {
+        return ResultBean.ofSuccess(loanCustomerService.enable(ids, enableType));
     }
 }

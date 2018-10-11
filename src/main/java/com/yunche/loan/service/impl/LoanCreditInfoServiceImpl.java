@@ -5,13 +5,9 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.yunche.loan.config.constant.IDict;
 import com.yunche.loan.config.result.ResultBean;
-import com.yunche.loan.config.util.SessionUtils;
 import com.yunche.loan.config.util.StringUtil;
-import com.yunche.loan.domain.entity.EmployeeDO;
 import com.yunche.loan.domain.entity.LoanCreditInfoDO;
-import com.yunche.loan.domain.entity.LoanCreditInfoHisDO;
 import com.yunche.loan.domain.entity.LoanCustomerDO;
-import com.yunche.loan.domain.param.ApprovalParam;
 import com.yunche.loan.domain.vo.BankInterfaceSerialReturnVO;
 import com.yunche.loan.domain.vo.CreditRecordVO;
 import com.yunche.loan.domain.vo.FileVO;
@@ -53,9 +49,6 @@ public class LoanCreditInfoServiceImpl implements LoanCreditInfoService {
 
     @Autowired
     private LoanOrderDOMapper loanOrderDOMapper;
-
-    @Autowired
-    private LoanCreditInfoHisDOMapper loanCreditInfoHisDOMapper;
 
     @Autowired
     private LoanCreditInfoHisService loanCreditInfoHisService;
@@ -153,63 +146,6 @@ public class LoanCreditInfoServiceImpl implements LoanCreditInfoService {
 
         return creditRecordVO;
     }
-
-    @Override
-    public void saveCreditInfoHis(Long principalCustId, ApprovalParam approval) {
-        Preconditions.checkNotNull(principalCustId, "主贷人ID不能为空");
-
-        List<Long> customerIdList = loanCustomerDOMapper.listIdByPrincipalCustIdAndType(principalCustId, null, VALID_STATUS);
-
-        if (!CollectionUtils.isEmpty(customerIdList)) {
-
-            EmployeeDO loginUser = SessionUtils.getLoginUser();
-
-            customerIdList.stream()
-                    .filter(Objects::nonNull)
-                    .forEach(e -> {
-
-                        // 征信申请
-                        LoanCreditInfoHisDO loanCreditInfoHisDO = new LoanCreditInfoHisDO();
-
-                        loanCreditInfoHisDO.setCustomerId(e);
-                        loanCreditInfoHisDO.setCreditApplyTime(new Date());
-                        loanCreditInfoHisDO.setCreditApplyUserId(loginUser.getId());
-                        loanCreditInfoHisDO.setCreditApplyUserName(loginUser.getName());
-
-                        loanCreditInfoHisDOMapper.insertSelective(loanCreditInfoHisDO);
-
-
-                        // 银行征信查询
-                        loanCreditInfoHisDO.setBankCreditRecordTime(new Date());
-                        loanCreditInfoHisDO.setBankCreditRecordUserId(loginUser.getId());
-                        loanCreditInfoHisDO.setBankCreditRecordUserName(loginUser.getName());
-
-                        // 银行征信结果
-                        loanCreditInfoHisDO.setBankCreditResult(approval.getCreditResult());
-
-
-                        // 社会征信结果
-                        loanCreditInfoHisDO.setSocialCreditResult(approval.getCreditResult());
-
-                        // 社会征信查询
-                        loanCreditInfoHisDO.setSocialCreditRecordTime(new Date());
-                        loanCreditInfoHisDO.setSocialCreditRecordUserId(loginUser.getId());
-                        loanCreditInfoHisDO.setSocialCreditRecordUserName(loginUser.getName());
-
-
-                        // 银行征信打回
-                        loanCreditInfoHisDO.setBankCreditRejectTime(new Date());
-                        loanCreditInfoHisDO.setBankCreditRejectUserId(loginUser.getId());
-                        loanCreditInfoHisDO.setBankCreditRejectUserName(loginUser.getName());
-                        loanCreditInfoHisDO.setBankCreditRejectInfo(approval.getInfo());
-
-
-                        loanCreditInfoHisDOMapper.updateByPrimaryKeySelective(loanCreditInfoHisDO);
-
-                    });
-        }
-    }
-
 
     /**
      * 填充客户信息 和 征信结果
