@@ -84,7 +84,8 @@ public class ImageUtil {
             IMOperation operation = new IMOperation();
             operation.addRawArgs("convert");
             operation.append();
-
+            operation.sample();
+            operation.addRawArgs("50%x50%");//质量大小缩小一半
             for(int i=0;i<fileList.size();i++){
                 operation.addImage(fileList.get(i));
             }
