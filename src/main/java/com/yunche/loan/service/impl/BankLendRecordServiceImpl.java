@@ -9,15 +9,13 @@ import com.yunche.loan.config.util.POIUtil;
 import com.yunche.loan.domain.entity.BankLendRecordDO;
 import com.yunche.loan.domain.entity.LoanFinancialPlanDO;
 import com.yunche.loan.domain.entity.LoanOrderDO;
+import com.yunche.loan.domain.entity.LoanProcessDO;
 import com.yunche.loan.domain.param.ApprovalParam;
 import com.yunche.loan.domain.vo.BankLendRecordVO;
 import com.yunche.loan.domain.vo.RecombinationVO;
 import com.yunche.loan.domain.vo.UniversalCustomerFileVO;
 import com.yunche.loan.domain.vo.UniversalCustomerVO;
-import com.yunche.loan.mapper.BankLendRecordDOMapper;
-import com.yunche.loan.mapper.LoanFinancialPlanDOMapper;
-import com.yunche.loan.mapper.LoanOrderDOMapper;
-import com.yunche.loan.mapper.LoanQueryDOMapper;
+import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.BankLendRecordService;
 import com.yunche.loan.service.LoanProcessService;
 import com.yunche.loan.service.LoanQueryService;
@@ -34,6 +32,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static com.yunche.loan.config.constant.LoanOrderProcessConst.TASK_PROCESS_DONE;
 
 @Service
 @Transactional
@@ -58,6 +58,9 @@ public class BankLendRecordServiceImpl implements BankLendRecordService {
 
     @Autowired
     LoanFinancialPlanDOMapper loanFinancialPlanDOMapper;
+
+    @Autowired
+    LoanProcessDOMapper loanProcessDOMapper;
 
     @Override
     public ResultBean<RecombinationVO> detail(Long orderId) {
@@ -119,10 +122,14 @@ public class BankLendRecordServiceImpl implements BankLendRecordService {
                 idCard=tmp[1].trim();
                 Long orderId = loanQueryDOMapper.selectOrderIdByIDCard(idCard);
                 if (orderId == null) {
+                    unusualRecord.add("导入失败:" + idCard+" "+ "非系统客户/存在多条订单");
                     continue;
                 }
                 if(check_usertask_bank_lend_record(orderId)){
-
+                    LoanProcessDO loanProcessDO = loanProcessDOMapper.selectByPrimaryKey(orderId);
+                    if(TASK_PROCESS_DONE.equals(loanProcessDO.getBankLendRecord())){
+                        continue;
+                    }
                     BankLendRecordDO bankLendRecordDO = new BankLendRecordDO();
                     bankLendRecordDO.setLoanOrder(orderId);
                     bankLendRecordDO.setLendDate(df.parse(tmp[2].trim()));
