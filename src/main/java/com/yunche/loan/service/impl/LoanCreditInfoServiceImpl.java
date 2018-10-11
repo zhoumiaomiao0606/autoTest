@@ -328,7 +328,7 @@ public class LoanCreditInfoServiceImpl implements LoanCreditInfoService {
                 }
             }
         } catch (Exception e) {
-            creditRecord.setBankCreditResponse("json解析异常,请联系管理员");
+            creditRecord.setBankCreditResponse("银行接口异常,请联系管理员");
         }
 
 
