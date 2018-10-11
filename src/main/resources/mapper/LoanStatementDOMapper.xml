@@ -289,7 +289,7 @@
             </if>
 
             <if test="state == 2">
-                loan_credit_info_his.bank_credit_record_time == null and
+                loan_credit_info_his.bank_credit_record_time is null and
             </if>
             case when #{maxGroupLevel} = 0 then false
             when #{maxGroupLevel} = 1 then
@@ -440,7 +440,7 @@
             </if>
 
             <if test="state == 2">
-                loan_credit_info_his.social_credit_record_time == null and
+                loan_credit_info_his.social_credit_record_time is null and
             </if>
 
 
