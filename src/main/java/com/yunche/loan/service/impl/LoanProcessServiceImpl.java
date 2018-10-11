@@ -3180,11 +3180,52 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         // 附带任务-[银行征信]
         doAttachTask_BankCreditRecord(approval, loanOrderDO);
 
+        // 附带任务-[社会征信]
+        doAttachTask_SocialCreditRecord(approval, loanOrderDO);
+
+        // 附带任务-[贷款申请]
+        doAttachTask_LoanApply(approval, loanOrderDO);
+
         // 附带任务-[打款确认]
         doAttachTask_RemitReview(approval, loanOrderDO);
 
         // 附带任务-[金融方案修改-审核]
         doAttachTask_FinancialSchemeModifyApplyReview(approval, loanProcessDO);
+    }
+
+    private void doAttachTask_SocialCreditRecord(ApprovalParam approval, LoanOrderDO loanOrderDO) {
+
+        // 社会征信
+        if (SOCIAL_CREDIT_RECORD.getCode().equals(approval.getTaskDefinitionKey()) && ACTION_PASS.equals(approval.getAction())) {
+
+            // 记录单个客户征信查询历史记录--社会征信查询   查询时间/查询人
+            loanCreditInfoHisService.saveCreditInfoHis_SocialCreditRecord(loanOrderDO.getLoanCustomerId());
+        }
+    }
+
+    /**
+     * 附带任务-[贷款申请]
+     *
+     * @param approval
+     * @param loanOrderDO
+     */
+    private void doAttachTask_LoanApply(ApprovalParam approval, LoanOrderDO loanOrderDO) {
+
+        if (LOAN_APPLY.getCode().equals(approval.getTaskDefinitionKey()) && ACTION_PASS.equals(approval.getAction())) {
+
+            // 贷款申请提交后，提交视频面签登记
+            ApprovalParam approvalParam = new ApprovalParam();
+            approvalParam.setOrderId(approval.getOrderId());
+            approvalParam.setTaskDefinitionKey(LOAN_APPLY.getCode());
+            approvalParam.setAction(TASK_PROCESS_DONE);
+
+            approvalParam.setNeedLog(false);
+            approvalParam.setAutoTask(true);
+            approvalParam.setNeedPush(false);
+            approvalParam.setCheckPermission(false);
+
+            approval(approvalParam);
+        }
     }
 
 

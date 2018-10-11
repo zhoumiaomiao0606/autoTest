@@ -27,14 +27,16 @@ public interface LoanCreditInfoHisService {
     void saveCreditInfoHis_CreditApply(Long principalCustId);
 
     /**
-     * 银行征信查询
+     * 银行征信查询   时间/查询人
      *
      * @param customers
      */
     void saveCreditInfoHis_BankCreditRecord(List<LoanCustomerDO> customers);
 
     /**
-     * 社会征信查询
+     * 社会征信查询   时间/查询人
+     * <p>
+     * [社会征信]提交时间  --> 作为 社会征信查询时间
      *
      * @param principalCustId
      */

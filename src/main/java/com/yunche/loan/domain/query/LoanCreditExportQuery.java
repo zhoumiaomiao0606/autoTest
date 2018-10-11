@@ -22,5 +22,7 @@ public class LoanCreditExportQuery  {
 
     Byte isForce;//0:否，1：是
 
+    String bankName;//银行名称
+
 
 }

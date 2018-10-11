@@ -1820,7 +1820,7 @@
                 LEFT JOIN loan_customer customer ON ( loan.loan_customer_id = customer.principal_cust_id AND customer.cust_type != 4 )
             WHERE
                 process.loan_apply = 0
-                and base.bank in('中国工商银行南京江宁支行','中国工商银行哈尔滨顾乡支行')
+                and base.bank = #{bankName}
         ) result
         WHERE
             1=1
