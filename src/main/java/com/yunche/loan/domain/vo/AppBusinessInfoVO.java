@@ -131,6 +131,9 @@ public class AppBusinessInfoVO {
      * 留备用钥匙loan_car_info
      */
     private   Byte carKey;
+
+    //待收钥匙
+    private String needCollectKey;
     /**
      * 业务来源  loan_car_info
      */

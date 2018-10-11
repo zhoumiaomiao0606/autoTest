@@ -27,6 +27,7 @@ public class ExportOrdersVO {
     private String vehicle_color;//车辆颜色
     private String vehicle_displacement;//车排量
     private String vehicle_use_year;//车辆使用年限
+    private String credit_result;//征信结果
     private String usertask_credit_apply_create_time;//征信申请时间
     private String usertask_bank_credit_record_create_time;//银行征信申请时间
     private String usertask_social_credit_record_create_time;//社会征信申请时间

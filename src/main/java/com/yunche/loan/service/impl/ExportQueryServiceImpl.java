@@ -528,6 +528,7 @@ public class ExportQueryServiceImpl implements ExportQueryService
                 ,"车辆颜色"
                 ,"车排量"
                 ,"车辆使用年限"
+                ,"银行征信结果"
                 ,"征信申请时间"
                 ,"银行征信申请时间"
                 ,"社会征信申请时间"

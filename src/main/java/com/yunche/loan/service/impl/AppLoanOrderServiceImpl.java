@@ -657,6 +657,27 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
                 businessInfoVO.setVehicleProperty(loanCarInfoDO.getVehicleProperty());
                 //留备用钥匙
                 businessInfoVO.setCarKey(loanCarInfoDO.getCarKey());
+
+                //待收钥匙
+                if (loanCarInfoDO.getCarKey() == 0 )
+                {
+                    businessInfoVO.setNeedCollectKey("不收");
+                }
+                else if (loanCarInfoDO.getCarKey() == 1)
+                {
+                    //查询是否已收钥匙
+                    LoanProcessLogDO loanProcessLogDO = loanCarInfoDOMapper.selectNeedCollectKey(orderId);
+                    if (loanProcessLogDO != null && loanProcessLogDO.getAction() == 1 )
+                    {
+                        businessInfoVO.setNeedCollectKey("已收");
+                    }else
+                        {
+                            businessInfoVO.setNeedCollectKey("待收");
+                        }
+
+
+                }
+
                 //业务来源
                 businessInfoVO.setBusinessSource(loanCarInfoDO.getBusinessSource());
                 //二手车初登日期
