@@ -1498,6 +1498,20 @@
                 AND TO_DAYS(complex_log.usertask_remit_review_create_time) &lt;= TO_DAYS(#{endRemitGmtCreate})
             </if>
 
+            <if test="taskDefinitionKey == 'usertask_telephone_verify'">
+                <choose>
+                    <when test="taskDefinitionKey == 'usertask_collection_workbench'">
+                        order by complex.urgeGmtCreate ASC
+                    </when>
+                    <when test="taskStatus == 2 or taskStatus == 4 or taskStatus == 5 or taskStatus == 6  or pull == false ">
+                        order by loanGmtCreate asc
+                    </when>
+                    <otherwise>
+                        order by telephoneGmtCreate DESC
+                    </otherwise>
+                </choose>
+            </if>
+            <if test="taskDefinitionKey != 'usertask_telephone_verify'">
             <choose>
                 <when test="taskDefinitionKey == 'usertask_collection_workbench'">
                     order by complex.urgeGmtCreate ASC
@@ -1518,6 +1532,7 @@
                     order by complex.orderGmtCreate DESC
                 </otherwise>
             </choose>
+            </if>
         </select>
 
 
