@@ -111,7 +111,7 @@ public class LoanCreditInfoHisServiceImpl implements LoanCreditInfoHisService {
                     });
 
             // 第2+次    过滤出：当前正在查询银行/社会征信的客户
-            customers = filterCustomers(customers, enableType[0]);
+            customers = filterCustomers(customers, enableType[0], false);
 
             if (!CollectionUtils.isEmpty(customers)) {
 
@@ -163,8 +163,7 @@ public class LoanCreditInfoHisServiceImpl implements LoanCreditInfoHisService {
             return;
         }
 
-        // 过滤出：当前正在查询银行征信的客户
-        customers = filterCustomers(customers, CREDIT_TYPE_BANK);
+        customers = filterCustomers(customers, CREDIT_TYPE_BANK, true);
         if (CollectionUtils.isEmpty(customers)) {
             return;
         }
@@ -185,6 +184,7 @@ public class LoanCreditInfoHisServiceImpl implements LoanCreditInfoHisService {
 
                     updateLoanCreditInfoBankHisDOByCustomerId(loanCreditInfoBankHisDO);
                 });
+
     }
 
 
@@ -198,7 +198,7 @@ public class LoanCreditInfoHisServiceImpl implements LoanCreditInfoHisService {
         }
 
         // 过滤出：当前正在查询社会征信的客户
-        customers = filterCustomers(customers, CREDIT_TYPE_SOCIAL);
+        customers = filterCustomers(customers, CREDIT_TYPE_SOCIAL, true);
         if (CollectionUtils.isEmpty(customers)) {
             return;
         }
@@ -231,7 +231,7 @@ public class LoanCreditInfoHisServiceImpl implements LoanCreditInfoHisService {
         }
 
         // 过滤出：被打回的客户
-        customers = filterCustomers(customers, CREDIT_TYPE_BANK);
+        customers = filterCustomers(customers, CREDIT_TYPE_BANK, false);
         if (CollectionUtils.isEmpty(customers)) {
             return;
         }
@@ -306,7 +306,7 @@ public class LoanCreditInfoHisServiceImpl implements LoanCreditInfoHisService {
         }
 
         // 过滤出：被打回的客户
-        customers = filterCustomers(customers, CREDIT_TYPE_SOCIAL);
+        customers = filterCustomers(customers, CREDIT_TYPE_SOCIAL, false);
         if (CollectionUtils.isEmpty(customers)) {
             return;
         }
@@ -336,15 +336,40 @@ public class LoanCreditInfoHisServiceImpl implements LoanCreditInfoHisService {
      *
      * @param customers
      * @param creditType 1-银行； 2-社会；
+     * @param checkFirst 是否校验 是第一次查询
      * @return
      */
-    private List<LoanCustomerDO> filterCustomers(List<LoanCustomerDO> customers, Byte creditType) {
+    private List<LoanCustomerDO> filterCustomers(List<LoanCustomerDO> customers, Byte creditType, boolean checkFirst) {
 
-        customers = customers.stream()
-                .filter(Objects::nonNull)
-                .filter(e -> creditType.equals(e.getEnableType()) && BaseConst.K_YORN_YES.equals(e.getEnable())
-                )
-                .collect(Collectors.toList());
+        // 需要校验是否第一次查询
+        if (checkFirst) {
+
+            // 如果是第一次提交征信查询，直接创建历史记录  银行/社会(如果 > 13W)
+            LoanCreditInfoBankHisDO last = loanCreditInfoBankHisDOMapper.lastByCustomerId(customers.get(0).getPrincipalCustId());
+
+            if (null == last) {
+
+                // 第一次     不过滤
+
+            } else {
+
+                // 第2+次     过滤出：当前正在查询银行征信的客户
+                customers = customers.stream()
+                        .filter(Objects::nonNull)
+                        .filter(e -> creditType.equals(e.getEnableType()) && BaseConst.K_YORN_YES.equals(e.getEnable())
+                        )
+                        .collect(Collectors.toList());
+            }
+
+        } else {
+
+            // 第2+次     过滤出：当前正在查询银行征信的客户
+            customers = customers.stream()
+                    .filter(Objects::nonNull)
+                    .filter(e -> creditType.equals(e.getEnableType()) && BaseConst.K_YORN_YES.equals(e.getEnable())
+                    )
+                    .collect(Collectors.toList());
+        }
 
         return customers;
     }
