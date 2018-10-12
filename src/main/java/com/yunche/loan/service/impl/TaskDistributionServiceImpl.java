@@ -1,5 +1,6 @@
 package com.yunche.loan.service.impl;
 
+import com.google.common.base.Preconditions;
 import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.util.SessionUtils;
 import com.yunche.loan.domain.entity.*;
@@ -41,6 +42,11 @@ public class TaskDistributionServiceImpl implements TaskDistributionService {
     @Resource
     private LoanFinancialPlanTempHisDOMapper loanFinancialPlanTempHisDOMapper;
 
+    @Resource
+    private LoanProcessLogDOMapper loanProcessLogDOMapper;
+
+    private static final  Byte action = 6;
+
 
     /**
      * 领取
@@ -76,6 +82,17 @@ public class TaskDistributionServiceImpl implements TaskDistributionService {
         V.setSendeeName(employeeDO.getName());
         V.setStatus(new Byte("2"));
         V.setGetCreate(new Date());
+
+        //领取记录日志
+        LoanProcessLogDO loanProcessLogDO = new LoanProcessLogDO();
+        loanProcessLogDO.setUserName(employeeDO.getName());
+        loanProcessLogDO.setUserId(employeeDO.getId());
+        loanProcessLogDO.setAction(action);
+        loanProcessLogDO.setTaskDefinitionKey(taskKey);
+        int count = loanProcessLogDOMapper.insertSelective(loanProcessLogDO);
+
+        Preconditions.checkArgument(count > 0, "操作日志记录失败");
+
         taskDistributionDOMapper.insertSelective(V);
     }
 
