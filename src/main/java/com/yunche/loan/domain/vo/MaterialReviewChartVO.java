@@ -42,7 +42,7 @@ public class MaterialReviewChartVO
     private Date express_receive_date;
 
     //资料齐全日期
-    private Date complete_material_date;
+    private String complete_material_date;
 
     //资料审核提交日期
     private Date materialReviewSubmit;

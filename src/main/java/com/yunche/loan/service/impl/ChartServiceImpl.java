@@ -168,6 +168,7 @@ public class ChartServiceImpl implements ChartService
 
         }
 
+
         PageHelper.startPage(param.getPageIndex(), param.getPageSize(), true);
         List list = chartDOMapper.selectMortgageOverdueChartVO(param);
         // 取分页信息

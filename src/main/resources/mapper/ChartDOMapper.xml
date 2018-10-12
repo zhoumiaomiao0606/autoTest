@@ -387,23 +387,6 @@
         LEFT JOIN partner partner ON partner.id = base.partner_id
         where 1=1
         and process.remit_review = 1
-        and
-        case when #{maxGroupLevel} = 0 then false
-        when #{maxGroupLevel} = 1 then
-        loaninfo.salesman_id in
-        (
-        <choose>
-            <when test="juniorIds != null and juniorIds.size() > 0">
-                <foreach item="item" index="index" collection="juniorIds" separator=",">
-                    #{item}
-                </foreach>
-            </when>
-            <otherwise>
-                select temp.id from (SELECT 1 as id) temp  where temp.id =2
-            </otherwise>
-        </choose>
-        )
-        else true end
         <if test="partnerList != null and partnerList.size() > 0">
             and
             base.partner_id in
@@ -444,6 +427,13 @@
                 </foreach>
             </if>
         </where>
+        <if test="orderBy == 1">
+            order by gmt_create desc
+        </if>
+
+        <if test="orderBy == 2 ">
+            order by gmt_create ASC
+        </if>
 
     </select>
 
@@ -474,9 +464,7 @@
         LIMIT 1
         ) AS credit_apply_time,
         loanbaseinfo.bank,
-        CASE
-
-        WHEN car.car_type = 0 THEN
+        CASE WHEN car.car_type = 0 THEN
         '新车'
         WHEN car.car_type = 1 THEN
         '二手车' ELSE '其他'
@@ -489,23 +477,19 @@
         bank_lend_record.lend_date,
         ( SELECT loan_data_flow.express_send_date FROM loan_data_flow WHERE orders.id = loan_data_flow.order_id AND type = 12 ORDER BY id DESC LIMIT 1 ) AS sendMaterialToParter_date,
         ( SELECT loan_data_flow.express_receive_date FROM loan_data_flow WHERE orders.id = loan_data_flow.order_id AND type = 12 ORDER BY id DESC LIMIT 1 ) AS ParterReceiveMaterial_date,
-        CASE
-
-        WHEN process.apply_license_plate_deposit_info = 1 THEN
+        CASE WHEN process.apply_license_plate_deposit_info = 1 THEN
         '已提交'
         WHEN process.apply_license_plate_deposit_info = 2 THEN
         '未提交'
         WHEN process.apply_license_plate_deposit_info = 3 THEN
         '已打回' ELSE '未知'
-        END AS apply_license_plate_deposit_info,
-        CASE
 
-        WHEN process.apply_license_plate_deposit_info  !=1 THEN
+        END AS apply_license_plate_deposit_info,
+        CASE WHEN process.apply_license_plate_deposit_info  !=1 THEN
         NULL ELSE a.apply_license_plate_deposit_date
         END AS depositTime,
-        CASE
 
-        WHEN a.apply_license_plate_deposit_date IS NULL THEN
+        CASE WHEN a.apply_license_plate_deposit_date IS NULL THEN
         floor(
         ( UNIX_TIMESTAMP( DATE_FORMAT( now( ), '%Y-%m-%d' )) - UNIX_TIMESTAMP( DATE_FORMAT( lend.lend_date, '%Y-%m-%d' ) ) ) / ( 24 * 60 * 60 )
         )
@@ -516,6 +500,7 @@
         )
         END AS depositOverdueTime,
         ( SELECT user_name FROM loan_process_log WHERE order_id = orders.id AND task_definition_key = 'usertask_apply_license_plate_deposit_info' ORDER BY create_time DESC LIMIT 1 ) AS submitUser
+
         FROM
         loan_order orders
         LEFT JOIN loan_customer customer ON orders.loan_customer_id = customer.id
@@ -536,23 +521,6 @@
 
         <where>
             and process.apply_license_plate_deposit_info != 0
-            and
-            case when #{maxGroupLevel} = 0 then false
-            when #{maxGroupLevel} = 1 then
-            base.salesman_id in
-            (
-            <choose>
-                <when test="juniorIds != null and juniorIds.size() > 0">
-                    <foreach item="item" index="index" collection="juniorIds" separator=",">
-                        #{item}
-                    </foreach>
-                </when>
-                <otherwise>
-                    select temp.id from (SELECT 1 as id) temp  where temp.id =2
-                </otherwise>
-            </choose>
-            )
-            else true end
             <if test="partnerList != null and partnerList.size() > 0">
                 and
                 base.partner_id in
@@ -583,8 +551,6 @@
             </if>
 
         </if>
-
-        order by bank_lend_record.lend_date desc
         ) tab
         <where>
             <if test="bizAreaList !=null and bizAreaList.size() > 0" >
@@ -594,6 +560,13 @@
                 </foreach>
             </if>
         </where>
+        <if test="orderBy == 1">
+            order by tab.credit_apply_time desc
+        </if>
+
+        <if test="orderBy == 2 ">
+            order by tab.credit_apply_time ASC
+        </if>
     </select>
 
 
@@ -645,7 +618,7 @@
         loan_financial_plan.bank_period_principal,
         ( SELECT create_time FROM loan_process_log WHERE orders.id = loan_process_log.order_id AND loan_process_log.task_definition_key = 'usertask_remit_review' ORDER BY id DESC LIMIT 1 ) AS remitdate,
         ( SELECT loan_data_flow.express_receive_date FROM loan_data_flow WHERE orders.id = loan_data_flow.order_id AND type = 2 ORDER BY loan_data_flow.id DESC LIMIT 1 ) AS express_receive_date,
-        material_audit.complete_material_date,
+        DATE_FORMAT(material_audit.complete_material_date,'%Y-%m-%d'),
         ( SELECT create_time FROM loan_process_log WHERE orders.id = loan_process_log.order_id AND loan_process_log.task_definition_key = 'usertask_material_review' ORDER BY id DESC LIMIT 1 ) AS materialReviewSubmit,
         CASE
 
@@ -667,7 +640,7 @@
         loan_info_supplement.order_id = orders.id
         ) AS supplementTime,
         ( SELECT create_time FROM loan_process_log WHERE orders.id = loan_process_log.order_id AND task_definition_key = 'usertask_vehicle_information' ORDER BY id DESC LIMIT 1 ) AS carMaterialCreateTime,
-        ( SELECT loan_data_flow.express_send_date FROM loan_data_flow WHERE orders.id = loan_data_flow.order_id AND type = 3 ORDER BY id DESC LIMIT 1 ) AS express_sendbank_date
+        ( SELECT loan_data_flow.express_send_date FROM loan_data_flow WHERE orders.id = loan_data_flow.order_id AND （type = 3 or type = 4)  ORDER BY id DESC LIMIT 1 ) AS express_sendbank_date
         FROM
         loan_order orders
         LEFT JOIN loan_customer customer ON orders.loan_customer_id = customer.id
@@ -682,23 +655,6 @@
 
         <where>
             and loan_process.material_review != 0
-            and
-            case when #{maxGroupLevel} = 0 then false
-            when #{maxGroupLevel} = 1 then
-            base.salesman_id in
-            (
-            <choose>
-                <when test="juniorIds != null and juniorIds.size() > 0">
-                    <foreach item="item" index="index" collection="juniorIds" separator=",">
-                        #{item}
-                    </foreach>
-                </when>
-                <otherwise>
-                    select temp.id from (SELECT 1 as id) temp  where temp.id =2
-                </otherwise>
-            </choose>
-            )
-            else true end
             <if test="partnerList != null and partnerList.size() > 0">
                 and
                 base.partner_id in
@@ -783,24 +739,6 @@
         LEFT JOIN partner partner ON partner.id = base.partner_id
         where 1=1
         and process.business_review = 1
-        and
-        case when #{maxGroupLevel} = 0 then false
-        when #{maxGroupLevel} = 1 then
-        base.salesman_id in
-        (
-        <choose>
-            <when test="juniorIds != null and juniorIds.size() > 0">
-                <foreach item="item" index="index" collection="juniorIds" separator=",">
-                    #{item}
-                </foreach>
-            </when>
-            <otherwise>
-                select temp.id from (SELECT 1 as id) temp  where temp.id =2
-            </otherwise>
-        </choose>
-        )
-        else true end
-
         <if test="startDate !=null and endDate !=null and startDate !='' and endDate !=''" >
             having operationDate between #{startDate} and #{endDate}
         </if>
@@ -876,24 +814,6 @@
         LEFT JOIN base_area parea ON area.parent_area_id = parea.area_id
         where 1=1
         and process.remit_review = 1
-        and
-        case when #{maxGroupLevel} = 0 then false
-        when #{maxGroupLevel} = 1 then
-        base.salesman_id in
-        (
-        <choose>
-            <when test="juniorIds != null and juniorIds.size() > 0">
-                <foreach item="item" index="index" collection="juniorIds" separator=",">
-                    #{item}
-                </foreach>
-            </when>
-            <otherwise>
-                select temp.id from (SELECT 1 as id) temp  where temp.id =2
-            </otherwise>
-        </choose>
-        )
-        else true end
-
         <if test="startDate !=null and endDate !=null and startDate !='' and endDate !=''" >
             having submitTime between #{startDate} and #{endDate}
         </if>
