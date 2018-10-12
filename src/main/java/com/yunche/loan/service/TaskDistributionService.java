@@ -12,15 +12,15 @@ public interface TaskDistributionService {
      * @param taskId
      * @param taskkey
      */
-    void get(Long taskId, String taskkey);
+    void get(Long taskId, String taskkey, Long orderId);
 
     /**
      * 取消领取-task         ==> del
-     *
-     * @param taskId
+     *  @param taskId
      * @param taskKey
+     * @param orderId
      */
-    void release(Long taskId, String taskKey);
+    void release(Long taskId, String taskKey, Long orderId);
 
     /**
      * 查询当前任务-领取详情
