@@ -98,6 +98,36 @@ public class LoanCreditInfoHisServiceImpl implements LoanCreditInfoHisService {
 
         } else {
 
+            // 小于13W   -->  大于等于13W
+            LoanCreditInfoSocialHisDO lastSocialHisDO = loanCreditInfoSocialHisDOMapper.lastByCustomerId(principalCustId);
+            if (null == lastSocialHisDO) {
+
+                // 社会征信查询记录 (>=13万)
+                if (loanAmount >= EXPECT_LOAN_AMOUNT_EQT_13W_LT_20W) {
+
+                    // 第一次    无需过滤
+                    customers.stream()
+                            .filter(Objects::nonNull)
+                            .forEach(e -> {
+
+                                // 社会征信查询记录 (>=13万)
+                                if (loanAmount >= EXPECT_LOAN_AMOUNT_EQT_13W_LT_20W) {
+
+                                    LoanCreditInfoSocialHisDO newLoanCreditInfoSocialHisDO = new LoanCreditInfoSocialHisDO();
+
+                                    newLoanCreditInfoSocialHisDO.setCustomerId(e.getId());
+                                    newLoanCreditInfoSocialHisDO.setCreditApplyTime(new Date());
+                                    newLoanCreditInfoSocialHisDO.setCreditApplyUserId(loginUser.getId());
+                                    newLoanCreditInfoSocialHisDO.setCreditApplyUserName(loginUser.getName());
+
+                                    createLoanCreditInfoSocialHisDO(newLoanCreditInfoSocialHisDO);
+                                }
+
+                            });
+                }
+            }
+
+
             // 客户征信打回类型
             final Byte[] enableType = {null};
             customers.stream()
