@@ -210,14 +210,14 @@ public class LoanCreditInfoHisServiceImpl implements LoanCreditInfoHisService {
                 .filter(Objects::nonNull)
                 .forEach(e -> {
 
-                    LoanCreditInfoBankHisDO loanCreditInfoBankHisDO = new LoanCreditInfoBankHisDO();
+                    LoanCreditInfoSocialHisDO loanCreditInfoSocialHisDO = new LoanCreditInfoSocialHisDO();
 
-                    loanCreditInfoBankHisDO.setCustomerId(e.getId());
-                    loanCreditInfoBankHisDO.setBankCreditRecordUserId(loginUser.getId());
-                    loanCreditInfoBankHisDO.setBankCreditRecordUserName(loginUser.getName());
-                    loanCreditInfoBankHisDO.setBankCreditRecordTime(new Date());
+                    loanCreditInfoSocialHisDO.setCustomerId(e.getId());
+                    loanCreditInfoSocialHisDO.setSocialCreditRecordUserId(loginUser.getId());
+                    loanCreditInfoSocialHisDO.setSocialCreditRecordUserName(loginUser.getName());
+                    loanCreditInfoSocialHisDO.setSocialCreditRecordTime(new Date());
 
-                    updateLoanCreditInfoBankHisDOByCustomerId(loanCreditInfoBankHisDO);
+                    updateLoanCreditInfoSocialHisDOByCustomerId(loanCreditInfoSocialHisDO);
                 });
     }
 
