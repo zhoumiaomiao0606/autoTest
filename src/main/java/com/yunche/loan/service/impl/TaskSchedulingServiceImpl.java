@@ -36,7 +36,6 @@ import static com.yunche.loan.config.constant.ListQueryTaskStatusConst.*;
 import static com.yunche.loan.config.constant.LoanDataFlowConst.DATA_FLOW_TASK_KEY_REVIEW_SUFFIX;
 import static com.yunche.loan.config.constant.LoanOrderProcessConst.*;
 import static com.yunche.loan.config.constant.LoanProcessEnum.DATA_FLOW;
-import static com.yunche.loan.config.util.DateTimeFormatUtils.formatter_yyyyMMdd;
 import static com.yunche.loan.config.util.DateTimeFormatUtils.formatter_yyyyMMdd_HHmmss;
 
 @Service
@@ -256,9 +255,9 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
     public ResultBean<List<TaskListVO>> queryTaskList(TaskListQuery taskListQuery) {
         Preconditions.checkNotNull(taskListQuery.getTaskStatus(), "taskStatus不能为空");
 
-        // 资料流转
+        // 资料流转l
         if (DATA_FLOW.getCode().equals(taskListQuery.getTaskDefinitionKey())) {
-            return queryDataFlowTaskList(taskListQuery);
+           return queryDataFlowTaskList(taskListQuery);
         }
 
         // 节点校验

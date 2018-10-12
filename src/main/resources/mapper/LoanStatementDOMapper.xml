@@ -238,13 +238,13 @@
         END AS cust_relation,
         -- 征信结果: 0-不通过;1-通过;2-关注;
         CASE
-        WHEN loan_credit_info_his.bank_credit_result = 0 THEN
+        WHEN loan_credit_info_bank_his.bank_credit_result = 0 THEN
         '不通过'
-        WHEN loan_credit_info_his.bank_credit_result = 1 THEN
+        WHEN loan_credit_info_bank_his.bank_credit_result = 1 THEN
         '通过'
-        WHEN loan_credit_info_his.bank_credit_result = 2 THEN
+        WHEN loan_credit_info_bank_his.bank_credit_result = 2 THEN
         '关注'
-        WHEN loan_credit_info_his.bank_credit_result = 3 THEN
+        WHEN loan_credit_info_bank_his.bank_credit_result = 3 THEN
         '银行退回'
         ELSE
         NULL
@@ -257,8 +257,8 @@
         ELSE
         NULL
         END  AS guaranteeType,
-        loan_credit_info_his.credit_apply_time AS credit_apply_time,
-        loan_credit_info_his.bank_credit_record_time AS credit_query_time,
+        loan_credit_info_bank_his.credit_apply_time AS credit_apply_time,
+        loan_credit_info_bank_his.bank_credit_record_time AS credit_query_time,
         (
         SELECT
         user_name
@@ -273,8 +273,8 @@
         ) AS gmt_user
         FROM
         loan_customer customer
-        left join (select customer_id,max(id) as credithisId FROM loan_credit_info_his GROUP BY customer_id) tab on tab.customer_id = customer.id
-        left join loan_credit_info_his on tab.credithisId = loan_credit_info_his.id
+        left join (select customer_id,max(id) as credithisId FROM loan_credit_info_bank_his GROUP BY customer_id) tab on tab.customer_id = customer.id
+        left join loan_credit_info_bank_his on tab.credithisId = loan_credit_info_bank_his.id
         LEFT JOIN loan_customer principal ON customer.principal_cust_id = principal.id
         LEFT JOIN loan_order principal_orders ON principal_orders.loan_customer_id = principal.id
         LEFT JOIN loan_base_info principal_base ON principal_orders.loan_base_info_id = principal_base.id
@@ -284,13 +284,6 @@
         LEFT JOIN loan_process ON principal_orders.id = loan_process.order_id
 
         <where>
-            <if test="state == 1">
-                loan_credit_info_his.bank_credit_record_time is not null and
-            </if>
-
-            <if test="state == 2">
-                loan_credit_info_his.bank_credit_record_time is null and
-            </if>
             case when #{maxGroupLevel} = 0 then false
             when #{maxGroupLevel} = 1 then
             principal_base.salesman_id in
@@ -308,7 +301,7 @@
             )
             else true end
             <if test="startDate !=null and endDate !=null">
-                and loan_credit_info_his.bank_credit_record_time between #{startDate} and #{endDate}
+                and loan_credit_info_bank_his.bank_credit_record_time between #{startDate} and #{endDate}
             </if>
 
             <if test="partnerList != null and partnerList.size() > 0">
@@ -333,7 +326,7 @@
             AND TO_DAYS(credit_apply_time) &lt;= TO_DAYS(#{endCreditGmtCreate})
             )
         </if>
-        order by loan_credit_info_his.bank_credit_record_time desc
+        order by loan_credit_info_bank_his.bank_credit_record_time desc
     </select>
 
 
@@ -390,13 +383,13 @@
         END AS cust_relation,
         -- 征信结果: 0-不通过;1-通过;2-关注;
         CASE
-        WHEN loan_credit_info_his.social_credit_result = 0 THEN
+        WHEN loan_credit_info_social_his.social_credit_result = 0 THEN
         '不通过'
-        WHEN loan_credit_info_his.social_credit_result = 1 THEN
+        WHEN loan_credit_info_social_his.social_credit_result = 1 THEN
         '通过'
-        WHEN loan_credit_info_his.social_credit_result = 2 THEN
+        WHEN loan_credit_info_social_his.social_credit_result = 2 THEN
         '关注'
-        WHEN loan_credit_info_his.social_credit_result = 3 THEN
+        WHEN loan_credit_info_social_his.social_credit_result = 3 THEN
         '银行退回'
         ELSE
         NULL
@@ -409,8 +402,8 @@
         ELSE
         NULL
         END  AS guaranteeType,
-        loan_credit_info_his.credit_apply_time AS credit_apply_time,
-        loan_credit_info_his.social_credit_record_time AS credit_query_time,
+        loan_credit_info_social_his.credit_apply_time AS credit_apply_time,
+        loan_credit_info_social_his.social_credit_record_time AS credit_query_time,
         (
         SELECT
         user_name
@@ -425,8 +418,8 @@
         ) AS gmt_user
         FROM
         loan_customer customer
-        left join (select customer_id,max(id) as credithisId FROM loan_credit_info_his GROUP BY customer_id) tab on tab.customer_id = customer.id
-        left join loan_credit_info_his on tab.credithisId = loan_credit_info_his.id
+        left join (select customer_id,max(id) as credithisId FROM loan_credit_info_social_his GROUP BY customer_id) tab on tab.customer_id = customer.id
+        left join loan_credit_info_social_his on tab.credithisId = loan_credit_info_social_his.id
         LEFT JOIN loan_customer principal ON customer.principal_cust_id = principal.id
         LEFT JOIN loan_order principal_orders ON principal_orders.loan_customer_id = principal.id
         LEFT JOIN loan_base_info principal_base ON principal_orders.loan_base_info_id = principal_base.id
@@ -436,11 +429,11 @@
         LEFT JOIN loan_process ON principal_orders.id = loan_process.order_id
         <where>
             <if test="state == 1">
-                loan_credit_info_his.social_credit_record_time is not null and
+                loan_credit_info_social_his.social_credit_record_time is not null and
             </if>
 
             <if test="state == 2">
-                loan_credit_info_his.social_credit_record_time is null and
+                loan_credit_info_social_his.social_credit_record_time is null and
             </if>
 
 
@@ -464,7 +457,7 @@
             else true end
 
             <if test="startDate !=null and endDate !=null">
-            and loan_credit_info_his.social_credit_record_time between #{startDate} and #{endDate}
+            and loan_credit_info_social_his.social_credit_record_time between #{startDate} and #{endDate}
             </if>
             <if test="partnerList != null and partnerList.size() > 0">
                 and
@@ -488,7 +481,7 @@
             AND TO_DAYS(credit_apply_time) &lt;= TO_DAYS(#{endCreditGmtCreate})
             )
         </if>
-        order by loan_credit_info_his.social_credit_record_time desc
+        order by loan_credit_info_social_his.social_credit_record_time desc
     </select>
 
     <select id="exportSocialCreditQuerys2" parameterType="com.yunche.loan.domain.param.ExportSocialCreditQueryVerifyParam"  resultType="com.yunche.loan.domain.vo.ExportSocialCreditQueryVO" >
@@ -1799,6 +1792,7 @@
             result.id       AS loanCustomerId,
             result.name     AS customerName,
             result.employee_id AS employeeId,
+            result.bank_credit_employee_id AS bankCreditEmployeeId,
             result.id_card     AS idCard
         FROM
         (
@@ -1812,7 +1806,8 @@
                 process.bank_credit_record,
                 ( SELECT create_time FROM loan_process_log log WHERE log.task_definition_key = 'usertask_credit_apply' AND order_id = process.order_id ORDER BY create_time DESC LIMIT 1 ) AS credit_apply_time,
                 ( SELECT create_time FROM loan_process_log log WHERE log.task_definition_key = 'usertask_bank_credit_record' AND order_id = process.order_id ORDER BY create_time DESC LIMIT 1 ) AS bank_credit_time,
-                ( SELECT user_id FROM loan_process_log log WHERE log.task_definition_key = 'usertask_credit_apply' AND order_id = process.order_id ORDER BY create_time DESC LIMIT 1 ) AS employee_id
+                ( SELECT user_id FROM loan_process_log log WHERE log.task_definition_key = 'usertask_credit_apply' AND order_id = process.order_id ORDER BY create_time DESC LIMIT 1 ) AS employee_id,
+                ( SELECT user_id FROM loan_process_log log WHERE log.task_definition_key = 'usertask_bank_credit_record' AND order_id = process.order_id ORDER BY create_time DESC LIMIT 1 ) AS bank_credit_employee_id
             FROM
                 loan_process process
                 LEFT JOIN loan_order loan ON process.order_id = loan.id
@@ -1837,7 +1832,9 @@
                 AND result.bank_credit_time &gt;=  #{creditQueryEndTime}
             </if>
             <if test="employeeId !=null">
-                AND result.employee_id =#{employeeId}
+                AND CASE WHEN #{creditStatus} = 3 THEN result.bank_credit_employee_id =#{employeeId}
+                         ELSE result.employee_id =#{employeeId}
+                END
             </if>
             <if test="creditStatus !=null">
                 AND CASE WHEN #{creditStatus} = 1 THEN result.credit_exp_flag =1
