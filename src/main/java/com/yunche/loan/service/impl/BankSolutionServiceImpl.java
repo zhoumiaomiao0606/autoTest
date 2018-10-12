@@ -570,7 +570,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
 
             ICBCApiRequest.Picture picture = new ICBCApiRequest.Picture();
             picture.setPicid(TermFileEnum.SELF_CERTIFICATE_FRONT.getValue());
-            String picName = GeneratorIDUtil.execute();
+            String picName = GeneratorIDUtil.execute()+ImageUtil.PIC_SUFFIX;
             picture.setPicname(picName);
             picture.setPicnote(LoanFileEnum.getNameByCode(TermFileEnum.SELF_CERTIFICATE_FRONT.getKey()));
             pictures.add(picture);
