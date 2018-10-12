@@ -98,9 +98,20 @@ public class LoanCreditInfoHisServiceImpl implements LoanCreditInfoHisService {
 
         } else {
 
+            // 客户征信打回类型
+            final Byte[] enableType = {null};
+            customers.stream()
+                    .filter(Objects::nonNull)
+                    .forEach(e -> {
+
+                        if (BaseConst.K_YORN_YES.equals(e.getEnable()) && null != e.getEnableType()) {
+                            enableType[0] = e.getEnableType();
+                            return;
+                        }
+                    });
+
             // 第2+次    过滤出：当前正在查询银行/社会征信的客户
-            customers = filterCustomers(customers, CREDIT_TYPE_BANK);
-            customers = filterCustomers(customers, CREDIT_TYPE_SOCIAL);
+            customers = filterCustomers(customers, enableType[0]);
 
             if (!CollectionUtils.isEmpty(customers)) {
 
@@ -108,9 +119,10 @@ public class LoanCreditInfoHisServiceImpl implements LoanCreditInfoHisService {
                         .filter(Objects::nonNull)
                         .forEach(e -> {
 
-                            Byte enableType = e.getEnableType();
+//                            Byte enableType_ = e.getEnableType();
+                            Byte enableType_ = enableType[0];
 
-                            if (CREDIT_TYPE_BANK.equals(enableType)) {
+                            if (CREDIT_TYPE_BANK.equals(enableType_)) {
 
                                 // 银行征信查询记录
                                 LoanCreditInfoBankHisDO newLoanCreditInfoBankHisDO = new LoanCreditInfoBankHisDO();
@@ -122,7 +134,7 @@ public class LoanCreditInfoHisServiceImpl implements LoanCreditInfoHisService {
 
                                 createLoanCreditInfoBankHisDO(newLoanCreditInfoBankHisDO);
 
-                            } else if (CREDIT_TYPE_SOCIAL.equals(enableType)) {
+                            } else if (CREDIT_TYPE_SOCIAL.equals(enableType_)) {
 
                                 // 社会征信查询记录
                                 LoanCreditInfoSocialHisDO newLoanCreditInfoSocialHisDO = new LoanCreditInfoSocialHisDO();
