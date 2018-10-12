@@ -3,18 +3,18 @@
   <signal id="contactChangeSignal" name="contactChangeSignal"></signal>
   <process id="loan_process" name="消费贷流程" isExecutable="true" isClosed="false" processType="None">
     <startEvent id="startevent_start_process" name="流程启动"></startEvent>
-    <userTask id="usertask_credit_apply" name="征信申请" activiti:candidateGroups="管理员,总经理,培训经理,台州主管,业务内勤,大区经理,浙江区大区经理,华中区大区经理,华东区大区经理,华南区大区经理,华北区大区经理,西南区大区经理,西北区大区经理,看车网大区经理"></userTask>
+    <userTask id="usertask_credit_apply" name="征信申请" activiti:candidateGroups="管理员,总经理,培训经理,台州主管,业务内勤,大区经理,浙江区大区经理,华中区大区经理,华东区大区经理,华南区大区经理,华北区大区经理,西南区大区经理,西北区大区经理,看车网大区经理,大区经理"></userTask>
     <sequenceFlow id="flow1" sourceRef="startevent_start_process" targetRef="usertask_credit_apply"></sequenceFlow>
     <exclusiveGateway id="exclusivegateway2" name="Exclusive Gateway"></exclusiveGateway>
     <sequenceFlow id="flow6" name="贷款额 &gt;= 13W" sourceRef="exclusivegateway2" targetRef="exclusivegateway43">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${expect_loan_amount >= 2}]]></conditionExpression>
     </sequenceFlow>
     <exclusiveGateway id="exclusivegateway3" name="Exclusive Gateway"></exclusiveGateway>
-    <userTask id="usertask_loan_apply" name="业务申请" activiti:candidateGroups="管理员,总经理,培训经理,台州主管,业务内勤,大区经理,浙江区大区经理,华中区大区经理,华东区大区经理,华南区大区经理,华北区大区经理,西南区大区经理,西北区大区经理,看车网大区经理"></userTask>
+    <userTask id="usertask_loan_apply" name="贷款申请" activiti:candidateGroups="管理员,总经理,培训经理,台州主管,业务内勤,大区经理,浙江区大区经理,华中区大区经理,华东区大区经理,华南区大区经理,华北区大区经理,西南区大区经理,西北区大区经理,看车网大区经理,大区经理"></userTask>
     <sequenceFlow id="flow13" name="&lt;13W 银行征信审核   征信通过" sourceRef="exclusivegateway3" targetRef="exclusivegateway39">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${expect_loan_amount == 1 && action == 1}]]></conditionExpression>
     </sequenceFlow>
-    <userTask id="usertask_visit_verify" name="上门调查" activiti:candidateGroups="管理员,总经理,培训经理,台州主管,业务内勤,大区经理,浙江区大区经理,华中区大区经理,华东区大区经理,华南区大区经理,华北区大区经理,西南区大区经理,西北区大区经理,看车网大区经理"></userTask>
+    <userTask id="usertask_visit_verify" name="上门调查" activiti:candidateGroups="管理员,总经理,培训经理,台州主管,业务内勤,大区经理,浙江区大区经理,华中区大区经理,华东区大区经理,华南区大区经理,华北区大区经理,西南区大区经理,西北区大区经理,看车网大区经理,大区经理"></userTask>
     <sequenceFlow id="flow15" name="提交 或 弃单 或 自动打回" sourceRef="exclusivegateway20" targetRef="filter_loan_apply_visit_verify">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${ (action == -1 || action == 2  ||  action == 1)  &&  target == "filter_loan_apply_visit_verify" }]]></conditionExpression>
     </sequenceFlow>
@@ -47,12 +47,12 @@
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 2}]]></conditionExpression>
     </sequenceFlow>
     <parallelGateway id="parallelgateway1" name="Parallel Gateway"></parallelGateway>
-    <userTask id="usertask_social_credit_record" name="社会征信录入" activiti:candidateGroups="管理员,总经理,培训经理,台州主管,社会征信查询"></userTask>
+    <userTask id="usertask_social_credit_record" name="社会征信录入" activiti:candidateGroups="管理员,总经理,培训经理,台州主管,社会征信查询,大区经理"></userTask>
     <sequenceFlow id="flow48" sourceRef="parallelgateway1" targetRef="usertask_social_credit_record"></sequenceFlow>
     <sequenceFlow id="flow49" name="&gt;=13W  征信通过" sourceRef="exclusivegateway11" targetRef="parallelgateway7">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1}]]></conditionExpression>
     </sequenceFlow>
-    <userTask id="usertask_bank_credit_record" name="银行征信录入" activiti:candidateGroups="管理员,总经理,培训经理,台州主管,银行驻点,南京江宁支行驻点,哈尔滨顾乡支行驻点,杭州城站支行驻点,台州路桥支行驻点"></userTask>
+    <userTask id="usertask_bank_credit_record" name="银行征信录入" activiti:candidateGroups="管理员,总经理,培训经理,台州主管,银行驻点,南京江宁支行驻点,哈尔滨顾乡支行驻点,杭州城站支行驻点,台州路桥支行驻点,大区经理"></userTask>
     <sequenceFlow id="flow52" sourceRef="usertask_bank_credit_record" targetRef="exclusivegateway3"></sequenceFlow>
     <sequenceFlow id="flow53" sourceRef="parallelgateway1" targetRef="usertask_bank_credit_record"></sequenceFlow>
     <exclusiveGateway id="exclusivegateway11" name="Exclusive Gateway"></exclusiveGateway>
@@ -63,12 +63,12 @@
     <sequenceFlow id="flow59" name="审核通过" sourceRef="exclusivegateway5" targetRef="parallelgateway3">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1}]]></conditionExpression>
     </sequenceFlow>
-    <userTask id="usertask_business_review" name="业务审批" activiti:candidateGroups="管理员,总经理,培训经理,台州主管,渠道经理,放款专员,哈尔滨放款专员"></userTask>
+    <userTask id="usertask_business_review" name="业务审批" activiti:candidateGroups="管理员,总经理,培训经理,台州主管,渠道经理,放款专员,哈尔滨放款专员,大区经理"></userTask>
     <userTask id="usertask_material_review" name="资料审核" activiti:candidateGroups="管理员,总经理,培训经理,台州主管,渠道经理,纸审,哈尔滨纸审,台州纸审,杭州城站纸审,南京纸审,合伙人纸审"></userTask>
     <userTask id="usertask_apply_license_plate_deposit_info" name="车辆抵押" activiti:candidateGroups="管理员,总经理,培训经理,台州主管,业务内勤,大区经理,浙江区大区经理,华中区大区经理,华东区大区经理,华南区大区经理,华北区大区经理,西南区大区经理,西北区大区经理,看车网大区经理,催收主管,哈尔滨抵押专员,台州抵押专员,杭州城站抵押专员,南京抵押专员"></userTask>
     <userTask id="usertask_car_insurance" name="车辆保险" activiti:candidateGroups="管理员,总经理,培训经理,台州主管,业务内勤,大区经理,浙江区大区经理,华中区大区经理,华东区大区经理,华南区大区经理,华北区大区经理,西南区大区经理,西北区大区经理,看车网大区经理,催收主管,哈尔滨保险专员"></userTask>
     <sequenceFlow id="flow63" sourceRef="parallelgateway3" targetRef="usertask_car_insurance"></sequenceFlow>
-    <userTask id="usertask_install_gps" name="GPS安装" activiti:candidateGroups="管理员,总经理,培训经理,台州主管,业务内勤,大区经理,浙江区大区经理,华中区大区经理,华东区大区经理,华南区大区经理,华北区大区经理,西南区大区经理,西北区大区经理,看车网大区经理,催收主管,GPS专员,哈尔滨GPS专员"></userTask>
+    <userTask id="usertask_install_gps" name="GPS安装" activiti:candidateGroups="管理员,总经理,培训经理,台州主管,业务内勤,大区经理,浙江区大区经理,华中区大区经理,华东区大区经理,华南区大区经理,华北区大区经理,西南区大区经理,西北区大区经理,看车网大区经理,催收主管,GPS专员,哈尔滨GPS专员,大区经理"></userTask>
     <sequenceFlow id="flow65" sourceRef="parallelgateway3" targetRef="usertask_install_gps"></sequenceFlow>
     <userTask id="usertask_commit_key" name="待收钥匙" activiti:candidateGroups="管理员,总经理,培训经理,台州主管,催收主管,收钥匙专员,哈尔滨收钥匙专员"></userTask>
     <sequenceFlow id="flow66" sourceRef="parallelgateway3" targetRef="usertask_commit_key"></sequenceFlow>
@@ -158,7 +158,7 @@
     <sequenceFlow id="flow155" name="自动打回" sourceRef="exclusivegateway9" targetRef="usertask_credit_apply">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == -1 && target == 'usertask_credit_apply' }]]></conditionExpression>
     </sequenceFlow>
-    <userTask id="usertask_bank_lend_record" name="银行放款记录" activiti:candidateGroups="管理员,总经理,培训经理,台州主管,财务经理,财务助理,银行驻点,南京江宁支行驻点,杭州城站支行驻点,台州路桥支行驻点,哈尔滨启卡放款组,城站放款专员,哈尔滨放款专员,台州放款专员,南京放款专员"></userTask>
+    <userTask id="usertask_bank_lend_record" name="银行放款记录" activiti:candidateGroups="管理员,总经理,培训经理,台州主管,财务经理,财务助理,银行驻点,南京江宁支行驻点,杭州城站支行驻点,台州路桥支行驻点,哈尔滨启卡放款组,城站放款专员,哈尔滨放款专员,台州放款专员,南京放款专员,大区经理"></userTask>
     <sequenceFlow id="flow157" sourceRef="parallelgateway10" targetRef="usertask_bank_lend_record"></sequenceFlow>
     <endEvent id="endevent26" name="End"></endEvent>
     <sequenceFlow id="flow158" name="提交" sourceRef="servicetask_financial_scheme" targetRef="endevent26">
@@ -167,24 +167,24 @@
     <sequenceFlow id="flow159" name="&lt;13W 手动OR自动打回修改" sourceRef="exclusivegateway3" targetRef="usertask_credit_apply">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${expect_loan_amount == 1 && (action == -1 || action == 0) }]]></conditionExpression>
     </sequenceFlow>
-    <userTask id="usertask_bank_card_record" name="银行卡接收" activiti:candidateGroups="管理员,总经理,培训经理,台州主管,财务经理,客服,银行驻点,南京江宁支行驻点,杭州城站支行驻点,台州路桥支行驻点,哈尔滨启卡放款组,台州银行卡管理专员"></userTask>
+    <userTask id="usertask_bank_card_record" name="银行卡接收" activiti:candidateGroups="管理员,总经理,培训经理,台州主管,财务经理,客服,银行驻点,南京江宁支行驻点,杭州城站支行驻点,台州路桥支行驻点,哈尔滨启卡放款组,台州银行卡管理专员,大区经理"></userTask>
     <parallelGateway id="parallelgateway8" name="Parallel Gateway"></parallelGateway>
     <sequenceFlow id="flow160" name="提交" sourceRef="usertask_bank_lend_record" targetRef="usertask_bank_card_record">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1}]]></conditionExpression>
     </sequenceFlow>
     <sequenceFlow id="flow162" sourceRef="parallelgateway3" targetRef="usertask_vehicle_information"></sequenceFlow>
-    <userTask id="usertask_vehicle_information" name="提车资料" activiti:candidateGroups="管理员,总经理,培训经理,台州主管,业务内勤,大区经理,浙江区大区经理,华中区大区经理,华东区大区经理,华南区大区经理,华北区大区经理,西南区大区经理,西北区大区经理,看车网大区经理"></userTask>
+    <userTask id="usertask_vehicle_information" name="提车资料" activiti:candidateGroups="管理员,总经理,培训经理,台州主管,业务内勤,大区经理,浙江区大区经理,华中区大区经理,华东区大区经理,华南区大区经理,华北区大区经理,西南区大区经理,西北区大区经理,看车网大区经理,大区经理"></userTask>
     <sequenceFlow id="flow163" name="提交" sourceRef="exclusivegateway41" targetRef="usertask_apply_license_plate_deposit_info">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1}]]></conditionExpression>
     </sequenceFlow>
-    <userTask id="servicetask_financial_scheme" name="金融方案" activiti:candidateGroups="管理员,总经理,培训经理,台州主管,渠道经理,总监,财务经理,财务助理,催收主管,客服,江浙大区经理,华中大区经理,华东大区经理,华南大区经理,华北大区经理,西南大区经理,西北大区经理,东北大区经理,看车网大区经理,哈尔滨GPS专员,GPS专员,哈尔滨客户信息,南京客户信息,台州客户信息,杭州城站客户信息,客户信息,合伙人客户信息"></userTask>
+    <userTask id="servicetask_financial_scheme" name="金融方案" activiti:candidateGroups="管理员,总经理,培训经理,台州主管,渠道经理,总监,财务经理,财务助理,催收主管,客服,江浙大区经理,华中大区经理,华东大区经理,华南大区经理,华北大区经理,西南大区经理,西北大区经理,东北大区经理,看车网大区经理,哈尔滨GPS专员,GPS专员,哈尔滨客户信息,南京客户信息,台州客户信息,杭州城站客户信息,客户信息,合伙人客户信息,大区经理"></userTask>
     <endEvent id="endevent28" name="End"></endEvent>
     <sequenceFlow id="flow164" name="提交" sourceRef="usertask_customer_repay_plan" targetRef="endevent28">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1}]]></conditionExpression>
     </sequenceFlow>
     <userTask id="usertask_financial_scheme_modify_apply" name="金融方案修改申请" activiti:candidateGroups="管理员,总经理,培训经理,台州主管,业务内勤,大区经理,浙江区大区经理,华中区大区经理,华东区大区经理,华南区大区经理,华北区大区经理,西南区大区经理,西北区大区经理,看车网大区经理"></userTask>
     <userTask id="usertask_refund_apply" name="退款申请" activiti:candidateGroups="管理员,总经理,培训经理,台州主管,业务内勤,大区经理,浙江区大区经理,华中区大区经理,华东区大区经理,华南区大区经理,华北区大区经理,西南区大区经理,西北区大区经理,看车网大区经理"></userTask>
-    <userTask id="usertask_financial_scheme_modify_apply_review" name="金融方案修改申请审核" activiti:candidateGroups="管理员,总经理,培训经理,台州主管,总监,电审经理,电审主管,电审专员,哈尔滨电审专员,哈尔滨电审主管,哈尔滨电审经理,哈尔滨总监"></userTask>
+    <userTask id="usertask_financial_scheme_modify_apply_review" name="金融方案修改申请审核" activiti:candidateGroups="管理员,总经理,培训经理,台州主管,总监,电审经理,电审主管,电审专员,哈尔滨电审专员,哈尔滨电审主管,哈尔滨电审经理,哈尔滨总监,大区经理"></userTask>
     <userTask id="usertask_refund_apply_review" name="退款申请审核" activiti:candidateGroups="管理员,总经理,培训经理,台州主管,财务经理,财务助理,出纳"></userTask>
     <exclusiveGateway id="exclusivegateway22" name="Exclusive Gateway"></exclusiveGateway>
     <sequenceFlow id="flow171" sourceRef="filter_remit_review" targetRef="exclusivegateway22"></sequenceFlow>
@@ -199,10 +199,10 @@
     <sequenceFlow id="flow174" sourceRef="parallelgateway8" targetRef="endevent29">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1}]]></conditionExpression>
     </sequenceFlow>
-    <userTask id="usertask_customer_repay_plan" name="客户还款计划" activiti:candidateGroups="管理员,总经理,培训经理,台州主管,电催主管,电催专员,电话催收组,贷后管理"></userTask>
+    <userTask id="usertask_customer_repay_plan" name="客户还款计划" activiti:candidateGroups="管理员,总经理,培训经理,台州主管,电催主管,电催专员,电话催收组,贷后管理,大区经理"></userTask>
     <sequenceFlow id="flow175" sourceRef="parallelgateway13" targetRef="usertask_customer_repay_plan"></sequenceFlow>
-    <userTask id="usertask_info_supplement" name="资料增补" activiti:candidateGroups="管理员,总经理,培训经理,台州主管,业务内勤,大区经理,浙江区大区经理,华中区大区经理,华东区大区经理,华南区大区经理,华北区大区经理,西南区大区经理,西北区大区经理,看车网大区经理"></userTask>
-    <userTask id="usertask_customer_repay_plan_record" name="银行还款计划记录" activiti:candidateGroups="管理员,总经理,培训经理,台州主管,电催主管,电催专员,电话催收组,贷后管理"></userTask>
+    <userTask id="usertask_info_supplement" name="资料增补" activiti:candidateGroups="管理员,总经理,培训经理,台州主管,业务内勤,大区经理,浙江区大区经理,华中区大区经理,华东区大区经理,华南区大区经理,华北区大区经理,西南区大区经理,西北区大区经理,看车网大区经理,大区经理"></userTask>
+    <userTask id="usertask_customer_repay_plan_record" name="银行还款计划记录" activiti:candidateGroups="管理员,总经理,培训经理,台州主管,电催主管,电催专员,电话催收组,贷后管理,大区经理"></userTask>
     <sequenceFlow id="flow176" name="金额变动，补充生成[社会征信]" sourceRef="exclusivegateway20" targetRef="usertask_social_credit_record">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${ action == 1 && target == "usertask_social_credit_record" }]]></conditionExpression>
     </sequenceFlow>
@@ -215,7 +215,7 @@
     <sequenceFlow id="flow180" name="手动打回" sourceRef="exclusivegateway23" targetRef="usertask_loan_review">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 0}]]></conditionExpression>
     </sequenceFlow>
-    <userTask id="usertask_business_pay" name="业务付款申请" activiti:candidateGroups="管理员,总经理,培训经理,台州主管,业务内勤,大区经理,浙江区大区经理,华中区大区经理,华东区大区经理,华南区大区经理,华北区大区经理,西南区大区经理,西北区大区经理,看车网大区经理"></userTask>
+    <userTask id="usertask_business_pay" name="业务付款申请" activiti:candidateGroups="管理员,总经理,培训经理,台州主管,业务内勤,大区经理,浙江区大区经理,华中区大区经理,华东区大区经理,华南区大区经理,华北区大区经理,西南区大区经理,西北区大区经理,看车网大区经理,大区经理"></userTask>
     <sequenceFlow id="flow181" name="通过" sourceRef="exclusivegateway24" targetRef="usertask_business_review">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1}]]></conditionExpression>
     </sequenceFlow>
@@ -381,13 +381,13 @@
     <sequenceFlow id="flow256" sourceRef="exclusivegateway30" targetRef="usertask_data_flow_mortgage_b2c">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1  &&  target == 'usertask_data_flow_mortgage_b2c'}]]></conditionExpression>
     </sequenceFlow>
-    <userTask id="usertask_bank_card_send" name="银行卡寄送" activiti:candidateGroups="管理员,总经理,培训经理,台州主管,哈尔滨工行寄卡,南京工行寄卡,台州工行寄卡,杭州城站工行寄卡,台州银行卡管理专员"></userTask>
+    <userTask id="usertask_bank_card_send" name="银行卡寄送" activiti:candidateGroups="管理员,总经理,培训经理,台州主管,哈尔滨工行寄卡,南京工行寄卡,台州工行寄卡,杭州城站工行寄卡,台州银行卡管理专员,大区经理"></userTask>
     <sequenceFlow id="flow258" sourceRef="parallelgateway13" targetRef="usertask_bank_card_send"></sequenceFlow>
     <endEvent id="endevent35" name="End"></endEvent>
     <sequenceFlow id="flow259" name="提交" sourceRef="usertask_bank_card_send" targetRef="endevent35">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1}]]></conditionExpression>
     </sequenceFlow>
-    <userTask id="usertask_bank_open_card" name="银行开卡" activiti:candidateGroups="管理员,总经理,培训经理,台州主管,业务内勤,杭州城站开卡专员,台州开卡专员"></userTask>
+    <userTask id="usertask_bank_open_card" name="银行开卡" activiti:candidateGroups="管理员,总经理,培训经理,台州主管,业务内勤,杭州城站开卡专员,台州开卡专员,大区经理"></userTask>
     <sequenceFlow id="flow261" sourceRef="parallelgateway6" targetRef="usertask_bank_open_card"></sequenceFlow>
     <endEvent id="endevent36" name="End"></endEvent>
     <sequenceFlow id="flow262" sourceRef="usertask_bank_open_card" targetRef="endevent36">
@@ -402,7 +402,7 @@
     <sequenceFlow id="flow265" sourceRef="exclusivegateway9" targetRef="usertask_telephone_verify">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1 && target == 'usertask_telephone_verify'}]]></conditionExpression>
     </sequenceFlow>
-    <userTask id="usertask_bank_open_card_list" name="银行开卡清单" activiti:candidateGroups="管理员,总经理,培训经理,台州主管"></userTask>
+    <userTask id="usertask_bank_open_card_list" name="银行开卡清单" activiti:candidateGroups="管理员,总经理,培训经理,台州主管,大区经理"></userTask>
     <parallelGateway id="parallelgateway12" name="Parallel Gateway"></parallelGateway>
     <sequenceFlow id="flow266" name="不走[申请分期]" sourceRef="exclusivegateway14" targetRef="parallelgateway12">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1  &&  target == 'usertask_material_manage&usertask_data_flow_contract_c2b'}]]></conditionExpression>
@@ -422,7 +422,7 @@
     <sequenceFlow id="flow275" name="反审" sourceRef="exclusivegateway9" targetRef="exclusivegateway39">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == -1 && target == '' }]]></conditionExpression>
     </sequenceFlow>
-    <userTask id="usertask_loan_info_record" name="视频面签登记" activiti:candidateGroups="管理员,总经理,培训经理,台州主管,业务内勤"></userTask>
+    <userTask id="usertask_loan_info_record" name="视频面签登记" activiti:candidateGroups="管理员,总经理,培训经理,台州主管,业务内勤,大区经理"></userTask>
     <sequenceFlow id="flow276" name="贷款额 &lt; 13W" sourceRef="exclusivegateway2" targetRef="usertask_bank_credit_record">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${expect_loan_amount == 1}]]></conditionExpression>
     </sequenceFlow>
