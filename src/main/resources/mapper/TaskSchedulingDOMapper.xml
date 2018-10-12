@@ -458,6 +458,7 @@
                   join_b.area_id                               AS bizAreaId,
                   join_c.id                                    AS customerId,
                   join_c.name                                  AS customer,
+                  join_c.credit_exp_flag                       AS creditExpFlag,
                   DATE_FORMAT(main.gmt_create,'%Y-%m-%d %H:%i:%S')      AS orderGmtCreate,
                   join_c.id_card                               AS idCard,
                   join_c.mobile                                AS mobile,
@@ -1263,6 +1264,7 @@
                                     else
                                         false
                                     end
+
                                 </when>
                                 <when test="bankOpenCardOrder == 'having'">
                                     AND tab.id not in  <!--  出现一次就判定为除外 -->
@@ -1299,7 +1301,9 @@
                                       </choose>
                                     )
                                 </otherwise>
+
                             </choose>
+                            AND  if((select count(*) from loan_customer where principal_cust_id= tab.customerId and cust_type in(1,2,3) and credit_exp_flag=1)>0,true,false)
                         </when>
 
                         <when test="serialStatus == 'exception'">
