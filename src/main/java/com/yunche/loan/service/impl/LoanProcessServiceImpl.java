@@ -2639,8 +2639,8 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      * @return
      */
     private String convertTaskDefKeyText(String taskDefinitionKey) {
-        String name = LoanProcessEnum.getNameByCode(taskDefinitionKey);
-        return name;
+        String taskName = LoanProcessEnum.getNameByCode(taskDefinitionKey);
+        return StringUtils.isBlank(taskName) ? "" : taskName;
     }
 
     /**
