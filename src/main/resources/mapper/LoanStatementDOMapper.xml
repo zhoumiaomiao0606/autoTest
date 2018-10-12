@@ -1828,7 +1828,7 @@
                 AND result.bank_credit_time &gt;=  #{creditQueryStartTime}
             </if>
             <if test="creditQueryEndTime !=null">
-                AND result.bank_credit_time &gt;=  #{creditQueryEndTime}
+                AND result.bank_credit_time &lt;=  #{creditQueryEndTime}
             </if>
             <if test="employeeId !=null">
                 AND CASE WHEN #{creditStatus} = 3 THEN result.bank_credit_employee_id =#{employeeId}
