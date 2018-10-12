@@ -425,7 +425,7 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
         if (!CollectionUtils.isEmpty(allCustomerId)) {
 
             // 其他客户  >>  重置为：0 -> 未打回(不可编辑)
-            long count2 = loanCustomerDOMapper.batchUpdateEnable(allCustomerId, BaseConst.K_YORN_NO, enableType);
+            long count2 = loanCustomerDOMapper.batchUpdateEnable(allCustomerId, BaseConst.K_YORN_NO, null);
         }
 
         return count;

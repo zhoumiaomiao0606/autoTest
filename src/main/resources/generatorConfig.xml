@@ -384,15 +384,11 @@
 -->
 
 
-        <table tableName="loan_credit_info_social_his" domainObjectName="LoanCreditInfoSocialHisDO"
+        <table tableName="loan_customer" domainObjectName="LoanCustomerDO"
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
         </table>
 
-        <table tableName="loan_credit_info_bank_his" domainObjectName="LoanCreditInfoBankHisDO"
-               enableCountByExample="false" enableUpdateByExample="false"
-               enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
-        </table>
 
         <!-- 忽略列，不生成bean 字段
         <ignoreColumn column="FRED" />-->

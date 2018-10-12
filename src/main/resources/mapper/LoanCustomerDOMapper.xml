@@ -93,6 +93,7 @@
         <result column="signature_type" property="signatureType" jdbcType="TINYINT"/>
         <result column="credit_exp_flag" property="creditExpFlag" jdbcType="TINYINT"/>
         <result column="enable" property="enable" jdbcType="TINYINT"/>
+        <result column="enable_type" property="enableType" jdbcType="TINYINT"/>
         <result column="bank_credit_reject" property="bankCreditReject" jdbcType="TINYINT"/>
     </resultMap>
     <sql id="Base_Column_List">
@@ -110,7 +111,8 @@
         card_send_addr_type, balance_change_remind, open_email, email, occupation, issuing_department,
         master_card_tel, bell_tel, balance_change_tel, open_card_status, open_card_curr_status,
         bill_send_type, bill_send_addr, cprovince, ccity, ccounty, hprovince, hcity, hcounty,
-        open_card_order, ctelzone, signature_type, credit_exp_flag, enable, bank_credit_reject
+        open_card_order, ctelzone, signature_type, credit_exp_flag, enable, enable_type,
+        bank_credit_reject
     </sql>
     <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
         select
@@ -154,8 +156,8 @@
         cprovince, ccity, ccounty,
         hprovince, hcity, hcounty,
         open_card_order, ctelzone, signature_type,
-        credit_exp_flag, enable, bank_credit_reject
-        )
+        credit_exp_flag, enable, enable_type,
+        bank_credit_reject)
         values (#{id,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{nation,jdbcType=VARCHAR},
         #{birth,jdbcType=DATE}, #{identityValidity,jdbcType=VARCHAR}, #{lendCard,jdbcType=VARCHAR},
         #{idCard,jdbcType=CHAR}, #{mobile,jdbcType=VARCHAR}, #{age,jdbcType=TINYINT}, #{sex,jdbcType=TINYINT},
@@ -186,8 +188,8 @@
         #{cprovince,jdbcType=VARCHAR}, #{ccity,jdbcType=VARCHAR}, #{ccounty,jdbcType=VARCHAR},
         #{hprovince,jdbcType=VARCHAR}, #{hcity,jdbcType=VARCHAR}, #{hcounty,jdbcType=VARCHAR},
         #{openCardOrder,jdbcType=VARCHAR}, #{ctelzone,jdbcType=VARCHAR}, #{signatureType,jdbcType=TINYINT},
-        #{creditExpFlag,jdbcType=TINYINT}, #{enable,jdbcType=TINYINT}, #{bankCreditReject,jdbcType=TINYINT}
-        )
+        #{creditExpFlag,jdbcType=TINYINT}, #{enable,jdbcType=TINYINT}, #{enableType,jdbcType=TINYINT},
+        #{bankCreditReject,jdbcType=TINYINT})
     </insert>
     <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.LoanCustomerDO"
             useGeneratedKeys="true" keyColumn="id" keyProperty="id">
@@ -462,6 +464,9 @@
             </if>
             <if test="enable != null">
                 enable,
+            </if>
+            <if test="enableType != null">
+                enable_type,
             </if>
             <if test="bankCreditReject != null">
                 bank_credit_reject,
@@ -738,6 +743,9 @@
             <if test="enable != null">
                 #{enable,jdbcType=TINYINT},
             </if>
+            <if test="enableType != null">
+                #{enableType,jdbcType=TINYINT},
+            </if>
             <if test="bankCreditReject != null">
                 #{bankCreditReject,jdbcType=TINYINT},
             </if>
@@ -1013,6 +1021,9 @@
             <if test="enable != null">
                 enable = #{enable,jdbcType=TINYINT},
             </if>
+            <if test="enableType != null">
+                enable_type = #{enableType,jdbcType=TINYINT},
+            </if>
             <if test="bankCreditReject != null">
                 bank_credit_reject = #{bankCreditReject,jdbcType=TINYINT},
             </if>
@@ -1110,6 +1121,7 @@
         signature_type = #{signatureType,jdbcType=TINYINT},
         credit_exp_flag = #{creditExpFlag,jdbcType=TINYINT},
         enable = #{enable,jdbcType=TINYINT},
+        enable_type = #{enableType,jdbcType=TINYINT},
         bank_credit_reject = #{bankCreditReject,jdbcType=TINYINT}
         where id = #{id,jdbcType=BIGINT}
     </update>
@@ -1198,7 +1210,9 @@
     <update id="batchUpdateEnable">
         UPDATE loan_customer
         SET enable = #{enable,jdbcType=TINYINT},
-        enable_type = #{enableType,jdbcType=TINYINT}
+        <if test="enableType != null">
+            enable_type = #{enableType,jdbcType=TINYINT}
+        </if>
         WHERE
         <if test="idList != null and idList.size() > 0">
             id IN

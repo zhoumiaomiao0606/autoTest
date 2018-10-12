@@ -210,7 +210,7 @@ public class LoanCustomerDO {
      */
     private Byte enable;
     /**
-     * 征信打回类型
+     * 征信打回类型   1-银行征信打回； 2-社会征信打回；
      */
     private Byte enableType;
 
