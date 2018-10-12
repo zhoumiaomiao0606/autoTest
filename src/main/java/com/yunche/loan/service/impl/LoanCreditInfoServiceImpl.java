@@ -98,6 +98,9 @@ public class LoanCreditInfoServiceImpl implements LoanCreditInfoService {
             Preconditions.checkArgument(count > 0, "征信结果录入失败");
         }
 
+        // 记录征信结果到 征信his表
+        saveCreditInfoHis_CreditResult(loanCreditInfoDO);
+
         return loanCreditInfoDO.getId();
     }
 
@@ -109,6 +112,9 @@ public class LoanCreditInfoServiceImpl implements LoanCreditInfoService {
         loanCreditInfoDO.setGmtModify(new Date());
         int count = loanCreditInfoDOMapper.updateByPrimaryKeySelective(loanCreditInfoDO);
         Preconditions.checkArgument(count > 0, "征信结果修改失败");
+
+        // 记录征信结果到 征信his表
+        saveCreditInfoHis_CreditResult(loanCreditInfoDO);
 
         return loanCreditInfoDO.getId();
     }
