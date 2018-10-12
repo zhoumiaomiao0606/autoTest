@@ -3184,7 +3184,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         doAttachTask_SocialCreditRecord(approval, loanOrderDO);
 
         // 附带任务-[贷款申请]
-        doAttachTask_LoanApply(approval, loanOrderDO);
+        doAttachTask_LoanApply(approval, loanOrderDO, loanProcessDO);
 
         // 附带任务-[打款确认]
         doAttachTask_RemitReview(approval, loanOrderDO);
@@ -3225,23 +3225,28 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      *
      * @param approval
      * @param loanOrderDO
+     * @param loanProcessDO
      */
-    private void doAttachTask_LoanApply(ApprovalParam approval, LoanOrderDO loanOrderDO) {
+    private void doAttachTask_LoanApply(ApprovalParam approval, LoanOrderDO loanOrderDO, LoanProcessDO loanProcessDO) {
 
         if (LOAN_APPLY.getCode().equals(approval.getTaskDefinitionKey()) && ACTION_PASS.equals(approval.getAction())) {
 
             // 贷款申请提交后，提交视频面签登记
-            ApprovalParam approvalParam = new ApprovalParam();
-            approvalParam.setOrderId(approval.getOrderId());
-            approvalParam.setTaskDefinitionKey(LOAN_INFO_RECORD.getCode());
-            approvalParam.setAction(TASK_PROCESS_DONE);
+            if (TASK_PROCESS_TODO.equals(loanProcessDO.getLoanInfoRecord())
+                    || TASK_PROCESS_REJECT.equals(loanProcessDO.getLoanInfoRecord())) {
 
-            approvalParam.setNeedLog(false);
-            approvalParam.setAutoTask(true);
-            approvalParam.setNeedPush(false);
-            approvalParam.setCheckPermission(false);
+                ApprovalParam approvalParam = new ApprovalParam();
+                approvalParam.setOrderId(approval.getOrderId());
+                approvalParam.setTaskDefinitionKey(LOAN_INFO_RECORD.getCode());
+                approvalParam.setAction(TASK_PROCESS_DONE);
 
-            approval(approvalParam);
+                approvalParam.setNeedLog(false);
+                approvalParam.setAutoTask(true);
+                approvalParam.setNeedPush(false);
+                approvalParam.setCheckPermission(false);
+
+                approval(approvalParam);
+            }
         }
     }
 
