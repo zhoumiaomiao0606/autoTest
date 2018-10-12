@@ -344,10 +344,25 @@ public class LoanCreditInfoHisServiceImpl implements LoanCreditInfoHisService {
         // 需要校验是否第一次查询
         if (checkFirst) {
 
-            // 如果是第一次提交征信查询，直接创建历史记录  银行/社会(如果 > 13W)
-            LoanCreditInfoBankHisDO last = loanCreditInfoBankHisDOMapper.lastByCustomerId(customers.get(0).getPrincipalCustId());
+            List<LoanCustomerDO> customerDOS = loanCustomerDOMapper.listByPrincipalCustIdAndType(customers.get(0).getPrincipalCustId(), null, VALID_STATUS);
 
-            if (null == last) {
+            boolean isFirst = false;
+            if (!CollectionUtils.isEmpty(customerDOS)) {
+
+                customerDOS = customerDOS.stream()
+                        .filter(Objects::nonNull)
+                        .filter(e -> !(BaseConst.K_YORN_NO.equals(e.getEnable()) && null == e.getEnableType()))
+                        .collect(Collectors.toList());
+
+                // 均为：enable=0  EnableType=null
+                if (CollectionUtils.isEmpty(customerDOS)) {
+                    // 则为：第一次查询征信
+                    isFirst = true;
+                }
+            }
+
+            // 是第一次查询征信
+            if (isFirst) {
 
                 // 第一次     不过滤
 
@@ -356,8 +371,7 @@ public class LoanCreditInfoHisServiceImpl implements LoanCreditInfoHisService {
                 // 第2+次     过滤出：当前正在查询银行征信的客户
                 customers = customers.stream()
                         .filter(Objects::nonNull)
-                        .filter(e -> creditType.equals(e.getEnableType()) && BaseConst.K_YORN_YES.equals(e.getEnable())
-                        )
+                        .filter(e -> creditType.equals(e.getEnableType()) && BaseConst.K_YORN_YES.equals(e.getEnable()))
                         .collect(Collectors.toList());
             }
 
