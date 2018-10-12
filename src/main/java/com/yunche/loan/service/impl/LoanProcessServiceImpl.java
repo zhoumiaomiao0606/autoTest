@@ -3156,12 +3156,12 @@ public class LoanProcessServiceImpl implements LoanProcessService {
     }
 
     /**
-     * 并行任务 -弃单
+     * 弃单 -> 直接终止所有流程 => 所有运行中的act_ru_task
      *
      * @param processInstanceId
      */
     private void dealCancelTask(String processInstanceId) {
-        // 弃单 -> 直接终止流程
+        // 弃单 -> 直接终止所有流程 => 所有运行中的act_ru_task
         runtimeService.deleteProcessInstance(processInstanceId, "弃单");
     }
 
@@ -3191,6 +3191,23 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
         // 附带任务-[金融方案修改-审核]
         doAttachTask_FinancialSchemeModifyApplyReview(approval, loanProcessDO);
+
+        // 附带任务-[弃单]
+        doAttachTask_CancelTask(approval, loanOrderDO);
+    }
+
+    /**
+     * 附带任务-[弃单]
+     *
+     * @param approval
+     * @param loanOrderDO
+     */
+    private void doAttachTask_CancelTask(ApprovalParam approval, LoanOrderDO loanOrderDO) {
+
+        // 弃单 -> 直接终止所有流程 => 所有运行中的act_ru_task
+        if (ACTION_CANCEL.equals(approval.getAction())) {
+            dealCancelTask(loanOrderDO.getProcessInstId());
+        }
     }
 
     /**
