@@ -1337,32 +1337,41 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
         approval.setAction(ACTION_REJECT_AUTO);
 
+        List<String> taskKeyList = Lists.newArrayList();
+
         currentTaskList.stream()
                 .filter(Objects::nonNull)
                 .forEach(task -> {
 
                     String taskDefinitionKey = task.getTaskDefinitionKey();
 
-                    boolean isBankAndSocialCreditRecordTask = BANK_CREDIT_RECORD.getCode().equals(taskDefinitionKey)
+                    boolean isBankOrSocialCreditRecordTask = BANK_CREDIT_RECORD.getCode().equals(taskDefinitionKey)
                             || SOCIAL_CREDIT_RECORD.getCode().equals(taskDefinitionKey);
 
-                    boolean isLoanApplyVisitVerifyFilterTask = (LOAN_APPLY.getCode().equals(taskDefinitionKey)
-                            || VISIT_VERIFY.getCode().equals(taskDefinitionKey))
-                            && TASK_PROCESS_INIT.equals(loanProcessDO.getTelephoneVerify());
+                    boolean isLoanApplyOrVisitVerifyTask = (LOAN_APPLY.getCode().equals(taskDefinitionKey)
+                            || VISIT_VERIFY.getCode().equals(taskDefinitionKey));
 
-                    if (isBankAndSocialCreditRecordTask) {
+                    if (isBankOrSocialCreditRecordTask) {
                         approval.setTaskDefinitionKey(taskDefinitionKey);
-                    }
-                    // [贷款申请] && [上门家访]   -- 2个任务时，必须用[贷款申请]的KEY
-                    else if (isLoanApplyVisitVerifyFilterTask && currentTaskList.size() >= 2) {
-                        approval.setTaskDefinitionKey(LOAN_APPLY.getCode());
                     }
                     // [贷款申请] && [上门家访]   -- 单个任务时，用当前KEY即可
-                    else if (isLoanApplyVisitVerifyFilterTask) {
+                    else if (isLoanApplyOrVisitVerifyTask) {
                         approval.setTaskDefinitionKey(taskDefinitionKey);
                     }
 
+                    taskKeyList.add(taskDefinitionKey);
                 });
+
+
+        boolean isLoanApplyAndVisitVerifyTask = taskKeyList.contains(LOAN_APPLY.getCode())
+                && taskKeyList.contains(VISIT_VERIFY.getCode());
+
+        // [贷款申请] && [上门家访]   -- 2个任务时
+        if (isLoanApplyAndVisitVerifyTask) {
+
+            // 必须用[贷款申请]-KEY
+            approval.setTaskDefinitionKey(LOAN_APPLY.getCode());
+        }
     }
 
     /**
