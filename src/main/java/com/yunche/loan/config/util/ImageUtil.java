@@ -87,9 +87,9 @@ public class ImageUtil {
 //            operation.sample();
 //            operation.addRawArgs("50%x50%");//质量大小缩小一半
             operation.resize();
-            operation.addRawArgs("1024x768");
+            operation.addRawArgs("1024x768");//指定图片大小
 
-            operation.quality();
+            operation.quality();//设置图片大小
             operation.addRawArgs("100%");
 
             for(int i=0;i<fileList.size();i++){
