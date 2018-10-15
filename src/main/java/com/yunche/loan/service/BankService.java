@@ -2,8 +2,10 @@ package com.yunche.loan.service;
 
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.entity.BankDO;
+import com.yunche.loan.domain.entity.ConfLoanApplyDO;
 import com.yunche.loan.domain.param.BankParam;
 import com.yunche.loan.domain.param.BankSaveParam;
+import com.yunche.loan.domain.param.ConfLoanApplyParam;
 import com.yunche.loan.domain.query.BankQuery;
 import com.yunche.loan.domain.vo.BankReturnVO;
 import com.yunche.loan.domain.vo.BankVO;
@@ -40,4 +42,8 @@ public interface BankService {
     void save(BankSaveParam param);
 
     BankReturnVO detail(Long bankId);
+
+    void saveConfLoanApply(ConfLoanApplyParam param);
+
+    List<ConfLoanApplyDO> getConfLoanApply(String bank);
 }

@@ -101,6 +101,7 @@ public class ShiroConfig {
             filterChainDefinitionMap.put("/api/v1/msg/creditDetail", "anon");
             filterChainDefinitionMap.put("/api/v1/app/msg/creditDetail", "anon");
             filterChainDefinitionMap.put("/api/v1/ext/financialSystem/**", "anon");
+            filterChainDefinitionMap.put("/api/v1/app/loanorder/chart/parter/**", "anon");
             filterChainDefinitionMap.put("/**", "authc");
 //            filterChainDefinitionMap.put("/**", "authc,perms");
         }

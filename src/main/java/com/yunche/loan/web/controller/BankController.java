@@ -2,8 +2,10 @@ package com.yunche.loan.web.controller;
 
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.entity.BankDO;
+import com.yunche.loan.domain.entity.ConfLoanApplyDO;
 import com.yunche.loan.domain.param.BankParam;
 import com.yunche.loan.domain.param.BankSaveParam;
+import com.yunche.loan.domain.param.ConfLoanApplyParam;
 import com.yunche.loan.domain.query.BankQuery;
 import com.yunche.loan.domain.vo.BankReturnVO;
 import com.yunche.loan.domain.vo.BankVO;
@@ -60,6 +62,19 @@ public class BankController {
         bankService.save(param);
         return ResultBean.ofSuccess(null, "编辑成功");
     }
+
+
+    @PostMapping(value = "/saveconfloanapply", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResultBean<Void> saveConfLoanApply(@RequestBody ConfLoanApplyParam param) {
+        bankService.saveConfLoanApply(param);
+        return ResultBean.ofSuccess(null, "保存成功");
+    }
+
+    @GetMapping("getconfloanapply")
+    public ResultBean<List<ConfLoanApplyDO>> getConfLoanApply(@RequestParam String bank) {
+        return ResultBean.ofSuccess(bankService.getConfLoanApply(bank));
+    }
+
 
     /**
      * 获取银行列表

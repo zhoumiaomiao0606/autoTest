@@ -197,6 +197,16 @@
         where bridge_procecss_id = #{bridgeProcecssId,jdbcType=BIGINT}
     </update>
 
+    <update id="updateInfo">
+        UPDATE third_party_fund_business
+        SET  repay_date = #{repayDate},
+              interest = #{interest},
+              poundage = #{poundage},
+              repay_type = 1
+        WHERE
+	order_id = #{orderId}
+    </update>
+
 
     <!-- batchInsert -->
     <insert id="batchInsert" parameterType="java.util.List">

@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yunche.loan.mapper.ConfLoanApplyDOMapper" >
+  <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.ConfLoanApplyDO" >
+    <id column="bank" property="bank" jdbcType="VARCHAR" />
+    <id column="car_type" property="car_type" jdbcType="INTEGER" />
+    <result column="down_payment_ratio" property="down_payment_ratio" jdbcType="DECIMAL" />
+    <result column="loan_ratio" property="loan_ratio" jdbcType="DECIMAL" />
+    <result column="financial_service_fee" property="financial_service_fee" jdbcType="DECIMAL" />
+    <result column="staging_ratio" property="staging_ratio" jdbcType="DECIMAL" />
+    <result column="down_payment_ratio_compare" property="down_payment_ratio_compare" jdbcType="VARCHAR" />
+    <result column="loan_ratio_compare" property="loan_ratio_compare" jdbcType="VARCHAR" />
+    <result column="staging_ratio_compard" property="staging_ratio_compard" jdbcType="VARCHAR" />
+    <result column="financial_service_fee_compard" property="financial_service_fee_compard" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    bank, car_type, down_payment_ratio, loan_ratio, financial_service_fee, staging_ratio, 
+    down_payment_ratio_compare, loan_ratio_compare, staging_ratio_compard, financial_service_fee_compard
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="com.yunche.loan.domain.entity.ConfLoanApplyDOKey" >
+    select 
+    <include refid="Base_Column_List" />
+    from conf_loan_apply
+    where bank = #{bank,jdbcType=VARCHAR}
+      and car_type = #{car_type,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="com.yunche.loan.domain.entity.ConfLoanApplyDOKey" >
+    delete from conf_loan_apply
+    where bank = #{bank,jdbcType=VARCHAR}
+      and car_type = #{car_type,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.yunche.loan.domain.entity.ConfLoanApplyDO" >
+    insert into conf_loan_apply (bank, car_type, down_payment_ratio, 
+      loan_ratio, financial_service_fee, staging_ratio, 
+      down_payment_ratio_compare, loan_ratio_compare, 
+      staging_ratio_compard, financial_service_fee_compard
+      )
+    values (#{bank,jdbcType=VARCHAR}, #{car_type,jdbcType=INTEGER}, #{down_payment_ratio,jdbcType=DECIMAL}, 
+      #{loan_ratio,jdbcType=DECIMAL}, #{financial_service_fee,jdbcType=DECIMAL}, #{staging_ratio,jdbcType=DECIMAL}, 
+      #{down_payment_ratio_compare,jdbcType=VARCHAR}, #{loan_ratio_compare,jdbcType=VARCHAR}, 
+      #{staging_ratio_compard,jdbcType=VARCHAR}, #{financial_service_fee_compard,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.ConfLoanApplyDO" >
+    insert into conf_loan_apply
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="bank != null" >
+        bank,
+      </if>
+      <if test="car_type != null" >
+        car_type,
+      </if>
+      <if test="down_payment_ratio != null" >
+        down_payment_ratio,
+      </if>
+      <if test="loan_ratio != null" >
+        loan_ratio,
+      </if>
+      <if test="financial_service_fee != null" >
+        financial_service_fee,
+      </if>
+      <if test="staging_ratio != null" >
+        staging_ratio,
+      </if>
+      <if test="down_payment_ratio_compare != null" >
+        down_payment_ratio_compare,
+      </if>
+      <if test="loan_ratio_compare != null" >
+        loan_ratio_compare,
+      </if>
+      <if test="staging_ratio_compard != null" >
+        staging_ratio_compard,
+      </if>
+      <if test="financial_service_fee_compard != null" >
+        financial_service_fee_compard,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="bank != null" >
+        #{bank,jdbcType=VARCHAR},
+      </if>
+      <if test="car_type != null" >
+        #{car_type,jdbcType=INTEGER},
+      </if>
+      <if test="down_payment_ratio != null" >
+        #{down_payment_ratio,jdbcType=DECIMAL},
+      </if>
+      <if test="loan_ratio != null" >
+        #{loan_ratio,jdbcType=DECIMAL},
+      </if>
+      <if test="financial_service_fee != null" >
+        #{financial_service_fee,jdbcType=DECIMAL},
+      </if>
+      <if test="staging_ratio != null" >
+        #{staging_ratio,jdbcType=DECIMAL},
+      </if>
+      <if test="down_payment_ratio_compare != null" >
+        #{down_payment_ratio_compare,jdbcType=VARCHAR},
+      </if>
+      <if test="loan_ratio_compare != null" >
+        #{loan_ratio_compare,jdbcType=VARCHAR},
+      </if>
+      <if test="staging_ratio_compard != null" >
+        #{staging_ratio_compard,jdbcType=VARCHAR},
+      </if>
+      <if test="financial_service_fee_compard != null" >
+        #{financial_service_fee_compard,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.ConfLoanApplyDO" >
+    update conf_loan_apply
+    <set >
+      <if test="down_payment_ratio != null" >
+        down_payment_ratio = #{down_payment_ratio,jdbcType=DECIMAL},
+      </if>
+      <if test="loan_ratio != null" >
+        loan_ratio = #{loan_ratio,jdbcType=DECIMAL},
+      </if>
+      <if test="financial_service_fee != null" >
+        financial_service_fee = #{financial_service_fee,jdbcType=DECIMAL},
+      </if>
+      <if test="staging_ratio != null" >
+        staging_ratio = #{staging_ratio,jdbcType=DECIMAL},
+      </if>
+      <if test="down_payment_ratio_compare != null" >
+        down_payment_ratio_compare = #{down_payment_ratio_compare,jdbcType=VARCHAR},
+      </if>
+      <if test="loan_ratio_compare != null" >
+        loan_ratio_compare = #{loan_ratio_compare,jdbcType=VARCHAR},
+      </if>
+      <if test="staging_ratio_compard != null" >
+        staging_ratio_compard = #{staging_ratio_compard,jdbcType=VARCHAR},
+      </if>
+      <if test="financial_service_fee_compard != null" >
+        financial_service_fee_compard = #{financial_service_fee_compard,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where bank = #{bank,jdbcType=VARCHAR}
+      and car_type = #{car_type,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.ConfLoanApplyDO" >
+    update conf_loan_apply
+    set down_payment_ratio = #{down_payment_ratio,jdbcType=DECIMAL},
+      loan_ratio = #{loan_ratio,jdbcType=DECIMAL},
+      financial_service_fee = #{financial_service_fee,jdbcType=DECIMAL},
+      staging_ratio = #{staging_ratio,jdbcType=DECIMAL},
+      down_payment_ratio_compare = #{down_payment_ratio_compare,jdbcType=VARCHAR},
+      loan_ratio_compare = #{loan_ratio_compare,jdbcType=VARCHAR},
+      staging_ratio_compard = #{staging_ratio_compard,jdbcType=VARCHAR},
+      financial_service_fee_compard = #{financial_service_fee_compard,jdbcType=VARCHAR}
+    where bank = #{bank,jdbcType=VARCHAR}
+      and car_type = #{car_type,jdbcType=INTEGER}
+  </update>
+  <select id="selectInfoByBank" resultType="com.yunche.loan.domain.entity.ConfLoanApplyDO" parameterType="java.lang.String">
+    select
+    <include refid="Base_Column_List" />
+     from conf_loan_apply where bank = #{bank}
+  </select>
+</mapper>

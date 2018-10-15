@@ -14,4 +14,8 @@ public class CalMoneyVO {
     String singleRate;
     //银行放款日期
     String bankDate;
+    //还款日期
+    String returnDate;
+    //还款类型
+    String returnType;
 }

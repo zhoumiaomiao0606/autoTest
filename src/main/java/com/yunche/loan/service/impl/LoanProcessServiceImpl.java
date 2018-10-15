@@ -8,10 +8,12 @@ import com.yunche.loan.config.constant.LoanProcessEnum;
 import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.DateTimeFormatUtils;
+import com.yunche.loan.config.util.DateUtil;
 import com.yunche.loan.config.util.EventBusCenter;
 import com.yunche.loan.config.util.SessionUtils;
 import com.yunche.loan.domain.entity.*;
 import com.yunche.loan.domain.param.ApprovalParam;
+import com.yunche.loan.domain.vo.CalMoneyVO;
 import com.yunche.loan.domain.vo.LoanProcessLogVO;
 import com.yunche.loan.domain.vo.LoanRejectLogVO;
 import com.yunche.loan.domain.vo.TaskStateVO;
@@ -32,6 +34,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.*;
 
@@ -162,6 +165,23 @@ public class LoanProcessServiceImpl implements LoanProcessService {
     @Autowired
     private LoanProcessApprovalRollBackService loanProcessApprovalRollBackService;
 
+    @Autowired
+    private LoanProcessBridgeDOMapper loanProcessBridgeDOMapper;
+
+    @Autowired
+    private ThirdPartyFundBusinessDOMapper thirdPartyFundBusinessDOMapper;
+
+    @Autowired
+    private ConfThirdPartyMoneyDOMapper confThirdPartyMoneyDOMapper;
+
+    @Autowired
+    private BankLendRecordDOMapper bankLendRecordDOMapper;
+
+    @Autowired
+    private FinancialProductDOMapper financialProductDOMapper;
+
+    @Autowired
+    private ConfLoanApplyDOMapper confLoanApplyDOMapper;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -242,7 +262,6 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         if (actionIsRollBack(approval.getAction())) {
             return loanProcessApprovalRollBackService.execRollBackTask(approval, loanOrderDO, loanProcessDO);
         }
-
 
         ////////////////////////////////////////// ↑↑↑↑↑ 特殊处理  ↑↑↑↑↑ ////////////////////////////////////////////////
 
@@ -3179,6 +3198,70 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
         // 附带任务-[金融方案修改-审核]
         doAttachTask_FinancialSchemeModifyApplyReview(approval, loanProcessDO);
+
+        doAttachTask_BankLendRecord(approval, loanOrderDO);
+
+        doAttachTask_loanApply(approval,loanOrderDO);
+    }
+    //1大于，2小于，3大于等于，4小于等于
+    public void compardNum(String flag,BigDecimal now,BigDecimal data,String reason){
+        int i=0;
+        i++;
+        if("1".equals(flag)){
+            if(now.compareTo(data) == -1){
+                throw new BizException(reason+"不能小于等于"+data);
+            }
+        }else if("2".equals(flag)){
+            if(now.compareTo(data) == 1){
+                throw new BizException(reason+"不能大于等于"+data);
+            }
+        }else if("3".equals(flag)){
+            if(now.compareTo(data) == -1){
+                throw new BizException(reason+"不能小于"+data);
+            }
+        }else if("4".equals(flag)){
+            if(now.compareTo(data) == 1){
+                throw new BizException(reason+"不能大于"+data);
+            }
+        }
+    }
+    /**
+     * 贷款申请校验1大于，2小于，3大于等于，4小于等于
+     */
+    private void doAttachTask_loanApply(ApprovalParam approval, LoanOrderDO loanOrderDO) {
+        if (LOAN_APPLY.getCode().equals(approval.getTaskDefinitionKey()) && ACTION_PASS.equals(approval.getAction())) {
+            Map map = financialProductDOMapper.selectProductInfoByOrderId(loanOrderDO.getId());
+            Long loanFinancialPlanId = loanOrderDOMapper.getLoanFinancialPlanIdById(loanOrderDO.getId());
+            LoanFinancialPlanDO loanFinancialPlanDO = loanFinancialPlanDOMapper.selectByPrimaryKey(loanFinancialPlanId);
+            //金融手续费
+            BigDecimal financialServiceFee = loanFinancialPlanDO.getBankPeriodPrincipal().subtract(loanFinancialPlanDO.getLoanAmount());
+            //首付比例
+            BigDecimal downPaymentRatio = loanFinancialPlanDO.getDownPaymentRatio();
+            //贷款比例
+            BigDecimal loanRate = loanFinancialPlanDO.getLoanAmount().divide(loanFinancialPlanDO.getCarPrice(),2,BigDecimal.ROUND_HALF_UP);
+            //银行分期比例
+            BigDecimal stagingRatio = (BigDecimal) map.get("stagingRatio");
+            LoanBaseInfoDO loanBaseInfoDO = loanBaseInfoDOMapper.selectByPrimaryKey(loanOrderDO.getLoanBaseInfoId());
+            String bankName = loanBaseInfoDO.getBank();
+            LoanCarInfoDO loanCarInfoDO = loanCarInfoDOMapper.selectByPrimaryKey(loanOrderDO.getLoanCarInfoId());
+            int carType = loanCarInfoDO.getCarType();
+            ConfLoanApplyDOKey confLoanApplyDOKey = new ConfLoanApplyDOKey();
+            confLoanApplyDOKey.setBank(bankName);
+            confLoanApplyDOKey.setCar_type(carType);
+            ConfLoanApplyDO confLoanApplyDO = confLoanApplyDOMapper.selectByPrimaryKey(confLoanApplyDOKey);
+            if(confLoanApplyDO.getDown_payment_ratio() !=null &&confLoanApplyDO.getDown_payment_ratio_compare() !=null){
+                compardNum(confLoanApplyDO.getDown_payment_ratio_compare(),downPaymentRatio,confLoanApplyDO.getDown_payment_ratio(),"首付比例");
+            }
+            if(confLoanApplyDO.getFinancial_service_fee() !=null && confLoanApplyDO.getFinancial_service_fee_compard() !=null){
+                compardNum(confLoanApplyDO.getFinancial_service_fee_compard(),financialServiceFee.divide(new BigDecimal("10000")),confLoanApplyDO.getFinancial_service_fee(),"金融手续费");
+            }
+            if(confLoanApplyDO.getLoan_ratio() !=null && confLoanApplyDO.getLoan_ratio_compare() !=null){
+                compardNum(confLoanApplyDO.getLoan_ratio_compare(),loanRate,confLoanApplyDO.getLoan_ratio().divide(new BigDecimal("100")),"贷款比例");
+            }
+            if(confLoanApplyDO.getStaging_ratio() !=null && confLoanApplyDO.getStaging_ratio_compard() !=null){
+                compardNum(confLoanApplyDO.getStaging_ratio_compard(),stagingRatio,confLoanApplyDO.getStaging_ratio(),"银行分期比例");
+            }
+        }
     }
 
     /**
@@ -3221,17 +3304,76 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             LoanBaseInfoDO loanBaseInfoDO = getLoanBaseInfoDO(loanOrderDO.getLoanBaseInfoId());
             if (BANK_NAME_ICBC_HangZhou_City_Station_Branch.equals(loanBaseInfoDO.getBank())) {
 
-                Long startProcessId = loanProcessBridgeService.startProcess(approval.getOrderId());
+                LoanProcessBridgeDO loanProcessBridgeDO = loanProcessBridgeDOMapper.selectByOrderId(loanOrderDO.getId());
 
-                // 绑定当前流程到金投行
-                ConfThirdRealBridgeProcessDO thirdRealBridgeProcessDO = new ConfThirdRealBridgeProcessDO();
-                thirdRealBridgeProcessDO.setBridgeProcessId(startProcessId);
-                thirdRealBridgeProcessDO.setConfThirdPartyId(IDict.K_CONF_THIRD_PARTY.K_JTH);
-                int insertCount = confThirdRealBridgeProcessDOMapper.insert(thirdRealBridgeProcessDO);
-                Preconditions.checkArgument(insertCount > 0, "插入失败");
+                if(loanProcessBridgeDO == null){
+                    Long startProcessId = loanProcessBridgeService.startProcess(approval.getOrderId());
 
+                    // 绑定当前流程到金投行
+                    ConfThirdRealBridgeProcessDO thirdRealBridgeProcessDO = new ConfThirdRealBridgeProcessDO();
+                    thirdRealBridgeProcessDO.setBridgeProcessId(startProcessId);
+                    thirdRealBridgeProcessDO.setConfThirdPartyId(IDict.K_CONF_THIRD_PARTY.K_JTH);
+                    int insertCount = confThirdRealBridgeProcessDOMapper.insert(thirdRealBridgeProcessDO);
+                    Preconditions.checkArgument(insertCount > 0, "插入失败");
+                }
             }
         }
+    }
+    /**
+     * 附带任务-银行打款更新进投行还款
+     */
+    private void doAttachTask_BankLendRecord(ApprovalParam approval, LoanOrderDO loanOrderDO) {
+        if (BANK_LEND_RECORD.getCode().equals(approval.getTaskDefinitionKey()) && ACTION_PASS.equals(approval.getAction())) {
+            LoanBaseInfoDO loanBaseInfoDO = getLoanBaseInfoDO(loanOrderDO.getLoanBaseInfoId());
+            if (BANK_NAME_ICBC_HangZhou_City_Station_Branch.equals(loanBaseInfoDO.getBank())) {
+                LoanProcessBridgeDO loanProcessBridgeDO = loanProcessBridgeDOMapper.selectByOrderId(loanOrderDO.getId());
+                if(loanProcessBridgeDO != null) {
+                    if (loanProcessBridgeDO.getBridgeRepayRecord() == 2) {
+                        CalMoneyVO calMoneyVO = calBankLendRecord(loanProcessBridgeDO.getId(), loanProcessBridgeDO.getOrderId());
+                        thirdPartyFundBusinessDOMapper.updateInfo(loanOrderDO.getId(), DateUtil.getDate10(calMoneyVO.getBankDate()), new BigDecimal(calMoneyVO.getInterest()), new BigDecimal(calMoneyVO.getPoundage()));
+                    }
+                }
+            }
+        }
+
+    }
+    public CalMoneyVO calBankLendRecord(Long bridgeProcessId,Long orderId){
+        CalMoneyVO calMoneyVO = new CalMoneyVO();
+        BigDecimal yearRate ;
+        BigDecimal singleRate ;
+        BigDecimal lend_amount;
+        Date lendDate;
+        Date repayDate;
+        int timeNum;
+
+        Long conf_third_party_id ;
+        ConfThirdRealBridgeProcessDO confThirdRealBridgeProcessDO = confThirdRealBridgeProcessDOMapper.selectByPrimaryKey(bridgeProcessId);
+        if(confThirdRealBridgeProcessDO !=null){
+            conf_third_party_id = confThirdRealBridgeProcessDO.getConfThirdPartyId();
+            ConfThirdPartyMoneyDO confThirdPartyMoneyDO = confThirdPartyMoneyDOMapper.selectByPrimaryKey(conf_third_party_id);
+            yearRate = confThirdPartyMoneyDO.getYearRate();
+            singleRate = confThirdPartyMoneyDO.getSingleRate();
+            ThirdPartyFundBusinessDO thirdPartyFundBusinessDO = thirdPartyFundBusinessDOMapper.selectByPrimaryKey(bridgeProcessId);
+            lendDate = thirdPartyFundBusinessDO.getLendDate();
+            BankLendRecordDO bankLendRecordDO = bankLendRecordDOMapper.selectByLoanOrder(orderId);
+            repayDate = bankLendRecordDO.getLendDate();
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            if(bankLendRecordDO !=null){
+                if(repayDate  != null){
+
+                    Calendar c = Calendar.getInstance();
+                    c.setTime(bankLendRecordDO.getLendDate());
+                    c.add(Calendar.DAY_OF_MONTH, 1);
+                    repayDate = c.getTime();
+                }
+            }
+            timeNum=(int)((repayDate.getTime()-lendDate.getTime())/(1000*3600*24));
+            lend_amount = thirdPartyFundBusinessDO.getLendAmount();
+            calMoneyVO.setInterest(String.valueOf(yearRate.divide(BigDecimal.valueOf(100)).multiply(lend_amount).multiply(BigDecimal.valueOf(timeNum)).divide(BigDecimal.valueOf(365),2,BigDecimal.ROUND_HALF_UP)));
+            calMoneyVO.setPoundage(String.valueOf(singleRate.divide(BigDecimal.valueOf(100)).multiply(lend_amount).multiply(BigDecimal.valueOf(timeNum)).divide(BigDecimal.valueOf(365),2,BigDecimal.ROUND_HALF_UP)));
+            calMoneyVO.setBankDate(sdf.format(repayDate));
+        }
+        return calMoneyVO;
     }
 
     /**

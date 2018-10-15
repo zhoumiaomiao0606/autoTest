@@ -1394,9 +1394,9 @@
         select
         customer.`name`           				AS name,
         customer.id_card          				AS idCard,
-        fund.lend_date            				AS lendDate,
-        record.lend_date									AS bankLendDate,
-        fund.repay_date           				AS repayDate,
+        DATE_FORMAT(fund.lend_date , '%Y-%m-%d' )           				AS lendDate,
+        DATE_FORMAT(record.lend_date, '%Y-%m-%d' )									AS bankLendDate,
+        DATE_FORMAT(fund.repay_date, '%Y-%m-%d' )           				AS repayDate,
         datediff( DATE_FORMAT( fund.repay_date, '%Y-%m-%d' ), DATE_FORMAT( fund.lend_date, '%Y-%m-%d' ) ) AS differTime,
         remit.remit_amount        				AS remitAmount,
         financial.bank_period_principal   AS  bankPeriodPrincipal,

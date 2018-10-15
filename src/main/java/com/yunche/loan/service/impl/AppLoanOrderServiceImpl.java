@@ -415,6 +415,14 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
             loanFinancialPlanVO.setCategorySuperior((String) map.get("categorySuperior"));
             loanFinancialPlanVO.setBankRate((BigDecimal) map.get("bankRate"));
             loanFinancialPlanVO.setStagingRatio((BigDecimal) map.get("stagingRatio"));
+            if(loanFinancialPlanDO !=null) {
+                if (loanFinancialPlanDO.getBankPeriodPrincipal() != null && loanFinancialPlanDO.getLoanAmount() != null) {
+                    loanFinancialPlanVO.setFinancialServiceFee(String.valueOf(loanFinancialPlanDO.getBankPeriodPrincipal().subtract(loanFinancialPlanDO.getLoanAmount())));
+                }
+                if (loanFinancialPlanDO.getLoanAmount() != null && loanFinancialPlanDO.getCarPrice() != null) {
+                    loanFinancialPlanVO.setLoanRate(String.valueOf(loanFinancialPlanDO.getLoanAmount().divide(loanFinancialPlanDO.getCarPrice(),2,BigDecimal.ROUND_HALF_UP)));
+                }
+            }
         }
 
         return ResultBean.ofSuccess(loanFinancialPlanVO);

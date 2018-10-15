@@ -135,7 +135,7 @@ public class AuxiliaryServiceImpl implements AuxiliaryService {
                                 }
 
                             } else {
-                                throw new BizException("第三方该gps信息以绑定用户");
+                                throw new BizException("第三方该gps信息以绑定用户或GPS未激活");
                             }
                         }
                         if (falg) {
