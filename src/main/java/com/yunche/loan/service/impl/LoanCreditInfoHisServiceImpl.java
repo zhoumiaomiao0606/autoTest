@@ -370,6 +370,7 @@ public class LoanCreditInfoHisServiceImpl implements LoanCreditInfoHisService {
      * @return
      */
     private List<LoanCustomerDO> filterCustomers(List<LoanCustomerDO> customers, Byte creditType, boolean checkFirst) {
+        Preconditions.checkNotNull(creditType, "征信打回类型不能为空");
 
         // 需要校验是否第一次查询
         if (checkFirst) {
