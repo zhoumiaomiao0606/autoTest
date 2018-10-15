@@ -3,6 +3,7 @@ package com.yunche.loan.web.controller.ext;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.param.CustomerInfoByCustomerNameParam;
 import com.yunche.loan.domain.param.CustomersLoanFinanceInfoByPartnerParam;
+import com.yunche.loan.domain.param.RefundOrderInfoByPartnerParam;
 import com.yunche.loan.service.CustomersLoanFinanceInfoByPartnerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -54,4 +55,12 @@ public class FinancialSystemExtController {
     {
         return customersLoanFinanceInfoByPartnerservice.getCustomerInfoByCustomerName(customerInfoByCustomerNameParam);
     }
+
+    //根据合伙人获取列表信息----退单未返款
+    @PostMapping("/refundOrderInfoByPartner")
+    public ResultBean selectRefundOrderInfoByPartner(@RequestBody RefundOrderInfoByPartnerParam refundOrderInfoByPartnerParam)
+    {
+        return customersLoanFinanceInfoByPartnerservice.selectRefundOrderInfoByPartner(refundOrderInfoByPartnerParam);
+    }
+
 }

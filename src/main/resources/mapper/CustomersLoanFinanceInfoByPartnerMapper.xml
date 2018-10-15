@@ -222,4 +222,32 @@ FROM
 
 
     </select>
+
+    <select id="selectRefundOrderInfoByPartner" parameterType="java.lang.Long" resultType="com.yunche.loan.domain.vo.RefundOrderInfoByPartnerVO" >
+          SELECT
+          customer.NAME AS customerName,
+                  customer.id_card as customerCardId,
+          				customer.mobile as customerPhone,
+          				 loan_financial_plan.bank_period_principal as financialBankPeriodPrincipal,
+          				 loan_refund_aply.refund_date as refundOrderDate,
+          				 remit_details.remit_time as remitDate,
+           bank_file_list_record.in_guarantee_balance as inGuaranteeBalance
+          FROM
+          (
+          SELECT
+          order_id,max(id) AS loan_refund_aply_id
+          FROM loan_refund_aply
+          WHERE status = 1
+          GROUP BY order_id
+          ) tab
+          LEFT JOIN loan_refund_aply ON tab.order_id = loan_refund_aply.order_id AND tab.loan_refund_aply_id = loan_refund_aply.id
+          LEFT JOIN loan_order orders ON tab.order_id = orders.id
+          left join remit_details on orders.remit_details_id = remit_details.id
+           LEFT JOIN loan_customer customer ON orders.loan_customer_id = customer.id
+           LEFT JOIN loan_base_info ON orders.loan_base_info_id = loan_base_info.id
+           LEFT JOIN loan_financial_plan ON orders.loan_financial_plan_id = loan_financial_plan.id
+          WHERE  loan_base_info.partner_id = #{partnerId}
+
+
+    </select>
 </mapper>

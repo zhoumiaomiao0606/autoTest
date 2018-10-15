@@ -27,4 +27,6 @@ public interface CustomersLoanFinanceInfoByPartnerMapper
     List<OrderByCustomerIdVO> getOrderByCustomerId(Long customerId);
 
     List<CustomerInfoForFinanceSys> getCustomerInfoByCustomerName(CustomerInfoByCustomerNameParam customerInfoByCustomerNameParam);
+
+    List<RefundOrderInfoByPartnerVO> selectRefundOrderInfoByPartner(Long partnerId);
 }

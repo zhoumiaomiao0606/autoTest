@@ -10,4 +10,6 @@ public class TaskDistributionParam {
 
     @NotBlank
     private String taskKey;
+
+    private Long orderId;
 }

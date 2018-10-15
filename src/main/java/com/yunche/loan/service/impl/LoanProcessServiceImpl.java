@@ -2628,6 +2628,12 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             case 5:
                 actionText = "反审";
                 break;
+            case 6:
+                actionText = "领取";
+                break;
+            case 7:
+                actionText = "取消领取";
+                break;
             default:
                 actionText = "-";
         }
