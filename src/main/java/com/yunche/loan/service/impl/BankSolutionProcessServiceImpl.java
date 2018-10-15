@@ -144,7 +144,9 @@ public class BankSolutionProcessServiceImpl implements BankSolutionProcessServic
             LoanCreditInfoDO up = new LoanCreditInfoDO();
             up.setCustomerId(D.getCustomerId());
             up.setType(CREDIT_TYPE_BANK);
-            up.setResult(CreditEnum.getValueByKey(applyCreditCallback.getReq().getResult()));
+            if (bankNoByCusId(D.getCustomerId())) {
+                up.setResult(CreditEnum.getValueByKey(applyCreditCallback.getReq().getResult()));
+            }
             loanCreditInfoService.save(up);
 
 //            List<LoanCreditInfoDO> loanCreditInfoDOS = loanCreditInfoDOMapper.getByCustomerIdAndType(D.getCustomerId(), new Byte("1"));
@@ -176,7 +178,9 @@ public class BankSolutionProcessServiceImpl implements BankSolutionProcessServic
             LoanCreditInfoDO up = new LoanCreditInfoDO();
             up.setCustomerId(D.getCustomerId());
             up.setType(CREDIT_TYPE_BANK);
-            up.setResult(CreditEnum.getValueByKey(applyCreditCallback.getReq().getResult()));
+            if (bankNoByCusId(D.getCustomerId())) {
+                up.setResult(CreditEnum.getValueByKey(applyCreditCallback.getReq().getResult()));
+            }
             loanCreditInfoService.save(up);
 
 //            List<LoanCreditInfoDO> loanCreditInfoDOS = loanCreditInfoDOMapper.getByCustomerIdAndType(D.getCustomerId(), new Byte("1"));
@@ -227,7 +231,9 @@ public class BankSolutionProcessServiceImpl implements BankSolutionProcessServic
             LoanCreditInfoDO up = new LoanCreditInfoDO();
             up.setCustomerId(D.getCustomerId());
             up.setType(CREDIT_TYPE_BANK);
-            up.setResult(CreditEnum.getValueByKey(applyCreditCallback.getReq().getResult()));
+            if (bankNoByCusId(D.getCustomerId())) {
+                up.setResult(CreditEnum.getValueByKey(applyCreditCallback.getReq().getResult()));
+            }
             loanCreditInfoService.save(up);
 
 
