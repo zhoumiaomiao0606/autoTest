@@ -139,6 +139,8 @@ public class LoanFinancialPlanServiceImpl implements LoanFinancialPlanService {
             loanFinancialPlanVO.setStagingRatio(calcParamVO.getStagingRatio());
             //金融服务费 ：贷款金额
             loanFinancialPlanVO.setLoanInterest(calcParamVO.getLoanInterest());
+
+            loanFinancialPlanVO.setLoanRate(String.valueOf(loanFinancialPlanParam.getLoanAmount().multiply(new BigDecimal("100")).divide(loanFinancialPlanParam.getCarPrice(),2,BigDecimal.ROUND_HALF_UP)));
         }
 
         return ResultBean.ofSuccess(loanFinancialPlanVO, "计算成功");
@@ -171,7 +173,7 @@ public class LoanFinancialPlanServiceImpl implements LoanFinancialPlanService {
                     loanFinancialPlanVO.setFinancialServiceFee(String.valueOf(loanFinancialPlanDO.getBankPeriodPrincipal().subtract(loanFinancialPlanDO.getLoanAmount())));
                 }
                 if (loanFinancialPlanDO.getLoanAmount() != null && loanFinancialPlanDO.getCarPrice() != null) {
-                    loanFinancialPlanVO.setLoanRate(String.valueOf(loanFinancialPlanDO.getLoanAmount().divide(loanFinancialPlanDO.getCarPrice(),2,BigDecimal.ROUND_HALF_UP)));
+                    loanFinancialPlanVO.setLoanRate(String.valueOf(loanFinancialPlanDO.getLoanAmount().multiply(new BigDecimal("100")).divide(loanFinancialPlanDO.getCarPrice(),2,BigDecimal.ROUND_HALF_UP)));
                 }
             }
         }

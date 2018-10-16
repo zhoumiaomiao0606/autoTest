@@ -423,7 +423,7 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
                     loanFinancialPlanVO.setFinancialServiceFee(String.valueOf(loanFinancialPlanDO.getBankPeriodPrincipal().subtract(loanFinancialPlanDO.getLoanAmount())));
                 }
                 if (loanFinancialPlanDO.getLoanAmount() != null && loanFinancialPlanDO.getCarPrice() != null) {
-                    loanFinancialPlanVO.setLoanRate(String.valueOf(loanFinancialPlanDO.getLoanAmount().divide(loanFinancialPlanDO.getCarPrice(),2,BigDecimal.ROUND_HALF_UP)));
+                    loanFinancialPlanVO.setLoanRate(String.valueOf(loanFinancialPlanDO.getLoanAmount().multiply(new BigDecimal("100")).divide(loanFinancialPlanDO.getCarPrice(),2,BigDecimal.ROUND_HALF_UP)));
                 }
             }
         }
@@ -511,6 +511,7 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
         AppLoanFinancialPlanVO appLoanFinancialPlanVO = new AppLoanFinancialPlanVO();
         LoanFinancialPlanVO loanFinancialPlanVO = calcResult.getData();
         if (null != loanFinancialPlanVO) {
+            loanFinancialPlanVO.setLoanRate(String.valueOf(loanFinancialPlanParam.getLoanAmount().multiply(new BigDecimal("100")).divide(loanFinancialPlanParam.getCarPrice(),2,BigDecimal.ROUND_HALF_UP)));
             BeanUtils.copyProperties(loanFinancialPlanVO, appLoanFinancialPlanVO);
         }
 
