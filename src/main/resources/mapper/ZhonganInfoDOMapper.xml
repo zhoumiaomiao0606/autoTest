@@ -774,6 +774,7 @@
         task_definition_key = "usertask_bank_credit_record"
         GROUP BY order_id ) d ON d.id = z.id
         ) log ON log.order_id = b.id
+        left join loan_credit_info credit on credit.customer_id = d.id and credit.type =1
         WHERE
         a.order_status !=3 and d.cust_type = 1
         and a.bank_credit_record = 1
