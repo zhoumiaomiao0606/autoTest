@@ -3502,6 +3502,9 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             }
             timeNum = (int) ((repayDate.getTime() - lendDate.getTime()) / (1000 * 3600 * 24));
             lend_amount = thirdPartyFundBusinessDO.getLendAmount();
+            if(lend_amount !=null){
+                lend_amount = new BigDecimal("0.00");
+            }
             calMoneyVO.setInterest(String.valueOf(yearRate.divide(BigDecimal.valueOf(100)).multiply(lend_amount).multiply(BigDecimal.valueOf(timeNum)).divide(BigDecimal.valueOf(365), 2, BigDecimal.ROUND_HALF_UP)));
             calMoneyVO.setPoundage(String.valueOf(singleRate.divide(BigDecimal.valueOf(100)).multiply(lend_amount).multiply(BigDecimal.valueOf(timeNum)).divide(BigDecimal.valueOf(365), 2, BigDecimal.ROUND_HALF_UP)));
             calMoneyVO.setBankDate(sdf.format(repayDate));
