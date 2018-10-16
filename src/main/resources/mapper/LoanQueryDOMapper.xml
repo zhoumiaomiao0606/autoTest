@@ -688,6 +688,8 @@
 
       from (select * from loan_order where id = #{orderId,jdbcType=BIGINT}) main_order
       left join loan_customer customer on main_order.loan_customer_id = customer.principal_cust_id and cust_type !=0
+      where  customer.status !=1
+
     </select>
 
     <!--打款信息-->
