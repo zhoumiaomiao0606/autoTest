@@ -304,7 +304,7 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
         ResultBean<Void> fileResultBean = loanFileService.updateOrInsertByCustomerIdAndUploadType(resultBean.getData(), customerParam.getFiles(), UPLOAD_TYPE_NORMAL);
         Preconditions.checkArgument(fileResultBean.getSuccess(), fileResultBean.getMsg());
 
-        // 增信增补打回状态编辑
+        // 增信增补自动打回状态编辑
         enable(String.valueOf(resultBean.getData()), CREDIT_SUPPLEMENT);
 
         return ResultBean.ofSuccess(resultBean.getData(), "创建关联人成功");
