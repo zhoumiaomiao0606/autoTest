@@ -95,7 +95,7 @@ public class JinTouHangAccommodationApplyController {
     计算费用
      */
     @GetMapping(value = "/calmoney")
-    ResultBean calMoney(@RequestParam("bridgeProcessId") Long bridgeProcessId,@RequestParam("orderId") Long orderId,@RequestParam(" ")String repayDate) {
+    ResultBean calMoney(@RequestParam("bridgeProcessId") Long bridgeProcessId,@RequestParam("orderId") Long orderId,@RequestParam("repayDate")String repayDate) {
         return accommodationApplyService.calMoney(bridgeProcessId,orderId,repayDate);
     }
 
