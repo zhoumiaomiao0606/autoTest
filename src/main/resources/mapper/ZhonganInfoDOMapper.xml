@@ -751,7 +751,12 @@
         e.name AS eName,
         f.name AS pName,
         '车贷' AS businessVariety,
-        '鑫宝行' AS submitOrganization
+        '鑫宝行' AS submitOrganization,
+        case when credit.result = 0 then '不通过'
+        when credit.result = 1 then '通过'
+        when credit.result = 2 then '关注' end AS bnakResult,
+        (select create_time from loan_process_log where task_definition_key = "usertask_credit_apply" and order_id = a.order_id order by id desc LIMIT 1) as creditApplyTime
+
         from
         loan_process a
         LEFT JOIN loan_order b ON a.order_id = b.id

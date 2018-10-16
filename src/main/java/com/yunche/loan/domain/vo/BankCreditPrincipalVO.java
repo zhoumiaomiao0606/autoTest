@@ -15,4 +15,6 @@ public class BankCreditPrincipalVO {
     private String pName;
     private String businessVariety;
 	private String submitOrganization;
+	private String bnakResult;
+	private String creditApplyTime;
 }
