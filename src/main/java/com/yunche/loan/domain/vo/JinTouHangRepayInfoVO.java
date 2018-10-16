@@ -4,12 +4,18 @@ import lombok.Data;
 
 @Data
 public class JinTouHangRepayInfoVO {
-    String lendDate;
-    String repayDate;
-    String remitAmount;
     String name;
     String idCard;
+    String lendDate;
+    String bankLendDate;
+    String repayDate;
+    String differTime;
+    String remitAmount;
     String bankPeriodPrincipal;
+    String differMoney;
     String repayType;
+    String interest;
+    String poundage;
     String repayRemark;
+
 }

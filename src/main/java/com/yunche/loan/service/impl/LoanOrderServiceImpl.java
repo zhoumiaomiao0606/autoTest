@@ -39,7 +39,6 @@ import static com.yunche.loan.config.constant.LoanCustomerConst.*;
 import static com.yunche.loan.config.constant.LoanCustomerEnum.*;
 import static com.yunche.loan.config.constant.LoanFileConst.UPLOAD_TYPE_NORMAL;
 import static com.yunche.loan.config.constant.LoanFileEnum.BANK_CREDIT_PIC;
-import static com.yunche.loan.config.constant.LoanOrderProcessConst.TASK_PROCESS_REJECT;
 import static com.yunche.loan.config.constant.LoanProcessEnum.CREDIT_APPLY;
 
 /**
@@ -237,16 +236,15 @@ public class LoanOrderServiceImpl implements LoanOrderService {
         if (StringUtils.isNotBlank(idCard)) {
 
             List<LoanCustomerDO> loanCustomerDOS = loanCustomerDOMapper.selectByIdCard(idCard);
-            //如果当前订单状态是 【打回】，则不用校验
-            LoanProcessDO loanProcessDO = loanProcessDOMapper.selectByPrimaryKey(orderId);
-            //如果是打回修改的单子则不用于校验14天
-            if (loanProcessDO != null && loanProcessDO.getCreditApply().equals(TASK_PROCESS_REJECT) && loanCustomerId != null) {
-                return;
-            }
+
 
             List<LoanOrderDO> collect = Lists.newArrayList();
 
             loanCustomerDOS.stream().filter(Objects::nonNull).forEach(e -> {
+
+
+
+
                 LoanOrderDO loanOrderDO = null;
                 //主贷人
                 if (PRINCIPAL_LENDER.getType().equals(e.getCustType())) {
@@ -260,26 +258,27 @@ public class LoanOrderServiceImpl implements LoanOrderService {
                         loanOrderDO = loanOrderDOMapper.selectByCustomerId(e.getPrincipalCustId());
                     }
 
-
+                //如果orderId 为null 第一次创建 需要判断是否重复
                 if (loanOrderDO != null) {
-                    LoanBaseInfoDO loanBaseInfoDO = loanBaseInfoDOMapper.selectByPrimaryKey(loanOrderDO.getLoanBaseInfoId());
-                    //同一个贷款银行需要校验征信
-                    if (bankName.equals(loanBaseInfoDO.getBank())) {
-                        //如果征信申请日志不为NULL
-                        LoanProcessLogDO loanProcessLog = loanProcessLogService.getLoanProcessLog(loanOrderDO.getId(), CREDIT_APPLY.getCode());
-                        if (loanProcessLog != null) {
-                            Date createTime = loanProcessLog.getCreateTime();
-                            Date currDate = new Date();
-                            int days = (int) ((currDate.getTime() - createTime.getTime()) / (1000 * 3600 * 24));
-                            if (days <= 14) {
-                                collect.add(loanOrderDO);
-                                return;
+
+                    if(orderId==null ||(orderId!=null && !loanOrderDO.getId().equals(orderId))){
+                        LoanBaseInfoDO loanBaseInfoDO = loanBaseInfoDOMapper.selectByPrimaryKey(loanOrderDO.getLoanBaseInfoId());
+                        //同一个贷款银行需要校验征信
+                        if (bankName.equals(loanBaseInfoDO.getBank())) {
+                            //如果征信申请日志不为NULL
+                            LoanProcessLogDO loanProcessLog = loanProcessLogService.getLoanProcessLog(loanOrderDO.getId(), CREDIT_APPLY.getCode());
+                            if (loanProcessLog != null) {
+                                Date createTime = loanProcessLog.getCreateTime();
+                                Date currDate = new Date();
+                                int days = (int) ((currDate.getTime() - createTime.getTime()) / (1000 * 3600 * 24));
+                                if (days <= 14) {
+                                    collect.add(loanOrderDO);
+                                    return;
+                                }
                             }
                         }
                     }
                 }
-
-
             });
 
 
@@ -549,7 +548,6 @@ public class LoanOrderServiceImpl implements LoanOrderService {
         OSSClient ossUnit=null;
         String resultName= null;
         String diskName =null;
-        List<CreditPicExportVO> exportVOS ;
         EmployeeDO loginUser = SessionUtils.getLoginUser();
         try {
 
@@ -569,6 +567,8 @@ public class LoanOrderServiceImpl implements LoanOrderService {
                         loanFileDOMapper.deleteByPrimaryKey(loanFileDO.getId());
                         if (!CollectionUtils.isEmpty(url)) {
                             return ResultBean.ofSuccess(url.get(0));
+                        }else{
+                            throw  new BizException("网络异常，请稍后重试");
                         }
                     }
                 }
@@ -576,8 +576,8 @@ public class LoanOrderServiceImpl implements LoanOrderService {
             }
 
 
-            diskName = name+ DateUtil.getTime();
-            final String localPath ="/tmp/"+diskName;
+            diskName = name+ DateUtil.getTime();//图片存放的文件夹名称
+            final String localPath ="/tmp/"+diskName;//文件夹绝对路径
 
             ossUnit = OSSUnit.getOSSClient();
             //查询符合要求的数据
@@ -602,7 +602,7 @@ public class LoanOrderServiceImpl implements LoanOrderService {
                 });
             }
 
-            resultName = diskName+".tar.gz";
+            resultName = diskName+".tar.gz";//压缩包文件名
 
             RuntimeUtils.exe("mkdir "+localPath);
             LOG.info("图片合成 开始时间："+start);

@@ -25,6 +25,8 @@ public class ConfThirdPartyMoneyQuery extends BaseQuery {
 
     private BigDecimal yearRate;
 
+    private BigDecimal singleRate;
+
     private BigDecimal singleCost;
 
     private Integer loanTime;

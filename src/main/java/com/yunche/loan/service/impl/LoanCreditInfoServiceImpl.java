@@ -12,10 +12,8 @@ import com.yunche.loan.domain.vo.BankInterfaceSerialReturnVO;
 import com.yunche.loan.domain.vo.CreditRecordVO;
 import com.yunche.loan.domain.vo.FileVO;
 import com.yunche.loan.domain.vo.LoanCreditInfoVO;
-import com.yunche.loan.mapper.LoanCreditInfoDOMapper;
-import com.yunche.loan.mapper.LoanCustomerDOMapper;
-import com.yunche.loan.mapper.LoanOrderDOMapper;
-import com.yunche.loan.mapper.LoanQueryDOMapper;
+import com.yunche.loan.mapper.*;
+import com.yunche.loan.service.LoanCreditInfoHisService;
 import com.yunche.loan.service.LoanCreditInfoService;
 import com.yunche.loan.service.LoanFileService;
 import com.yunche.loan.service.LoanQueryService;
@@ -53,6 +51,9 @@ public class LoanCreditInfoServiceImpl implements LoanCreditInfoService {
     private LoanOrderDOMapper loanOrderDOMapper;
 
     @Autowired
+    private LoanCreditInfoHisService loanCreditInfoHisService;
+
+    @Autowired
     private LoanFileService loanFileService;
 
     @Autowired
@@ -62,7 +63,11 @@ public class LoanCreditInfoServiceImpl implements LoanCreditInfoService {
     @Override
     public void save(LoanCreditInfoDO loanCreditInfoDO) {
 
+        // save
         create(loanCreditInfoDO);
+
+        // 记录征信结果到 征信his表
+        saveCreditInfoHis_CreditResult(loanCreditInfoDO);
     }
 
     @Override
@@ -93,6 +98,9 @@ public class LoanCreditInfoServiceImpl implements LoanCreditInfoService {
             Preconditions.checkArgument(count > 0, "征信结果录入失败");
         }
 
+        // 记录征信结果到 征信his表
+        saveCreditInfoHis_CreditResult(loanCreditInfoDO);
+
         return loanCreditInfoDO.getId();
     }
 
@@ -104,6 +112,9 @@ public class LoanCreditInfoServiceImpl implements LoanCreditInfoService {
         loanCreditInfoDO.setGmtModify(new Date());
         int count = loanCreditInfoDOMapper.updateByPrimaryKeySelective(loanCreditInfoDO);
         Preconditions.checkArgument(count > 0, "征信结果修改失败");
+
+        // 记录征信结果到 征信his表
+        saveCreditInfoHis_CreditResult(loanCreditInfoDO);
 
         return loanCreditInfoDO.getId();
     }
@@ -259,7 +270,7 @@ public class LoanCreditInfoServiceImpl implements LoanCreditInfoService {
                 }
             }
         } catch (Exception e) {
-            creditRecord.setBankCreditResponse("json解析异常,请联系管理员");
+            creditRecord.setBankCreditResponse("银行接口异常,请联系管理员");
         }
 
 
@@ -308,5 +319,22 @@ public class LoanCreditInfoServiceImpl implements LoanCreditInfoService {
         customerCreditRecord.setCreditResult(loanCreditInfoVO.getResult());
         customerCreditRecord.setCreditInfo(loanCreditInfoVO.getInfo());
         customerCreditRecord.setBankCreditStatus(loanQueryDOMapper.selectLastBankInterfaceSerialStatusByTransCode(customerCreditRecord.getCustomerId(), "applyCredit"));
+    }
+
+    /**
+     * 记录征信结果到 征信his表
+     *
+     * @param loanCreditInfoDO
+     */
+    private void saveCreditInfoHis_CreditResult(LoanCreditInfoDO loanCreditInfoDO) {
+
+        if (CREDIT_TYPE_BANK.equals(loanCreditInfoDO.getType())) {
+
+            loanCreditInfoHisService.saveCreditInfoHis_BankCreditResult(loanCreditInfoDO.getCustomerId(), loanCreditInfoDO.getResult());
+
+        } else if (CREDIT_TYPE_SOCIAL.equals(loanCreditInfoDO.getType())) {
+
+            loanCreditInfoHisService.saveCreditInfoHis_SocialCreditResult(loanCreditInfoDO.getCustomerId(), loanCreditInfoDO.getResult());
+        }
     }
 }

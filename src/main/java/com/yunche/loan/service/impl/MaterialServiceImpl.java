@@ -14,6 +14,7 @@ import com.yunche.loan.config.constant.LoanFileEnum;
 import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.BeanPlasticityUtills;
+import com.yunche.loan.config.util.GeneratorIDUtil;
 import com.yunche.loan.config.util.OSSUnit;
 import com.yunche.loan.domain.entity.*;
 import com.yunche.loan.domain.param.CarUpdateParam;
@@ -98,6 +99,9 @@ public class MaterialServiceImpl implements MaterialService {
     @Autowired
     private BaseAreaDOMapper baseAreaDOMapper;
 
+    @Autowired
+    private LoanTelephoneVerifyDOMapper loanTelephoneVerifyDOMapper;
+
 
     @Override
     public RecombinationVO detail(Long orderId) {
@@ -149,7 +153,18 @@ public class MaterialServiceImpl implements MaterialService {
         recombinationVO.setCredits(credits);
         recombinationVO.setLoanreview_msg(loanQueryDOMapper.selectUniversalApprovalInfo(LOAN_REVIEW.getCode(), orderId));
         recombinationVO.setBusinessreview_msg(loanQueryDOMapper.selectUniversalApprovalInfo(BUSINESS_REVIEW.getCode(), orderId));
-        recombinationVO.setTelephone_msg(loanQueryDOMapper.selectUniversalApprovalInfo(TELEPHONE_VERIFY.getCode(), orderId));
+
+        UniversalApprovalInfo universalApprovalInfo = loanQueryDOMapper.selectUniversalApprovalInfo(TELEPHONE_VERIFY.getCode(), orderId);
+        if (universalApprovalInfo !=null)
+        {
+            LoanTelephoneVerifyDO loanTelephoneVerifyDO = loanTelephoneVerifyDOMapper.selectByPrimaryKey(orderId);
+            if (loanTelephoneVerifyDO !=null)
+            {
+                universalApprovalInfo.setDecribe(loanTelephoneVerifyDO.getInfo());
+            }
+        }
+        recombinationVO.setTelephone_msg(universalApprovalInfo);
+
         recombinationVO.setSupplement(loanQueryService.selectUniversalInfoSupplementHistory(orderId));
         recombinationVO.setCustomers(customers);
         return recombinationVO;
@@ -716,11 +731,11 @@ public class MaterialServiceImpl implements MaterialService {
                     }
 
 
-                    if (preCheck(NAME_ENTRY, typeFile.getCustTypeName() + "/" + documentType + "/" + typeFile.getTypeName() + "/" + url.split("/")[url.split("/").length - 1])) {
-                        zos.putNextEntry(new ZipEntry(typeFile.getCustTypeName() + "/" + documentType + "/" + typeFile.getTypeName() + "/" + url.split("/")[url.split("/").length - 1]));
-                    } else {
-                        continue;
-                    }
+//                    if (preCheck(NAME_ENTRY, typeFile.getCustTypeName() + "/" + documentType + "/" + typeFile.getTypeName() + "/" + url.split("/")[url.split("/").length - 1])) {
+                        zos.putNextEntry(new ZipEntry(typeFile.getCustTypeName() + "/" + documentType + "/" + typeFile.getTypeName() + "/" +generateNewFileName(url.split("/")[url.split("/").length - 1])));
+//                    } else {
+//                        continue;
+//                    }
                     int bytesRead = 0;
                     // 向压缩文件中输出数据
                     while ((bytesRead = inputStream.read()) != -1) {
@@ -1146,5 +1161,22 @@ public class MaterialServiceImpl implements MaterialService {
             int count = loanFileDOMapper.updateByPrimaryKeySelective(e);
             Preconditions.checkArgument(count > 0, "更新失败");
         });
+    }
+
+    /**
+     * 文件重命名
+     * @param ossFileName
+     * @return
+     */
+    private String generateNewFileName(String ossFileName){
+        try{
+            String[] split = ossFileName.split("\\.");
+            String hz = split[split.length-1];//文件后缀
+            return  GeneratorIDUtil.execute()+"."+hz;
+        }catch (Exception e){
+            return ossFileName;
+        }
+
+
     }
 }

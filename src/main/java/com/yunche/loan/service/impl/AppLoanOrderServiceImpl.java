@@ -179,6 +179,9 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
     @Autowired
     private VideoFaceLogDOMapper videoFaceLogDOMapper;
 
+    @Autowired
+    private ConfLoanApplyDOMapper confLoanApplyDOMapper;
+
 
     @Override
     public ResultBean<AppInfoSupplementVO> infoSupplementDetail(Long supplementOrderId) {
@@ -415,6 +418,14 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
             loanFinancialPlanVO.setCategorySuperior((String) map.get("categorySuperior"));
             loanFinancialPlanVO.setBankRate((BigDecimal) map.get("bankRate"));
             loanFinancialPlanVO.setStagingRatio((BigDecimal) map.get("stagingRatio"));
+            if(loanFinancialPlanDO !=null) {
+                if (loanFinancialPlanDO.getBankPeriodPrincipal() != null && loanFinancialPlanDO.getLoanAmount() != null) {
+                    loanFinancialPlanVO.setFinancialServiceFee(String.valueOf(loanFinancialPlanDO.getBankPeriodPrincipal().subtract(loanFinancialPlanDO.getLoanAmount())));
+                }
+                if (loanFinancialPlanDO.getLoanAmount() != null && loanFinancialPlanDO.getCarPrice() != null) {
+                    loanFinancialPlanVO.setLoanRate(String.valueOf(loanFinancialPlanDO.getLoanAmount().divide(loanFinancialPlanDO.getCarPrice(),2,BigDecimal.ROUND_HALF_UP)));
+                }
+            }
         }
 
         return ResultBean.ofSuccess(loanFinancialPlanVO);
@@ -657,6 +668,27 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
                 businessInfoVO.setVehicleProperty(loanCarInfoDO.getVehicleProperty());
                 //留备用钥匙
                 businessInfoVO.setCarKey(loanCarInfoDO.getCarKey());
+
+                //待收钥匙
+                if (loanCarInfoDO.getCarKey() == 0 )
+                {
+                    businessInfoVO.setNeedCollectKey("不收");
+                }
+                else if (loanCarInfoDO.getCarKey() == 1)
+                {
+                    //查询是否已收钥匙
+                    LoanProcessLogDO loanProcessLogDO = loanCarInfoDOMapper.selectNeedCollectKey(orderId);
+                    if (loanProcessLogDO != null && loanProcessLogDO.getAction() == 1 )
+                    {
+                        businessInfoVO.setNeedCollectKey("已收");
+                    }else
+                        {
+                            businessInfoVO.setNeedCollectKey("待收");
+                        }
+
+
+                }
+
                 //业务来源
                 businessInfoVO.setBusinessSource(loanCarInfoDO.getBusinessSource());
                 //二手车初登日期
@@ -1237,6 +1269,7 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
         // convert
         LoanFinancialPlanDO loanFinancialPlanDO = new LoanFinancialPlanDO();
         BeanUtils.copyProperties(appLoanFinancialPlanParam, loanFinancialPlanDO);
+        doAttachTask_loanApply(appLoanFinancialPlanParam.getOrderId(),appLoanFinancialPlanParam);
         // insert
         ResultBean<Long> resultBean = loanFinancialPlanService.create(loanFinancialPlanDO);
         Preconditions.checkArgument(resultBean.getSuccess(), resultBean.getMsg());
@@ -1250,6 +1283,65 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
 
         return resultBean;
     }
+    /**
+     * 贷款申请校验1大于，2小于，3大于等于，4小于等于
+     */
+    private void doAttachTask_loanApply( Long orderId,AppLoanFinancialPlanParam appLoanFinancialPlanParam) {
+            LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
+/*            Map map = financialProductDOMapper.selectProductInfoByOrderId(loanOrderDO.getId());
+            Long loanFinancialPlanId = loanOrderDOMapper.getLoanFinancialPlanIdById(loanOrderDO.getId());
+            LoanFinancialPlanDO loanFinancialPlanDO = loanFinancialPlanDOMapper.selectByPrimaryKey(loanFinancialPlanId);*/
+            //金融手续费
+            BigDecimal financialServiceFee = appLoanFinancialPlanParam.getBankPeriodPrincipal().subtract(appLoanFinancialPlanParam.getLoanAmount());
+            //首付比例
+            BigDecimal downPaymentRatio = appLoanFinancialPlanParam.getDownPaymentRatio();
+            //贷款比例
+            BigDecimal loanRate = appLoanFinancialPlanParam.getLoanAmount().divide(appLoanFinancialPlanParam.getCarPrice(),2,BigDecimal.ROUND_HALF_UP);
+            //银行分期比例
+            BigDecimal stagingRatio = appLoanFinancialPlanParam.getStagingRatio();
+            LoanBaseInfoDO loanBaseInfoDO = loanBaseInfoDOMapper.selectByPrimaryKey(loanOrderDO.getLoanBaseInfoId());
+            String bankName = loanBaseInfoDO.getBank();
+            LoanCarInfoDO loanCarInfoDO = loanCarInfoDOMapper.selectByPrimaryKey(loanOrderDO.getLoanCarInfoId());
+            int carType = loanCarInfoDO.getCarType();
+            ConfLoanApplyDOKey confLoanApplyDOKey = new ConfLoanApplyDOKey();
+            confLoanApplyDOKey.setBank(bankName);
+            confLoanApplyDOKey.setCar_type(carType);
+            ConfLoanApplyDO confLoanApplyDO = confLoanApplyDOMapper.selectByPrimaryKey(confLoanApplyDOKey);
+            if(confLoanApplyDO.getDown_payment_ratio() !=null &&confLoanApplyDO.getDown_payment_ratio_compare() !=null){
+                compardNum(confLoanApplyDO.getDown_payment_ratio_compare(),downPaymentRatio,confLoanApplyDO.getDown_payment_ratio(),"首付比例");
+            }
+            if(confLoanApplyDO.getFinancial_service_fee() !=null && confLoanApplyDO.getFinancial_service_fee_compard() !=null){
+                compardNum(confLoanApplyDO.getFinancial_service_fee_compard(),financialServiceFee.divide(new BigDecimal("10000")),confLoanApplyDO.getFinancial_service_fee(),"金融手续费");
+            }
+            if(confLoanApplyDO.getLoan_ratio() !=null && confLoanApplyDO.getLoan_ratio_compare() !=null){
+                compardNum(confLoanApplyDO.getLoan_ratio_compare(),loanRate,confLoanApplyDO.getLoan_ratio().divide(new BigDecimal("100")),"贷款比例");
+            }
+            if(confLoanApplyDO.getStaging_ratio() !=null && confLoanApplyDO.getStaging_ratio_compard() !=null){
+                compardNum(confLoanApplyDO.getStaging_ratio_compard(),stagingRatio,confLoanApplyDO.getStaging_ratio(),"银行分期比例");
+            }
+    }
+    //1大于，2小于，3大于等于，4小于等于
+    public void compardNum(String flag,BigDecimal now,BigDecimal data,String reason){
+        int i=0;
+        i++;
+        if("1".equals(flag)){
+            if(now.compareTo(data) == -1){
+                throw new BizException(reason+"不能小于等于"+data);
+            }
+        }else if("2".equals(flag)){
+            if(now.compareTo(data) == 1){
+                throw new BizException(reason+"不能大于等于"+data);
+            }
+        }else if("3".equals(flag)){
+            if(now.compareTo(data) == -1){
+                throw new BizException(reason+"不能小于"+data);
+            }
+        }else if("4".equals(flag)){
+            if(now.compareTo(data) == 1){
+                throw new BizException(reason+"不能大于"+data);
+            }
+        }
+    }
 
     /**
      * update贷款金融方案
@@ -1260,7 +1352,7 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
     @Transactional
     public ResultBean<Void> updateLoanFinancialPlan(AppLoanFinancialPlanParam appLoanFinancialPlanParam) {
         Preconditions.checkNotNull(appLoanFinancialPlanParam, "金融方案不能为空");
-
+        doAttachTask_loanApply(appLoanFinancialPlanParam.getOrderId(),appLoanFinancialPlanParam);
         // convert
         LoanFinancialPlanDO loanFinancialPlanDO = new LoanFinancialPlanDO();
         BeanUtils.copyProperties(appLoanFinancialPlanParam, loanFinancialPlanDO);

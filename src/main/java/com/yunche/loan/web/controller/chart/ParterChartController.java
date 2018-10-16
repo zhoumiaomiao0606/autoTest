@@ -45,7 +45,7 @@ public class ParterChartController
     * @Description:  当月提交了征信查询的订单客户
     */
     @PostMapping(value = "/creditApplyCustomerByMonthChart", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultBean creditApplyCustomerByMonthChart(@RequestBody @Validated CreditApplyCustomerByMonthChartParam param)
+    public ResultBean creditApplyCustomerByMonthChart(@RequestBody @Validated LoanApplyOrdersByMonthChartParam param)
     {
         return parterChartService.getCreditApplyCustomerByMonthChart(param);
     }
@@ -72,7 +72,7 @@ public class ParterChartController
     * @Description:  征信未通过、风控未通过、银行未通过，征信未通过
     */
     @PostMapping(value = "/ordersSuccessByMonthChart", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultBean loanApplyOrdersByMonthRemitDetailChart(@RequestBody @Validated OrdersSuccessByMonthChartParam param)
+    public ResultBean loanApplyOrdersByMonthRemitDetailChart(@RequestBody @Validated LoanApplyOrdersByMonthChartParam param)
     {
         return parterChartService.getOrdersSuccessByMonthChart(param);
     }

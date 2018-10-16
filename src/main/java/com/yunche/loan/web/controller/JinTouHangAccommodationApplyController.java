@@ -9,6 +9,8 @@ import org.springframework.http.MediaType;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
+
 /**
  * 金投行过桥处理
  */
@@ -82,6 +84,28 @@ public class JinTouHangAccommodationApplyController {
     //--------------------------金投行过桥处理------------------------
 
     //--------------------------金投行还款登记------------------------
+    /*
+    *查看还款记录信息
+     */
+    @GetMapping(value = "/calmoneydetail")
+    ResultBean calMoneyDetail(@RequestParam("bridgeProcessId") Long bridgeProcessId,@RequestParam("orderId") Long orderId,@RequestParam("repayDate")String repayDate,@RequestParam("flag")String flag) {
+        return accommodationApplyService.calMoneyDetail(bridgeProcessId,orderId,repayDate,flag);
+    }
+    /*
+    计算费用
+     */
+    @GetMapping(value = "/calmoney")
+    ResultBean calMoney(@RequestParam("bridgeProcessId") Long bridgeProcessId,@RequestParam("orderId") Long orderId,@RequestParam("repayDate")String repayDate) {
+        return accommodationApplyService.calMoney(bridgeProcessId,orderId,repayDate);
+    }
+
+    /*
+    判断是否有还款记录
+     */
+    @GetMapping(value = "/isreturn")
+    ResultBean isReturn(@RequestParam("bridgeProcessId") Long bridgeProcessId,@RequestParam("orderId") Long orderId) {
+        return accommodationApplyService.isReturn(bridgeProcessId,orderId);
+    }
 
     /**
      * 异常还款

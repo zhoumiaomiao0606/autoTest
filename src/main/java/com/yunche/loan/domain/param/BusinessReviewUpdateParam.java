@@ -11,7 +11,7 @@ public class BusinessReviewUpdateParam  {
     @NotBlank
     private String order_id;//订单号
     @NotBlank
-    private String service_fee;//服务费
+    private String service_fee;//服务费--公司收益
     @NotBlank
     private String apply_license_plate_deposit_fee;//上牌押金
     @NotBlank
@@ -43,11 +43,11 @@ public class BusinessReviewUpdateParam  {
     @NotBlank
     private String based_margin_fee_type;//基础保证金 1 打款内扣 2 返利内扣 3 实收
     @NotBlank
-    private String extra_fee;
+    private String extra_fee;//额外费用
     @NotBlank
     private String extra_fee_type;
     @NotBlank
-    private String other_fee;
+    private String other_fee;//其他费用
     @NotBlank
     private String other_fee_type;
     @NotBlank
@@ -63,5 +63,5 @@ public class BusinessReviewUpdateParam  {
     @NotBlank
     private String insurance_situation;//保险情况
     @NotBlank
-    private String rebate_not_deducted;
+    private String rebate_not_deducted;//返利不内扣
 }

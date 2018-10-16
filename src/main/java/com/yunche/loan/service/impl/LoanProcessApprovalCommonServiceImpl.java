@@ -50,9 +50,9 @@ public class LoanProcessApprovalCommonServiceImpl implements LoanProcessApproval
 
     private static final Logger logger = LoggerFactory.getLogger(LoanProcessApprovalCommonServiceImpl.class);
 
-    private static final Long AUTO_EMPLOYEE_ID = 878L;
+    public static final Long AUTO_EMPLOYEE_ID = 878L;
 
-    private static final String AUTO_EMPLOYEE_NAME = "自动任务";
+    public static final String AUTO_EMPLOYEE_NAME = "自动任务";
 
 
     @Autowired

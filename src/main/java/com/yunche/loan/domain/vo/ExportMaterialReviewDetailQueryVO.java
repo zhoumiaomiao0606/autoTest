@@ -31,7 +31,7 @@ public class ExportMaterialReviewDetailQueryVO
     //垫款日期
     private String remitdate;
 
-    //资料接收日期
+    //资料接收日期  ---合同资料合伙人至公司
     private String express_receive_date;
 
     //资料齐全日期

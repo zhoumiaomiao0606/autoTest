@@ -22,6 +22,7 @@ import com.yunche.loan.domain.param.ICBCApiCallbackParam;
 import com.yunche.loan.domain.vo.UniversalBankInterfaceFileSerialDO;
 import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.BankSolutionProcessService;
+import com.yunche.loan.service.LoanCreditInfoService;
 import com.yunche.loan.service.LoanProcessService;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -37,7 +38,7 @@ import java.util.List;
 
 @Service
 @Transactional
-public class BankSolutionProcessServiceImpl implements BankSolutionProcessService{
+public class BankSolutionProcessServiceImpl implements BankSolutionProcessService {
     private static final Logger logger = LoggerFactory.getLogger(BankSolutionProcessServiceImpl.class);
     @Resource
     SysConfig sysConfig;
@@ -64,6 +65,9 @@ public class BankSolutionProcessServiceImpl implements BankSolutionProcessServic
     private LoanCreditInfoDOMapper loanCreditInfoDOMapper;
 
     @Resource
+    private LoanCreditInfoService loanCreditInfoService;
+
+    @Resource
     private LoanProcessService loanProcessService;
 
     @Resource
@@ -75,19 +79,20 @@ public class BankSolutionProcessServiceImpl implements BankSolutionProcessServic
     @Resource
     private BankInterfaceFileSerialDOMapper bankInterfaceFileSerialDOMapper;
 
-    @Override
-    public String  fileDownload(String filesrc,String fileType) {
 
-        String returnKey=null;
+    @Override
+    public String fileDownload(String filesrc, String fileType) {
+
+        String returnKey = null;
         try {
-            boolean filedownload = icbcFeignFileDownLoad.filedownload(filesrc,fileType);
+            boolean filedownload = icbcFeignFileDownLoad.filedownload(filesrc, fileType);
             String serverRecvPath = sysConfig.getServerRecvPath();
-            serverRecvPath = serverRecvPath.replaceAll("FILETYPE",fileType);
-            String fileAndPath = FtpUtil.icbcDownload(serverRecvPath,DateUtil.getDate()+"_"+fileType+".txt");
+            serverRecvPath = serverRecvPath.replaceAll("FILETYPE", fileType);
+            String fileAndPath = FtpUtil.icbcDownload(serverRecvPath, DateUtil.getDate() + "_" + fileType + ".txt");
             OSSClient ossClient = OSSUnit.getOSSClient();
             String diskName = ossConfig.getDownLoadDiskName();
             File file = new File(fileAndPath);
-            OSSUnit.deleteFile(ossClient,ossConfig.getBucketName(),ossConfig.getDownLoadDiskName()+File.separator,file.getName());
+            OSSUnit.deleteFile(ossClient, ossConfig.getBucketName(), ossConfig.getDownLoadDiskName() + File.separator, file.getName());
             OSSUnit.uploadObject2OSS(ossClient, file, ossConfig.getBucketName(), ossConfig.getDownLoadDiskName() + File.separator);
             returnKey = diskName + File.separator + file.getName();
         } catch (Exception e) {
@@ -103,20 +108,20 @@ public class BankSolutionProcessServiceImpl implements BankSolutionProcessServic
         logger.info("征信查询回调===============================================================");
         violationUtil.violation(applyCreditCallback);
         //只有在非成功状态和退回的流水可以进行更新
-        if(!checkStatus(applyCreditCallback.getPub().getCmpseq())){
+        if (!checkStatus(applyCreditCallback.getPub().getCmpseq())) {
             return;
         }
 
         BankInterfaceSerialDO D = bankInterfaceSerialDOMapper.selectByPrimaryKey(applyCreditCallback.getPub().getCmpseq());
-        if(D == null){
+        if (D == null) {
             return;
         }
 
-        if(!sysConfig.getAssurerno().equals(applyCreditCallback.getPub().getAssurerno())){
+        if (!sysConfig.getAssurerno().equals(applyCreditCallback.getPub().getAssurerno())) {
             throw new BizException("保单号错误");
         }
 
-        if(!sysConfig.getPlatno().equals(applyCreditCallback.getPub().getPlatno())){
+        if (!sysConfig.getPlatno().equals(applyCreditCallback.getPub().getPlatno())) {
             throw new BizException("平台编号错误");
         }
 
@@ -127,57 +132,40 @@ public class BankSolutionProcessServiceImpl implements BankSolutionProcessServic
         099:退回，由于资料不全等原因退回
         */
 
-        logger.info("征信查询回调 状态 ==============================================================="+applyCreditCallback.getPub().getCmpseq()+"："+applyCreditCallback.getReq().getResult());
+        logger.info("征信查询回调 状态 ===============================================================" + applyCreditCallback.getPub().getCmpseq() + "：" + applyCreditCallback.getReq().getResult());
         BankInterfaceSerialDO bankInterfaceSerialDO = new BankInterfaceSerialDO();
         bankInterfaceSerialDO.setSerialNo(applyCreditCallback.getPub().getCmpseq());
-        if(IDict.K_RESULT.PASS.equals(applyCreditCallback.getReq().getResult())){
-            bankInterfaceSerialDO.setStatus(new Byte(IDict.K_JYZT.SUCCESS));
-            List<LoanCreditInfoDO>  loanCreditInfoDOS =  loanCreditInfoDOMapper.getByCustomerIdAndType(D.getCustomerId(),new Byte("1"));
 
-            if(CollectionUtils.isEmpty(loanCreditInfoDOS)){
-                LoanCreditInfoDO up = new LoanCreditInfoDO();
-                up.setCustomerId(D.getCustomerId());
-                if(bankNoByCusId(D.getCustomerId())){
-                    up.setResult(CreditEnum.getValueByKey(applyCreditCallback.getReq().getResult()));
-                }
-                up.setType(new Byte("1"));
-                up.setStatus(new Byte("0"));
-                up.setGmtCreate(new Date());
-                loanCreditInfoDOMapper.insertSelective(up);
-            }else {
-                LoanCreditInfoDO up = loanCreditInfoDOS.get(0);
-                up.setCustomerId(D.getCustomerId());
-                if(bankNoByCusId(D.getCustomerId())){
-                    up.setResult(CreditEnum.getValueByKey(applyCreditCallback.getReq().getResult()));
-                }
-                up.setGmtModify(new Date());
-                loanCreditInfoDOMapper.updateByPrimaryKeySelective(up);
+        if (IDict.K_RESULT.PASS.equals(applyCreditCallback.getReq().getResult())) {
+
+            bankInterfaceSerialDO.setStatus(new Byte(IDict.K_JYZT.SUCCESS));
+
+            LoanCreditInfoDO up = new LoanCreditInfoDO();
+            up.setCustomerId(D.getCustomerId());
+            if (bankNoByCusId1(D.getCustomerId())) {
+                up.setResult(CreditEnum.getValueByKey(applyCreditCallback.getReq().getResult()));
             }
-        }else if(IDict.K_RESULT.NOPASS.equals(applyCreditCallback.getReq().getResult())){
+            up.setType(new Byte("1"));
+            up.setStatus(new Byte("0"));
+            up.setGmtCreate(new Date());
+
+            loanCreditInfoService.save(up);
+
+        } else if (IDict.K_RESULT.NOPASS.equals(applyCreditCallback.getReq().getResult())) {
+
             bankInterfaceSerialDO.setStatus(new Byte(IDict.K_JYZT.SUCCESS_ERROR));
 
-            List<LoanCreditInfoDO>  loanCreditInfoDOS =  loanCreditInfoDOMapper.getByCustomerIdAndType(D.getCustomerId(),new Byte("1"));
-
-            if(CollectionUtils.isEmpty(loanCreditInfoDOS)){
-                LoanCreditInfoDO up = new LoanCreditInfoDO();
-                up.setCustomerId(D.getCustomerId());
-                if(bankNoByCusId(D.getCustomerId())){
-                    up.setResult(CreditEnum.getValueByKey(applyCreditCallback.getReq().getResult()));
-                }
-                up.setType(new Byte("1"));
-                up.setStatus(new Byte("0"));
-                up.setGmtCreate(new Date());
-                loanCreditInfoDOMapper.insertSelective(up);
-            }else {
-                LoanCreditInfoDO up = loanCreditInfoDOS.get(0);
-                up.setCustomerId(D.getCustomerId());
-                if(bankNoByCusId(D.getCustomerId())){
-                    up.setResult(CreditEnum.getValueByKey(applyCreditCallback.getReq().getResult()));
-                }
-                up.setGmtModify(new Date());
-                loanCreditInfoDOMapper.updateByPrimaryKeySelective(up);
+            LoanCreditInfoDO up = new LoanCreditInfoDO();
+            up.setCustomerId(D.getCustomerId());
+            if (bankNoByCusId1(D.getCustomerId())) {
+                up.setResult(CreditEnum.getValueByKey(applyCreditCallback.getReq().getResult()));
             }
-//
+            up.setType(new Byte("1"));
+            up.setStatus(new Byte("0"));
+            up.setGmtCreate(new Date());
+
+            loanCreditInfoService.save(up);
+
 //            logger.info("征信查询回调 自动打回开始 ==============================================================="+applyCreditCallback.getPub().getCmpseq()+"："+applyCreditCallback.getReq().getResult());
 //            try {
 //                ApprovalParam approvalParam = new ApprovalParam();
@@ -195,31 +183,22 @@ public class BankSolutionProcessServiceImpl implements BankSolutionProcessServic
 //            logger.info("征信查询回调 自动打回成功 ==============================================================="+applyCreditCallback.getPub().getCmpseq()+"："+applyCreditCallback.getReq().getResult());
 
 
-        }else if(IDict.K_RESULT.BACK.equals(applyCreditCallback.getReq().getResult())){
+        } else if (IDict.K_RESULT.BACK.equals(applyCreditCallback.getReq().getResult())) {
+
             bankInterfaceSerialDO.setStatus(new Byte(IDict.K_JYZT.BACK));
             bankInterfaceSerialDO.setRejectReason(applyCreditCallback.getReq().getNote());
 
-            List<LoanCreditInfoDO>  loanCreditInfoDOS =  loanCreditInfoDOMapper.getByCustomerIdAndType(D.getCustomerId(),new Byte("1"));
-
-            if(CollectionUtils.isEmpty(loanCreditInfoDOS)){
-                LoanCreditInfoDO up = new LoanCreditInfoDO();
-                up.setCustomerId(D.getCustomerId());
-                if(bankNoByCusId(D.getCustomerId())){
-                    up.setResult(CreditEnum.getValueByKey(applyCreditCallback.getReq().getResult()));
-                }
-                up.setType(new Byte("1"));
-                up.setStatus(new Byte("0"));
-                up.setGmtCreate(new Date());
-                loanCreditInfoDOMapper.insertSelective(up);
-            }else {
-                LoanCreditInfoDO up = loanCreditInfoDOS.get(0);
-                up.setCustomerId(D.getCustomerId());
-                if(bankNoByCusId(D.getCustomerId())){
-                    up.setResult(CreditEnum.getValueByKey(applyCreditCallback.getReq().getResult()));
-                }
-                up.setGmtModify(new Date());
-                loanCreditInfoDOMapper.updateByPrimaryKeySelective(up);
+            LoanCreditInfoDO up = new LoanCreditInfoDO();
+            up.setCustomerId(D.getCustomerId());
+            if (bankNoByCusId(D.getCustomerId())) {
+                up.setResult(CreditEnum.getValueByKey(applyCreditCallback.getReq().getResult()));
             }
+            up.setType(new Byte("1"));
+            up.setStatus(new Byte("0"));
+            up.setGmtCreate(new Date());
+
+            loanCreditInfoService.save(up);
+
 //            logger.info("征信查询回调 自动打回开始 ==============================================================="+applyCreditCallback.getPub().getCmpseq()+"："+applyCreditCallback.getReq().getResult());
 
 //            try {
@@ -235,7 +214,7 @@ public class BankSolutionProcessServiceImpl implements BankSolutionProcessServic
 //                logger.info("征信查询回调打回异常");
 //            }
 //            logger.info("征信查询回调 自动打回成功 ==============================================================="+applyCreditCallback.getPub().getCmpseq()+"："+applyCreditCallback.getReq().getResult());
-        }else{
+        } else {
             throw new BizException("未知错误");
         }
         bankInterfaceSerialDOMapper.updateByPrimaryKeySelective(bankInterfaceSerialDO);
@@ -255,18 +234,28 @@ public class BankSolutionProcessServiceImpl implements BankSolutionProcessServic
         V.setLeftamount(applyCreditCallback.getReq().getLeftAmount());
         V.setNote(applyCreditCallback.getReq().getNote());
 
-        if(DO == null){
+        if (DO == null) {
             bankCreditInfoDOMapper.insertSelective(V);
-        }else{
+        } else {
             bankCreditInfoDOMapper.updateByPrimaryKeySelective(V);
         }
 
         logger.info("存储数据 结束  ===============================================================");
     }
-    public boolean bankNoByCusId(Long cusId){
+
+    public boolean bankNoByCusId(Long cusId) {
         boolean flag = false;
         String bankName = loanCreditInfoDOMapper.bankNoByCusId(cusId);
-        if(!"中国工商银行杭州城站支行".equals(bankName)){
+        if (!"中国工商银行杭州城站支行".equals(bankName)) {
+            flag = true;
+        }
+        return flag;
+    }
+
+    public boolean bankNoByCusId1(Long cusId) {
+        boolean flag = false;
+        String bankName = loanCreditInfoDOMapper.bankNoByCusId(cusId);
+        if ((!"中国工商银行台州路桥支行".equals(bankName)) && (!"中国工商银行杭州城站支行".equals(bankName))) {
             flag = true;
         }
         return flag;
@@ -276,16 +265,16 @@ public class BankSolutionProcessServiceImpl implements BankSolutionProcessServic
     public void applyDiviGeneralCallback(ICBCApiCallbackParam.ApplyDiviGeneralCallback applyDiviGeneralCallback) {
         logger.info("分期退回回调开始===============================================================");
         violationUtil.violation(applyDiviGeneralCallback);
-        if(!checkStatus(applyDiviGeneralCallback.getPub().getCmpseq())){
+        if (!checkStatus(applyDiviGeneralCallback.getPub().getCmpseq())) {
             return;
         }
 
 
-        if(!sysConfig.getAssurerno().equals(applyDiviGeneralCallback.getPub().getAssurerno())){
+        if (!sysConfig.getAssurerno().equals(applyDiviGeneralCallback.getPub().getAssurerno())) {
             throw new BizException("保单号错误");
         }
 
-        if(!sysConfig.getPlatno().equals(applyDiviGeneralCallback.getPub().getPlatno())){
+        if (!sysConfig.getPlatno().equals(applyDiviGeneralCallback.getPub().getPlatno())) {
             throw new BizException("平台编号错误");
         }
 
@@ -302,15 +291,15 @@ public class BankSolutionProcessServiceImpl implements BankSolutionProcessServic
     public void multimediaUploadCallback(ICBCApiCallbackParam.MultimediaUploadCallback multimediaUploadCallback) {
         logger.info("多媒体退回回调开始===============================================================");
         violationUtil.violation(multimediaUploadCallback);
-        if(!checkStatus(multimediaUploadCallback.getPub().getCmpseq())){
+        if (!checkStatus(multimediaUploadCallback.getPub().getCmpseq())) {
             return;
         }
 
-        if(!sysConfig.getAssurerno().equals(multimediaUploadCallback.getPub().getAssurerno())){
+        if (!sysConfig.getAssurerno().equals(multimediaUploadCallback.getPub().getAssurerno())) {
             throw new BizException("保单号错误");
         }
 
-        if(!sysConfig.getPlatno().equals(multimediaUploadCallback.getPub().getPlatno())){
+        if (!sysConfig.getPlatno().equals(multimediaUploadCallback.getPub().getPlatno())) {
             throw new BizException("平台编号错误");
         }
 
@@ -328,20 +317,20 @@ public class BankSolutionProcessServiceImpl implements BankSolutionProcessServic
         logger.info("开卡退回回调开始===============================================================");
         violationUtil.violation(creditCardApplyCallback);
         //只有在非成功状态和退回的流水可以进行更新
-        if(!checkStatus(creditCardApplyCallback.getPub().getCmpseq())){
+        if (!checkStatus(creditCardApplyCallback.getPub().getCmpseq())) {
             return;
         }
 
         BankInterfaceSerialDO D = bankInterfaceSerialDOMapper.selectByPrimaryKey(creditCardApplyCallback.getPub().getCmpseq());
-        if(D == null){
+        if (D == null) {
             return;
         }
 
-        if(!sysConfig.getAssurerno().equals(creditCardApplyCallback.getPub().getAssurerno())){
+        if (!sysConfig.getAssurerno().equals(creditCardApplyCallback.getPub().getAssurerno())) {
             throw new BizException("保单号错误");
         }
 
-        if(!sysConfig.getPlatno().equals(creditCardApplyCallback.getPub().getPlatno())){
+        if (!sysConfig.getPlatno().equals(creditCardApplyCallback.getPub().getPlatno())) {
             throw new BizException("平台编号错误");
         }
 
@@ -357,34 +346,34 @@ public class BankSolutionProcessServiceImpl implements BankSolutionProcessServic
     public ICBCApiCallbackParam.Ans artificialgainImage(ICBCApiCallbackParam.ArtificialGainImageCallback artificialGainImageCallback) {
         logger.info("手动获取图片回调开始===============================================================");
         violationUtil.violation(artificialGainImageCallback);
-        if(!checkStatus(artificialGainImageCallback.getPub().getCmpseq())){
+        if (!checkStatus(artificialGainImageCallback.getPub().getCmpseq())) {
             throw new BizException("缺少流水号");
         }
 
-        if(TermFileEnum.getKeyByValue(artificialGainImageCallback.getReq().getPicid()) == null){
+        if (TermFileEnum.getKeyByValue(artificialGainImageCallback.getReq().getPicid()) == null) {
             throw new BizException("id 不存在");
         }
 
-        List<UniversalBankInterfaceFileSerialDO> list = loanQueryDOMapper.selectSuccessBankInterfaceFileSerialBySeriesNoAndFileType(artificialGainImageCallback.getPub().getCmpseq(),artificialGainImageCallback.getReq().getPicid());
+        List<UniversalBankInterfaceFileSerialDO> list = loanQueryDOMapper.selectSuccessBankInterfaceFileSerialBySeriesNoAndFileType(artificialGainImageCallback.getPub().getCmpseq(), artificialGainImageCallback.getReq().getPicid());
 
-        if(CollectionUtils.isEmpty(list)){
+        if (CollectionUtils.isEmpty(list)) {
             throw new BizException("图片不存在");
         }
 
         List<ICBCApiCallbackParam.Pic> picList = Lists.newArrayList();
 
-        for(UniversalBankInterfaceFileSerialDO universalBankInterfaceFileSerialDO:list){
+        for (UniversalBankInterfaceFileSerialDO universalBankInterfaceFileSerialDO : list) {
             ICBCApiCallbackParam.Pic pic = new ICBCApiCallbackParam.Pic();
             String note = "未知";
-            if(TermFileEnum.getKeyByValue(universalBankInterfaceFileSerialDO.getFile_type()) != null){
+            if (TermFileEnum.getKeyByValue(universalBankInterfaceFileSerialDO.getFile_type()) != null) {
                 note = LoanFileEnum.getNameByCode(TermFileEnum.getKeyByValue(universalBankInterfaceFileSerialDO.getFile_type()));
             }
             pic.setPicnote(note);
 
-            if(StringUtils.isNotBlank(universalBankInterfaceFileSerialDO.getFile_name())){
+            if (StringUtils.isNotBlank(universalBankInterfaceFileSerialDO.getFile_name())) {
 
-                String date = universalBankInterfaceFileSerialDO.getFile_name().substring(0,8);
-                String path = "http://109.2.148.206:9030/ftpwebv3/yunche/" + date+"/"+universalBankInterfaceFileSerialDO.getFile_name();
+                String date = universalBankInterfaceFileSerialDO.getFile_name().substring(0, 8);
+                String path = "http://109.2.148.206:9030/ftpwebv3/yunche/" + date + "/" + universalBankInterfaceFileSerialDO.getFile_name();
                 pic.setPicurl(path);
             }
             picList.add(pic);
@@ -395,29 +384,29 @@ public class BankSolutionProcessServiceImpl implements BankSolutionProcessServic
         return ans;
     }
 
-    private boolean checkStatus(String cmpseq){
+    private boolean checkStatus(String cmpseq) {
 
         BankInterfaceSerialDO D = bankInterfaceSerialDOMapper.selectByPrimaryKey(cmpseq);
-        if(D == null){
+        if (D == null) {
             return false;
         }
 
-        if(StringUtils.isBlank(cmpseq)){
+        if (StringUtils.isBlank(cmpseq)) {
             throw new BizException("缺少流水号");
         }
         BankInterfaceSerialDO V = bankInterfaceSerialDOMapper.selectByPrimaryKey(cmpseq);
-        if(V == null){
+        if (V == null) {
             return false;
         }
-        if(V.getApiStatus() == null){
+        if (V.getApiStatus() == null) {
             return false;
         }
-        if(V.getApiStatus().intValue() != 200){
+        if (V.getApiStatus().intValue() != 200) {
             return false;
         }
 
         //只有处理中和超时状态才能进行后续处理
-        if(!IDict.K_JYZT.PROCESS.equals(V.getStatus())){
+        if (!IDict.K_JYZT.PROCESS.equals(V.getStatus())) {
             return false;
         }
 

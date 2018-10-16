@@ -6,6 +6,8 @@ import com.yunche.loan.domain.param.AccommodationApplyParam;
 import com.yunche.loan.domain.param.ApprovalParam;
 import com.yunche.loan.domain.param.ExportApplyLoanPushParam;
 
+import java.util.Date;
+
 public interface JinTouHangAccommodationApplyService {
 
 //    ResultBean revoke(AccommodationApplyParam param);
@@ -35,5 +37,9 @@ public interface JinTouHangAccommodationApplyService {
 
     ResultBean exportJinTouHangInterestRegister(ExportApplyLoanPushParam param);
 
+    ResultBean calMoneyDetail(Long bridgeProcessId,Long orderId,String repayDate,String flag);
 
+    ResultBean calMoney(Long bridgeProcessId,Long orderId,String repayDate);
+
+    ResultBean isReturn(Long bridgeProcessId,Long orderId);
 }

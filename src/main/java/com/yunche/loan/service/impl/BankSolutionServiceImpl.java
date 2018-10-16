@@ -4,14 +4,11 @@ import com.github.pagehelper.util.StringUtil;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import com.yunche.loan.config.cache.AreaCache;
-import com.yunche.loan.config.cache.CarCache;
 import com.yunche.loan.config.cache.DictMapCache;
 import com.yunche.loan.config.common.SysConfig;
 import com.yunche.loan.config.constant.*;
 import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.feign.client.ICBCFeignClient;
-import com.yunche.loan.config.feign.client.ICBCFeignNormal;
 import com.yunche.loan.config.feign.request.ICBCApiRequest;
 import com.yunche.loan.config.feign.request.group.*;
 import com.yunche.loan.config.feign.response.ApplyStatusResponse;
@@ -25,9 +22,7 @@ import com.yunche.loan.domain.param.BankOpenCardParam;
 import com.yunche.loan.domain.vo.UniversalBankInterfaceSerialVO;
 import com.yunche.loan.domain.vo.UniversalMaterialRecordVO;
 import com.yunche.loan.mapper.*;
-import com.yunche.loan.service.BankSolutionService;
-import com.yunche.loan.service.LoanProcessService;
-import com.yunche.loan.service.LoanQueryService;
+import com.yunche.loan.service.*;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -86,9 +81,6 @@ public class BankSolutionServiceImpl implements BankSolutionService {
     private LoanCarInfoDOMapper loanCarInfoDOMapper;
 
     @Resource
-    private CarCache carCache;
-
-    @Resource
     private VehicleInformationDOMapper vehicleInformationDOMapper;
 
     @Resource
@@ -98,19 +90,10 @@ public class BankSolutionServiceImpl implements BankSolutionService {
     private FinancialProductDOMapper financialProductDOMapper;
 
     @Resource
-    private BankFileListRecordDOMapper bankFileListRecordDOMapper;
-
-    @Resource
     private AsyncUpload asyncUpload;
 
     @Autowired
-    private ICBCFeignNormal icbcFeignNormal;
-
-    @Autowired
     private DictMapCache dictMapCache;
-
-    @Autowired
-    private AreaCache areaCache;
 
     @Resource
     private CarBrandDOMapper carBrandDOMapper;
@@ -121,13 +104,15 @@ public class BankSolutionServiceImpl implements BankSolutionService {
     @Resource
     private CarDetailDOMapper carDetailDOMapper;
 
+    @Resource
+    private BankInterfaceSerialDOMapper bankInterfaceSerialDOMapper;
+
 
     @Resource
     private LoanQueryService loanQueryService;
 
-
-    @Resource
-    private BankInterfaceSerialDOMapper bankInterfaceSerialDOMapper;
+    @Autowired
+    private LoanCreditInfoHisService loanCreditInfoHisService;
 
     @Autowired
     private LoanProcessService loanProcessService;
@@ -135,7 +120,12 @@ public class BankSolutionServiceImpl implements BankSolutionService {
     @Autowired
     private BankInterfaceLogDOMapper bankInterfaceLogDOMapper;
 
-    //征信自动提交
+
+    /**
+     * 征信自动提交
+     *
+     * @param orderId
+     */
     @Override
     public void creditAutomaticCommit(Long orderId) {
         LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
@@ -580,7 +570,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
 
             ICBCApiRequest.Picture picture = new ICBCApiRequest.Picture();
             picture.setPicid(TermFileEnum.SELF_CERTIFICATE_FRONT.getValue());
-            String picName = GeneratorIDUtil.execute()+ImageUtil.PIC_SUFFIX;;
+            String picName = GeneratorIDUtil.execute() + ImageUtil.PIC_SUFFIX;
             picture.setPicname(picName);
             picture.setPicnote(LoanFileEnum.getNameByCode(TermFileEnum.SELF_CERTIFICATE_FRONT.getKey()));
             pictures.add(picture);
@@ -591,11 +581,6 @@ public class BankSolutionServiceImpl implements BankSolutionService {
             picQueue.setUrl(authSignPic.getUrls().get(0));
             queue.add(picQueue);
         }
-
-
-
-
-
 
 
         if (pictures.size() == 0) {
@@ -1176,6 +1161,5 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         ApplycreditstatusResponse response = icbcFeignClient.applycreditstatus(applycreditstatus);
         return response;
     }
-
 
 }

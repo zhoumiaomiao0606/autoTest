@@ -7,6 +7,11 @@ import com.yunche.loan.domain.entity.*;
 import com.yunche.loan.domain.vo.UniversalApprovalInfo;
 import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.MsgService;
+import net.sourceforge.pinyin4j.PinyinHelper;
+import net.sourceforge.pinyin4j.format.HanyuPinyinCaseType;
+import net.sourceforge.pinyin4j.format.HanyuPinyinOutputFormat;
+import net.sourceforge.pinyin4j.format.HanyuPinyinToneType;
+import net.sourceforge.pinyin4j.format.exception.BadHanyuPinyinOutputFormatCombination;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -372,5 +377,36 @@ public class MsgServiceImpl implements MsgService {
         result.put("mAction", mAction);
 
         return result;
+    }
+
+    @Override
+    public String getPinYin(String chinese) {
+        int length = chinese.length();
+        char[] value = new char[length << 1];
+        for (int i=0, j=0; i<length; ++i, j = i << 1) {
+            value[j] = chinese.charAt(i);
+            value[1 + j] = ' ';
+        }
+        chinese = new String(value);
+        chinese = chinese.substring(0,chinese.length()-1);
+        System.out.println(chinese.length());
+
+        StringBuffer pybf = new StringBuffer();
+        char[] arr = chinese.toCharArray();
+        HanyuPinyinOutputFormat defaultFormat = new HanyuPinyinOutputFormat();
+        defaultFormat.setCaseType(HanyuPinyinCaseType.UPPERCASE);
+        defaultFormat.setToneType(HanyuPinyinToneType.WITHOUT_TONE);
+        for (int i = 0; i < arr.length; i++) {
+            if (arr[i] > 128) {
+                try {
+                    pybf.append(PinyinHelper.toHanyuPinyinStringArray(arr[i], defaultFormat)[0]);
+                } catch (BadHanyuPinyinOutputFormatCombination e) {
+                    e.printStackTrace();
+                }
+            } else {
+                pybf.append(arr[i]);
+            }
+        }
+        return pybf.toString();
     }
 }

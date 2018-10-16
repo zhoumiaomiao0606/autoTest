@@ -304,6 +304,9 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
         ResultBean<Void> fileResultBean = loanFileService.updateOrInsertByCustomerIdAndUploadType(resultBean.getData(), customerParam.getFiles(), UPLOAD_TYPE_NORMAL);
         Preconditions.checkArgument(fileResultBean.getSuccess(), fileResultBean.getMsg());
 
+        // enable_type：增信增补(自动)打回
+        enable(String.valueOf(resultBean.getData()), ENABLE_TYPE_CREDIT_SUPPLEMENT);
+
         return ResultBean.ofSuccess(resultBean.getData(), "创建关联人成功");
     }
 
@@ -400,9 +403,11 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
     }
 
     @Override
-    public Long enable(String ids, Byte enable) {
+    public Long enable(String ids, Byte enableType) {
         Preconditions.checkArgument(StringUtils.isNotBlank(ids), "ids不能为空");
+        Preconditions.checkNotNull(enableType, "enableType不能为空");
 
+        // 1、更新所选客户 打回状态：1 -> 已打回(可编辑)
         List<Long> idList = Arrays.stream(ids.split("\\,"))
                 .filter(StringUtils::isNotBlank)
                 .map(Long::valueOf)
@@ -410,7 +415,21 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
 
         Preconditions.checkArgument(!CollectionUtils.isEmpty(idList), "ids不能为空");
 
-        long count = loanCustomerDOMapper.batchUpdateEnable(idList, enable);
+        long count = loanCustomerDOMapper.batchUpdateEnable(idList, BaseConst.K_YORN_YES, enableType);
+
+
+        // 2、打回标记重置   此次未打回的客户全部重置为：  0 -> 未打回(不可编辑)
+        LoanCustomerDO loanCustomerDO = loanCustomerDOMapper.selectByPrimaryKey(idList.get(0), VALID_STATUS);
+        Long principalCustId = loanCustomerDO.getPrincipalCustId();
+
+        List<Long> allCustomerId = loanCustomerDOMapper.listIdByPrincipalCustIdAndType(principalCustId, null, VALID_STATUS);
+        allCustomerId.removeAll(idList);
+
+        if (!CollectionUtils.isEmpty(allCustomerId)) {
+
+            // 其他客户  >>  重置为：0 -> 未打回(不可编辑)
+            long count2 = loanCustomerDOMapper.batchUpdateEnable(allCustomerId, BaseConst.K_YORN_NO, null);
+        }
 
         return count;
     }
@@ -425,7 +444,7 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
 
         List<Long> customerIdList = loanCustomerDOMapper.listIdByPrincipalCustIdAndType(principalId, null, VALID_STATUS);
 
-        loanCustomerDOMapper.batchUpdateEnable(customerIdList, BaseConst.K_YORN_NO);
+        loanCustomerDOMapper.batchUpdateEnable(customerIdList, BaseConst.K_YORN_NO, BaseConst.K_YORN_NO);
     }
 
 
@@ -629,12 +648,13 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
         Preconditions.checkArgument(createCustomerResult.getSuccess(), "创建客户信息失败");
 
         // 文件信息保存
-        ResultBean<Void> fileResultBean = loanFileService.updateOrInsertByCustomerIdAndUploadType(customerParam.getId(), customerParam.getFiles(), UPLOAD_TYPE_NORMAL);
+        ResultBean<Void> fileResultBean = loanFileService.updateOrInsertByCustomerIdAndUploadType(createCustomerResult.getData(), customerParam.getFiles(), UPLOAD_TYPE_NORMAL);
         Preconditions.checkArgument(fileResultBean.getSuccess(), fileResultBean.getMsg());
 
         // 返回客户ID
         return createCustomerResult.getData();
     }
+
 
     /**
      * 身份证重复校验

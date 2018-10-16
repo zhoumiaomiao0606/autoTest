@@ -43,4 +43,9 @@ public class MsgController {
         return ResultBean.ofSuccess(msgService.msgDetail(msgId));
     }
 
+    @GetMapping(value = "/getpinyin")
+    public ResultBean msgDetail(@RequestParam String name) {
+        return ResultBean.ofSuccess(msgService.getPinYin(name));
+    }
+
 }

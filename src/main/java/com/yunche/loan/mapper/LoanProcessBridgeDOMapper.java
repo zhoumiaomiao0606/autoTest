@@ -1,6 +1,7 @@
 package com.yunche.loan.mapper;
 
 import com.yunche.loan.domain.entity.LoanProcessBridgeDO;
+import org.apache.ibatis.annotations.Param;
 
 public interface LoanProcessBridgeDOMapper {
 
@@ -15,4 +16,6 @@ public interface LoanProcessBridgeDOMapper {
     int updateByPrimaryKeySelective(LoanProcessBridgeDO record);
 
     int updateByPrimaryKey(LoanProcessBridgeDO record);
+
+    LoanProcessBridgeDO selectByOrderId(@Param("orderId") Long orderId);
 }

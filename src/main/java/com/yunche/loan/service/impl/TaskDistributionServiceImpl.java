@@ -1,5 +1,6 @@
 package com.yunche.loan.service.impl;
 
+import com.google.common.base.Preconditions;
 import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.util.SessionUtils;
 import com.yunche.loan.domain.entity.*;
@@ -41,18 +42,26 @@ public class TaskDistributionServiceImpl implements TaskDistributionService {
     @Resource
     private LoanFinancialPlanTempHisDOMapper loanFinancialPlanTempHisDOMapper;
 
+    @Resource
+    private LoanProcessLogDOMapper loanProcessLogDOMapper;
+
+    private static final Byte ACTION = 6;
+
+    private static final Byte UNACTION = 7;
+
 
     /**
      * 领取
      *
      * @param taskId
      * @param taskKey
+     * @param orderId
      */
     @Override
-    public void get(Long taskId, String taskKey) {
-        if (taskId == null || StringUtils.isBlank(taskKey)) {
-            throw new BizException("必须传入任务id和任务key");
-        }
+    public void get(Long taskId, String taskKey, Long orderId) {
+        Preconditions.checkNotNull(orderId, "orderId不能为空");
+        Preconditions.checkNotNull(taskId, "taskId不能为空");
+        Preconditions.checkArgument(StringUtils.isNotBlank(taskKey), "taskKey不能为空");
 
         TaskDistributionDO taskDistributionDO = taskDistributionDOMapper.selectByPrimaryKey(taskId, taskKey);
         if (null != taskDistributionDO) {
@@ -76,12 +85,24 @@ public class TaskDistributionServiceImpl implements TaskDistributionService {
         V.setSendeeName(employeeDO.getName());
         V.setStatus(new Byte("2"));
         V.setGetCreate(new Date());
+
+        //领取记录日志
+        LoanProcessLogDO loanProcessLogDO = new LoanProcessLogDO();
+        loanProcessLogDO.setUserName(employeeDO.getName());
+        loanProcessLogDO.setUserId(employeeDO.getId());
+        loanProcessLogDO.setAction(ACTION);
+        loanProcessLogDO.setTaskDefinitionKey(taskKey);
+        loanProcessLogDO.setOrderId(orderId);
+        loanProcessLogDO.setCreateTime(new Date());
+        int count = loanProcessLogDOMapper.insertSelective(loanProcessLogDO);
+        Preconditions.checkArgument(count > 0, "操作日志记录失败");
+
         taskDistributionDOMapper.insertSelective(V);
     }
 
     // 释放
     @Override
-    public void release(Long taskId, String taskKey) {
+    public void release(Long taskId, String taskKey, Long orderId) {
         if (taskId == null || StringUtils.isBlank(taskKey)) {
             throw new BizException("必须传入任务id和任务key");
         }
@@ -103,6 +124,16 @@ public class TaskDistributionServiceImpl implements TaskDistributionService {
             throw new BizException("该任务只能被领取人释放");
         }
 
+        //领取记录日志
+        LoanProcessLogDO loanProcessLogDO = new LoanProcessLogDO();
+        loanProcessLogDO.setUserName(employeeDO.getName());
+        loanProcessLogDO.setUserId(employeeDO.getId());
+        loanProcessLogDO.setAction(UNACTION);
+        loanProcessLogDO.setTaskDefinitionKey(taskKey);
+        loanProcessLogDO.setOrderId(orderId);
+        loanProcessLogDO.setCreateTime(new Date());
+        int count = loanProcessLogDOMapper.insertSelective(loanProcessLogDO);
+        Preconditions.checkArgument(count > 0, "操作日志记录失败");
         taskDistributionDOMapper.deleteByPrimaryKey(taskId, taskKey);
     }
 

@@ -63,7 +63,10 @@ public class BusinessReviewController {
      * 财务系统对接-----微调参数--重新计算
      */
     @PostMapping(value = "/parternerRuleSharpTuning", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public String parternerRuleSharpTuning(@RequestBody @Validated ParternerRuleSharpTuningeParam param) {
-        return businessReviewManager.financeUnisal(param,"/costcalculation/detailn");
+    public String parternerRuleSharpTuning(@RequestBody @Validated ParternerRuleSharpTuningeParam param)
+    {
+        System.out.println("==================");
+        return businessReviewService.parternerRuleSharpTuning(param);
+        //return businessReviewManager.financeUnisal(param,"/costcalculation/detailn");
     }
 }

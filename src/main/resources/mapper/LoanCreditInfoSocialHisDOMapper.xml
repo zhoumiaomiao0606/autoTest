@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yunche.loan.mapper.LoanCreditInfoSocialHisDOMapper">
+    <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.LoanCreditInfoSocialHisDO">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="customer_id" property="customerId" jdbcType="BIGINT"/>
+        <result column="credit_apply_time" property="creditApplyTime" jdbcType="TIMESTAMP"/>
+        <result column="credit_apply_user_id" property="creditApplyUserId" jdbcType="BIGINT"/>
+        <result column="credit_apply_user_name" property="creditApplyUserName" jdbcType="VARCHAR"/>
+        <result column="social_credit_record_time" property="socialCreditRecordTime" jdbcType="TIMESTAMP"/>
+        <result column="social_credit_record_user_id" property="socialCreditRecordUserId" jdbcType="BIGINT"/>
+        <result column="social_credit_record_user_name" property="socialCreditRecordUserName" jdbcType="VARCHAR"/>
+        <result column="social_credit_result" property="socialCreditResult" jdbcType="TINYINT"/>
+        <result column="social_credit_reject_time" property="socialCreditRejectTime" jdbcType="TIMESTAMP"/>
+        <result column="social_credit_reject_user_id" property="socialCreditRejectUserId" jdbcType="BIGINT"/>
+        <result column="social_credit_reject_user_name" property="socialCreditRejectUserName" jdbcType="VARCHAR"/>
+        <result column="social_credit_reject_info" property="socialCreditRejectInfo" jdbcType="VARCHAR"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+    id, customer_id, credit_apply_time, credit_apply_user_id, credit_apply_user_name, 
+    social_credit_record_time, social_credit_record_user_id, social_credit_record_user_name, 
+    social_credit_result, social_credit_reject_time, social_credit_reject_user_id, social_credit_reject_user_name, 
+    social_credit_reject_info
+  </sql>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        select
+        <include refid="Base_Column_List"/>
+        from loan_credit_info_social_his
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from loan_credit_info_social_his
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+    <insert id="insert" parameterType="com.yunche.loan.domain.entity.LoanCreditInfoSocialHisDO"
+            useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+    insert into loan_credit_info_social_his (id, customer_id, credit_apply_time, 
+      credit_apply_user_id, credit_apply_user_name, 
+      social_credit_record_time, social_credit_record_user_id, 
+      social_credit_record_user_name, social_credit_result, 
+      social_credit_reject_time, social_credit_reject_user_id, 
+      social_credit_reject_user_name, social_credit_reject_info
+      )
+    values (#{id,jdbcType=BIGINT}, #{customerId,jdbcType=BIGINT}, #{creditApplyTime,jdbcType=TIMESTAMP}, 
+      #{creditApplyUserId,jdbcType=BIGINT}, #{creditApplyUserName,jdbcType=VARCHAR}, 
+      #{socialCreditRecordTime,jdbcType=TIMESTAMP}, #{socialCreditRecordUserId,jdbcType=BIGINT}, 
+      #{socialCreditRecordUserName,jdbcType=VARCHAR}, #{socialCreditResult,jdbcType=TINYINT}, 
+      #{socialCreditRejectTime,jdbcType=TIMESTAMP}, #{socialCreditRejectUserId,jdbcType=BIGINT}, 
+      #{socialCreditRejectUserName,jdbcType=VARCHAR}, #{socialCreditRejectInfo,jdbcType=VARCHAR}
+      )
+  </insert>
+    <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.LoanCreditInfoSocialHisDO"
+            useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+        insert into loan_credit_info_social_his
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="customerId != null">
+                customer_id,
+            </if>
+            <if test="creditApplyTime != null">
+                credit_apply_time,
+            </if>
+            <if test="creditApplyUserId != null">
+                credit_apply_user_id,
+            </if>
+            <if test="creditApplyUserName != null">
+                credit_apply_user_name,
+            </if>
+            <if test="socialCreditRecordTime != null">
+                social_credit_record_time,
+            </if>
+            <if test="socialCreditRecordUserId != null">
+                social_credit_record_user_id,
+            </if>
+            <if test="socialCreditRecordUserName != null">
+                social_credit_record_user_name,
+            </if>
+            <if test="socialCreditResult != null">
+                social_credit_result,
+            </if>
+            <if test="socialCreditRejectTime != null">
+                social_credit_reject_time,
+            </if>
+            <if test="socialCreditRejectUserId != null">
+                social_credit_reject_user_id,
+            </if>
+            <if test="socialCreditRejectUserName != null">
+                social_credit_reject_user_name,
+            </if>
+            <if test="socialCreditRejectInfo != null">
+                social_credit_reject_info,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=BIGINT},
+            </if>
+            <if test="customerId != null">
+                #{customerId,jdbcType=BIGINT},
+            </if>
+            <if test="creditApplyTime != null">
+                #{creditApplyTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="creditApplyUserId != null">
+                #{creditApplyUserId,jdbcType=BIGINT},
+            </if>
+            <if test="creditApplyUserName != null">
+                #{creditApplyUserName,jdbcType=VARCHAR},
+            </if>
+            <if test="socialCreditRecordTime != null">
+                #{socialCreditRecordTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="socialCreditRecordUserId != null">
+                #{socialCreditRecordUserId,jdbcType=BIGINT},
+            </if>
+            <if test="socialCreditRecordUserName != null">
+                #{socialCreditRecordUserName,jdbcType=VARCHAR},
+            </if>
+            <if test="socialCreditResult != null">
+                #{socialCreditResult,jdbcType=TINYINT},
+            </if>
+            <if test="socialCreditRejectTime != null">
+                #{socialCreditRejectTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="socialCreditRejectUserId != null">
+                #{socialCreditRejectUserId,jdbcType=BIGINT},
+            </if>
+            <if test="socialCreditRejectUserName != null">
+                #{socialCreditRejectUserName,jdbcType=VARCHAR},
+            </if>
+            <if test="socialCreditRejectInfo != null">
+                #{socialCreditRejectInfo,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.LoanCreditInfoSocialHisDO">
+        update loan_credit_info_social_his
+        <set>
+            <if test="customerId != null">
+                customer_id = #{customerId,jdbcType=BIGINT},
+            </if>
+            <if test="creditApplyTime != null">
+                credit_apply_time = #{creditApplyTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="creditApplyUserId != null">
+                credit_apply_user_id = #{creditApplyUserId,jdbcType=BIGINT},
+            </if>
+            <if test="creditApplyUserName != null">
+                credit_apply_user_name = #{creditApplyUserName,jdbcType=VARCHAR},
+            </if>
+            <if test="socialCreditRecordTime != null">
+                social_credit_record_time = #{socialCreditRecordTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="socialCreditRecordUserId != null">
+                social_credit_record_user_id = #{socialCreditRecordUserId,jdbcType=BIGINT},
+            </if>
+            <if test="socialCreditRecordUserName != null">
+                social_credit_record_user_name = #{socialCreditRecordUserName,jdbcType=VARCHAR},
+            </if>
+            <if test="socialCreditResult != null">
+                social_credit_result = #{socialCreditResult,jdbcType=TINYINT},
+            </if>
+            <if test="socialCreditRejectTime != null">
+                social_credit_reject_time = #{socialCreditRejectTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="socialCreditRejectUserId != null">
+                social_credit_reject_user_id = #{socialCreditRejectUserId,jdbcType=BIGINT},
+            </if>
+            <if test="socialCreditRejectUserName != null">
+                social_credit_reject_user_name = #{socialCreditRejectUserName,jdbcType=VARCHAR},
+            </if>
+            <if test="socialCreditRejectInfo != null">
+                social_credit_reject_info = #{socialCreditRejectInfo,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.LoanCreditInfoSocialHisDO">
+    update loan_credit_info_social_his
+    set customer_id = #{customerId,jdbcType=BIGINT},
+      credit_apply_time = #{creditApplyTime,jdbcType=TIMESTAMP},
+      credit_apply_user_id = #{creditApplyUserId,jdbcType=BIGINT},
+      credit_apply_user_name = #{creditApplyUserName,jdbcType=VARCHAR},
+      social_credit_record_time = #{socialCreditRecordTime,jdbcType=TIMESTAMP},
+      social_credit_record_user_id = #{socialCreditRecordUserId,jdbcType=BIGINT},
+      social_credit_record_user_name = #{socialCreditRecordUserName,jdbcType=VARCHAR},
+      social_credit_result = #{socialCreditResult,jdbcType=TINYINT},
+      social_credit_reject_time = #{socialCreditRejectTime,jdbcType=TIMESTAMP},
+      social_credit_reject_user_id = #{socialCreditRejectUserId,jdbcType=BIGINT},
+      social_credit_reject_user_name = #{socialCreditRejectUserName,jdbcType=VARCHAR},
+      social_credit_reject_info = #{socialCreditRejectInfo,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+    <select id="lastByCustomerId" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM loan_credit_info_social_his
+        WHERE customer_id = #{customerId,jdbcType=BIGINT}
+        ORDER BY id DESC
+        LIMIT 1
+    </select>
+</mapper>

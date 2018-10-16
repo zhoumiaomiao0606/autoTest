@@ -206,9 +206,15 @@ public class LoanCustomerDO {
     private Byte creditExpFlag;
 
     /**
-     * 是否可编辑：0-否;1-是;   默认：否
+     * 是否被征信打回      0-否；1-是；        默认：否
+     * <p>
+     * 银行/社会征信
      */
     private Byte enable;
+    /**
+     * 征信打回类型   1-银行征信打回； 2-社会征信打回；3-增信增补打回；
+     */
+    private Byte enableType;
 
     /**
      * 银行征信打回标记：0-否；1-是；

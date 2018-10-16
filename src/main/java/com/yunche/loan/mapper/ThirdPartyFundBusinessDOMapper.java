@@ -1,7 +1,10 @@
 package com.yunche.loan.mapper;
 
 import com.yunche.loan.domain.entity.ThirdPartyFundBusinessDO;
+import org.apache.ibatis.annotations.Param;
 
+import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
 public interface ThirdPartyFundBusinessDOMapper {
@@ -19,4 +22,10 @@ public interface ThirdPartyFundBusinessDOMapper {
     int updateByPrimaryKey(ThirdPartyFundBusinessDO record);
 
     int batchInsert(List<ThirdPartyFundBusinessDO> thirdPartyFundBusinessDOS);
+
+    int updateInfo(@Param("orderId")Long orderId,
+                   @Param("repayDate")Date repayDate,
+                   @Param("interest")BigDecimal interest,
+                   @Param("poundage")BigDecimal poundage);
+
 }

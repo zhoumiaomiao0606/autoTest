@@ -39,14 +39,14 @@ import static com.yunche.loan.config.constant.LoanCustomerConst.CUST_TYPE_EMERGE
 import static com.yunche.loan.config.constant.LoanFileConst.UPLOAD_TYPE_NORMAL;
 import static com.yunche.loan.config.constant.LoanFileEnum.*;
 import static com.yunche.loan.config.constant.ProcessApprovalConst.ACTION_PASS;
+import static com.yunche.loan.service.impl.LoanProcessApprovalCommonServiceImpl.AUTO_EMPLOYEE_ID;
+import static com.yunche.loan.service.impl.LoanProcessApprovalCommonServiceImpl.AUTO_EMPLOYEE_NAME;
 
 @Service
 public class BankOpenCardServiceImpl implements BankOpenCardService {
 
     private static final Logger LOG = LoggerFactory.getLogger(BankOpenCardServiceImpl.class);
-    private static final Long AUTO_EMPLOYEE_ID = 878L;
 
-    private static final String AUTO_EMPLOYEE_NAME = "自动任务";
     @Autowired
     LoanQueryService loanQueryService;
 
@@ -106,6 +106,11 @@ public class BankOpenCardServiceImpl implements BankOpenCardService {
 
     @Autowired
     LoanProcessLogDOMapper loanProcessLogDOMapper;
+
+    @Autowired
+    MsgService msgService;
+
+
     /**
      * 银行开卡详情页
      *
@@ -168,6 +173,10 @@ public class BankOpenCardServiceImpl implements BankOpenCardService {
         for (UniversalCustomerVO universalCustomerVO : customers) {
             List<UniversalCustomerFileVO> files = loanQueryService.selectUniversalCustomerFile(Long.valueOf(universalCustomerVO.getCustomer_id()));
             universalCustomerVO.setFiles(files);
+        }
+        if (universalCustomerDetailVO.getCustomer_name_pinyin() == null || "".equals(universalCustomerDetailVO.getCustomer_name_pinyin())) {
+            universalCustomerDetailVO.setCustomer_name_pinyin(msgService.getPinYin(universalCustomerDetailVO.getCustomer_name()));
+
         }
         recombinationVO.setFinancial(financialSchemeVO);
         recombinationVO.setLoanBaseInfo(loanBaseInfoVOResultBean.getData());
@@ -280,7 +289,7 @@ public class BankOpenCardServiceImpl implements BankOpenCardService {
                 LoanProcessDO loanProcessDO = loanProcessDOMapper.selectByPrimaryKey(e.getOrderId());
                 Byte openCard = loanProcessDO.getBankOpenCard();
                 //如果开卡失败，则更新bank_interface_serial 0:失败  1：成功
-                if(StringUtils.isNotBlank(e.getHairpinFlag()) && "0".equals(e.getHairpinFlag())){
+                if (StringUtils.isNotBlank(e.getHairpinFlag()) && "0".equals(e.getHairpinFlag())) {
                     LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(e.getOrderId());
                     BankInterfaceSerialDO bankInterfaceSerialDO = bankInterfaceSerialDOMapper.selectByCustomerIdAndTransCode(loanOrderDO.getLoanCustomerId(), IDict.K_TRANS_CODE.CREDITCARDAPPLY);
                     bankInterfaceSerialDO.setStatus(IDict.K_JYZT.FAIL);
@@ -290,22 +299,22 @@ public class BankOpenCardServiceImpl implements BankOpenCardService {
                 //如果卡号存在，则直接完成任务
                 LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(e.getOrderId());
                 LoanCustomerDO customerDO = loanCustomerDOMapper.selectByPrimaryKey(loanOrderDO.getLoanCustomerId(), null);
-                if(!StringUtil.isEmpty(customerDO.getLendCard())){
+                if (!StringUtil.isEmpty(customerDO.getLendCard())) {
                     //更新loan_process
                     LoanProcessDO processDO = new LoanProcessDO();
                     processDO.setOrderId(e.getOrderId());
                     processDO.setBankOpenCard(ACTION_PASS);
                     int count = loanProcessDOMapper.updateByPrimaryKeySelective(processDO);
-                    Preconditions.checkArgument(count>0,"任务更新失败");
+                    Preconditions.checkArgument(count > 0, "任务更新失败");
 
                     //更新bank_interface_serial
                     BankInterfaceSerialDO bankInterfaceSerialDO = bankInterfaceSerialDOMapper.selectByCustomerIdAndTransCode(loanOrderDO.getLoanCustomerId(), IDict.K_TRANS_CODE.CREDITCARDAPPLY);
                     bankInterfaceSerialDO.setStatus(IDict.K_JYZT.SUCCESS);
                     int count2 = bankInterfaceSerialDOMapper.updateByPrimaryKeySelective(bankInterfaceSerialDO);
-                    Preconditions.checkArgument(count2>0,"更新银行流水失败");
+                    Preconditions.checkArgument(count2 > 0, "更新银行流水失败");
                 }
                 if (!openCard.equals(LoanOrderProcessConst.TASK_PROCESS_DONE)) {
-                    try{
+                    try {
                         ApprovalParam approvalParam = new ApprovalParam();
                         approvalParam.setOrderId(e.getOrderId());
                         approvalParam.setTaskDefinitionKey(LoanProcessEnum.BANK_OPEN_CARD.getCode());
@@ -315,11 +324,11 @@ public class BankOpenCardServiceImpl implements BankOpenCardService {
                         approvalParam.setCheckPermission(false);
                         ResultBean<Void> approvalResultBean = loanProcessService.approval(approvalParam);
                         LOG.info(e.getOrderId() + approvalResultBean.getMsg());
-                    }catch (Exception e2){
+                    } catch (Exception e2) {
                         LoanProcessDO processDO = loanProcessDOMapper.selectByPrimaryKey(e.getOrderId());
                         processDO.setBankOpenCard(ACTION_PASS);
                         int count = loanProcessDOMapper.updateByPrimaryKeySelective(processDO);
-                        Preconditions.checkArgument(count>0,"更新失败");
+                        Preconditions.checkArgument(count > 0, "更新失败");
 
                         //记录一条假日志
                         LoanProcessLogDO loanProcessLogDO = new LoanProcessLogDO();

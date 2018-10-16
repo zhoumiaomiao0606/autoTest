@@ -1,6 +1,7 @@
 package com.yunche.loan.mapper;
 
 import com.yunche.loan.domain.entity.LoanCarInfoDO;
+import com.yunche.loan.domain.entity.LoanProcessLogDO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 
@@ -21,4 +22,6 @@ public interface LoanCarInfoDOMapper {
     @Select("SELECT `car_key`  FROM `loan_car_info` WHERE `id` = " +
             "(SELECT  `loan_car_info_id` from `loan_order` WHERE `id`  = #{orderId})")
     Byte getCarKeyByOrderId(Long orderId);
+
+    LoanProcessLogDO selectNeedCollectKey(Long orderId);
 }

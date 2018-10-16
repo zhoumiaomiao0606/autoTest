@@ -81,9 +81,11 @@ public class LoanProcessCollectionServiceImpl implements LoanProcessCollectionSe
             permissionService.checkTaskPermission(approval.getTaskDefinitionKey());
         }
 
-        // 订单状态校验
-        loanProcessApprovalCommonService.checkOrderStatus(approval.getOrderId(), approval.getProcessId(), PROCESS_TYPE_LOAN_PROCESS_COLLECTION);
-
+        if (!isPassSettleOrderTask(approval))
+        {
+            // 订单状态校验
+            loanProcessApprovalCommonService.checkOrderStatus(approval.getOrderId(), approval.getProcessId(), PROCESS_TYPE_LOAN_PROCESS_COLLECTION);
+        }
         // 操作日志
         loanProcessApprovalCommonService.log(approval);
 

@@ -39,6 +39,9 @@ public class FinancialDepartmentRemitDetailChartParam extends BaseQuery
     //贷款银行列表
     private List<String> bankList;
 
+    //征信申请时间-排序
+    private byte orderBy;
+
     Long maxGroupLevel;
 
     Set<String> juniorIds = Sets.newHashSet();

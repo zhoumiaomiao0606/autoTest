@@ -55,16 +55,16 @@
             useActualColumnNames 采用下划线字段
          -->
 
-        <!--
 
-            <table tableName="remit_details" domainObjectName="RemitDetailsDO"
-                   enableCountByExample="false" enableUpdateByExample="false"
-                   enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
-                &lt;!&ndash;采用下划线字段&ndash;&gt;
-                <property name="useActualColumnNames" value="true"/>
-            </table>
 
-        -->
+        <table tableName="remit_details" domainObjectName="RemitDetailsDO"
+               enableCountByExample="false" enableUpdateByExample="false"
+               enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+            <!--采用下划线字段-->
+            <property name="useActualColumnNames" value="true"/>
+        </table>
+
+
 
         <!--
 
@@ -384,11 +384,10 @@
 -->
 
 
-        <table tableName="conf_video_face_time" domainObjectName="ConfVideoFaceTimeDO"
+        <table tableName="remit_details" domainObjectName="RemitDetailsDO"
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
         </table>
-
 
         <!-- 忽略列，不生成bean 字段
         <ignoreColumn column="FRED" />-->

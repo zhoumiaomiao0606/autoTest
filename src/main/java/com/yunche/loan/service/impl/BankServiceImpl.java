@@ -7,20 +7,16 @@ import com.google.common.collect.Sets;
 import com.yunche.loan.config.cache.AreaCache;
 import com.yunche.loan.config.cache.BankCache;
 import com.yunche.loan.config.result.ResultBean;
-import com.yunche.loan.domain.entity.BankCarLicenseLocationDO;
-import com.yunche.loan.domain.entity.BankDO;
-import com.yunche.loan.domain.entity.BankRelaQuestionDO;
-import com.yunche.loan.domain.entity.BaseAreaDO;
+import com.yunche.loan.domain.entity.*;
 import com.yunche.loan.domain.param.BankParam;
 import com.yunche.loan.domain.param.BankSaveParam;
+import com.yunche.loan.domain.param.ConfLoanApplyParam;
 import com.yunche.loan.domain.query.BankQuery;
 import com.yunche.loan.domain.vo.*;
-import com.yunche.loan.mapper.BankCarLicenseLocationDOMapper;
-import com.yunche.loan.mapper.BankDOMapper;
-import com.yunche.loan.mapper.BankRelaQuestionDOMapper;
-import com.yunche.loan.mapper.BaseAreaDOMapper;
+import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.BankService;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -60,6 +56,9 @@ public class BankServiceImpl implements BankService {
 
     @Autowired
     private BankCache bankCache;
+
+    @Autowired
+    private ConfLoanApplyDOMapper confLoanApplyDOMapper;
 
 
     @Override
@@ -149,6 +148,42 @@ public class BankServiceImpl implements BankService {
         }
         bankReturnVO.setList(result);
         return bankReturnVO;
+    }
+
+    @Override
+    public void saveConfLoanApply(ConfLoanApplyParam param) {
+        ConfLoanApplyDO newCar = param.getNewCar();
+        ConfLoanApplyDOKey confLoanApplyDOKey = new ConfLoanApplyDOKey();
+        confLoanApplyDOKey.setBank(newCar.getBank());
+        confLoanApplyDOKey.setCar_type(Integer.valueOf(newCar.getCar_type()));
+        ConfLoanApplyDO confLoanApplyDO = confLoanApplyDOMapper.selectByPrimaryKey(confLoanApplyDOKey);
+        ConfLoanApplyDO confLoanApplyDO1 = new ConfLoanApplyDO();
+        BeanUtils.copyProperties(newCar,confLoanApplyDO1);
+        if(confLoanApplyDO != null){
+            confLoanApplyDOMapper.updateByPrimaryKey(confLoanApplyDO1);
+        }else{
+            confLoanApplyDOMapper.insert(confLoanApplyDO1);
+        }
+        ConfLoanApplyDO oldCar = param.getOldCar();
+        ConfLoanApplyDOKey confLoanApplyDOKey1 = new ConfLoanApplyDOKey();
+        confLoanApplyDOKey1.setBank(oldCar.getBank());
+        confLoanApplyDOKey1.setCar_type(Integer.valueOf(oldCar.getCar_type()));
+        ConfLoanApplyDO confLoanApplyDO2 = confLoanApplyDOMapper.selectByPrimaryKey(confLoanApplyDOKey1);
+        ConfLoanApplyDO confLoanApplyDO3 = new ConfLoanApplyDO();
+        BeanUtils.copyProperties(oldCar,confLoanApplyDO3);
+        if(confLoanApplyDO2 != null){
+            confLoanApplyDOMapper.updateByPrimaryKey(confLoanApplyDO3);
+        }else{
+            confLoanApplyDOMapper.insert(confLoanApplyDO3);
+        }
+
+    }
+
+    @Override
+    public List<ConfLoanApplyDO> getConfLoanApply(String bank) {
+        List<ConfLoanApplyDO> list = new ArrayList<>();
+        list = confLoanApplyDOMapper.selectInfoByBank(bank);
+        return list;
     }
 
     @Override

@@ -11,5 +11,15 @@ public interface AppReportService {
 
     ResultBean<List<AppMakeMoneyDetailReportVO>> makeMoneyDetail(AppBusDetailQuery query);
 
+    ResultBean<List<AppBussinessRankReportVO>> businessRank(AppBusDetailQuery query);
+
+    ResultBean<List<AppNoMortgageCusReportVO>> noMortgageCus(AppBusDetailQuery query);
+
+    ResultBean<List<AppMortgageAndDataOverdueReportVO>> mortgageAndDataOverdue(AppBusDetailQuery query);
+
+    ResultBean<List<AppCardsTimeCheckReportVO>> cardsTimeCheck(AppBusDetailQuery query);
+
+    ResultBean<List<AppDataTimeCheckReportVO>> dataTimeCheck(AppBusDetailQuery query);
+
     AppTableInfoVO getTableHead(String type);
 }

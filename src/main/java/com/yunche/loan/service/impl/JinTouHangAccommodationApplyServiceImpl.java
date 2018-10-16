@@ -10,8 +10,7 @@ import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.POIUtil;
 import com.yunche.loan.config.util.StringUtil;
-import com.yunche.loan.domain.entity.LoanOrderDO;
-import com.yunche.loan.domain.entity.ThirdPartyFundBusinessDO;
+import com.yunche.loan.domain.entity.*;
 import com.yunche.loan.domain.param.AccommodationApplyParam;
 import com.yunche.loan.domain.param.ApprovalParam;
 import com.yunche.loan.domain.param.ExportApplyLoanPushParam;
@@ -28,6 +27,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.math.BigDecimal;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -38,6 +40,7 @@ import static com.yunche.loan.config.constant.ProcessApprovalConst.ACTION_ROLL_B
 
 @Service
 @Transactional
+
 public class JinTouHangAccommodationApplyServiceImpl implements JinTouHangAccommodationApplyService {
 
 
@@ -71,6 +74,9 @@ public class JinTouHangAccommodationApplyServiceImpl implements JinTouHangAccomm
 
     @Autowired
     private BankCache bankCache;
+
+    @Autowired
+    private BankLendRecordDOMapper bankLendRecordDOMapper;
 
 
 //    @Override
@@ -338,8 +344,8 @@ public class JinTouHangAccommodationApplyServiceImpl implements JinTouHangAccomm
     public ResultBean exportJinTouHangRepayInfo(ExportApplyLoanPushParam param) {
 
         List<JinTouHangRepayInfoVO> voList = loanStatementDOMapper.exportJinTouHangRepayInfo(param);
-        List<String> header = Lists.newArrayList("借款时间", "还款时间", "借款金额",
-                "主贷姓名", "身份证号", "分期本金", "还款类型", "备注"
+        List<String> header = Lists.newArrayList("主贷姓名", "身份证号", "借款时间",
+                "银行放款时间", "还款时间", "借款天数", "借款金额", "放款本金" ,"放款-借款","还款类型","利息","手续费","备注"
         );
 
         String ossResultKey = POIUtil.createExcelFile("金投行还款信息", voList, header, JinTouHangRepayInfoVO.class, ossConfig);
@@ -361,6 +367,124 @@ public class JinTouHangAccommodationApplyServiceImpl implements JinTouHangAccomm
 
         String ossResultKey = POIUtil.createExcelFile("金投行息费登记", voList, header, JinTouHangInterestRegisterVO.class, ossConfig);
         return ResultBean.ofSuccess(ossResultKey);
+    }
+
+    @Override
+    public ResultBean calMoney(Long bridgeProcessId, Long orderId,String repayDate) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        CalMoneyVO calMoneyVO = new CalMoneyVO();
+        Long conf_third_party_id ;
+        BigDecimal yearRate ;
+        BigDecimal singleRate ;
+        BigDecimal lend_amount;
+        Date lendDate;
+        Date repayDate1;
+        int timeNum;
+        try {
+            ConfThirdRealBridgeProcessDO confThirdRealBridgeProcessDO = confThirdRealBridgeProcessDOMapper.selectByPrimaryKey(bridgeProcessId);
+            if (confThirdRealBridgeProcessDO != null) {
+                conf_third_party_id = confThirdRealBridgeProcessDO.getConfThirdPartyId();
+                ConfThirdPartyMoneyDO confThirdPartyMoneyDO = confThirdPartyMoneyDOMapper.selectByPrimaryKey(conf_third_party_id);
+                yearRate = confThirdPartyMoneyDO.getYearRate();
+                singleRate = confThirdPartyMoneyDO.getSingleRate();
+                ThirdPartyFundBusinessDO thirdPartyFundBusinessDO = thirdPartyFundBusinessDOMapper.selectByPrimaryKey(bridgeProcessId);
+                lendDate = thirdPartyFundBusinessDO.getLendDate();
+                repayDate1 = sdf.parse(repayDate);
+                timeNum = (int) ((repayDate1.getTime() - lendDate.getTime()) / (1000 * 3600 * 24));
+                lend_amount = thirdPartyFundBusinessDO.getLendAmount();
+                if(lend_amount == null){
+                    lend_amount = new BigDecimal("0.00");
+                }
+                calMoneyVO.setInterest(String.valueOf(yearRate.divide(BigDecimal.valueOf(100)).multiply(lend_amount).multiply(BigDecimal.valueOf(timeNum)).divide(BigDecimal.valueOf(365), 2, BigDecimal.ROUND_HALF_UP)));
+                calMoneyVO.setPoundage(String.valueOf(singleRate.divide(BigDecimal.valueOf(100)).multiply(lend_amount).multiply(BigDecimal.valueOf(timeNum)).divide(BigDecimal.valueOf(365), 2, BigDecimal.ROUND_HALF_UP)));
+                calMoneyVO.setTimeNum(String.valueOf(timeNum));
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return ResultBean.ofSuccess(calMoneyVO);
+    }
+
+    @Override
+    public ResultBean calMoneyDetail(Long bridgeProcessId, Long orderId,String repayDate,String flag) {
+        CalMoneyVO calMoneyVO = new CalMoneyVO();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        BigDecimal yearRate ;
+        BigDecimal singleRate ;
+        BigDecimal lend_amount;
+        Date lendDate;
+        Date repayDate1;
+        int timeNum;
+
+        Long conf_third_party_id ;
+        try {
+            //0没有还款记录
+            if ("0".equals(flag)) {
+                ConfThirdRealBridgeProcessDO confThirdRealBridgeProcessDO = confThirdRealBridgeProcessDOMapper.selectByPrimaryKey(bridgeProcessId);
+                if (confThirdRealBridgeProcessDO != null) {
+                    conf_third_party_id = confThirdRealBridgeProcessDO.getConfThirdPartyId();
+                    ConfThirdPartyMoneyDO confThirdPartyMoneyDO = confThirdPartyMoneyDOMapper.selectByPrimaryKey(conf_third_party_id);
+                    yearRate = confThirdPartyMoneyDO.getYearRate();
+                    singleRate = confThirdPartyMoneyDO.getSingleRate();
+                    ThirdPartyFundBusinessDO thirdPartyFundBusinessDO = thirdPartyFundBusinessDOMapper.selectByPrimaryKey(bridgeProcessId);
+                    lendDate = thirdPartyFundBusinessDO.getLendDate();
+                    repayDate1 = sdf.parse(repayDate);
+                    timeNum = (int) ((repayDate1.getTime() - lendDate.getTime()) / (1000 * 3600 * 24));
+                    lend_amount = thirdPartyFundBusinessDO.getLendAmount();
+                    if(lend_amount == null){
+                        lend_amount = new BigDecimal("0.00");
+                    }
+                    calMoneyVO.setInterest(String.valueOf(yearRate.divide(BigDecimal.valueOf(100)).multiply(lend_amount).multiply(BigDecimal.valueOf(timeNum)).divide(BigDecimal.valueOf(365), 2, BigDecimal.ROUND_HALF_UP)));
+                    calMoneyVO.setPoundage(String.valueOf(singleRate.divide(BigDecimal.valueOf(100)).multiply(lend_amount).multiply(BigDecimal.valueOf(timeNum)).divide(BigDecimal.valueOf(365), 2, BigDecimal.ROUND_HALF_UP)));
+                    calMoneyVO.setTimeNum(String.valueOf(timeNum));
+                    calMoneyVO.setSingleRate(String.valueOf(singleRate));
+                }
+            } else {
+                ConfThirdRealBridgeProcessDO confThirdRealBridgeProcessDO = confThirdRealBridgeProcessDOMapper.selectByPrimaryKey(bridgeProcessId);
+                if (confThirdRealBridgeProcessDO != null) {
+                    conf_third_party_id = confThirdRealBridgeProcessDO.getConfThirdPartyId();
+                    ConfThirdPartyMoneyDO confThirdPartyMoneyDO = confThirdPartyMoneyDOMapper.selectByPrimaryKey(conf_third_party_id);
+                    singleRate = confThirdPartyMoneyDO.getSingleRate();
+                    ThirdPartyFundBusinessDO thirdPartyFundBusinessDO = thirdPartyFundBusinessDOMapper.selectByPrimaryKey(bridgeProcessId);
+                    lendDate = thirdPartyFundBusinessDO.getLendDate();
+                    repayDate1 = thirdPartyFundBusinessDO.getRepayDate();
+                    timeNum = (int) ((repayDate1.getTime() - lendDate.getTime()) / (1000 * 3600 * 24));
+                    calMoneyVO.setInterest(String.valueOf(thirdPartyFundBusinessDO.getInterest()));
+                    calMoneyVO.setPoundage(String.valueOf(thirdPartyFundBusinessDO.getPoundage()));
+                    calMoneyVO.setTimeNum(String.valueOf(timeNum));
+                    calMoneyVO.setSingleRate(String.valueOf(singleRate));
+                    calMoneyVO.setReturnDate(sdf.format(repayDate1));
+                    calMoneyVO.setReturnType(String.valueOf(thirdPartyFundBusinessDO.getRepayType()));
+                }
+            }
+            BankLendRecordDO bankLendRecordDO = bankLendRecordDOMapper.selectByLoanOrder(orderId);
+            if (bankLendRecordDO != null) {
+                if (bankLendRecordDO.getLendDate() != null) {
+
+                    Calendar c = Calendar.getInstance();
+                    c.setTime(bankLendRecordDO.getLendDate());
+                    c.add(Calendar.DAY_OF_MONTH, 1);
+                    calMoneyVO.setBankDate(sdf.format(c.getTime()));
+                }
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return ResultBean.ofSuccess(calMoneyVO);
+    }
+
+    @Override
+    public ResultBean isReturn(Long bridgeProcessId, Long orderId) {
+        ThirdPartyFundBusinessDO thirdPartyFundBusinessDO = thirdPartyFundBusinessDOMapper.selectByPrimaryKey(bridgeProcessId);
+        if(thirdPartyFundBusinessDO != null){
+            if(thirdPartyFundBusinessDO.getRepayDate() == null){
+                return ResultBean.ofSuccess("0");
+            }else{
+                return ResultBean.ofSuccess(thirdPartyFundBusinessDO.getRepayDate());
+            }
+        }else{
+            return ResultBean.ofSuccess("0");
+        }
     }
 
     @Override

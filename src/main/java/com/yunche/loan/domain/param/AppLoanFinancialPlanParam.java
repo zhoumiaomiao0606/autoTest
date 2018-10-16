@@ -34,6 +34,8 @@ public class AppLoanFinancialPlanParam {
 
     private BigDecimal signRate;
 
+    private BigDecimal stagingRatio;
+
     /**
      * 实际贷款额
      */

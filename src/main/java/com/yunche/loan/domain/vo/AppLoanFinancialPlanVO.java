@@ -75,4 +75,8 @@ public class AppLoanFinancialPlanVO {
     private String paddingCompany;//垫资平台
 
     private String playCompany;//打款平台
+
+    private String financialServiceFee;//金融服务费
+
+    private String loanRate;//贷款比例
 }

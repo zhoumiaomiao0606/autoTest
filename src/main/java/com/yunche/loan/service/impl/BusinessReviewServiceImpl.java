@@ -1,15 +1,15 @@
 package com.yunche.loan.service.impl;
 
+import com.google.common.base.Preconditions;
+import com.google.gson.Gson;
 import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.util.BeanPlasticityUtills;
 import com.yunche.loan.domain.entity.*;
 import com.yunche.loan.domain.param.BusinessReviewCalculateParam;
 import com.yunche.loan.domain.param.BusinessReviewUpdateParam;
 import com.yunche.loan.domain.param.ParternerRuleParam;
-import com.yunche.loan.domain.vo.RecombinationVO;
-import com.yunche.loan.domain.vo.UniversalCustomerFileVO;
-import com.yunche.loan.domain.vo.UniversalCustomerVO;
-import com.yunche.loan.domain.vo.UniversalInfoVO;
+import com.yunche.loan.domain.param.ParternerRuleSharpTuningeParam;
+import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.manager.finance.BusinessReviewManager;
 import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.BusinessReviewService;
@@ -118,15 +118,15 @@ public class BusinessReviewServiceImpl implements BusinessReviewService {
         param.setAreaId(universalInfoVO.getVehicle_apply_license_plate_area_id());
 
 
-//        String financeResult = businessReviewManager.financeUnisal(param, "/costcalculation");
-//        FinanceResult financeResult1 = new FinanceResult();
-//        if (financeResult !=null && !"".equals(financeResult))
-//        {
-//            Gson gson = new Gson();
-//             financeResult1 = gson.fromJson(financeResult, FinanceResult.class);
-//        }
-//
-//        recombinationVO.setFinanceResult1(financeResult1);
+        String financeResult = businessReviewManager.financeUnisal(param, "/costcalculation");
+        FinanceResult financeResult1 = new FinanceResult();
+        if (financeResult !=null && !"".equals(financeResult))
+        {
+            Gson gson = new Gson();
+             financeResult1 = gson.fromJson(financeResult, FinanceResult.class);
+        }
+
+        recombinationVO.setFinanceResult1(financeResult1);
 
         return recombinationVO;
     }
@@ -348,6 +348,31 @@ public class BusinessReviewServiceImpl implements BusinessReviewService {
             total = total.setScale(2, BigDecimal.ROUND_HALF_UP);
             return total;
         }
+    }
+
+    @Override
+    public String parternerRuleSharpTuning(ParternerRuleSharpTuningeParam param)
+    {
+        Preconditions.checkNotNull(param.getCostType(),"消费类型不能为空");
+        Preconditions.checkNotNull(param.getOrderId(),"订单id不能为空");
+
+        //请求财务系统初始数据
+        UniversalInfoVO universalInfoVO = loanQueryDOMapper.selectUniversalInfo(param.getOrderId());
+        LoanBaseInfoDO loanBaseInfoDO = loanBaseInfoDOMapper.getTotalInfoByOrderId(param.getOrderId());
+
+        param.setPartnerId(loanBaseInfoDO.getPartnerId());
+        param.setPayMonth(universalInfoVO.getPay_month());
+        param.setCarType(universalInfoVO.getCar_type());
+        param.setFinancialLoanAmount(universalInfoVO.getFinancial_loan_amount());
+        param.setFinancialBankPeriodPrincipal(universalInfoVO.getFinancial_bank_period_principal());
+        param.setRate(universalInfoVO.getFinancial_sign_rate());
+        param.setYear(universalInfoVO.getFinancial_loan_time());
+        param.setCarGpsNum(universalInfoVO.getCar_gps_num());
+        //加收保证金
+        param.setBail(universalInfoVO.getFinancial_cash_deposit());
+
+
+        return businessReviewManager.financeUnisal(param,"/costcalculation/detail");
     }
 
 

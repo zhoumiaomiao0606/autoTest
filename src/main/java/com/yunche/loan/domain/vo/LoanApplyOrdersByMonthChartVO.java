@@ -11,15 +11,16 @@ import lombok.Data;
 public class LoanApplyOrdersByMonthChartVO
 {
     //贷款中
-    private Long uc_remitCount;
+    private String uc_remitCount;
     //已垫款
-    private Long c_remitCount;
+    private String c_remitCount;
     //合同准备中
-    private Long uc_materialPrintCount;
+    private String uc_materialPrintCount;
     //已放款
-    private Long c_bankLendCount;
+    private String c_bankLendCount;
     //抵押中
-    private Long uc_depositCount;
+    private String uc_depositCount;
     //抵押完成
-    private Long c_depositCount;
+    private String c_depositCount;
+
 }

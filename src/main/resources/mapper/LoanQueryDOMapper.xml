@@ -600,6 +600,15 @@
             detail.id                                                               AS car_detail_id,
             car.vehicle_property                                                    AS car_vehicle_property,
             car.car_type                                                            AS car_type,
+            car.car_key                                                            AS car_key,
+            CASE
+        WHEN car.car_key  = 0 THEN
+        '不收'
+        WHEN needCollectKeyTab.action = 1 THEN
+        '已收'
+        ELSE
+        '待收'
+        END                                                           AS needCollectKey,
             car.car_category                                                        AS car_category,
             vehicle.vehicle_identification_number                                   AS vehicle_vehicle_identification_number,
             vehicle.license_plate_number                                            AS vehicle_license_plate_number,
@@ -621,6 +630,7 @@
             car.car_category                                                        AS car_category
 
         from (select * from loan_order where id = #{orderId,jdbcType=BIGINT}) main_order
+        left join (select * from loan_process_log  where order_id =  #{orderId,jdbcType=BIGINT} and task_definition_key = '"usertask_commit_key"' order by create_time desc LIMIT 1) needCollectKeyTab on needCollectKeyTab.order_id = main_order.id
         left join loan_car_info car on main_order.loan_car_info_id = car.id
         left join loan_financial_plan financial on main_order.loan_financial_plan_id = financial.id
         left join vehicle_information vehicle on main_order.vehicle_information_id = vehicle.id
@@ -698,6 +708,11 @@
             remit.beneficiary_bank                                                                  AS remit_beneficiary_bank,
             remit.beneficiary_account                                                               AS remit_beneficiary_account,
             remit.beneficiary_account_number                                                        AS remit_beneficiary_account_number,
+
+            remit.remit_bank                                                                  AS remit_bank,
+            remit.remit_account                                                               AS remit_account,
+            remit.remit_account_number                                                        AS remit_account_number,
+
             remit.remit_amount                                                                      AS remit_amount,
             remit.return_rate_amount                                                                AS remit_return_rate_amount,
             remit.insurance_situation                                                               AS remit_insurance_situation,
