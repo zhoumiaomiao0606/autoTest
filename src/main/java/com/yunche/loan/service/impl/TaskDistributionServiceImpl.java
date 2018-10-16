@@ -55,12 +55,13 @@ public class TaskDistributionServiceImpl implements TaskDistributionService {
      *
      * @param taskId
      * @param taskKey
+     * @param orderId
      */
     @Override
     public void get(Long taskId, String taskKey, Long orderId) {
         Preconditions.checkNotNull(orderId, "orderId不能为空");
         Preconditions.checkNotNull(taskId, "taskId不能为空");
-        Preconditions.checkArgument(StringUtils.isBlank(taskKey), "taskKey不能为空");
+        Preconditions.checkArgument(StringUtils.isNotBlank(taskKey), "taskKey不能为空");
 
         TaskDistributionDO taskDistributionDO = taskDistributionDOMapper.selectByPrimaryKey(taskId, taskKey);
         if (null != taskDistributionDO) {
