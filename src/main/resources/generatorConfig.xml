@@ -56,12 +56,14 @@
          -->
 
 
+
         <table tableName="remit_details" domainObjectName="RemitDetailsDO"
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
             <!--采用下划线字段-->
             <property name="useActualColumnNames" value="true"/>
         </table>
+
 
 
         <!--
