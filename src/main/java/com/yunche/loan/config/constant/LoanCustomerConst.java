@@ -47,6 +47,10 @@ public class LoanCustomerConst {
      * 社会征信
      */
     public static final Byte CREDIT_TYPE_SOCIAL = 2;
+    /**
+     * customer征信增补打回
+     */
+    public static final Byte CREDIT_SUPPLEMENT = 3;
     ////////////////////////////////////////////////// 征信类型 /////////////////////////////////////////////////////////
 
 

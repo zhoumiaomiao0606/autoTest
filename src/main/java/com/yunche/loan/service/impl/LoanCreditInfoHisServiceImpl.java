@@ -70,30 +70,7 @@ public class LoanCreditInfoHisServiceImpl implements LoanCreditInfoHisService {
                     .filter(Objects::nonNull)
                     .forEach(e -> {
 
-                        // 银行征信查询记录
-                        LoanCreditInfoBankHisDO newLoanCreditInfoBankHisDO = new LoanCreditInfoBankHisDO();
-
-                        newLoanCreditInfoBankHisDO.setCustomerId(e.getId());
-                        newLoanCreditInfoBankHisDO.setCreditApplyTime(new Date());
-                        newLoanCreditInfoBankHisDO.setCreditApplyUserId(loginUser.getId());
-                        newLoanCreditInfoBankHisDO.setCreditApplyUserName(loginUser.getName());
-
-                        createLoanCreditInfoBankHisDO(newLoanCreditInfoBankHisDO);
-
-
-                        // 社会征信查询记录 (>=13万)
-                        if (loanAmount >= EXPECT_LOAN_AMOUNT_EQT_13W_LT_20W) {
-
-                            LoanCreditInfoSocialHisDO newLoanCreditInfoSocialHisDO = new LoanCreditInfoSocialHisDO();
-
-                            newLoanCreditInfoSocialHisDO.setCustomerId(e.getId());
-                            newLoanCreditInfoSocialHisDO.setCreditApplyTime(new Date());
-                            newLoanCreditInfoSocialHisDO.setCreditApplyUserId(loginUser.getId());
-                            newLoanCreditInfoSocialHisDO.setCreditApplyUserName(loginUser.getName());
-
-                            createLoanCreditInfoSocialHisDO(newLoanCreditInfoSocialHisDO);
-                        }
-
+                        createCreditInfoHis_CreditApply_First(e, loanAmount, loginUser);
                     });
 
         } else {
@@ -152,6 +129,7 @@ public class LoanCreditInfoHisServiceImpl implements LoanCreditInfoHisService {
 //                            Byte enableType_ = e.getEnableType();
                             Byte enableType_ = enableType[0];
 
+                            // 银行增信打回
                             if (CREDIT_TYPE_BANK.equals(enableType_)) {
 
                                 // 银行征信查询记录
@@ -164,7 +142,9 @@ public class LoanCreditInfoHisServiceImpl implements LoanCreditInfoHisService {
 
                                 createLoanCreditInfoBankHisDO(newLoanCreditInfoBankHisDO);
 
-                            } else if (CREDIT_TYPE_SOCIAL.equals(enableType_)) {
+                            }
+                            // 社会增信打回
+                            else if (CREDIT_TYPE_SOCIAL.equals(enableType_)) {
 
                                 // 社会征信查询记录
                                 LoanCreditInfoSocialHisDO newLoanCreditInfoSocialHisDO = new LoanCreditInfoSocialHisDO();
@@ -175,11 +155,51 @@ public class LoanCreditInfoHisServiceImpl implements LoanCreditInfoHisService {
                                 newLoanCreditInfoSocialHisDO.setCreditApplyUserName(loginUser.getName());
 
                                 createLoanCreditInfoSocialHisDO(newLoanCreditInfoSocialHisDO);
+
+                            }
+                            // 增信增补打回
+                            else if (CREDIT_SUPPLEMENT.equals(enableType_)) {
+
+                                createCreditInfoHis_CreditApply_First(e, loanAmount, loginUser);
                             }
 
                         });
             }
 
+        }
+    }
+
+    /**
+     * 创建征信查询历史记录   -->     customer-first
+     *
+     * @param loanCustomerDO
+     * @param loanAmount
+     * @param loginUser
+     */
+    private void createCreditInfoHis_CreditApply_First(LoanCustomerDO loanCustomerDO, Byte loanAmount, EmployeeDO loginUser) {
+
+        // 银行征信查询记录
+        LoanCreditInfoBankHisDO newLoanCreditInfoBankHisDO = new LoanCreditInfoBankHisDO();
+
+        newLoanCreditInfoBankHisDO.setCustomerId(loanCustomerDO.getId());
+        newLoanCreditInfoBankHisDO.setCreditApplyTime(new Date());
+        newLoanCreditInfoBankHisDO.setCreditApplyUserId(loginUser.getId());
+        newLoanCreditInfoBankHisDO.setCreditApplyUserName(loginUser.getName());
+
+        createLoanCreditInfoBankHisDO(newLoanCreditInfoBankHisDO);
+
+
+        // 社会征信查询记录 (>=13万)
+        if (loanAmount >= EXPECT_LOAN_AMOUNT_EQT_13W_LT_20W) {
+
+            LoanCreditInfoSocialHisDO newLoanCreditInfoSocialHisDO = new LoanCreditInfoSocialHisDO();
+
+            newLoanCreditInfoSocialHisDO.setCustomerId(loanCustomerDO.getId());
+            newLoanCreditInfoSocialHisDO.setCreditApplyTime(new Date());
+            newLoanCreditInfoSocialHisDO.setCreditApplyUserId(loginUser.getId());
+            newLoanCreditInfoSocialHisDO.setCreditApplyUserName(loginUser.getName());
+
+            createLoanCreditInfoSocialHisDO(newLoanCreditInfoSocialHisDO);
         }
     }
 
