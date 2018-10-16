@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.yunche.loan.mapper.LoanStatementDOMapper">
-    <select id="statisticsTelephoneVerifyNodeOrders" parameterType="com.yunche.loan.domain.param.TelephoneVerifyParam" resultType="com.yunche.loan.domain.vo.TelephoneVerifyNodeOrdersVO">
+    <select id="statisticsTelephoneVerifyNodeOrders" parameterType="com.yunche.loan.domain.param.TelephoneVerifyParam"
+            resultType="com.yunche.loan.domain.vo.TelephoneVerifyNodeOrdersVO">
         SELECT
         tab.*
         FROM
@@ -36,7 +37,8 @@
         employee_rela_user_group ug
         LEFT JOIN user_group g ON ug.user_group_id = g.id
         WHERE
-        ug.employee_id = ( SELECT user_id FROM loan_process_log WHERE task_definition_key = 'usertask_telephone_verify' AND order_id = orders.id ORDER BY create_time DESC LIMIT 1 )
+        ug.employee_id = ( SELECT user_id FROM loan_process_log WHERE task_definition_key = 'usertask_telephone_verify'
+        AND order_id = orders.id ORDER BY create_time DESC LIMIT 1 )
         ) = 7 THEN
         '电审总监过单'
         WHEN (
@@ -46,7 +48,8 @@
         employee_rela_user_group ug
         LEFT JOIN user_group g ON ug.user_group_id = g.id
         WHERE
-        ug.employee_id = ( SELECT user_id FROM loan_process_log WHERE task_definition_key = 'usertask_telephone_verify' AND order_id = orders.id ORDER BY create_time DESC LIMIT 1 )
+        ug.employee_id = ( SELECT user_id FROM loan_process_log WHERE task_definition_key = 'usertask_telephone_verify'
+        AND order_id = orders.id ORDER BY create_time DESC LIMIT 1 )
         ) = 6 THEN
         '电审主管过单'
         WHEN (
@@ -56,7 +59,8 @@
         employee_rela_user_group ug
         LEFT JOIN user_group g ON ug.user_group_id = g.id
         WHERE
-        ug.employee_id = ( SELECT user_id FROM loan_process_log WHERE task_definition_key = 'usertask_telephone_verify' AND order_id = orders.id ORDER BY create_time DESC LIMIT 1 )
+        ug.employee_id = ( SELECT user_id FROM loan_process_log WHERE task_definition_key = 'usertask_telephone_verify'
+        AND order_id = orders.id ORDER BY create_time DESC LIMIT 1 )
         ) = 5 THEN
         '电审组长过单'
         WHEN (
@@ -66,7 +70,8 @@
         employee_rela_user_group ug
         LEFT JOIN user_group g ON ug.user_group_id = g.id
         WHERE
-        ug.employee_id = ( SELECT user_id FROM loan_process_log WHERE task_definition_key = 'usertask_telephone_verify' AND order_id = orders.id ORDER BY create_time DESC LIMIT 1 )
+        ug.employee_id = ( SELECT user_id FROM loan_process_log WHERE task_definition_key = 'usertask_telephone_verify'
+        AND order_id = orders.id ORDER BY create_time DESC LIMIT 1 )
         ) = 4 THEN
         '电审专员过单' ELSE '异常提交'
         END ELSE '待处理'
@@ -84,33 +89,43 @@
         WHEN ( SELECT count( order_id ) FROM install_gps GROUP BY order_id HAVING order_id = orders.id ) IS NULL THEN
         0 ELSE ( SELECT count( order_id ) FROM install_gps GROUP BY order_id HAVING order_id = orders.id )
         END AS gps_number,
-        ( SELECT NAME FROM employee WHERE id = ( SELECT user_id FROM loan_process_log WHERE task_definition_key = 'usertask_telephone_verify' AND order_id = orders.id ORDER BY create_time DESC LIMIT 1 ) ) AS op_user_name,
-        ( SELECT create_time FROM loan_process_log WHERE task_definition_key = 'usertask_telephone_verify' AND order_id = orders.id ORDER BY create_time DESC LIMIT 1 ) op_time,
+        ( SELECT NAME FROM employee WHERE id = ( SELECT user_id FROM loan_process_log WHERE task_definition_key =
+        'usertask_telephone_verify' AND order_id = orders.id ORDER BY create_time DESC LIMIT 1 ) ) AS op_user_name,
+        ( SELECT create_time FROM loan_process_log WHERE task_definition_key = 'usertask_telephone_verify' AND order_id
+        = orders.id ORDER BY create_time DESC LIMIT 1 ) op_time,
         CASE
 
-        WHEN ( SELECT credit_result FROM loan_process_log WHERE task_definition_key = 'usertask_telephone_verify' AND order_id = orders.id ORDER BY create_time DESC LIMIT 1 ) = 1 THEN
+        WHEN ( SELECT credit_result FROM loan_process_log WHERE task_definition_key = 'usertask_telephone_verify' AND
+        order_id = orders.id ORDER BY create_time DESC LIMIT 1 ) = 1 THEN
         '通过'
-        WHEN ( SELECT credit_result FROM loan_process_log WHERE task_definition_key = 'usertask_telephone_verify' AND order_id = orders.id ORDER BY create_time DESC LIMIT 1 ) = 1 THEN
+        WHEN ( SELECT credit_result FROM loan_process_log WHERE task_definition_key = 'usertask_telephone_verify' AND
+        order_id = orders.id ORDER BY create_time DESC LIMIT 1 ) = 1 THEN
         '通融通过' ELSE '待审核'
         END AS result,
-        ( SELECT info FROM loan_process_log WHERE task_definition_key = 'usertask_telephone_verify' AND order_id = orders.id ORDER BY create_time DESC LIMIT 1 ) op_info,
+        ( SELECT info FROM loan_process_log WHERE task_definition_key = 'usertask_telephone_verify' AND order_id =
+        orders.id ORDER BY create_time DESC LIMIT 1 ) op_info,
         CASE
         WHEN process.telephone_verify = 2 then '待审核'
 
-        WHEN ( SELECT action FROM loan_process_log WHERE task_definition_key = 'usertask_telephone_verify' AND order_id = orders.id ORDER BY create_time DESC LIMIT 1 ) = 3 THEN
+        WHEN ( SELECT action FROM loan_process_log WHERE task_definition_key = 'usertask_telephone_verify' AND order_id
+        = orders.id ORDER BY create_time DESC LIMIT 1 ) = 3 THEN
         '资料增补'
-        WHEN ( SELECT action FROM loan_process_log WHERE task_definition_key = 'usertask_telephone_verify' AND order_id = orders.id ORDER BY create_time DESC LIMIT 1 ) = 2 THEN
+        WHEN ( SELECT action FROM loan_process_log WHERE task_definition_key = 'usertask_telephone_verify' AND order_id
+        = orders.id ORDER BY create_time DESC LIMIT 1 ) = 2 THEN
         '弃单'
-        WHEN ( SELECT action FROM loan_process_log WHERE task_definition_key = 'usertask_telephone_verify' AND order_id = orders.id ORDER BY create_time DESC LIMIT 1 ) = 1 THEN
+        WHEN ( SELECT action FROM loan_process_log WHERE task_definition_key = 'usertask_telephone_verify' AND order_id
+        = orders.id ORDER BY create_time DESC LIMIT 1 ) = 1 THEN
         '通过'
-        WHEN ( SELECT action FROM loan_process_log WHERE task_definition_key = 'usertask_telephone_verify' AND order_id = orders.id ORDER BY create_time DESC LIMIT 1 ) = 0 THEN
+        WHEN ( SELECT action FROM loan_process_log WHERE task_definition_key = 'usertask_telephone_verify' AND order_id
+        = orders.id ORDER BY create_time DESC LIMIT 1 ) = 0 THEN
         CASE
 
         WHEN process.telephone_verify IN ( 2, 4, 5, 6, 7 ) THEN
         '待审核' ELSE
         CASE
 
-        WHEN ( SELECT count( 1 ) FROM loan_reject_log WHERE reject_origin_task = 'usertask_telephone_verify' AND order_id = process.order_id AND gmt_create BETWEEN process.gmt_create AND process.gmt_modify ) = 0 THEN
+        WHEN ( SELECT count( 1 ) FROM loan_reject_log WHERE reject_origin_task = 'usertask_telephone_verify' AND
+        order_id = process.order_id AND gmt_create BETWEEN process.gmt_create AND process.gmt_modify ) = 0 THEN
         '待审核' ELSE '已打回'
         END
         END ELSE '未知'
@@ -186,7 +201,8 @@
         order by op_time asc
     </select>
     <!--=======================================导出 EXCEL 银行征信查询=========================================-->
-    <select id="exportBankCreditQuerys" parameterType="com.yunche.loan.domain.param.ExportBankCreditQueryVerifyParam"  resultType="com.yunche.loan.domain.vo.ExportBankCreditQueryVO">
+    <select id="exportBankCreditQuerys" parameterType="com.yunche.loan.domain.param.ExportBankCreditQueryVerifyParam"
+            resultType="com.yunche.loan.domain.vo.ExportBankCreditQueryVO">
         SELECT
         principal_area.area_name,
         -- 客户类型: 1-主贷人;2-共贷人;3-担保人;4-紧急联系人;
@@ -238,13 +254,13 @@
         END AS cust_relation,
         -- 征信结果: 0-不通过;1-通过;2-关注;
         CASE
-        WHEN credit_info.result = 0 THEN
+        WHEN loan_credit_info_bank_his.bank_credit_result = 0 THEN
         '不通过'
-        WHEN credit_info.result = 1 THEN
+        WHEN loan_credit_info_bank_his.bank_credit_result = 1 THEN
         '通过'
-        WHEN credit_info.result = 2 THEN
+        WHEN loan_credit_info_bank_his.bank_credit_result = 2 THEN
         '关注'
-        WHEN credit_info.result = 3 THEN
+        WHEN loan_credit_info_bank_his.bank_credit_result = 3 THEN
         '银行退回'
         ELSE
         NULL
@@ -256,20 +272,9 @@
         '内部担保'
         ELSE
         NULL
-        END  AS guaranteeType,
-        (
-        SELECT
-        create_time
-        FROM
-        loan_process_log
-        WHERE
-        task_definition_key = 'usertask_credit_apply'
-        AND order_id = principal_orders.id
-        ORDER BY
-        create_time
-        LIMIT 1
-        ) AS credit_apply_time,
-        credit_info.gmt_modify AS credit_query_time,
+        END AS guaranteeType,
+        loan_credit_info_bank_his.credit_apply_time AS credit_apply_time,
+        loan_credit_info_bank_his.bank_credit_record_time AS credit_query_time,
         (
         SELECT
         user_name
@@ -284,7 +289,9 @@
         ) AS gmt_user
         FROM
         loan_customer customer
-        LEFT JOIN loan_credit_info credit_info ON credit_info.customer_id = customer.id
+        left join (select customer_id,max(id) as credithisId FROM loan_credit_info_bank_his GROUP BY customer_id) tab on
+        tab.customer_id = customer.id
+        left join loan_credit_info_bank_his on tab.credithisId = loan_credit_info_bank_his.id
         LEFT JOIN loan_customer principal ON customer.principal_cust_id = principal.id
         LEFT JOIN loan_order principal_orders ON principal_orders.loan_customer_id = principal.id
         LEFT JOIN loan_base_info principal_base ON principal_orders.loan_base_info_id = principal_base.id
@@ -294,8 +301,6 @@
         LEFT JOIN loan_process ON principal_orders.id = loan_process.order_id
 
         <where>
-            and (credit_info.type = 1 OR credit_info.type is NULL) AND loan_process.bank_credit_record IN (1,2)
-            and
             case when #{maxGroupLevel} = 0 then false
             when #{maxGroupLevel} = 1 then
             principal_base.salesman_id in
@@ -307,15 +312,14 @@
                     </foreach>
                 </when>
                 <otherwise>
-                    select temp.id from (SELECT 1 as id) temp  where temp.id =2
+                    select temp.id from (SELECT 1 as id) temp where temp.id =2
                 </otherwise>
             </choose>
             )
             else true end
-            <if test="startDate !=null and endDate !=null and startDate !='' and endDate !='' ">
-                and credit_info.gmt_modify between #{startDate} and #{endDate}
+            <if test="startDate !=null and endDate !=null">
+                and loan_credit_info_bank_his.bank_credit_record_time between #{startDate} and #{endDate}
             </if>
-
             <if test="partnerList != null and partnerList.size() > 0">
                 and
                 principal_base.partner_id in
@@ -330,7 +334,7 @@
                     #{item}
                 </foreach>
             </if>
-            AND customer.cust_type  in  (1,2,3) and customer.status = 0
+            AND customer.cust_type in (1,2,3) and customer.status = 0
         </where>
         <if test="startCreditGmtCreate != null and endCreditGmtCreate != null and startCreditGmtCreate != '' and endCreditGmtCreate != '' ">
             having(
@@ -338,12 +342,14 @@
             AND TO_DAYS(credit_apply_time) &lt;= TO_DAYS(#{endCreditGmtCreate})
             )
         </if>
-        order by credit_info.gmt_modify desc
+        order by loan_credit_info_bank_his.bank_credit_record_time desc
     </select>
 
 
     <!--=======================================导出 EXCEL 社会征信查询=========================================-->
-    <select id="exportSocialCreditQuerys1" parameterType="com.yunche.loan.domain.param.ExportSocialCreditQueryVerifyParam"  resultType="com.yunche.loan.domain.vo.ExportSocialCreditQueryVO" >
+    <select id="exportSocialCreditQuerys1"
+            parameterType="com.yunche.loan.domain.param.ExportSocialCreditQueryVerifyParam"
+            resultType="com.yunche.loan.domain.vo.ExportSocialCreditQueryVO">
         SELECT
         principal_area.area_name,principal_orders.id,
         -- 客户类型: 1-主贷人;2-共贷人;3-担保人;4-紧急联系人;
@@ -395,13 +401,13 @@
         END AS cust_relation,
         -- 征信结果: 0-不通过;1-通过;2-关注;
         CASE
-        WHEN credit_info.result = 0 THEN
+        WHEN loan_credit_info_social_his.social_credit_result = 0 THEN
         '不通过'
-        WHEN credit_info.result = 1 THEN
+        WHEN loan_credit_info_social_his.social_credit_result = 1 THEN
         '通过'
-        WHEN credit_info.result = 2 THEN
+        WHEN loan_credit_info_social_his.social_credit_result = 2 THEN
         '关注'
-        WHEN credit_info.result = 3 THEN
+        WHEN loan_credit_info_social_his.social_credit_result = 3 THEN
         '银行退回'
         ELSE
         NULL
@@ -413,20 +419,9 @@
         '内部担保'
         ELSE
         NULL
-        END  AS guaranteeType,
-        (
-        SELECT
-        create_time
-        FROM
-        loan_process_log
-        WHERE
-        task_definition_key = 'usertask_credit_apply'
-        AND order_id = principal_orders.id
-        ORDER BY
-        create_time
-        LIMIT 1
-        ) AS credit_apply_time,
-        credit_info.gmt_modify AS credit_query_time,
+        END AS guaranteeType,
+        loan_credit_info_social_his.credit_apply_time AS credit_apply_time,
+        loan_credit_info_social_his.social_credit_record_time AS credit_query_time,
         (
         SELECT
         user_name
@@ -441,7 +436,9 @@
         ) AS gmt_user
         FROM
         loan_customer customer
-        LEFT JOIN loan_credit_info credit_info ON credit_info.customer_id = customer.id
+        left join (select customer_id,max(id) as credithisId FROM loan_credit_info_social_his GROUP BY customer_id) tab
+        on tab.customer_id = customer.id
+        left join loan_credit_info_social_his on tab.credithisId = loan_credit_info_social_his.id
         LEFT JOIN loan_customer principal ON customer.principal_cust_id = principal.id
         LEFT JOIN loan_order principal_orders ON principal_orders.loan_customer_id = principal.id
         LEFT JOIN loan_base_info principal_base ON principal_orders.loan_base_info_id = principal_base.id
@@ -450,7 +447,16 @@
         LEFT JOIN employee employee ON employee.id = principal_base.salesman_id
         LEFT JOIN loan_process ON principal_orders.id = loan_process.order_id
         <where>
-            loan_process.order_status = 1 and credit_info.type = 2
+            <if test="state == 1">
+                loan_credit_info_social_his.social_credit_record_time is not null and
+            </if>
+
+            <if test="state == 2">
+                loan_credit_info_social_his.social_credit_record_time is null and
+            </if>
+
+
+            loan_process.order_status = 1
             and
             case when #{maxGroupLevel} = 0 then false
             when #{maxGroupLevel} = 1 then
@@ -463,14 +469,14 @@
                     </foreach>
                 </when>
                 <otherwise>
-                    select temp.id from (SELECT 1 as id) temp  where temp.id =2
+                    select temp.id from (SELECT 1 as id) temp where temp.id =2
                 </otherwise>
             </choose>
             )
             else true end
 
             <if test="startDate !=null and endDate !=null">
-            and credit_info.gmt_modify between #{startDate} and #{endDate}
+                and loan_credit_info_social_his.social_credit_record_time between #{startDate} and #{endDate}
             </if>
             <if test="partnerList != null and partnerList.size() > 0">
                 and
@@ -486,7 +492,7 @@
                     #{item}
                 </foreach>
             </if>
-            AND customer.cust_type  in  (1,2,3) and customer.status = 0
+            AND customer.cust_type in (1,2,3) and customer.status = 0
         </where>
         <if test="startCreditGmtCreate != null and endCreditGmtCreate != null">
             having(
@@ -494,10 +500,12 @@
             AND TO_DAYS(credit_apply_time) &lt;= TO_DAYS(#{endCreditGmtCreate})
             )
         </if>
-        order by credit_info.gmt_modify desc
+        order by loan_credit_info_social_his.social_credit_record_time desc
     </select>
 
-    <select id="exportSocialCreditQuerys2" parameterType="com.yunche.loan.domain.param.ExportSocialCreditQueryVerifyParam"  resultType="com.yunche.loan.domain.vo.ExportSocialCreditQueryVO" >
+    <select id="exportSocialCreditQuerys2"
+            parameterType="com.yunche.loan.domain.param.ExportSocialCreditQueryVerifyParam"
+            resultType="com.yunche.loan.domain.vo.ExportSocialCreditQueryVO">
         SELECT
         principal_area.area_name,principal_orders.id,
         -- 客户类型: 1-主贷人;2-共贷人;3-担保人;4-紧急联系人;
@@ -548,7 +556,18 @@
         NULL
         END AS cust_relation,
         -- 征信结果: 0-不通过;1-通过;2-关注;
-        '' AS credit_result,
+        CASE
+        WHEN loan_credit_info_his.social_credit_result = 0 THEN
+        '不通过'
+        WHEN loan_credit_info_his.social_credit_result = 1 THEN
+        '通过'
+        WHEN loan_credit_info_his.social_credit_result = 2 THEN
+        '关注'
+        WHEN loan_credit_info_his.social_credit_result = 3 THEN
+        '银行退回'
+        ELSE
+        NULL
+        END AS credit_result,
         CASE
         WHEN customer.guarantee_type = 1 THEN
         '银行担保'
@@ -556,20 +575,9 @@
         '内部担保'
         ELSE
         NULL
-        END  AS guaranteeType,
-        (
-        SELECT
-        create_time
-        FROM
-        loan_process_log
-        WHERE
-        task_definition_key = 'usertask_credit_apply'
-        AND order_id = principal_orders.id
-        ORDER BY
-        create_time
-        LIMIT 1
-        ) AS credit_apply_time,
-        '' AS credit_query_time,
+        END AS guaranteeType,
+        loan_credit_info_his.credit_apply_time AS credit_apply_time,
+        loan_credit_info_his.social_credit_record_time AS credit_query_time,
         (
         SELECT
         user_name
@@ -584,7 +592,9 @@
         ) AS gmt_user
         FROM
         loan_customer customer
-        LEFT JOIN loan_credit_info credit_info ON credit_info.customer_id = customer.id
+        left join (select customer_id,max(id) as credithisId FROM loan_credit_info_his GROUP BY customer_id) tab on
+        tab.customer_id = customer.id
+        left join loan_credit_info_his on tab.credithisId = loan_credit_info_his.id
         LEFT JOIN loan_customer principal ON customer.principal_cust_id = principal.id
         LEFT JOIN loan_order principal_orders ON principal_orders.loan_customer_id = principal.id
         LEFT JOIN loan_base_info principal_base ON principal_orders.loan_base_info_id = principal_base.id
@@ -593,7 +603,7 @@
         LEFT JOIN employee employee ON employee.id = principal_base.salesman_id
         LEFT JOIN loan_process ON principal_orders.id = loan_process.order_id
         <where>
-            loan_process.order_status = 1 and loan_process.social_credit_record =2 and if((select count(*) from loan_credit_info where customer_id = customer.id and type =2) = 1,false,true)
+            loan_process.order_status = 1 and loan_process.social_credit_record =2
             and
             case when #{maxGroupLevel} = 0 then false
             when #{maxGroupLevel} = 1 then
@@ -606,14 +616,14 @@
                     </foreach>
                 </when>
                 <otherwise>
-                    select temp.id from (SELECT 1 as id) temp  where temp.id =2
+                    select temp.id from (SELECT 1 as id) temp where temp.id =2
                 </otherwise>
             </choose>
             )
             else true end
 
             <if test="startDate !=null and endDate !=null">
-                and credit_info.gmt_modify between #{startDate} and #{endDate}
+                and loan_credit_info_his.social_credit_record_time between #{startDate} and #{endDate}
             </if>
             <if test="partnerList != null and partnerList.size() > 0">
                 and
@@ -629,7 +639,7 @@
                     #{item}
                 </foreach>
             </if>
-            AND customer.cust_type  in  (1,2,3) and customer.status = 0
+            AND customer.cust_type in (1,2,3) and customer.status = 0
         </where>
         <if test="startCreditGmtCreate != null and endCreditGmtCreate != null">
             having(
@@ -637,13 +647,13 @@
             AND TO_DAYS(credit_apply_time) &lt;= TO_DAYS(#{endCreditGmtCreate})
             )
         </if>
-        order by credit_info.gmt_modify desc
+        order by loan_credit_info_his.social_credit_record_time desc
     </select>
 
 
-
     <!--=======================================导出 EXCEL 财务垫款明细查询=========================================-->
-    <select id="exportRemitDetailQuerys" parameterType="com.yunche.loan.domain.param.ExportRemitDetailQueryVerifyParam"  resultType="com.yunche.loan.domain.vo.ExportRemitDetailQueryVO" >
+    <select id="exportRemitDetailQuerys" parameterType="com.yunche.loan.domain.param.ExportRemitDetailQueryVerifyParam"
+            resultType="com.yunche.loan.domain.vo.ExportRemitDetailQueryVO">
 
         SELECT
         base_area.area_name,
@@ -654,8 +664,8 @@
         partner. NAME AS partner_name,
         employee. NAME AS salesman_name,
         case when car.car_type = 0 then '新车'
-             when car.car_type = 1 then '二手车'
-             else '其他' end as car_type,
+        when car.car_type = 1 then '二手车'
+        else '其他' end as car_type,
         loan_financial_plan.car_price AS price,
         loan_financial_plan.sign_rate,
         loan_financial_plan.loan_amount,
@@ -714,7 +724,7 @@
                 </foreach>
             </when>
             <otherwise>
-                select temp.id from (SELECT 1 as id) temp  where temp.id =2
+                select temp.id from (SELECT 1 as id) temp where temp.id =2
             </otherwise>
         </choose>
         )
@@ -733,13 +743,13 @@
                 #{item}
             </foreach>
         </if>
-        <if test="startRemitAmount !=null" >
+        <if test="startRemitAmount !=null">
             and
             remit_details.remit_amount &gt;= #{startRemitAmount}
         </if>
 
-        <if test="endRemitAmount !=null" >
-            AND  remit_details.remit_amount &lt;= #{endRemitAmount}
+        <if test="endRemitAmount !=null">
+            AND remit_details.remit_amount &lt;= #{endRemitAmount}
         </if>
 
         having submitTime between #{startDate} AND CONCAT(#{endDate},' 23.59.59')
@@ -748,25 +758,31 @@
     </select>
 
     <!--=======================================导出 EXCEL 资料审核明细查询=========================================-->
-    <select id="exportMaterialReviewQuerys" parameterType="com.yunche.loan.domain.param.ExportMaterialReviewQueryVerifyParam"  resultType="com.yunche.loan.domain.vo.ExportMaterialReviewDetailQueryVO" >
+    <select id="exportMaterialReviewQuerys"
+            parameterType="com.yunche.loan.domain.param.ExportMaterialReviewQueryVerifyParam"
+            resultType="com.yunche.loan.domain.vo.ExportMaterialReviewDetailQueryVO">
         SELECT
         t.*,
         CASE
 
         WHEN t.express_receive_date IS NOT NULL THEN
         floor(
-        ( UNIX_TIMESTAMP( DATE_FORMAT( t.express_receive_date, '%Y-%m-%d' ) ) - UNIX_TIMESTAMP( DATE_FORMAT( t.remitdate, '%Y-%m-%d' ) ) ) / ( 24 * 60 * 60 )
+        ( UNIX_TIMESTAMP( DATE_FORMAT( t.express_receive_date, '%Y-%m-%d' ) ) - UNIX_TIMESTAMP( DATE_FORMAT(
+        t.remitdate, '%Y-%m-%d' ) ) ) / ( 24 * 60 * 60 )
         ) ELSE floor(
-        ( UNIX_TIMESTAMP( DATE_FORMAT( now( ), '%Y-%m-%d' ) ) - UNIX_TIMESTAMP( DATE_FORMAT( t.remitdate, '%Y-%m-%d' ) ) ) / ( 24 * 60 * 60 )
+        ( UNIX_TIMESTAMP( DATE_FORMAT( now( ), '%Y-%m-%d' ) ) - UNIX_TIMESTAMP( DATE_FORMAT( t.remitdate, '%Y-%m-%d' ) )
+        ) / ( 24 * 60 * 60 )
         )
         END AS remitOverdueTime,
         CASE
 
         WHEN t.complete_material_date IS NOT NULL THEN
         floor(
-        ( UNIX_TIMESTAMP( DATE_FORMAT( t.complete_material_date, '%Y-%m-%d' ) ) - UNIX_TIMESTAMP( DATE_FORMAT( t.remitdate, '%Y-%m-%d' ) ) ) / ( 24 * 60 * 60 )
+        ( UNIX_TIMESTAMP( DATE_FORMAT( t.complete_material_date, '%Y-%m-%d' ) ) - UNIX_TIMESTAMP( DATE_FORMAT(
+        t.remitdate, '%Y-%m-%d' ) ) ) / ( 24 * 60 * 60 )
         ) ELSE floor(
-        ( UNIX_TIMESTAMP( DATE_FORMAT( now( ), '%Y-%m-%d' ) ) - UNIX_TIMESTAMP( DATE_FORMAT( t.remitdate, '%Y-%m-%d' ) ) ) / ( 24 * 60 * 60 )
+        ( UNIX_TIMESTAMP( DATE_FORMAT( now( ), '%Y-%m-%d' ) ) - UNIX_TIMESTAMP( DATE_FORMAT( t.remitdate, '%Y-%m-%d' ) )
+        ) / ( 24 * 60 * 60 )
         )
         END AS revievOverdueTime
         FROM
@@ -778,10 +794,14 @@
         customer.id_card,
         loan_base_info.bank,
         loan_financial_plan.bank_period_principal,
-        ( SELECT create_time FROM loan_process_log WHERE orders.id = loan_process_log.order_id AND loan_process_log.task_definition_key = 'usertask_remit_review' ORDER BY id DESC LIMIT 1 ) AS remitdate,
-        ( SELECT loan_data_flow.express_receive_date FROM loan_data_flow WHERE orders.id = loan_data_flow.order_id AND type = 2 ORDER BY loan_data_flow.id DESC LIMIT 1  ) AS express_receive_date,
+        ( SELECT create_time FROM loan_process_log WHERE orders.id = loan_process_log.order_id AND
+        loan_process_log.task_definition_key = 'usertask_remit_review' ORDER BY id DESC LIMIT 1 ) AS remitdate,
+        ( SELECT loan_data_flow.express_receive_date FROM loan_data_flow WHERE orders.id = loan_data_flow.order_id AND
+        type = 2 ORDER BY loan_data_flow.id DESC LIMIT 1 ) AS express_receive_date,
         material_audit.complete_material_date,
-        ( SELECT create_time FROM loan_process_log WHERE orders.id = loan_process_log.order_id AND loan_process_log.task_definition_key = 'usertask_material_review' ORDER BY id DESC LIMIT 1 ) AS materialReviewSubmit,
+        ( SELECT create_time FROM loan_process_log WHERE orders.id = loan_process_log.order_id AND
+        loan_process_log.task_definition_key = 'usertask_material_review' ORDER BY id DESC LIMIT 1 ) AS
+        materialReviewSubmit,
         CASE
 
         WHEN loan_process.material_review = 1 THEN
@@ -791,8 +811,10 @@
         WHEN loan_process.material_review = 3 THEN
         '已打回'
         ELSE '未知' END AS material_review,
-        ( SELECT count( 1 ) FROM loan_info_supplement WHERE loan_info_supplement.order_id = orders.id ) AS supplementCount,
-        ( SELECT GROUP_CONCAT( DATE_FORMAT( end_time, '%Y-%m-%d  ' ), content ORDER BY id DESC ) FROM loan_info_supplement WHERE loan_info_supplement.order_id = orders.id ) AS supplementContent,
+        ( SELECT count( 1 ) FROM loan_info_supplement WHERE loan_info_supplement.order_id = orders.id ) AS
+        supplementCount,
+        ( SELECT GROUP_CONCAT( DATE_FORMAT( end_time, '%Y-%m-%d ' ), content ORDER BY id DESC ) FROM
+        loan_info_supplement WHERE loan_info_supplement.order_id = orders.id ) AS supplementContent,
         (
         SELECT
         GROUP_CONCAT( DATE_FORMAT( start_time, '%Y-%m-%d至' ), DATE_FORMAT( end_time, '%Y-%m-%d' ) ORDER BY id DESC )
@@ -801,8 +823,10 @@
         WHERE
         loan_info_supplement.order_id = orders.id
         ) AS supplementTime,
-        ( SELECT create_time FROM loan_process_log WHERE orders.id = loan_process_log.order_id AND task_definition_key = 'usertask_vehicle_information' ORDER BY id DESC LIMIT 1 ) AS carMaterialCreateTime,
-        ( SELECT loan_data_flow.express_send_date FROM loan_data_flow WHERE orders.id = loan_data_flow.order_id AND （type = 3 or type = 4) ORDER BY id DESC LIMIT 1 ) AS express_sendbank_date
+        ( SELECT create_time FROM loan_process_log WHERE orders.id = loan_process_log.order_id AND task_definition_key =
+        'usertask_vehicle_information' ORDER BY id DESC LIMIT 1 ) AS carMaterialCreateTime,
+        ( SELECT loan_data_flow.express_send_date FROM loan_data_flow WHERE orders.id = loan_data_flow.order_id AND
+        （type = 3 or type = 4) ORDER BY id DESC LIMIT 1 ) AS express_sendbank_date
         FROM
         loan_order orders
         LEFT JOIN loan_customer customer ON orders.loan_customer_id = customer.id
@@ -827,7 +851,7 @@
                     </foreach>
                 </when>
                 <otherwise>
-                    select temp.id from (SELECT 1 as id) temp  where temp.id =2
+                    select temp.id from (SELECT 1 as id) temp where temp.id =2
                 </otherwise>
             </choose>
             )
@@ -866,7 +890,9 @@
     </select>
 
     <!--=======================================导出 EXCEL 抵押超期=========================================-->
-    <select id="exportMortgageOverdueQuerys" parameterType="com.yunche.loan.domain.param.ExportMortgageOverdueQueryVerifyParam"  resultType="com.yunche.loan.domain.vo.ExportMortgageOverdueQueryVO" >
+    <select id="exportMortgageOverdueQuerys"
+            parameterType="com.yunche.loan.domain.param.ExportMortgageOverdueQueryVerifyParam"
+            resultType="com.yunche.loan.domain.vo.ExportMortgageOverdueQueryVO">
         SELECT
         loanbaseinfo.area_id,
         base_area.area_name,
@@ -887,10 +913,13 @@
         cardetail.price,
         loan_financial_plan.loan_amount,
         loan_financial_plan.bank_period_principal,
-        ( SELECT create_time FROM loan_process_log WHERE orders.id = loan_process_log.order_id AND loan_process_log.task_definition_key = 'usertask_remit_review' ORDER BY id DESC LIMIT 1 ) AS remitdate,
+        ( SELECT create_time FROM loan_process_log WHERE orders.id = loan_process_log.order_id AND
+        loan_process_log.task_definition_key = 'usertask_remit_review' ORDER BY id DESC LIMIT 1 ) AS remitdate,
         bank_lend_record.lend_date,
-        ( SELECT loan_data_flow.express_send_date FROM loan_data_flow WHERE orders.id = loan_data_flow.order_id AND type = 12 ORDER BY id DESC LIMIT 1 ) AS sendMaterialToParter_date,
-        ( SELECT loan_data_flow.express_receive_date FROM loan_data_flow WHERE orders.id = loan_data_flow.order_id AND type = 12 ORDER BY id DESC LIMIT 1 ) AS ParterReceiveMaterial_date,
+        ( SELECT loan_data_flow.express_send_date FROM loan_data_flow WHERE orders.id = loan_data_flow.order_id AND type
+        = 12 ORDER BY id DESC LIMIT 1 ) AS sendMaterialToParter_date,
+        ( SELECT loan_data_flow.express_receive_date FROM loan_data_flow WHERE orders.id = loan_data_flow.order_id AND
+        type = 12 ORDER BY id DESC LIMIT 1 ) AS ParterReceiveMaterial_date,
         CASE
 
         WHEN process.apply_license_plate_deposit_info = 1 THEN
@@ -902,22 +931,25 @@
         END AS apply_license_plate_deposit_info,
         CASE
 
-        WHEN process.apply_license_plate_deposit_info  !=1 THEN
+        WHEN process.apply_license_plate_deposit_info !=1 THEN
         NULL ELSE a.apply_license_plate_deposit_date
         END AS depositTime,
         CASE
 
         WHEN a.apply_license_plate_deposit_date IS NULL THEN
         floor(
-        ( UNIX_TIMESTAMP( DATE_FORMAT( now( ), '%Y-%m-%d' )) - UNIX_TIMESTAMP( DATE_FORMAT( lend.lend_date, '%Y-%m-%d' ) ) ) / ( 24 * 60 * 60 )
+        ( UNIX_TIMESTAMP( DATE_FORMAT( now( ), '%Y-%m-%d' )) - UNIX_TIMESTAMP( DATE_FORMAT( lend.lend_date, '%Y-%m-%d' )
+        ) ) / ( 24 * 60 * 60 )
         )
         ELSE
         floor
         (
-        (UNIX_TIMESTAMP( DATE_FORMAT(a.apply_license_plate_deposit_date, '%Y-%m-%d'  )) - UNIX_TIMESTAMP( DATE_FORMAT( lend.lend_date, '%Y-%m-%d' ) ) ) / ( 24 * 60 * 60 )
+        (UNIX_TIMESTAMP( DATE_FORMAT(a.apply_license_plate_deposit_date, '%Y-%m-%d' )) - UNIX_TIMESTAMP( DATE_FORMAT(
+        lend.lend_date, '%Y-%m-%d' ) ) ) / ( 24 * 60 * 60 )
         )
         END AS depositOverdueTime,
-        ( SELECT user_name FROM loan_process_log WHERE order_id = orders.id AND task_definition_key = 'usertask_apply_license_plate_deposit_info' ORDER BY create_time DESC LIMIT 1 ) AS submitUser
+        ( SELECT user_name FROM loan_process_log WHERE order_id = orders.id AND task_definition_key =
+        'usertask_apply_license_plate_deposit_info' ORDER BY create_time DESC LIMIT 1 ) AS submitUser
         FROM
         loan_order orders
         LEFT JOIN loan_customer customer ON orders.loan_customer_id = customer.id
@@ -948,12 +980,13 @@
                     </foreach>
                 </when>
                 <otherwise>
-                    select temp.id from (SELECT 1 as id) temp  where temp.id =2
+                    select temp.id from (SELECT 1 as id) temp where temp.id =2
                 </otherwise>
             </choose>
             )
             else true end
-            and process.apply_license_plate_deposit_info != 0  and bank_lend_record.lend_date between #{startDate} and #{endDate}
+            and process.apply_license_plate_deposit_info != 0 and bank_lend_record.lend_date between #{startDate} and
+            #{endDate}
             <if test="partnerList != null and partnerList.size() > 0">
                 and
                 base.partner_id in
@@ -973,11 +1006,10 @@
     </select>
 
 
-
-
-    <select id="exportOrders" resultType="com.yunche.loan.domain.vo.ExportOrdersVO" parameterType="com.yunche.loan.domain.param.ExportOrdersParam">
-            select
-             orders.id 																		    as order_id,
+    <select id="exportOrders" resultType="com.yunche.loan.domain.vo.ExportOrdersVO"
+            parameterType="com.yunche.loan.domain.param.ExportOrdersParam">
+        select
+        orders.id as order_id,
         -- 征信结果: 0-不通过;1-通过;2-关注;
         CASE
         WHEN credit_info.result = 0 THEN
@@ -991,48 +1023,49 @@
         ELSE
         NULL
         END AS credit_result,
-             customer.name 																	    as customer_name,
-             customer.id_card 																    as customer_id_card,
-             customer.mobile 																    as customer_mobile,
-             saleman.name 																	    as saleman,
-             partner.name 																	    as partner_name,
-             plan.car_price 																	as car_price,
-             baseinfo.bank 																		    as plan_bank,
-             plan.appraisal 																	as plan_appraisal,
-             plan.loan_amount 																    as plan_loan_amount,
-             plan.bank_period_principal 														as plan_bank_period_principal,
-             remit.remit_amount 																as remit_amount,
-             plan.loan_time 																	as plan_loan_time,
-             useGetCarName(car.car_detail_id)  												    as car_name,
-             case when car.car_type = 0 then '新车'
-                  when car.car_type = 1 then '二手车'
-             else '其他' end 																    as car_type,
-             vehicle.license_plate_number 														as vehicle_license_plate_number,
-             vehicle.engine_number 																as vehicle_engine_number,
-             vehicle.vehicle_identification_number 												as vehicle_identification_number,
-             vehicle.register_date																as vehicle_register_date,
-             vehicle.color 																		as vehicle_color,
-             vehicle.displacement																as vehicle_displacement,
-             TIMESTAMPDIFF(MONTH,now(),vehicle.register_date) 							        as vehicle_use_year,
-             current.usertask_credit_apply_create_time											as usertask_credit_apply_create_time,
-             current.usertask_bank_credit_record_create_time								    as usertask_bank_credit_record_create_time,
-             current.usertask_social_credit_record_create_time							        as usertask_social_credit_record_create_time,
-             current.usertask_loan_apply_create_time											as usertask_loan_apply_create_time,
-             current.usertask_visit_verify_create_time											as usertask_visit_verify_create_time,
-             current.usertask_telephone_verify_create_time									    as usertask_telephone_verify_create_time,
-             current.usertask_vehicle_information_create_time								    as usertask_vehicle_information_create_time,
-             current.usertask_material_review_create_time										as usertask_material_review_create_time,
-             current.usertask_material_print_review_create_time							        as usertask_material_print_review_create_time,
-             current.usertask_install_gps_create_time											as usertask_install_gps_create_time,
-             current.usertask_apply_license_plate_deposit_info_create_time	                    as usertask_apply_license_plate_deposit_info_create_time,
-             current.usertask_car_insurance_create_time											as usertask_car_insurance_create_time,
-             current.usertask_business_pay_create_time											as usertask_business_pay_create_time,
-             current.usertask_business_review_create_time										as usertask_business_review_create_time,
-             current.usertask_loan_review_create_time											as usertask_loan_review_create_time,
-             current.usertask_remit_review_create_time											as usertask_remit_review_create_time,
-             current.usertask_material_manage_create_time										as usertask_material_manage_create_time,
-             lend.lend_date																		as usertask_bank_lend_record_create_time,
-             send.express_send_date																as usertask_bank_card_send_create_time
+        customer.name as customer_name,
+        customer.id_card as customer_id_card,
+        customer.mobile as customer_mobile,
+        saleman.name as saleman,
+        partner.name as partner_name,
+        plan.car_price as car_price,
+        baseinfo.bank as plan_bank,
+        plan.appraisal as plan_appraisal,
+        plan.loan_amount as plan_loan_amount,
+        plan.bank_period_principal as plan_bank_period_principal,
+        remit.remit_amount as remit_amount,
+        plan.loan_time as plan_loan_time,
+        useGetCarName(car.car_detail_id) as car_name,
+        case when car.car_type = 0 then '新车'
+        when car.car_type = 1 then '二手车'
+        else '其他' end as car_type,
+        vehicle.license_plate_number as vehicle_license_plate_number,
+        vehicle.engine_number as vehicle_engine_number,
+        vehicle.vehicle_identification_number as vehicle_identification_number,
+        vehicle.register_date as vehicle_register_date,
+        vehicle.color as vehicle_color,
+        vehicle.displacement as vehicle_displacement,
+        TIMESTAMPDIFF(MONTH,now(),vehicle.register_date) as vehicle_use_year,
+        current.usertask_credit_apply_create_time as usertask_credit_apply_create_time,
+        current.usertask_bank_credit_record_create_time as usertask_bank_credit_record_create_time,
+        current.usertask_social_credit_record_create_time as usertask_social_credit_record_create_time,
+        current.usertask_loan_apply_create_time as usertask_loan_apply_create_time,
+        current.usertask_visit_verify_create_time as usertask_visit_verify_create_time,
+        current.usertask_telephone_verify_create_time as usertask_telephone_verify_create_time,
+        current.usertask_vehicle_information_create_time as usertask_vehicle_information_create_time,
+        current.usertask_material_review_create_time as usertask_material_review_create_time,
+        current.usertask_material_print_review_create_time as usertask_material_print_review_create_time,
+        current.usertask_install_gps_create_time as usertask_install_gps_create_time,
+        current.usertask_apply_license_plate_deposit_info_create_time as
+        usertask_apply_license_plate_deposit_info_create_time,
+        current.usertask_car_insurance_create_time as usertask_car_insurance_create_time,
+        current.usertask_business_pay_create_time as usertask_business_pay_create_time,
+        current.usertask_business_review_create_time as usertask_business_review_create_time,
+        current.usertask_loan_review_create_time as usertask_loan_review_create_time,
+        current.usertask_remit_review_create_time as usertask_remit_review_create_time,
+        current.usertask_material_manage_create_time as usertask_material_manage_create_time,
+        lend.lend_date as usertask_bank_lend_record_create_time,
+        send.express_send_date as usertask_bank_card_send_create_time
 
 
         FROM
@@ -1065,52 +1098,52 @@
                 </foreach>
             </when>
             <otherwise>
-                select temp.id from (SELECT 1 as id) temp  where temp.id =2
+                select temp.id from (SELECT 1 as id) temp where temp.id =2
             </otherwise>
         </choose>
         )
         else true end
-            <if test="partnerList != null and partnerList.size() > 0">
-                and
-                baseinfo.partner_id in
-                <foreach item="item" index="index" collection="partnerList" open="(" separator="," close=")">
-                    #{item}
-                </foreach>
-            </if>
-            <if test="bankList != null and bankList.size() > 0">
-                and
-                baseinfo.bank in
-                <foreach item="item" index="index" collection="bankList" open="(" separator="," close=")">
-                    #{item}
-                </foreach>
-            </if>
-            <if test="car_type!=null and car_type!=''">
-                and car.car_type = #{car_type}
-            </if>
+        <if test="partnerList != null and partnerList.size() > 0">
+            and
+            baseinfo.partner_id in
+            <foreach item="item" index="index" collection="partnerList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="bankList != null and bankList.size() > 0">
+            and
+            baseinfo.bank in
+            <foreach item="item" index="index" collection="bankList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="car_type!=null and car_type!=''">
+            and car.car_type = #{car_type}
+        </if>
         having 1=1
         <if test="order_id!=null and order_id!=''">
-            AND  order_id LIKE CONCAT('%', #{order_id} ,'%')
+            AND order_id LIKE CONCAT('%', #{order_id} ,'%')
         </if>
         <if test="customer_name!=null and customer_name!=''">
-            AND  customer_name LIKE CONCAT('%', #{customer_name} ,'%')
+            AND customer_name LIKE CONCAT('%', #{customer_name} ,'%')
         </if>
         <if test="customer_id_card!=null and customer_id_card!=''">
-            AND  customer_id_card LIKE CONCAT('%', #{customer_id_card} ,'%')
+            AND customer_id_card LIKE CONCAT('%', #{customer_id_card} ,'%')
         </if>
         <if test="customer_mobile!=null and customer_mobile!=''">
-            AND  customer_mobile LIKE CONCAT('%', #{customer_mobile} ,'%')
+            AND customer_mobile LIKE CONCAT('%', #{customer_mobile} ,'%')
         </if>
         <if test="saleman!=null and saleman!=''">
-            AND  saleman LIKE CONCAT('%', #{saleman} ,'%')
+            AND saleman LIKE CONCAT('%', #{saleman} ,'%')
         </if>
         <if test="partner_name!=null and partner_name!=''">
-            AND  partner_name LIKE CONCAT('%', #{partner_name} ,'%')
+            AND partner_name LIKE CONCAT('%', #{partner_name} ,'%')
         </if>
         <if test="car_price_start!=null and car_price_start!='' and car_price_end!=null and car_price_end!=''">
             AND car_price &gt;= #{car_price_start} and car_price &lt;= #{car_price_end}
         </if>
         <if test="plan_bank!=null and plan_bank!=''">
-            AND  plan_bank LIKE CONCAT('%', #{plan_bank} ,'%')
+            AND plan_bank LIKE CONCAT('%', #{plan_bank} ,'%')
         </if>
         <if test="plan_appraisal_start!=null and plan_appraisal_start!='' and plan_appraisal_end!=null and plan_appraisal_end!=''">
             AND plan_appraisal &gt;= #{plan_appraisal_start} and plan_appraisal &lt;= #{plan_appraisal_end}
@@ -1119,7 +1152,8 @@
             AND plan_loan_amount &gt;= #{plan_loan_amount_start} and plan_loan_amount &lt;= #{plan_loan_amount_end}
         </if>
         <if test="plan_bank_period_principal_start!=null and plan_bank_period_principal_start!='' and plan_bank_period_principal_end!=null and plan_bank_period_principal_end!='' ">
-            AND plan_bank_period_principal &gt;= #{plan_bank_period_principal_start} and plan_bank_period_principal &lt;= #{plan_bank_period_principal_end}
+            AND plan_bank_period_principal &gt;= #{plan_bank_period_principal_start} and plan_bank_period_principal &lt;=
+            #{plan_bank_period_principal_end}
         </if>
         <if test="remit_amount_start!=null and remit_amount_start!='' and remit_amount_end!=null and remit_amount_end!=''">
             AND remit_amount &gt;= #{remit_amount_start} and remit_amount &lt;= #{remit_amount_end}
@@ -1128,25 +1162,26 @@
             AND plan_loan_time &gt;= #{plan_loan_time_start} and plan_loan_time &lt;= #{plan_loan_time_end}
         </if>
         <if test="car_name!=null and car_name!=''">
-            AND  car_name LIKE CONCAT('%', #{car_name} ,'%')
+            AND car_name LIKE CONCAT('%', #{car_name} ,'%')
         </if>
         <if test="vehicle_license_plate_number!=null and vehicle_license_plate_number!=''">
-            AND  vehicle_license_plate_number LIKE CONCAT('%', #{vehicle_license_plate_number} ,'%')
+            AND vehicle_license_plate_number LIKE CONCAT('%', #{vehicle_license_plate_number} ,'%')
         </if>
         <if test="vehicle_engine_number!=null and vehicle_engine_number!=''">
-            AND  vehicle_engine_number LIKE CONCAT('%', #{vehicle_engine_number} ,'%')
+            AND vehicle_engine_number LIKE CONCAT('%', #{vehicle_engine_number} ,'%')
         </if>
         <if test="vehicle_identification_number!=null and vehicle_identification_number!=''">
-            AND  vehicle_identification_number LIKE CONCAT('%', #{vehicle_identification_number} ,'%')
+            AND vehicle_identification_number LIKE CONCAT('%', #{vehicle_identification_number} ,'%')
         </if>
         <if test="vehicle_register_date_start!=null and vehicle_register_date_start!='' and vehicle_register_date_end!=null and vehicle_register_date_end!=''">
-            AND TO_DAYS(vehicle_register_date) &gt;= TO_DAYS(#{vehicle_register_date_start}) and TO_DAYS(vehicle_register_date) &lt;= TO_DAYS(#{vehicle_register_date_end})
+            AND TO_DAYS(vehicle_register_date) &gt;= TO_DAYS(#{vehicle_register_date_start}) and
+            TO_DAYS(vehicle_register_date) &lt;= TO_DAYS(#{vehicle_register_date_end})
         </if>
         <if test="vehicle_color!=null and vehicle_color!=''">
-            AND  vehicle_color LIKE CONCAT('%', #{vehicle_color} ,'%')
+            AND vehicle_color LIKE CONCAT('%', #{vehicle_color} ,'%')
         </if>
         <if test="vehicle_displacement!=null and vehicle_displacement!=''">
-            AND  vehicle_displacement LIKE CONCAT('%', #{vehicle_displacement} ,'%')
+            AND vehicle_displacement LIKE CONCAT('%', #{vehicle_displacement} ,'%')
         </if>
         <if test="vehicle_use_year_start!=null and vehicle_use_year_start!='' and vehicle_use_year_end!=null and vehicle_use_year_end!=''">
             AND vehicle_use_year &gt;= #{vehicle_use_year_start} and vehicle_use_year &lt;= #{vehicle_use_year_end}
@@ -1156,12 +1191,16 @@
             AND TO_DAYS(usertask_credit_apply_create_time) &lt;= TO_DAYS(#{usertask_credit_apply_create_time_end})
         </if>
         <if test="usertask_bank_credit_record_create_time_start!=null and usertask_bank_credit_record_create_time_start!='' and usertask_bank_credit_record_create_time_end!=null and usertask_bank_credit_record_create_time_end!=''">
-            AND TO_DAYS(usertask_bank_credit_record_create_time) &gt;= TO_DAYS(#{usertask_bank_credit_record_create_time_start})
-            AND TO_DAYS(usertask_bank_credit_record_create_time) &lt;= TO_DAYS(#{usertask_bank_credit_record_create_time_end})
+            AND TO_DAYS(usertask_bank_credit_record_create_time) &gt;=
+            TO_DAYS(#{usertask_bank_credit_record_create_time_start})
+            AND TO_DAYS(usertask_bank_credit_record_create_time) &lt;=
+            TO_DAYS(#{usertask_bank_credit_record_create_time_end})
         </if>
         <if test="usertask_social_credit_record_create_time_start!=null and usertask_social_credit_record_create_time_start!='' and usertask_social_credit_record_create_time_end!=null and usertask_social_credit_record_create_time_end!=''">
-            AND TO_DAYS(usertask_social_credit_record_create_time) &gt;= TO_DAYS(#{usertask_social_credit_record_create_time_start})
-            AND TO_DAYS(usertask_social_credit_record_create_time) &lt;= TO_DAYS(#{usertask_social_credit_record_create_time_end})
+            AND TO_DAYS(usertask_social_credit_record_create_time) &gt;=
+            TO_DAYS(#{usertask_social_credit_record_create_time_start})
+            AND TO_DAYS(usertask_social_credit_record_create_time) &lt;=
+            TO_DAYS(#{usertask_social_credit_record_create_time_end})
         </if>
         <if test="usertask_loan_apply_create_time_start!=null and usertask_loan_apply_create_time_start!='' and usertask_loan_apply_create_time_end!=null and usertask_loan_apply_create_time_end!=''">
             AND TO_DAYS(usertask_loan_apply_create_time) &gt;= TO_DAYS(#{usertask_loan_apply_create_time_start})
@@ -1172,28 +1211,37 @@
             AND TO_DAYS(usertask_visit_verify_create_time) &lt;= TO_DAYS(#{usertask_visit_verify_create_time_end})
         </if>
         <if test="usertask_telephone_verify_create_time_start!=null and usertask_telephone_verify_create_time_start!='' and usertask_telephone_verify_create_time_end!=null and usertask_telephone_verify_create_time_end!=''">
-            AND TO_DAYS(usertask_telephone_verify_create_time) &gt;= TO_DAYS(#{usertask_telephone_verify_create_time_start})
-            AND TO_DAYS(usertask_telephone_verify_create_time) &lt;= TO_DAYS(#{usertask_telephone_verify_create_time_end})
+            AND TO_DAYS(usertask_telephone_verify_create_time) &gt;=
+            TO_DAYS(#{usertask_telephone_verify_create_time_start})
+            AND TO_DAYS(usertask_telephone_verify_create_time) &lt;=
+            TO_DAYS(#{usertask_telephone_verify_create_time_end})
         </if>
         <if test="usertask_vehicle_information_create_time_start!=null and usertask_vehicle_information_create_time_start!='' and usertask_vehicle_information_create_time_end!=null and usertask_vehicle_information_create_time_end!=''">
-            AND TO_DAYS(usertask_vehicle_information_create_time) &gt;= TO_DAYS(#{usertask_vehicle_information_create_time_start})
-            AND TO_DAYS(usertask_vehicle_information_create_time) &lt;= TO_DAYS(#{usertask_vehicle_information_create_time_end})
+            AND TO_DAYS(usertask_vehicle_information_create_time) &gt;=
+            TO_DAYS(#{usertask_vehicle_information_create_time_start})
+            AND TO_DAYS(usertask_vehicle_information_create_time) &lt;=
+            TO_DAYS(#{usertask_vehicle_information_create_time_end})
         </if>
         <if test="usertask_material_review_create_time_start!=null and usertask_material_review_create_time_start!='' and usertask_material_review_create_time_end!=null and usertask_material_review_create_time_end!=''">
-            AND TO_DAYS(usertask_material_review_create_time) &gt;= TO_DAYS(#{usertask_material_review_create_time_start})
+            AND TO_DAYS(usertask_material_review_create_time) &gt;=
+            TO_DAYS(#{usertask_material_review_create_time_start})
             AND TO_DAYS(usertask_material_review_create_time) &lt;= TO_DAYS(#{usertask_material_review_create_time_end})
         </if>
         <if test="usertask_material_print_review_create_time_start!=null and usertask_material_print_review_create_time_start!='' and usertask_material_print_review_create_time_end!=null and usertask_material_print_review_create_time_end!=''">
-            AND TO_DAYS(usertask_material_print_review_create_time) &gt;= TO_DAYS(#{usertask_material_print_review_create_time_start})
-            AND TO_DAYS(usertask_material_print_review_create_time) &lt;= TO_DAYS(#{usertask_material_print_review_create_time_end})
+            AND TO_DAYS(usertask_material_print_review_create_time) &gt;=
+            TO_DAYS(#{usertask_material_print_review_create_time_start})
+            AND TO_DAYS(usertask_material_print_review_create_time) &lt;=
+            TO_DAYS(#{usertask_material_print_review_create_time_end})
         </if>
         <if test="usertask_install_gps_create_time_start!=null and usertask_install_gps_create_time_start!='' and usertask_install_gps_create_time_end!=null and usertask_install_gps_create_time_end!=''">
             AND TO_DAYS(usertask_install_gps_create_time) &gt;= TO_DAYS(#{usertask_install_gps_create_time_start})
             AND TO_DAYS(usertask_install_gps_create_time) &lt;= TO_DAYS(#{usertask_install_gps_create_time_end})
         </if>
         <if test="usertask_apply_license_plate_deposit_info_create_time_start!=null and usertask_apply_license_plate_deposit_info_create_time_start!='' and usertask_apply_license_plate_deposit_info_create_time_end!=null and usertask_apply_license_plate_deposit_info_create_time_end!=''">
-            AND TO_DAYS(usertask_apply_license_plate_deposit_info_create_time) &gt;= TO_DAYS(#{usertask_apply_license_plate_deposit_info_create_time_start})
-            AND TO_DAYS(usertask_apply_license_plate_deposit_info_create_time) &lt;= TO_DAYS(#{usertask_apply_license_plate_deposit_info_create_time_end})
+            AND TO_DAYS(usertask_apply_license_plate_deposit_info_create_time) &gt;=
+            TO_DAYS(#{usertask_apply_license_plate_deposit_info_create_time_start})
+            AND TO_DAYS(usertask_apply_license_plate_deposit_info_create_time) &lt;=
+            TO_DAYS(#{usertask_apply_license_plate_deposit_info_create_time_end})
         </if>
         <if test="usertask_car_insurance_create_time_start!=null and usertask_car_insurance_create_time_start!='' and usertask_car_insurance_create_time_end!=null and usertask_car_insurance_create_time_end!=''">
             AND TO_DAYS(usertask_car_insurance_create_time) &gt;= TO_DAYS(#{usertask_car_insurance_create_time_start})
@@ -1204,7 +1252,8 @@
             AND TO_DAYS(usertask_business_pay_create_time) &lt;= TO_DAYS(#{usertask_business_pay_create_time_end})
         </if>
         <if test="usertask_business_review_create_time_start!=null and usertask_business_review_create_time_start!='' and usertask_business_review_create_time_end!=null and usertask_business_review_create_time_end!=''">
-            AND TO_DAYS(usertask_business_review_create_time) &gt;= TO_DAYS(#{usertask_business_review_create_time_start})
+            AND TO_DAYS(usertask_business_review_create_time) &gt;=
+            TO_DAYS(#{usertask_business_review_create_time_start})
             AND TO_DAYS(usertask_business_review_create_time) &lt;= TO_DAYS(#{usertask_business_review_create_time_end})
         </if>
         <if test="usertask_loan_review_create_time_start!=null and usertask_loan_review_create_time_start!='' and usertask_loan_review_create_time_end!=null and usertask_loan_review_create_time_end!=''">
@@ -1216,12 +1265,15 @@
             AND TO_DAYS(usertask_remit_review_create_time) &lt;= TO_DAYS(#{usertask_remit_review_create_time_end})
         </if>
         <if test="usertask_material_manage_create_time_start!=null and usertask_material_manage_create_time_start!='' and usertask_material_manage_create_time_end!=null and usertask_material_manage_create_time_end!=''">
-            AND TO_DAYS(usertask_material_manage_create_time) &gt;= TO_DAYS(#{usertask_material_manage_create_time_start})
+            AND TO_DAYS(usertask_material_manage_create_time) &gt;=
+            TO_DAYS(#{usertask_material_manage_create_time_start})
             AND TO_DAYS(usertask_material_manage_create_time) &lt;= TO_DAYS(#{usertask_material_manage_create_time_end})
         </if>
         <if test="usertask_bank_lend_record_create_time_start!=null and usertask_bank_lend_record_create_time_start!='' and usertask_bank_lend_record_create_time_end!=null and usertask_bank_lend_record_create_time_end!=''">
-            AND TO_DAYS(usertask_bank_lend_record_create_time) &gt;= TO_DAYS(#{usertask_bank_lend_record_create_time_start})
-            AND TO_DAYS(usertask_bank_lend_record_create_time) &lt;= TO_DAYS(#{usertask_bank_lend_record_create_time_end})
+            AND TO_DAYS(usertask_bank_lend_record_create_time) &gt;=
+            TO_DAYS(#{usertask_bank_lend_record_create_time_start})
+            AND TO_DAYS(usertask_bank_lend_record_create_time) &lt;=
+            TO_DAYS(#{usertask_bank_lend_record_create_time_end})
         </if>
         <if test="usertask_bank_card_send_create_time_start!=null and usertask_bank_card_send_create_time_start!='' and usertask_bank_card_send_create_time_end!=null and usertask_bank_card_send_create_time_end!=''">
             AND TO_DAYS(usertask_bank_card_send_create_time) &gt;= TO_DAYS(#{usertask_bank_card_send_create_time_start})
@@ -1229,7 +1281,9 @@
         </if>
     </select>
     <!--=======================================导出 EXCEL 财务垫款明细查询-财务打款单=========================================-->
-    <select id="exportRemitDetailForRemitOrderQuerys" parameterType="com.yunche.loan.domain.param.ExportRemitDetailQueryVerifyParam"  resultType="com.yunche.loan.domain.vo.ExportRemitDetailQueryForRemitOrderVO" >
+    <select id="exportRemitDetailForRemitOrderQuerys"
+            parameterType="com.yunche.loan.domain.param.ExportRemitDetailQueryVerifyParam"
+            resultType="com.yunche.loan.domain.vo.ExportRemitDetailQueryForRemitOrderVO">
 
         SELECT
         base_area.area_name,
@@ -1249,7 +1303,7 @@
         loan_financial_plan.bank_period_principal,
         remit_details.remit_amount,
 
-        remit_details.return_rate_amount                                                                AS remit_return_rate_amount,
+        remit_details.return_rate_amount AS remit_return_rate_amount,
         cost_details.service_fee,
         cost_details.performance_fee,
         cost_details.apply_license_plate_deposit_fee,
@@ -1329,7 +1383,7 @@
                 </foreach>
             </when>
             <otherwise>
-                select temp.id from (SELECT 1 as id) temp  where temp.id =2
+                select temp.id from (SELECT 1 as id) temp where temp.id =2
             </otherwise>
         </choose>
         )
@@ -1348,20 +1402,21 @@
                 #{item}
             </foreach>
         </if>
-        <if test="startRemitAmount !=null" >
+        <if test="startRemitAmount !=null">
             and
             remit_details.remit_amount &gt;= #{startRemitAmount}
         </if>
 
-        <if test="endRemitAmount !=null" >
-            AND  remit_details.remit_amount &lt;= #{endRemitAmount}
+        <if test="endRemitAmount !=null">
+            AND remit_details.remit_amount &lt;= #{endRemitAmount}
         </if>
 
         having submitTime between #{startDate} and #{endDate}
         order by submitTime desc
 
     </select>
-    <select id="exportApplyLoanPush" parameterType="com.yunche.loan.domain.param.ExportApplyLoanPushParam"  resultType="com.yunche.loan.domain.vo.ExportApplyLoanPushVO">
+    <select id="exportApplyLoanPush" parameterType="com.yunche.loan.domain.param.ExportApplyLoanPushParam"
+            resultType="com.yunche.loan.domain.vo.ExportApplyLoanPushVO">
         select
         process.id        AS bridgeProcessId,
         customer.name     AS customerName,
@@ -1390,31 +1445,32 @@
         where 	if((select count(*) from third_party_fund_business where bridge_procecss_id=process.id and lend_status=3)=1,false,true)
     </select>
 
-    <select id="exportJinTouHangRepayInfo" parameterType="com.yunche.loan.domain.param.ExportApplyLoanPushParam"  resultType="com.yunche.loan.domain.vo.JinTouHangRepayInfoVO">
+    <select id="exportJinTouHangRepayInfo" parameterType="com.yunche.loan.domain.param.ExportApplyLoanPushParam"
+            resultType="com.yunche.loan.domain.vo.JinTouHangRepayInfoVO">
         select
-        customer.`name`           				AS name,
-        customer.id_card          				AS idCard,
-        DATE_FORMAT(fund.lend_date , '%Y-%m-%d' )           				AS lendDate,
-        DATE_FORMAT(record.lend_date, '%Y-%m-%d' )									AS bankLendDate,
-        DATE_FORMAT(fund.repay_date, '%Y-%m-%d' )           				AS repayDate,
+        customer.`name` AS name,
+        customer.id_card AS idCard,
+        DATE_FORMAT(fund.lend_date , '%Y-%m-%d' ) AS lendDate,
+        DATE_FORMAT(record.lend_date, '%Y-%m-%d' ) AS bankLendDate,
+        DATE_FORMAT(fund.repay_date, '%Y-%m-%d' ) AS repayDate,
         datediff( DATE_FORMAT( fund.repay_date, '%Y-%m-%d' ), DATE_FORMAT( fund.lend_date, '%Y-%m-%d' ) ) AS differTime,
-        remit.remit_amount        				AS remitAmount,
-        financial.bank_period_principal   AS  bankPeriodPrincipal,
-        financial.bank_period_principal - remit.remit_amount  AS differMoney,
-        fund.repay_type                   AS repayType,
-        fund.interest                     AS interest,
-        fund.poundage                     AS poundage,
-        fund.repay_remark                 AS repayRemark
+        remit.remit_amount AS remitAmount,
+        financial.bank_period_principal AS bankPeriodPrincipal,
+        financial.bank_period_principal - remit.remit_amount AS differMoney,
+        fund.repay_type AS repayType,
+        fund.interest AS interest,
+        fund.poundage AS poundage,
+        fund.repay_remark AS repayRemark
         from
         (select * from loan_process_bridge where bridge_repay_info=2) process
-        LEFT JOIN loan_order  loan ON process.order_id = loan.id
+        LEFT JOIN loan_order loan ON process.order_id = loan.id
         LEFT JOIN loan_base_info base ON loan.loan_base_info_id=base.id
         LEFT JOIN third_party_fund_business fund ON (loan.id=fund.order_id and fund.bridge_procecss_id=process.id)
         LEFT JOIN loan_customer customer ON loan.loan_customer_id = customer.id
         LEFT JOIN loan_financial_plan financial ON financial.id = loan.loan_financial_plan_id
-        LEFT JOIN remit_details remit  ON loan.remit_details_id =remit.id
+        LEFT JOIN remit_details remit ON loan.remit_details_id =remit.id
         left join bank_lend_record record on record.loan_order = loan.id
-        where  1=1
+        where 1=1
         <if test="startRepayDate !=null">
             AND fund.repay_date &gt;= #{startRepayDate}
         </if>
@@ -1423,23 +1479,24 @@
         </if>
     </select>
 
-    <select id="exportJinTouHangInterestRegister" parameterType="com.yunche.loan.domain.param.ExportApplyLoanPushParam"  resultType="com.yunche.loan.domain.vo.JinTouHangInterestRegisterVO">
+    <select id="exportJinTouHangInterestRegister" parameterType="com.yunche.loan.domain.param.ExportApplyLoanPushParam"
+            resultType="com.yunche.loan.domain.vo.JinTouHangInterestRegisterVO">
         select
-        fund.lend_date            				AS lendDate,
-        fund.repay_date           				AS repayDate,
-        remit.remit_amount        				AS remitAmount,
-        customer.`name`           				AS name,
-        customer.id_card          				AS idCard,
-        financial.bank_period_principal   AS  bankPeriodPrincipal
+        fund.lend_date AS lendDate,
+        fund.repay_date AS repayDate,
+        remit.remit_amount AS remitAmount,
+        customer.`name` AS name,
+        customer.id_card AS idCard,
+        financial.bank_period_principal AS bankPeriodPrincipal
         from
         (select * from loan_process_bridge where bridge_interest_record=2) process
-        LEFT JOIN loan_order  loan ON process.order_id = loan.id
+        LEFT JOIN loan_order loan ON process.order_id = loan.id
         LEFT JOIN loan_base_info base ON loan.loan_base_info_id=base.id
         LEFT JOIN third_party_fund_business fund ON loan.id=fund.order_id
         LEFT JOIN loan_customer customer ON loan.loan_customer_id = customer.id
         LEFT JOIN loan_financial_plan financial ON financial.id = loan.loan_financial_plan_id
-        LEFT JOIN remit_details remit  ON loan.remit_details_id =remit.id
-        where  1=1
+        LEFT JOIN remit_details remit ON loan.remit_details_id =remit.id
+        where 1=1
         <if test="startRepayDate !=null">
             fund.repay_date &gt;= #{startRepayDate}
         </if>
@@ -1458,11 +1515,12 @@
     </select>
 
     <!--=======================================导出 主贷客户信息查询=========================================-->
-    <select id="exportCustomerInfo" parameterType="com.yunche.loan.domain.param.ExportCustomerInfoParam"  resultType="com.yunche.loan.domain.vo.ExportCustomerInfoVO" >
+    <select id="exportCustomerInfo" parameterType="com.yunche.loan.domain.param.ExportCustomerInfoParam"
+            resultType="com.yunche.loan.domain.vo.ExportCustomerInfoVO">
         SELECT
-          pcustomer.id  AS  pCustomerId,
-          pcustomer.`name` AS pName,
-          pcustomer.name_pinyin AS  pyName,
+        pcustomer.id AS pCustomerId,
+        pcustomer.`name` AS pName,
+        pcustomer.name_pinyin AS pyName,
         CASE
         WHEN pcustomer.sex = 1 THEN
         '男'
@@ -1471,9 +1529,9 @@
         ELSE
         NULL END
         AS pSex,
-          pcustomer.birth AS pBirth,
-          pcustomer.id_card AS pIdCard,
-          pcustomer.identity_validity AS pIdentityValidity,
+        pcustomer.birth AS pBirth,
+        pcustomer.id_card AS pIdCard,
+        pcustomer.identity_validity AS pIdentityValidity,
 
         CASE
         WHEN pcustomer.marry = 0 THEN
@@ -1498,11 +1556,11 @@
         ELSE
         NULL END
         AS pEducation,
-          pcustomer.mobile AS pMobile,
+        pcustomer.mobile AS pMobile,
         CONCAT_WS('',pcustomer.hprovince,pcustomer.hcity,pcustomer.hcounty,pcustomer.address)
-           AS pAddress,
-          pcustomer.mobile AS pHomeMobile,
-          pcustomer.postcode AS pPostcode ,
+        AS pAddress,
+        pcustomer.mobile AS pHomeMobile,
+        pcustomer.postcode AS pPostcode ,
 
         CASE
         WHEN pcustomer.house_feature = 1 THEN
@@ -1526,11 +1584,11 @@
         ELSE
         NULL
         END AS pHouseFeature,
-          pcustomer.income_certificate_company_name AS pIncomeCertificateCompanyName,
+        pcustomer.income_certificate_company_name AS pIncomeCertificateCompanyName,
         CONCAT_WS('',pcustomer.cprovince,pcustomer.ccity,pcustomer.ccounty,pcustomer.income_certificate_company_address)
-           AS pIncomeCertificateCompanyAddress,
-          pcustomer.company_postcode AS pCompanyPostcode,
-          pcustomer.company_phone AS pCompanyPhone,
+        AS pIncomeCertificateCompanyAddress,
+        pcustomer.company_postcode AS pCompanyPostcode,
+        pcustomer.company_phone AS pCompanyPhone,
         CASE
         WHEN pcustomer.company_nature = 1 THEN
         '政府机构'
@@ -1580,7 +1638,7 @@
         '其他'
         ELSE
         NULL END
-           AS pIndustryCategory,
+        AS pIndustryCategory,
         CASE
         WHEN pcustomer.occupation = 1 THEN
         '公务员'
@@ -1643,13 +1701,13 @@
         '制造业职员'
         ELSE
         NULL END
-           AS pOccupation,
-          pcustomer.duty AS pDuty,
-          pcustomer.month_income*12 AS pYearIncome,
-          loan_financial_plan.down_payment_money AS pDownPaymentMoney,
-          loan_financial_plan.loan_amount AS pLoanAmount,
-          loan_financial_plan.loan_time AS pLoanTime,
-          pcustomer.month_income AS pMonthIncome,
+        AS pOccupation,
+        pcustomer.duty AS pDuty,
+        pcustomer.month_income*12 AS pYearIncome,
+        loan_financial_plan.down_payment_money AS pDownPaymentMoney,
+        loan_financial_plan.loan_amount AS pLoanAmount,
+        loan_financial_plan.loan_time AS pLoanTime,
+        pcustomer.month_income AS pMonthIncome,
 
         CASE
         WHEN loan_car_info.vehicle_property = 1 THEN
@@ -1659,27 +1717,28 @@
         ELSE
         NULL END
         AS pVehicleProperty,
-          loan_car_info.cooperation_dealer AS pCooperationDealer,
-          car_brand.`name` AS brandName,
-          car_model.`name` AS modelName,
-          CASE
-          WHEN loan_car_info.car_type =0 THEN vehicle_information.purchase_car_invoice_date
-          WHEN loan_car_info.car_type =1 THEN vehicle_information.transfer_ownership_date
-          ELSE NULL END AS purchaseDate,
-          vehicle_information.license_plate_number AS licensePlateNumber,
-          vehicle_information.vehicle_identification_number AS vehicleIdentificationNumber,
-          vehicle_information.engine_number AS engineNumber,
+        loan_car_info.cooperation_dealer AS pCooperationDealer,
+        car_brand.`name` AS brandName,
+        car_model.`name` AS modelName,
+        CASE
+        WHEN loan_car_info.car_type =0 THEN vehicle_information.purchase_car_invoice_date
+        WHEN loan_car_info.car_type =1 THEN vehicle_information.transfer_ownership_date
+        ELSE NULL END AS purchaseDate,
+        vehicle_information.license_plate_number AS licensePlateNumber,
+        vehicle_information.vehicle_identification_number AS vehicleIdentificationNumber,
+        vehicle_information.engine_number AS engineNumber,
         CASE
         WHEN parea.parent_area_id = '' OR parea.parent_area_id = NULL THEN
         CONCAT(area.parent_area_name,area.area_name)
         ELSE
         CONCAT(parea.parent_area_name,area.area_name) END
         AS applyLicensePlateArea,
-        ( SELECT loan_data_flow.express_receive_date FROM loan_data_flow WHERE principal_orders.id = loan_data_flow.order_id AND type = 4 ORDER BY id DESC LIMIT 1 ) AS express_receive_date
+        ( SELECT loan_data_flow.express_receive_date FROM loan_data_flow WHERE principal_orders.id =
+        loan_data_flow.order_id AND type = 4 ORDER BY id DESC LIMIT 1 ) AS express_receive_date
 
 
-          FROM
-          loan_order principal_orders
+        FROM
+        loan_order principal_orders
         LEFT JOIN loan_customer pcustomer ON principal_orders.loan_customer_id = pcustomer.id
         LEFT JOIN loan_financial_plan ON principal_orders.loan_financial_plan_id = loan_financial_plan.id
         LEFT JOIN loan_car_info ON principal_orders.loan_car_info_id = loan_car_info.id
@@ -1687,7 +1746,7 @@
         LEFT JOIN car_model ON car_detail.model_id = car_model.id
         LEFT JOIN car_brand ON car_model.brand_id = car_brand.id
         LEFT JOIN vehicle_information ON principal_orders.vehicle_information_id = vehicle_information.id
-        LEFT JOIN loan_base_info ON  principal_orders.loan_base_info_id = loan_base_info.id
+        LEFT JOIN loan_base_info ON principal_orders.loan_base_info_id = loan_base_info.id
         left join base_area area on vehicle_information.apply_license_plate_area = area.area_id
         LEFT JOIN base_area parea ON area.parent_area_id = parea.area_id
         <where>
@@ -1702,31 +1761,31 @@
                     </foreach>
                 </when>
                 <otherwise>
-                    select temp.id from (SELECT 1 as id) temp  where temp.id =2
+                    select temp.id from (SELECT 1 as id) temp where temp.id =2
                 </otherwise>
             </choose>
             )
             else true end
-        <if test="partnerList != null and partnerList.size() > 0">
-            and
-            loan_base_info.partner_id in
-            <foreach item="item" index="index" collection="partnerList" open="(" separator="," close=")">
-                #{item}
-            </foreach>
-        </if>
-        <if test="bankList != null and bankList.size() > 0">
-            and
-            loan_base_info.bank in
-            <foreach item="item" index="index" collection="bankList" open="(" separator="," close=")">
-                #{item}
-            </foreach>
-        </if>
-        <if test="pname !=null and pname !=''" >
-            AND pcustomer.`name` = #{pname}
-        </if>
-        <if test="startTime !=null and endTime !=null and startTime !='' and endTime !=''" >
-            having express_receive_date between #{startTime} and #{endTime}
-        </if>
+            <if test="partnerList != null and partnerList.size() > 0">
+                and
+                loan_base_info.partner_id in
+                <foreach item="item" index="index" collection="partnerList" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="bankList != null and bankList.size() > 0">
+                and
+                loan_base_info.bank in
+                <foreach item="item" index="index" collection="bankList" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="pname !=null and pname !=''">
+                AND pcustomer.`name` = #{pname}
+            </if>
+            <if test="startTime !=null and endTime !=null and startTime !='' and endTime !=''">
+                having express_receive_date between #{startTime} and #{endTime}
+            </if>
 
         </where>
     </select>
@@ -1766,7 +1825,8 @@
         WHERE principal_cust_id = #{pCustomerId} AND cust_type = 4
     </select>
 
-    <select id="exportGuarantorLinkManList" parameterType="long" resultType="com.yunche.loan.domain.vo.GuarantorLinkManVO">
+    <select id="exportGuarantorLinkManList" parameterType="long"
+            resultType="com.yunche.loan.domain.vo.GuarantorLinkManVO">
         SELECT
         name AS linkManName,
         id_card AS linkManIdCard,
@@ -1819,58 +1879,67 @@
     </select>
 
 
-    <select id="selectCreditPicExport" parameterType="com.yunche.loan.domain.query.LoanCreditExportQuery" resultType="com.yunche.loan.domain.vo.CreditPicExportVO">
+    <select id="selectCreditPicExport" parameterType="com.yunche.loan.domain.query.LoanCreditExportQuery"
+            resultType="com.yunche.loan.domain.vo.CreditPicExportVO">
         SELECT
-            result.order_id AS orderId,
-            result.id       AS loanCustomerId,
-            result.name     AS customerName,
-            result.employee_id AS employeeId,
-            result.id_card     AS idCard
+        result.order_id AS orderId,
+        result.id AS loanCustomerId,
+        result.name AS customerName,
+        result.employee_id AS employeeId,
+        result.bank_credit_employee_id AS bankCreditEmployeeId,
+        result.id_card AS idCard
         FROM
         (
-            SELECT
-                process.order_id,
-                customer.id,
-                customer.`name`,
-                customer.credit_exp_flag,
-                customer.id_card,
-                process.credit_apply,
-                process.bank_credit_record,
-                ( SELECT create_time FROM loan_process_log log WHERE log.task_definition_key = 'usertask_credit_apply' AND order_id = process.order_id ORDER BY create_time DESC LIMIT 1 ) AS credit_apply_time,
-                ( SELECT create_time FROM loan_process_log log WHERE log.task_definition_key = 'usertask_bank_credit_record' AND order_id = process.order_id ORDER BY create_time DESC LIMIT 1 ) AS bank_credit_time,
-                ( SELECT user_id FROM loan_process_log log WHERE log.task_definition_key = 'usertask_bank_credit_record' AND order_id = process.order_id ORDER BY create_time DESC LIMIT 1 ) AS employee_id
-            FROM
-                loan_process process
-                LEFT JOIN loan_order loan ON process.order_id = loan.id
-                LEFT JOIN loan_base_info base ON base.id=loan.loan_base_info_id
-                LEFT JOIN loan_customer customer ON ( loan.loan_customer_id = customer.principal_cust_id AND customer.cust_type != 4 )
-            WHERE
-                process.loan_apply = 0
-                and base.bank in('中国工商银行南京江宁支行','中国工商银行哈尔滨顾乡支行')
+        SELECT
+        process.order_id,
+        customer.id,
+        customer.`name`,
+        customer.credit_exp_flag,
+        customer.id_card,
+        process.credit_apply,
+        process.bank_credit_record,
+        ( SELECT create_time FROM loan_process_log log WHERE log.task_definition_key = 'usertask_credit_apply' AND
+        order_id = process.order_id ORDER BY create_time DESC LIMIT 1 ) AS credit_apply_time,
+        ( SELECT create_time FROM loan_process_log log WHERE log.task_definition_key = 'usertask_bank_credit_record' AND
+        order_id = process.order_id ORDER BY create_time DESC LIMIT 1 ) AS bank_credit_time,
+        ( SELECT user_id FROM loan_process_log log WHERE log.task_definition_key = 'usertask_credit_apply' AND order_id
+        = process.order_id ORDER BY create_time DESC LIMIT 1 ) AS employee_id,
+        ( SELECT user_id FROM loan_process_log log WHERE log.task_definition_key = 'usertask_bank_credit_record' AND
+        order_id = process.order_id ORDER BY create_time DESC LIMIT 1 ) AS bank_credit_employee_id
+        FROM
+        loan_process process
+        LEFT JOIN loan_order loan ON process.order_id = loan.id
+        LEFT JOIN loan_base_info base ON base.id=loan.loan_base_info_id
+        LEFT JOIN loan_customer customer ON ( loan.loan_customer_id = customer.principal_cust_id AND customer.cust_type
+        != 4 )
+        WHERE
+        base.bank = #{bankName}
         ) result
         WHERE
-            1=1
-            <if test="creditApplyStartTime != null">
-                AND result.credit_apply_time &gt;= #{creditApplyStartTime}
-            </if>
-            <if test="creditApplyEndTime != null">
-                AND result.credit_apply_time &lt;= #{creditApplyEndTime}
-            </if>
-            <if test="creditQueryStartTime !=null">
-                AND result.bank_credit_time &gt;=  #{creditQueryStartTime}
-            </if>
-            <if test="creditQueryEndTime !=null">
-                AND result.bank_credit_time &gt;=  #{creditQueryEndTime}
-            </if>
-            <if test="employeeId !=null">
-                AND result.employee_id =#{employeeId}
-            </if>
-            <if test="creditStatus !=null">
-                AND CASE WHEN #{creditStatus} = 1 THEN result.credit_exp_flag =1
-                         WHEN #{creditStatus} = 2 THEN result.credit_exp_flag =2
-                         WHEN #{creditStatus} = 3 THEN result.bank_credit_time IS NOT NULL
-                END
-            </if>
+        1=1
+        <if test="creditApplyStartTime != null">
+            AND result.credit_apply_time &gt;= #{creditApplyStartTime}
+        </if>
+        <if test="creditApplyEndTime != null">
+            AND result.credit_apply_time &lt;= #{creditApplyEndTime}
+        </if>
+        <if test="creditQueryStartTime !=null">
+            AND result.bank_credit_time &gt;= #{creditQueryStartTime}
+        </if>
+        <if test="creditQueryEndTime !=null">
+            AND result.bank_credit_time &lt;= #{creditQueryEndTime}
+        </if>
+        <if test="employeeId !=null">
+            AND CASE WHEN #{creditStatus} = 3 THEN result.bank_credit_employee_id =#{employeeId}
+            ELSE result.employee_id =#{employeeId}
+            END
+        </if>
+        <if test="creditStatus !=null">
+            AND CASE WHEN #{creditStatus} = 1 THEN result.credit_exp_flag =1
+            WHEN #{creditStatus} = 2 THEN result.credit_exp_flag =2
+            WHEN #{creditStatus} = 3 THEN result.bank_credit_time IS NOT NULL
+            END
+        </if>
 
     </select>
 

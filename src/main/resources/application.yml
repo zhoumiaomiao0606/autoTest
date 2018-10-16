@@ -13,11 +13,6 @@ spring:
       max-idle: 16
       max-active: 20
       test-on-borrow: true
-#    tomcat:
-#      max-wait: 10000
-#      max-idle: 8
-#      max-active: 8
-#      test-on-borrow: true
 
   redis:
     host: 47.97.122.31
@@ -56,11 +51,6 @@ spring:
       max-wait: 10000
       initialSize: 8
       min-idle: 0
-      max-idle: 8
-      max-active: 8
-      test-on-borrow: true
-    tomcat:
-      max-wait: 10000
       max-idle: 8
       max-active: 8
       test-on-borrow: true
@@ -104,11 +94,6 @@ spring:
       minIdle: 16
       max-idle: 16
       max-active: 30
-      test-on-borrow: true
-    tomcat:
-      max-wait: 10000
-      max-idle: 8
-      max-active: 16
       test-on-borrow: true
 
   redis:

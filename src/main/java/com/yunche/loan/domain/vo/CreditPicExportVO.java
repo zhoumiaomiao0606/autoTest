@@ -9,4 +9,5 @@ public class CreditPicExportVO {
     private String customerName;
     private Long employeeId;
     private String idCard;
+    private Long bankCreditEmployeeId;
 }

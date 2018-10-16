@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yunche.loan.mapper.LoanCreditInfoBankHisDOMapper">
+    <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.LoanCreditInfoBankHisDO">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="customer_id" property="customerId" jdbcType="BIGINT"/>
+        <result column="credit_apply_time" property="creditApplyTime" jdbcType="TIMESTAMP"/>
+        <result column="credit_apply_user_id" property="creditApplyUserId" jdbcType="BIGINT"/>
+        <result column="credit_apply_user_name" property="creditApplyUserName" jdbcType="VARCHAR"/>
+        <result column="bank_credit_record_time" property="bankCreditRecordTime" jdbcType="TIMESTAMP"/>
+        <result column="bank_credit_record_user_id" property="bankCreditRecordUserId" jdbcType="BIGINT"/>
+        <result column="bank_credit_record_user_name" property="bankCreditRecordUserName" jdbcType="VARCHAR"/>
+        <result column="bank_credit_result" property="bankCreditResult" jdbcType="TINYINT"/>
+        <result column="bank_credit_reject_time" property="bankCreditRejectTime" jdbcType="TIMESTAMP"/>
+        <result column="bank_credit_reject_user_id" property="bankCreditRejectUserId" jdbcType="BIGINT"/>
+        <result column="bank_credit_reject_user_name" property="bankCreditRejectUserName" jdbcType="VARCHAR"/>
+        <result column="bank_credit_reject_info" property="bankCreditRejectInfo" jdbcType="VARCHAR"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+    id, customer_id, credit_apply_time, credit_apply_user_id, credit_apply_user_name, 
+    bank_credit_record_time, bank_credit_record_user_id, bank_credit_record_user_name, 
+    bank_credit_result, bank_credit_reject_time, bank_credit_reject_user_id, bank_credit_reject_user_name, 
+    bank_credit_reject_info
+  </sql>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        select
+        <include refid="Base_Column_List"/>
+        from loan_credit_info_bank_his
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from loan_credit_info_bank_his
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+    <insert id="insert" parameterType="com.yunche.loan.domain.entity.LoanCreditInfoBankHisDO"
+            useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+    insert into loan_credit_info_bank_his (id, customer_id, credit_apply_time, 
+      credit_apply_user_id, credit_apply_user_name, 
+      bank_credit_record_time, bank_credit_record_user_id, 
+      bank_credit_record_user_name, bank_credit_result, 
+      bank_credit_reject_time, bank_credit_reject_user_id, 
+      bank_credit_reject_user_name, bank_credit_reject_info
+      )
+    values (#{id,jdbcType=BIGINT}, #{customerId,jdbcType=BIGINT}, #{creditApplyTime,jdbcType=TIMESTAMP}, 
+      #{creditApplyUserId,jdbcType=BIGINT}, #{creditApplyUserName,jdbcType=VARCHAR}, 
+      #{bankCreditRecordTime,jdbcType=TIMESTAMP}, #{bankCreditRecordUserId,jdbcType=BIGINT}, 
+      #{bankCreditRecordUserName,jdbcType=VARCHAR}, #{bankCreditResult,jdbcType=TINYINT}, 
+      #{bankCreditRejectTime,jdbcType=TIMESTAMP}, #{bankCreditRejectUserId,jdbcType=BIGINT}, 
+      #{bankCreditRejectUserName,jdbcType=VARCHAR}, #{bankCreditRejectInfo,jdbcType=VARCHAR}
+      )
+  </insert>
+    <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.LoanCreditInfoBankHisDO"
+            useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+        insert into loan_credit_info_bank_his
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="customerId != null">
+                customer_id,
+            </if>
+            <if test="creditApplyTime != null">
+                credit_apply_time,
+            </if>
+            <if test="creditApplyUserId != null">
+                credit_apply_user_id,
+            </if>
+            <if test="creditApplyUserName != null">
+                credit_apply_user_name,
+            </if>
+            <if test="bankCreditRecordTime != null">
+                bank_credit_record_time,
+            </if>
+            <if test="bankCreditRecordUserId != null">
+                bank_credit_record_user_id,
+            </if>
+            <if test="bankCreditRecordUserName != null">
+                bank_credit_record_user_name,
+            </if>
+            <if test="bankCreditResult != null">
+                bank_credit_result,
+            </if>
+            <if test="bankCreditRejectTime != null">
+                bank_credit_reject_time,
+            </if>
+            <if test="bankCreditRejectUserId != null">
+                bank_credit_reject_user_id,
+            </if>
+            <if test="bankCreditRejectUserName != null">
+                bank_credit_reject_user_name,
+            </if>
+            <if test="bankCreditRejectInfo != null">
+                bank_credit_reject_info,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=BIGINT},
+            </if>
+            <if test="customerId != null">
+                #{customerId,jdbcType=BIGINT},
+            </if>
+            <if test="creditApplyTime != null">
+                #{creditApplyTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="creditApplyUserId != null">
+                #{creditApplyUserId,jdbcType=BIGINT},
+            </if>
+            <if test="creditApplyUserName != null">
+                #{creditApplyUserName,jdbcType=VARCHAR},
+            </if>
+            <if test="bankCreditRecordTime != null">
+                #{bankCreditRecordTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="bankCreditRecordUserId != null">
+                #{bankCreditRecordUserId,jdbcType=BIGINT},
+            </if>
+            <if test="bankCreditRecordUserName != null">
+                #{bankCreditRecordUserName,jdbcType=VARCHAR},
+            </if>
+            <if test="bankCreditResult != null">
+                #{bankCreditResult,jdbcType=TINYINT},
+            </if>
+            <if test="bankCreditRejectTime != null">
+                #{bankCreditRejectTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="bankCreditRejectUserId != null">
+                #{bankCreditRejectUserId,jdbcType=BIGINT},
+            </if>
+            <if test="bankCreditRejectUserName != null">
+                #{bankCreditRejectUserName,jdbcType=VARCHAR},
+            </if>
+            <if test="bankCreditRejectInfo != null">
+                #{bankCreditRejectInfo,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.LoanCreditInfoBankHisDO">
+        update loan_credit_info_bank_his
+        <set>
+            <if test="customerId != null">
+                customer_id = #{customerId,jdbcType=BIGINT},
+            </if>
+            <if test="creditApplyTime != null">
+                credit_apply_time = #{creditApplyTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="creditApplyUserId != null">
+                credit_apply_user_id = #{creditApplyUserId,jdbcType=BIGINT},
+            </if>
+            <if test="creditApplyUserName != null">
+                credit_apply_user_name = #{creditApplyUserName,jdbcType=VARCHAR},
+            </if>
+            <if test="bankCreditRecordTime != null">
+                bank_credit_record_time = #{bankCreditRecordTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="bankCreditRecordUserId != null">
+                bank_credit_record_user_id = #{bankCreditRecordUserId,jdbcType=BIGINT},
+            </if>
+            <if test="bankCreditRecordUserName != null">
+                bank_credit_record_user_name = #{bankCreditRecordUserName,jdbcType=VARCHAR},
+            </if>
+            <if test="bankCreditResult != null">
+                bank_credit_result = #{bankCreditResult,jdbcType=TINYINT},
+            </if>
+            <if test="bankCreditRejectTime != null">
+                bank_credit_reject_time = #{bankCreditRejectTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="bankCreditRejectUserId != null">
+                bank_credit_reject_user_id = #{bankCreditRejectUserId,jdbcType=BIGINT},
+            </if>
+            <if test="bankCreditRejectUserName != null">
+                bank_credit_reject_user_name = #{bankCreditRejectUserName,jdbcType=VARCHAR},
+            </if>
+            <if test="bankCreditRejectInfo != null">
+                bank_credit_reject_info = #{bankCreditRejectInfo,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.LoanCreditInfoBankHisDO">
+    update loan_credit_info_bank_his
+    set customer_id = #{customerId,jdbcType=BIGINT},
+      credit_apply_time = #{creditApplyTime,jdbcType=TIMESTAMP},
+      credit_apply_user_id = #{creditApplyUserId,jdbcType=BIGINT},
+      credit_apply_user_name = #{creditApplyUserName,jdbcType=VARCHAR},
+      bank_credit_record_time = #{bankCreditRecordTime,jdbcType=TIMESTAMP},
+      bank_credit_record_user_id = #{bankCreditRecordUserId,jdbcType=BIGINT},
+      bank_credit_record_user_name = #{bankCreditRecordUserName,jdbcType=VARCHAR},
+      bank_credit_result = #{bankCreditResult,jdbcType=TINYINT},
+      bank_credit_reject_time = #{bankCreditRejectTime,jdbcType=TIMESTAMP},
+      bank_credit_reject_user_id = #{bankCreditRejectUserId,jdbcType=BIGINT},
+      bank_credit_reject_user_name = #{bankCreditRejectUserName,jdbcType=VARCHAR},
+      bank_credit_reject_info = #{bankCreditRejectInfo,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+    <select id="lastByCustomerId" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM loan_credit_info_bank_his
+        WHERE customer_id = #{customerId,jdbcType=BIGINT}
+        ORDER BY id DESC
+        LIMIT 1
+    </select>
+
+</mapper>

@@ -37,6 +37,7 @@ import static com.yunche.loan.config.constant.CarConst.CAR_DETAIL;
 import static com.yunche.loan.config.constant.CarConst.CAR_TYPE_MAP;
 import static com.yunche.loan.config.constant.InsuranceTypeConst.*;
 import static com.yunche.loan.config.constant.LoanCustomerConst.*;
+import static com.yunche.loan.config.constant.LoanCustomerEnum.*;
 import static com.yunche.loan.config.constant.LoanFileConst.UPLOAD_TYPE_NORMAL;
 import static com.yunche.loan.config.constant.LoanOrderProcessConst.ORDER_STATUS_DOING;
 import static com.yunche.loan.config.constant.LoanOrderProcessConst.TASK_PROCESS_DONE;
@@ -178,6 +179,9 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
 
     @Autowired
     private VideoFaceLogDOMapper videoFaceLogDOMapper;
+
+    @Autowired
+    private LoanProcessLogService loanProcessLogService ;
 
 
     @Override
@@ -346,6 +350,74 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
         return ResultBean.ofSuccess(appCreditApplyVO);
     }
 
+    /**
+     * 校验客户14天内是否提交过征信盛情
+     * @param customerParam
+     */
+    private void checkBankInterfaceSerial(AppLoanBaseInfoParam customerParam) {
+        List<LoanCustomerDO> loanCustomerDOS = loanCustomerDOMapper.selectCusByOrderId(customerParam.getOrderId());
+        loanCustomerDOS.stream().filter(Objects::nonNull).forEach(e->{
+            String bank = customerParam.getLoanBaseInfo().getBank();
+            bankCredit(customerParam.getOrderId(), e.getIdCard(), e.getName(), bank, e.getPrincipalCustId());
+        });
+    }
+
+    private void bankCredit(Long orderId, String idCard, String name, String bankName, Long loanCustomerId) {
+
+        if (StringUtils.isNotBlank(idCard)) {
+
+            List<LoanCustomerDO> loanCustomerDOS = loanCustomerDOMapper.selectByIdCard(idCard);
+
+
+            List<LoanOrderDO> collect = Lists.newArrayList();
+
+            loanCustomerDOS.stream().filter(Objects::nonNull).forEach(e -> {
+                LoanOrderDO loanOrderDO = null;
+                //主贷人
+                if (PRINCIPAL_LENDER.getType().equals(e.getCustType())) {
+
+                    loanOrderDO = loanOrderDOMapper.selectByCustomerId(e.getId());
+
+                } else
+                    //共待人 || 担保人
+                    if (COMMON_LENDER.getType().equals(e.getCustType()) ||
+                            GUARANTOR.getType().equals(e.getCustType())) {
+                        loanOrderDO = loanOrderDOMapper.selectByCustomerId(e.getPrincipalCustId());
+                    }
+
+                //如果orderId 为null 第一次创建 需要判断是否重复
+                if (loanOrderDO != null) {
+
+                    if(orderId!=null && !loanOrderDO.getId().equals(orderId)){
+                        LoanBaseInfoDO loanBaseInfoDO = loanBaseInfoDOMapper.selectByPrimaryKey(loanOrderDO.getLoanBaseInfoId());
+                        //同一个贷款银行需要校验征信
+                        if (bankName.equals(loanBaseInfoDO.getBank())) {
+                            //如果征信申请日志不为NULL
+                            LoanProcessLogDO loanProcessLog = loanProcessLogService.getLoanProcessLog(loanOrderDO.getId(), CREDIT_APPLY.getCode());
+                            if (loanProcessLog != null) {
+                                Date createTime = loanProcessLog.getCreateTime();
+                                Date currDate = new Date();
+                                int days = (int) ((currDate.getTime() - createTime.getTime()) / (1000 * 3600 * 24));
+                                if (days <= 14) {
+                                    collect.add(loanOrderDO);
+                                    return;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+
+            if (collect != null && collect.size() > 0) {
+                throw new BizException(name + ":征信14天内已经发起征信申请，对应订单号【" + collect.get(0).getId() + "】");
+
+            }
+
+
+        }
+
+    }
     /**
      * 初始化贷款业余员相关信息   -根据当前登录账户
      *
@@ -1058,6 +1130,10 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
     public ResultBean<Long> createBaseInfo(AppLoanBaseInfoParam param) {
         Preconditions.checkNotNull(param.getOrderId(), "业务单号不能为空");
         Preconditions.checkNotNull(param.getLoanBaseInfo(), "贷款基本信息不能为空");
+
+        // 校验客户是否在系统之前已经查过征信，如果已经查过了，则不允许再添加
+        // 根据身份证号校验
+        checkBankInterfaceSerial(param);
 
         LoanBaseInfoDO loanBaseInfoDO = new LoanBaseInfoDO();
 

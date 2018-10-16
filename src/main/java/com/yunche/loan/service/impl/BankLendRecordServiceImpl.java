@@ -1,25 +1,28 @@
 package com.yunche.loan.service.impl;
 
 import com.google.common.base.Preconditions;
-import com.yunche.loan.config.constant.ProcessApprovalConst;
+import com.google.common.collect.Lists;
 import com.yunche.loan.config.constant.LoanProcessEnum;
+import com.yunche.loan.config.constant.ProcessApprovalConst;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.POIUtil;
 import com.yunche.loan.domain.entity.BankLendRecordDO;
 import com.yunche.loan.domain.entity.LoanFinancialPlanDO;
 import com.yunche.loan.domain.entity.LoanOrderDO;
+import com.yunche.loan.domain.entity.LoanProcessDO;
 import com.yunche.loan.domain.param.ApprovalParam;
 import com.yunche.loan.domain.vo.BankLendRecordVO;
 import com.yunche.loan.domain.vo.RecombinationVO;
 import com.yunche.loan.domain.vo.UniversalCustomerFileVO;
 import com.yunche.loan.domain.vo.UniversalCustomerVO;
-import com.yunche.loan.mapper.BankLendRecordDOMapper;
-import com.yunche.loan.mapper.LoanFinancialPlanDOMapper;
-import com.yunche.loan.mapper.LoanOrderDOMapper;
-import com.yunche.loan.mapper.LoanQueryDOMapper;
+import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.BankLendRecordService;
 import com.yunche.loan.service.LoanProcessService;
 import com.yunche.loan.service.LoanQueryService;
+import org.activiti.engine.TaskService;
+import org.activiti.engine.task.Task;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,10 +33,13 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.yunche.loan.config.constant.LoanOrderProcessConst.TASK_PROCESS_DONE;
+
 @Service
 @Transactional
 public class BankLendRecordServiceImpl implements BankLendRecordService {
 
+    private static final Logger LOG = LoggerFactory.getLogger(BankLendRecordService.class);
 
     @Autowired
     LoanQueryDOMapper loanQueryDOMapper;
@@ -52,6 +58,9 @@ public class BankLendRecordServiceImpl implements BankLendRecordService {
 
     @Autowired
     LoanFinancialPlanDOMapper loanFinancialPlanDOMapper;
+
+    @Autowired
+    LoanProcessDOMapper loanProcessDOMapper;
 
     @Override
     public ResultBean<RecombinationVO> detail(Long orderId) {
@@ -91,12 +100,15 @@ public class BankLendRecordServiceImpl implements BankLendRecordService {
 
     @Override
     public ResultBean importFile(String key) {
-        Preconditions.checkNotNull(key, "文件名不能为空（包含绝对路径）");
+        Preconditions.checkNotNull(key, "文件名不能为空");
 
         List<String[]> returnList;
-        try {
+        List<String> unusualRecord = Lists.newArrayList();
+        String idCard=null;
 
+        try{
             returnList = POIUtil.readExcelFromOSS(0, 1, key);
+
 
             SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
             for (String[] tmp : returnList) {
@@ -107,52 +119,90 @@ public class BankLendRecordServiceImpl implements BankLendRecordService {
                 if (tmp.length != 4) {
                     continue;
                 }
-                Long orderId = loanQueryDOMapper.selectOrderIdByIDCard(tmp[1].trim());
+                idCard=tmp[1].trim();
+                Long orderId = loanQueryDOMapper.selectOrderIdByIDCard(idCard);
                 if (orderId == null) {
+                    unusualRecord.add("导入失败:" + idCard+" "+ "非系统客户/存在多条订单");
                     continue;
                 }
-                BankLendRecordDO bankLendRecordDO = new BankLendRecordDO();
-                bankLendRecordDO.setLoanOrder(orderId);
-                bankLendRecordDO.setLendDate(df.parse(tmp[2].trim()));
-                bankLendRecordDO.setLendAmount(new BigDecimal(tmp[3].trim()));
-                bankLendRecordDO.setRecordStatus(Byte.valueOf("1"));
-                bankLendRecordDO.setStatus(Byte.valueOf("0"));
-                bankLendRecordDO.setGmtCreate(new Date());
-                //兼容重复导入
-                BankLendRecordDO tmpBankLendRecordDO = bankLendRecordDOMapper.selectByLoanOrder(orderId);
-                if (tmpBankLendRecordDO == null) {
-                    int count = bankLendRecordDOMapper.insert(bankLendRecordDO);
-                    Preconditions.checkArgument(count > 0, "身份证号:" + tmp[1].trim() + ",对应记录导入出错");
-                } else {
-                    bankLendRecordDO.setId(tmpBankLendRecordDO.getId());
-                    int count = bankLendRecordDOMapper.updateByPrimaryKey(bankLendRecordDO);
-                    Preconditions.checkArgument(count > 0, "身份证号:" + tmp[1].trim() + ",对应记录更新出错");
+                if(check_usertask_bank_lend_record(orderId)){
+                    LoanProcessDO loanProcessDO = loanProcessDOMapper.selectByPrimaryKey(orderId);
+                    if(TASK_PROCESS_DONE.equals(loanProcessDO.getBankLendRecord())){
+                        continue;
+                    }
+                    BankLendRecordDO bankLendRecordDO = new BankLendRecordDO();
+                    bankLendRecordDO.setLoanOrder(orderId);
+                    bankLendRecordDO.setLendDate(df.parse(tmp[2].trim()));
+                    bankLendRecordDO.setLendAmount(new BigDecimal(tmp[3].trim()));
+                    bankLendRecordDO.setRecordStatus(Byte.valueOf("1"));
+                    bankLendRecordDO.setStatus(Byte.valueOf("0"));
+                    bankLendRecordDO.setGmtCreate(new Date());
+                    //兼容重复导入
+                    BankLendRecordDO tmpBankLendRecordDO = bankLendRecordDOMapper.selectByLoanOrder(orderId);
+                    if (tmpBankLendRecordDO == null) {
+                        int count = bankLendRecordDOMapper.insert(bankLendRecordDO);
+                        Preconditions.checkArgument(count > 0, "身份证号:" + idCard + ",对应记录导入出错");
+                    } else {
+                        bankLendRecordDO.setId(tmpBankLendRecordDO.getId());
+                        int count = bankLendRecordDOMapper.updateByPrimaryKey(bankLendRecordDO);
+                        Preconditions.checkArgument(count > 0, "身份证号:" + idCard + ",对应记录更新出错");
+                    }
+
+                    LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
+                    loanOrderDO.setBankLendRecordId((long) bankLendRecordDO.getId());
+                    int count = loanOrderDOMapper.updateByPrimaryKey(loanOrderDO);
+                    Preconditions.checkArgument(count > 0, "业务单号为:" + orderId + ",对应记录更新出错");
+
+
+                    ApprovalParam approvalParam = new ApprovalParam();
+                    approvalParam.setOrderId(orderId);
+                    approvalParam.setTaskDefinitionKey(LoanProcessEnum.BANK_LEND_RECORD.getCode());
+                    approvalParam.setAction(ProcessApprovalConst.ACTION_PASS);
+
+                    approvalParam.setNeedLog(true);
+                    approvalParam.setCheckPermission(false);
+                    try{
+                        ResultBean<Void> approvalResultBean = loanProcessService.approval(approvalParam);
+                    }catch(Exception e){
+                        unusualRecord.add(idCard+":任务不存在");
+                        LOG.info("导入失败:" + idCard+" "+ "任务不存在");
+                    }
+                }else{
+                    unusualRecord.add(idCard+":任务不存在");
+                    LOG.info("导入失败:" + idCard+" "+ "任务不存在");
                 }
-
-                LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
-                loanOrderDO.setBankLendRecordId((long)  bankLendRecordDO.getId());
-                int count = loanOrderDOMapper.updateByPrimaryKey(loanOrderDO);
-                Preconditions.checkArgument(count > 0, "业务单号为:" + orderId + ",对应记录更新出错");
-
-
-                ApprovalParam approvalParam = new ApprovalParam();
-                approvalParam.setOrderId(orderId);
-                approvalParam.setTaskDefinitionKey(LoanProcessEnum.BANK_LEND_RECORD.getCode());
-                approvalParam.setAction(ProcessApprovalConst.ACTION_PASS);
-
-                approvalParam.setNeedLog(true);
-                approvalParam.setCheckPermission(false);
-                ResultBean<Void> approvalResultBean = loanProcessService.approval(approvalParam);
-                Preconditions.checkArgument(approvalResultBean.getSuccess(), approvalResultBean.getMsg());
             }
-
-        } catch (Exception e) {
-            Preconditions.checkArgument(false, e.getMessage());
+        }catch (Exception e){
+            unusualRecord.add(idCard+":"+e.getMessage());
+            LOG.info("导入失败:" + idCard+" "+ e.getMessage());
         }
 
-        return ResultBean.ofSuccess("导入成功");
+        return ResultBean.ofSuccess("导入成功，存在"+unusualRecord.size()+"条记录导入失败,失败原因："+unusualRecord.toString());
     }
 
+    @Autowired
+    private TaskService taskService;
+    /**
+     *  检查订单任务是否存在
+     * @return
+     */
+    private boolean check_usertask_bank_lend_record(Long orderId){
+        boolean flag=true;
+        try{
+            LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
+            // 获取当前流程task
+            Task task = taskService.createTaskQuery()
+                    .processInstanceId(loanOrderDO.getProcessInstId())
+                    .taskDefinitionKey(LoanProcessEnum.BANK_LEND_RECORD.getCode())
+                    .singleResult();
+            if(task==null){
+                flag=false;
+            }
+        }catch (Exception e){
+            return false;
+        }
+        return flag;
+    }
     @Override
     /**
      * 业务员手工录入银行放款记录

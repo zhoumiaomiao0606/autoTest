@@ -14,6 +14,7 @@ import com.yunche.loan.config.constant.LoanFileEnum;
 import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.BeanPlasticityUtills;
+import com.yunche.loan.config.util.GeneratorIDUtil;
 import com.yunche.loan.config.util.OSSUnit;
 import com.yunche.loan.domain.entity.*;
 import com.yunche.loan.domain.param.CarUpdateParam;
@@ -730,11 +731,11 @@ public class MaterialServiceImpl implements MaterialService {
                     }
 
 
-                    if (preCheck(NAME_ENTRY, typeFile.getCustTypeName() + "/" + documentType + "/" + typeFile.getTypeName() + "/" + url.split("/")[url.split("/").length - 1])) {
-                        zos.putNextEntry(new ZipEntry(typeFile.getCustTypeName() + "/" + documentType + "/" + typeFile.getTypeName() + "/" + url.split("/")[url.split("/").length - 1]));
-                    } else {
-                        continue;
-                    }
+//                    if (preCheck(NAME_ENTRY, typeFile.getCustTypeName() + "/" + documentType + "/" + typeFile.getTypeName() + "/" + url.split("/")[url.split("/").length - 1])) {
+                        zos.putNextEntry(new ZipEntry(typeFile.getCustTypeName() + "/" + documentType + "/" + typeFile.getTypeName() + "/" +generateNewFileName(url.split("/")[url.split("/").length - 1])));
+//                    } else {
+//                        continue;
+//                    }
                     int bytesRead = 0;
                     // 向压缩文件中输出数据
                     while ((bytesRead = inputStream.read()) != -1) {
@@ -1160,5 +1161,22 @@ public class MaterialServiceImpl implements MaterialService {
             int count = loanFileDOMapper.updateByPrimaryKeySelective(e);
             Preconditions.checkArgument(count > 0, "更新失败");
         });
+    }
+
+    /**
+     * 文件重命名
+     * @param ossFileName
+     * @return
+     */
+    private String generateNewFileName(String ossFileName){
+        try{
+            String[] split = ossFileName.split("\\.");
+            String hz = split[split.length-1];//文件后缀
+            return  GeneratorIDUtil.execute()+"."+hz;
+        }catch (Exception e){
+            return ossFileName;
+        }
+
+
     }
 }
