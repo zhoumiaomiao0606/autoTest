@@ -45,9 +45,9 @@ public class TaskDistributionServiceImpl implements TaskDistributionService {
     @Resource
     private LoanProcessLogDOMapper loanProcessLogDOMapper;
 
-    private static final  Byte ACTION = 6;
+    private static final Byte ACTION = 6;
 
-    private static final  Byte UNACTION = 7;
+    private static final Byte UNACTION = 7;
 
 
     /**
@@ -55,12 +55,13 @@ public class TaskDistributionServiceImpl implements TaskDistributionService {
      *
      * @param taskId
      * @param taskKey
+     * @param orderId
      */
     @Override
     public void get(Long taskId, String taskKey, Long orderId) {
-        if (taskId == null || StringUtils.isBlank(taskKey)) {
-            throw new BizException("必须传入任务id和任务key");
-        }
+        Preconditions.checkNotNull(orderId, "orderId不能为空");
+        Preconditions.checkNotNull(taskId, "taskId不能为空");
+        Preconditions.checkArgument(StringUtils.isNotBlank(taskKey), "taskKey不能为空");
 
         TaskDistributionDO taskDistributionDO = taskDistributionDOMapper.selectByPrimaryKey(taskId, taskKey);
         if (null != taskDistributionDO) {

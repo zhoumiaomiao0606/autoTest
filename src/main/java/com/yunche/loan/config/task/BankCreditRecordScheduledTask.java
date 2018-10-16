@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Objects;
 
 import static com.yunche.loan.config.constant.LoanCustomerConst.CREDIT_TYPE_BANK;
+import static com.yunche.loan.config.constant.LoanCustomerConst.ENABLE_TYPE_BANK;
 import static com.yunche.loan.config.constant.LoanProcessEnum.BANK_CREDIT_RECORD;
 import static com.yunche.loan.config.constant.ProcessApprovalConst.ACTION_REJECT_MANUAL;
 
@@ -220,7 +221,7 @@ public class BankCreditRecordScheduledTask {
             LoanCustomerDO loanCustomerDO = new LoanCustomerDO();
             loanCustomerDO.setId(customerId);
             loanCustomerDO.setEnable(BaseConst.K_YORN_YES);
-            loanCustomerDO.setEnableType(CREDIT_TYPE_BANK);
+            loanCustomerDO.setEnableType(ENABLE_TYPE_BANK);
             loanCustomerDO.setBankCreditReject(BaseConst.K_YORN_YES);
 
             ResultBean<Void> updateResult = loanCustomerService.update(loanCustomerDO);
