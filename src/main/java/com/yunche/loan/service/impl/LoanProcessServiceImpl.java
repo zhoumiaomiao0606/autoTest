@@ -3228,6 +3228,9 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
         // 附带任务-[银行放款记录]
         doAttachTask_BankLendRecord(approval, loanOrderDO);
+
+        // 附带任务-[弃单]
+        doAttachTask_CancelTask(approval, loanOrderDO);
     }
 
 
