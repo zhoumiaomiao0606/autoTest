@@ -47,10 +47,6 @@ public class LoanCustomerConst {
      * 社会征信
      */
     public static final Byte CREDIT_TYPE_SOCIAL = 2;
-    /**
-     * customer征信增补打回
-     */
-    public static final Byte CREDIT_SUPPLEMENT = 3;
     ////////////////////////////////////////////////// 征信类型 /////////////////////////////////////////////////////////
 
 
@@ -87,4 +83,20 @@ public class LoanCustomerConst {
     public static final Byte CUST_RELATION_other = 9;
 
     ///////////////////////////////////////////////// 与主贷人关系 ///////////////////////////////////////////////////////
+
+
+    ///////////////////////////////////////////////// enable_type //////////////////////////////////////////////////////
+    /**
+     * 银行征信打回
+     */
+    public static final Byte ENABLE_TYPE_BANK = 1;
+    /**
+     * 社会征信打回
+     */
+    public static final Byte ENABLE_TYPE_SOCIAL = 2;
+    /**
+     * customer征信增补打回
+     */
+    public static final Byte ENABLE_TYPE_CREDIT_SUPPLEMENT = 3;
+    ///////////////////////////////////////////////// enable_type //////////////////////////////////////////////////////
 }

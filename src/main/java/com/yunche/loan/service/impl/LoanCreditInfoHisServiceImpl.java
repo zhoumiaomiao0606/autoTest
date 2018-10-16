@@ -130,7 +130,7 @@ public class LoanCreditInfoHisServiceImpl implements LoanCreditInfoHisService {
                             Byte enableType_ = enableType[0];
 
                             // 银行增信打回
-                            if (CREDIT_TYPE_BANK.equals(enableType_)) {
+                            if (ENABLE_TYPE_BANK.equals(enableType_)) {
 
                                 // 银行征信查询记录
                                 LoanCreditInfoBankHisDO newLoanCreditInfoBankHisDO = new LoanCreditInfoBankHisDO();
@@ -144,7 +144,7 @@ public class LoanCreditInfoHisServiceImpl implements LoanCreditInfoHisService {
 
                             }
                             // 社会增信打回
-                            else if (CREDIT_TYPE_SOCIAL.equals(enableType_)) {
+                            else if (ENABLE_TYPE_SOCIAL.equals(enableType_)) {
 
                                 // 社会征信查询记录
                                 LoanCreditInfoSocialHisDO newLoanCreditInfoSocialHisDO = new LoanCreditInfoSocialHisDO();
@@ -158,7 +158,7 @@ public class LoanCreditInfoHisServiceImpl implements LoanCreditInfoHisService {
 
                             }
                             // 增信增补打回
-                            else if (CREDIT_SUPPLEMENT.equals(enableType_)) {
+                            else if (ENABLE_TYPE_CREDIT_SUPPLEMENT.equals(enableType_)) {
 
                                 createCreditInfoHis_CreditApply_First(e, loanAmount, loginUser);
                             }
@@ -213,7 +213,7 @@ public class LoanCreditInfoHisServiceImpl implements LoanCreditInfoHisService {
             return;
         }
 
-        customers = filterCustomers(customers, CREDIT_TYPE_BANK, true);
+        customers = filterCustomers(customers, ENABLE_TYPE_BANK, true);
         if (CollectionUtils.isEmpty(customers)) {
             return;
         }
@@ -248,7 +248,7 @@ public class LoanCreditInfoHisServiceImpl implements LoanCreditInfoHisService {
         }
 
         // 过滤出：当前正在查询社会征信的客户
-        customers = filterCustomers(customers, CREDIT_TYPE_SOCIAL, true);
+        customers = filterCustomers(customers, ENABLE_TYPE_SOCIAL, true);
         if (CollectionUtils.isEmpty(customers)) {
             return;
         }
@@ -281,7 +281,7 @@ public class LoanCreditInfoHisServiceImpl implements LoanCreditInfoHisService {
         }
 
         // 过滤出：被打回的客户
-        customers = filterCustomers(customers, CREDIT_TYPE_BANK, false);
+        customers = filterCustomers(customers, ENABLE_TYPE_BANK, false);
         if (CollectionUtils.isEmpty(customers)) {
             return;
         }
@@ -356,7 +356,7 @@ public class LoanCreditInfoHisServiceImpl implements LoanCreditInfoHisService {
         }
 
         // 过滤出：被打回的客户
-        customers = filterCustomers(customers, CREDIT_TYPE_SOCIAL, false);
+        customers = filterCustomers(customers, ENABLE_TYPE_SOCIAL, false);
         if (CollectionUtils.isEmpty(customers)) {
             return;
         }
@@ -385,12 +385,12 @@ public class LoanCreditInfoHisServiceImpl implements LoanCreditInfoHisService {
      * 过滤出：当前正在查询银行/社会征信的客户
      *
      * @param customers
-     * @param creditType 1-银行； 2-社会；
+     * @param enableType 1-银行打回； 2-社会打回； 3-征信增补打回；
      * @param checkFirst 是否校验 是第一次查询
      * @return
      */
-    private List<LoanCustomerDO> filterCustomers(List<LoanCustomerDO> customers, Byte creditType, boolean checkFirst) {
-        Preconditions.checkNotNull(creditType, "征信打回类型不能为空");
+    private List<LoanCustomerDO> filterCustomers(List<LoanCustomerDO> customers, Byte enableType, boolean checkFirst) {
+        Preconditions.checkNotNull(enableType, "征信打回类型不能为空");
 
         // 需要校验是否第一次查询
         if (checkFirst) {
@@ -422,7 +422,7 @@ public class LoanCreditInfoHisServiceImpl implements LoanCreditInfoHisService {
                 // 第2+次     过滤出：当前正在查询银行征信的客户
                 customers = customers.stream()
                         .filter(Objects::nonNull)
-                        .filter(e -> creditType.equals(e.getEnableType()) && BaseConst.K_YORN_YES.equals(e.getEnable()))
+                        .filter(e -> enableType.equals(e.getEnableType()) && BaseConst.K_YORN_YES.equals(e.getEnable()))
                         .collect(Collectors.toList());
             }
 
@@ -431,7 +431,7 @@ public class LoanCreditInfoHisServiceImpl implements LoanCreditInfoHisService {
             // 第2+次     过滤出：当前正在查询银行征信的客户
             customers = customers.stream()
                     .filter(Objects::nonNull)
-                    .filter(e -> creditType.equals(e.getEnableType()) && BaseConst.K_YORN_YES.equals(e.getEnable())
+                    .filter(e -> enableType.equals(e.getEnableType()) && BaseConst.K_YORN_YES.equals(e.getEnable())
                     )
                     .collect(Collectors.toList());
         }
