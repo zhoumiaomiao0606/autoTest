@@ -91,6 +91,19 @@
         </dependency>
         <!-- log4j2 -->
 
+        <!-- mq -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-amqp</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-logging</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <!-- mq -->
+
         <!-- redis -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
