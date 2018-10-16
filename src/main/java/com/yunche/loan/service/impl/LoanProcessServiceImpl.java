@@ -3218,10 +3218,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         doAttachTask_SocialCreditRecord(approval, loanOrderDO);
 
         // 附带任务-[贷款申请]
-        doAttachTask_LoanApply(approval, loanOrderDO, loanProcessDO);
-
-        // 附带任务-[贷款申请]
-        doAttachTask_loanApply(approval, loanOrderDO);
+        doAttachTask_loanApply(approval, loanOrderDO, loanProcessDO);
 
         // 附带任务-[打款确认]
         doAttachTask_RemitReview(approval, loanOrderDO);
@@ -3231,6 +3228,9 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
         // 附带任务-[银行放款记录]
         doAttachTask_BankLendRecord(approval, loanOrderDO);
+
+        // 附带任务-[弃单]
+        doAttachTask_CancelTask(approval, loanOrderDO);
     }
 
 
@@ -3257,13 +3257,19 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         }
     }
 
+
     /**
-     * 贷款申请校验1大于，2小于，3大于等于，4小于等于
+     * 附带任务-[贷款申请]
+     *
+     * @param approval
+     * @param loanOrderDO
+     * @param loanProcessDO
      */
-    private void doAttachTask_loanApply(ApprovalParam approval, LoanOrderDO loanOrderDO) {
+    private void doAttachTask_loanApply(ApprovalParam approval, LoanOrderDO loanOrderDO, LoanProcessDO loanProcessDO) {
 
         if (LOAN_APPLY.getCode().equals(approval.getTaskDefinitionKey()) && ACTION_PASS.equals(approval.getAction())) {
 
+            // 1、贷款申请校验1大于，2小于，3大于等于，4小于等于
             Map map = financialProductDOMapper.selectProductInfoByOrderId(loanOrderDO.getId());
             Long loanFinancialPlanId = loanOrderDOMapper.getLoanFinancialPlanIdById(loanOrderDO.getId());
             LoanFinancialPlanDO loanFinancialPlanDO = loanFinancialPlanDOMapper.selectByPrimaryKey(loanFinancialPlanId);
@@ -3298,6 +3304,24 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             }
             if (confLoanApplyDO.getStaging_ratio() != null && confLoanApplyDO.getStaging_ratio_compard() != null) {
                 compardNum(confLoanApplyDO.getStaging_ratio_compard(), stagingRatio, confLoanApplyDO.getStaging_ratio(), "银行分期比例");
+            }
+
+
+            // 2、贷款申请提交后，提交视频面签登记
+            if (TASK_PROCESS_TODO.equals(loanProcessDO.getLoanInfoRecord())
+                    || TASK_PROCESS_REJECT.equals(loanProcessDO.getLoanInfoRecord())) {
+
+                ApprovalParam approvalParam = new ApprovalParam();
+                approvalParam.setOrderId(approval.getOrderId());
+                approvalParam.setTaskDefinitionKey(LOAN_INFO_RECORD.getCode());
+                approvalParam.setAction(TASK_PROCESS_DONE);
+
+                approvalParam.setNeedLog(false);
+                approvalParam.setAutoTask(true);
+                approvalParam.setNeedPush(false);
+                approvalParam.setCheckPermission(false);
+
+                approval(approvalParam);
             }
         }
     }
@@ -3343,37 +3367,6 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             }
         }
     }
-
-    /**
-     * 附带任务-[贷款申请]
-     *
-     * @param approval
-     * @param loanOrderDO
-     * @param loanProcessDO
-     */
-    private void doAttachTask_LoanApply(ApprovalParam approval, LoanOrderDO loanOrderDO, LoanProcessDO loanProcessDO) {
-
-        if (LOAN_APPLY.getCode().equals(approval.getTaskDefinitionKey()) && ACTION_PASS.equals(approval.getAction())) {
-
-            // 贷款申请提交后，提交视频面签登记
-            if (TASK_PROCESS_TODO.equals(loanProcessDO.getLoanInfoRecord())
-                    || TASK_PROCESS_REJECT.equals(loanProcessDO.getLoanInfoRecord())) {
-
-                ApprovalParam approvalParam = new ApprovalParam();
-                approvalParam.setOrderId(approval.getOrderId());
-                approvalParam.setTaskDefinitionKey(LOAN_INFO_RECORD.getCode());
-                approvalParam.setAction(TASK_PROCESS_DONE);
-
-                approvalParam.setNeedLog(false);
-                approvalParam.setAutoTask(true);
-                approvalParam.setNeedPush(false);
-                approvalParam.setCheckPermission(false);
-
-                approval(approvalParam);
-            }
-        }
-    }
-
 
     /**
      * 附带任务-[征信申请]
