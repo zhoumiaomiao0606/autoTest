@@ -37,7 +37,6 @@ import static com.yunche.loan.config.constant.CarConst.CAR_DETAIL;
 import static com.yunche.loan.config.constant.CarConst.CAR_TYPE_MAP;
 import static com.yunche.loan.config.constant.InsuranceTypeConst.*;
 import static com.yunche.loan.config.constant.LoanCustomerConst.*;
-import static com.yunche.loan.config.constant.LoanCustomerEnum.*;
 import static com.yunche.loan.config.constant.LoanFileConst.UPLOAD_TYPE_NORMAL;
 import static com.yunche.loan.config.constant.LoanOrderProcessConst.ORDER_STATUS_DOING;
 import static com.yunche.loan.config.constant.LoanOrderProcessConst.TASK_PROCESS_DONE;
@@ -181,7 +180,7 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
     private VideoFaceLogDOMapper videoFaceLogDOMapper;
 
     @Autowired
-    private LoanProcessLogService loanProcessLogService ;
+    private ConfLoanApplyDOMapper confLoanApplyDOMapper;
 
 
     @Override
@@ -350,74 +349,6 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
         return ResultBean.ofSuccess(appCreditApplyVO);
     }
 
-    /**
-     * 校验客户14天内是否提交过征信盛情
-     * @param customerParam
-     */
-    private void checkBankInterfaceSerial(AppLoanBaseInfoParam customerParam) {
-        List<LoanCustomerDO> loanCustomerDOS = loanCustomerDOMapper.selectCusByOrderId(customerParam.getOrderId());
-        loanCustomerDOS.stream().filter(Objects::nonNull).forEach(e->{
-            String bank = customerParam.getLoanBaseInfo().getBank();
-            bankCredit(customerParam.getOrderId(), e.getIdCard(), e.getName(), bank, e.getPrincipalCustId());
-        });
-    }
-
-    private void bankCredit(Long orderId, String idCard, String name, String bankName, Long loanCustomerId) {
-
-        if (StringUtils.isNotBlank(idCard)) {
-
-            List<LoanCustomerDO> loanCustomerDOS = loanCustomerDOMapper.selectByIdCard(idCard);
-
-
-            List<LoanOrderDO> collect = Lists.newArrayList();
-
-            loanCustomerDOS.stream().filter(Objects::nonNull).forEach(e -> {
-                LoanOrderDO loanOrderDO = null;
-                //主贷人
-                if (PRINCIPAL_LENDER.getType().equals(e.getCustType())) {
-
-                    loanOrderDO = loanOrderDOMapper.selectByCustomerId(e.getId());
-
-                } else
-                    //共待人 || 担保人
-                    if (COMMON_LENDER.getType().equals(e.getCustType()) ||
-                            GUARANTOR.getType().equals(e.getCustType())) {
-                        loanOrderDO = loanOrderDOMapper.selectByCustomerId(e.getPrincipalCustId());
-                    }
-
-                //如果orderId 为null 第一次创建 需要判断是否重复
-                if (loanOrderDO != null) {
-
-                    if(orderId!=null && !loanOrderDO.getId().equals(orderId)){
-                        LoanBaseInfoDO loanBaseInfoDO = loanBaseInfoDOMapper.selectByPrimaryKey(loanOrderDO.getLoanBaseInfoId());
-                        //同一个贷款银行需要校验征信
-                        if (bankName.equals(loanBaseInfoDO.getBank())) {
-                            //如果征信申请日志不为NULL
-                            LoanProcessLogDO loanProcessLog = loanProcessLogService.getLoanProcessLog(loanOrderDO.getId(), CREDIT_APPLY.getCode());
-                            if (loanProcessLog != null) {
-                                Date createTime = loanProcessLog.getCreateTime();
-                                Date currDate = new Date();
-                                int days = (int) ((currDate.getTime() - createTime.getTime()) / (1000 * 3600 * 24));
-                                if (days <= 14) {
-                                    collect.add(loanOrderDO);
-                                    return;
-                                }
-                            }
-                        }
-                    }
-                }
-            });
-
-
-            if (collect != null && collect.size() > 0) {
-                throw new BizException(name + ":征信14天内已经发起征信申请，对应订单号【" + collect.get(0).getId() + "】");
-
-            }
-
-
-        }
-
-    }
     /**
      * 初始化贷款业余员相关信息   -根据当前登录账户
      *
@@ -1131,10 +1062,6 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
         Preconditions.checkNotNull(param.getOrderId(), "业务单号不能为空");
         Preconditions.checkNotNull(param.getLoanBaseInfo(), "贷款基本信息不能为空");
 
-        // 校验客户是否在系统之前已经查过征信，如果已经查过了，则不允许再添加
-        // 根据身份证号校验
-        checkBankInterfaceSerial(param);
-
         LoanBaseInfoDO loanBaseInfoDO = new LoanBaseInfoDO();
 
         EmployeeDO loginUser = SessionUtils.getLoginUser();
@@ -1342,6 +1269,7 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
         // convert
         LoanFinancialPlanDO loanFinancialPlanDO = new LoanFinancialPlanDO();
         BeanUtils.copyProperties(appLoanFinancialPlanParam, loanFinancialPlanDO);
+        doAttachTask_loanApply(appLoanFinancialPlanParam.getOrderId(),appLoanFinancialPlanParam);
         // insert
         ResultBean<Long> resultBean = loanFinancialPlanService.create(loanFinancialPlanDO);
         Preconditions.checkArgument(resultBean.getSuccess(), resultBean.getMsg());
@@ -1355,6 +1283,65 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
 
         return resultBean;
     }
+    /**
+     * 贷款申请校验1大于，2小于，3大于等于，4小于等于
+     */
+    private void doAttachTask_loanApply( Long orderId,AppLoanFinancialPlanParam appLoanFinancialPlanParam) {
+            LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
+/*            Map map = financialProductDOMapper.selectProductInfoByOrderId(loanOrderDO.getId());
+            Long loanFinancialPlanId = loanOrderDOMapper.getLoanFinancialPlanIdById(loanOrderDO.getId());
+            LoanFinancialPlanDO loanFinancialPlanDO = loanFinancialPlanDOMapper.selectByPrimaryKey(loanFinancialPlanId);*/
+            //金融手续费
+            BigDecimal financialServiceFee = appLoanFinancialPlanParam.getBankPeriodPrincipal().subtract(appLoanFinancialPlanParam.getLoanAmount());
+            //首付比例
+            BigDecimal downPaymentRatio = appLoanFinancialPlanParam.getDownPaymentRatio();
+            //贷款比例
+            BigDecimal loanRate = appLoanFinancialPlanParam.getLoanAmount().divide(appLoanFinancialPlanParam.getCarPrice(),2,BigDecimal.ROUND_HALF_UP);
+            //银行分期比例
+            BigDecimal stagingRatio = appLoanFinancialPlanParam.getStagingRatio();
+            LoanBaseInfoDO loanBaseInfoDO = loanBaseInfoDOMapper.selectByPrimaryKey(loanOrderDO.getLoanBaseInfoId());
+            String bankName = loanBaseInfoDO.getBank();
+            LoanCarInfoDO loanCarInfoDO = loanCarInfoDOMapper.selectByPrimaryKey(loanOrderDO.getLoanCarInfoId());
+            int carType = loanCarInfoDO.getCarType();
+            ConfLoanApplyDOKey confLoanApplyDOKey = new ConfLoanApplyDOKey();
+            confLoanApplyDOKey.setBank(bankName);
+            confLoanApplyDOKey.setCar_type(carType);
+            ConfLoanApplyDO confLoanApplyDO = confLoanApplyDOMapper.selectByPrimaryKey(confLoanApplyDOKey);
+            if(confLoanApplyDO.getDown_payment_ratio() !=null &&confLoanApplyDO.getDown_payment_ratio_compare() !=null){
+                compardNum(confLoanApplyDO.getDown_payment_ratio_compare(),downPaymentRatio,confLoanApplyDO.getDown_payment_ratio(),"首付比例");
+            }
+            if(confLoanApplyDO.getFinancial_service_fee() !=null && confLoanApplyDO.getFinancial_service_fee_compard() !=null){
+                compardNum(confLoanApplyDO.getFinancial_service_fee_compard(),financialServiceFee.divide(new BigDecimal("10000")),confLoanApplyDO.getFinancial_service_fee(),"金融手续费");
+            }
+            if(confLoanApplyDO.getLoan_ratio() !=null && confLoanApplyDO.getLoan_ratio_compare() !=null){
+                compardNum(confLoanApplyDO.getLoan_ratio_compare(),loanRate,confLoanApplyDO.getLoan_ratio().divide(new BigDecimal("100")),"贷款比例");
+            }
+            if(confLoanApplyDO.getStaging_ratio() !=null && confLoanApplyDO.getStaging_ratio_compard() !=null){
+                compardNum(confLoanApplyDO.getStaging_ratio_compard(),stagingRatio,confLoanApplyDO.getStaging_ratio(),"银行分期比例");
+            }
+    }
+    //1大于，2小于，3大于等于，4小于等于
+    public void compardNum(String flag,BigDecimal now,BigDecimal data,String reason){
+        int i=0;
+        i++;
+        if("1".equals(flag)){
+            if(now.compareTo(data) == -1){
+                throw new BizException(reason+"不能小于等于"+data);
+            }
+        }else if("2".equals(flag)){
+            if(now.compareTo(data) == 1){
+                throw new BizException(reason+"不能大于等于"+data);
+            }
+        }else if("3".equals(flag)){
+            if(now.compareTo(data) == -1){
+                throw new BizException(reason+"不能小于"+data);
+            }
+        }else if("4".equals(flag)){
+            if(now.compareTo(data) == 1){
+                throw new BizException(reason+"不能大于"+data);
+            }
+        }
+    }
 
     /**
      * update贷款金融方案
@@ -1365,7 +1352,7 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
     @Transactional
     public ResultBean<Void> updateLoanFinancialPlan(AppLoanFinancialPlanParam appLoanFinancialPlanParam) {
         Preconditions.checkNotNull(appLoanFinancialPlanParam, "金融方案不能为空");
-
+        doAttachTask_loanApply(appLoanFinancialPlanParam.getOrderId(),appLoanFinancialPlanParam);
         // convert
         LoanFinancialPlanDO loanFinancialPlanDO = new LoanFinancialPlanDO();
         BeanUtils.copyProperties(appLoanFinancialPlanParam, loanFinancialPlanDO);
