@@ -160,9 +160,9 @@ public class BankServiceImpl implements BankService {
         ConfLoanApplyDO confLoanApplyDO1 = new ConfLoanApplyDO();
         BeanUtils.copyProperties(newCar,confLoanApplyDO1);
         if(confLoanApplyDO != null){
-            confLoanApplyDOMapper.updateByPrimaryKeySelective(confLoanApplyDO1);
+            confLoanApplyDOMapper.updateByPrimaryKey(confLoanApplyDO1);
         }else{
-            confLoanApplyDOMapper.insertSelective(confLoanApplyDO1);
+            confLoanApplyDOMapper.insert(confLoanApplyDO1);
         }
         ConfLoanApplyDO oldCar = param.getOldCar();
         ConfLoanApplyDOKey confLoanApplyDOKey1 = new ConfLoanApplyDOKey();
@@ -172,9 +172,9 @@ public class BankServiceImpl implements BankService {
         ConfLoanApplyDO confLoanApplyDO3 = new ConfLoanApplyDO();
         BeanUtils.copyProperties(oldCar,confLoanApplyDO3);
         if(confLoanApplyDO2 != null){
-            confLoanApplyDOMapper.updateByPrimaryKeySelective(confLoanApplyDO3);
+            confLoanApplyDOMapper.updateByPrimaryKey(confLoanApplyDO3);
         }else{
-            confLoanApplyDOMapper.insertSelective(confLoanApplyDO3);
+            confLoanApplyDOMapper.insert(confLoanApplyDO3);
         }
 
     }
