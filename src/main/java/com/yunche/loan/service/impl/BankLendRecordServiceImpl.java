@@ -113,15 +113,11 @@ public class BankLendRecordServiceImpl implements BankLendRecordService {
 
             SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
             for (String[] tmp : returnList) {
-//                tmp[0].trim();//客户姓名
-//                tmp[1].trim();//身份证号
-//                tmp[2].trim();//放款日期
-//                tmp[3].trim();//放款金额
                 if (tmp.length != 4) {
                     continue;
                 }
                 idCard=tmp[1].trim();
-                List<Long> orders = loanQueryDOMapper.selectOrderIdByIdCard(Long.valueOf(idCard.trim()));//
+                List<Long> orders = loanQueryDOMapper.selectOrderIdByIdCard(idCard.trim());//
                 if(orders!=null && orders.size()>1){
                     unusualRecord.add("导入失败:" + idCard+" "+ "存在多条订单");
                     continue;
@@ -129,12 +125,6 @@ public class BankLendRecordServiceImpl implements BankLendRecordService {
                     unusualRecord.add("导入失败:" + idCard+" "+ "非系统客户");
                     continue;
                 }
-
-//                Long orderId = loanQueryDOMapper.selectOrderIdByIDCard(idCard);
-//                if (orderId == null) {
-//                    unusualRecord.add("导入失败:" + idCard+" "+ "非系统客户/存在多条订单");
-//                    continue;
-//                }
                 Long orderId=orders.get(0).longValue();
                 if(check_usertask_bank_lend_record(unusualRecord,orderId,idCard)){
                     LoanProcessDO loanProcessDO = loanProcessDOMapper.selectByPrimaryKey(orderId);
