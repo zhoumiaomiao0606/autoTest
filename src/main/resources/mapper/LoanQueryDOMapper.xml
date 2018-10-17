@@ -2185,4 +2185,17 @@
 
     </select>
 
+    <select id="selectOrderIdByIdCard" parameterType="java.lang.Long">
+        SELECT
+            loan.id AS orderId
+        FROM
+            loan_order loan
+            LEFT JOIN loan_process process ON loan.id = process.order_id
+            LEFT JOIN loan_customer customer ON loan.loan_customer_id = customer.id
+        WHERE
+            process.order_status != 3
+            AND customer.id_card = #{customerId}
+
+    </select>
+
 </mapper>

@@ -2,6 +2,7 @@ package com.yunche.loan.service.impl;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import com.yunche.loan.config.constant.LoanOrderProcessConst;
 import com.yunche.loan.config.constant.LoanProcessEnum;
 import com.yunche.loan.config.constant.ProcessApprovalConst;
 import com.yunche.loan.config.result.ResultBean;
@@ -120,12 +121,22 @@ public class BankLendRecordServiceImpl implements BankLendRecordService {
                     continue;
                 }
                 idCard=tmp[1].trim();
-                Long orderId = loanQueryDOMapper.selectOrderIdByIDCard(idCard);
-                if (orderId == null) {
-                    unusualRecord.add("导入失败:" + idCard+" "+ "非系统客户/存在多条订单");
+                List<Long> orders = loanQueryDOMapper.selectOrderIdByIdCard(Long.valueOf(idCard.trim()));//
+                if(orders!=null && orders.size()>1){
+                    unusualRecord.add("导入失败:" + idCard+" "+ "存在多条订单");
+                    continue;
+                }else if(orders==null){
+                    unusualRecord.add("导入失败:" + idCard+" "+ "非系统客户");
                     continue;
                 }
-                if(check_usertask_bank_lend_record(orderId)){
+
+//                Long orderId = loanQueryDOMapper.selectOrderIdByIDCard(idCard);
+//                if (orderId == null) {
+//                    unusualRecord.add("导入失败:" + idCard+" "+ "非系统客户/存在多条订单");
+//                    continue;
+//                }
+                Long orderId=orders.get(0).longValue();
+                if(check_usertask_bank_lend_record(unusualRecord,orderId,idCard)){
                     LoanProcessDO loanProcessDO = loanProcessDOMapper.selectByPrimaryKey(orderId);
                     if(TASK_PROCESS_DONE.equals(loanProcessDO.getBankLendRecord())){
                         continue;
@@ -164,12 +175,9 @@ public class BankLendRecordServiceImpl implements BankLendRecordService {
                     try{
                         ResultBean<Void> approvalResultBean = loanProcessService.approval(approvalParam);
                     }catch(Exception e){
-                        unusualRecord.add(idCard+":任务不存在");
+                        unusualRecord.add("导入失败:"+idCard+":任务处理失败请联系管理员");
                         LOG.info("导入失败:" + idCard+" "+ "任务不存在");
                     }
-                }else{
-                    unusualRecord.add(idCard+":任务不存在");
-                    LOG.info("导入失败:" + idCard+" "+ "任务不存在");
                 }
             }
         }catch (Exception e){
@@ -186,9 +194,15 @@ public class BankLendRecordServiceImpl implements BankLendRecordService {
      *  检查订单任务是否存在
      * @return
      */
-    private boolean check_usertask_bank_lend_record(Long orderId){
+    private boolean check_usertask_bank_lend_record( List<String> unusualRecord,Long orderId,String idCard){
         boolean flag=true;
         try{
+            LoanProcessDO loanProcessDO = loanProcessDOMapper.selectByPrimaryKey(orderId);
+            //银行还款已提交
+            if(LoanOrderProcessConst.TASK_PROCESS_DONE.equals(loanProcessDO.getBankLendRecord())){
+                unusualRecord.add("导入失败:" + idCard+" "+ "订单已提交");
+                return false;
+            }
             LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
             // 获取当前流程task
             Task task = taskService.createTaskQuery()
@@ -196,9 +210,11 @@ public class BankLendRecordServiceImpl implements BankLendRecordService {
                     .taskDefinitionKey(LoanProcessEnum.BANK_LEND_RECORD.getCode())
                     .singleResult();
             if(task==null){
-                flag=false;
+                unusualRecord.add("导入失败:" + idCard+" "+ "当前任务不存在");
+                return false;
             }
         }catch (Exception e){
+            unusualRecord.add("导入失败:" + idCard+" "+ "当前任务存在多条记录，请联系管理员");
             return false;
         }
         return flag;
