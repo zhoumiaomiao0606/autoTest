@@ -30,7 +30,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
 import java.util.*;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import static com.yunche.loan.config.constant.LoanCustomerConst.CREDIT_TYPE_BANK;
