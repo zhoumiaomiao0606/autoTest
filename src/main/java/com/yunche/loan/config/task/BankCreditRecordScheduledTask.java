@@ -8,7 +8,6 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.yunche.loan.config.anno.DistributedLock;
 import com.yunche.loan.config.constant.BaseConst;
-import com.yunche.loan.config.constant.LoanCustomerConst;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.entity.BankInterfaceSerialDO;
 import com.yunche.loan.domain.entity.LoanCreditInfoDO;
