@@ -1315,6 +1315,9 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
                 if (confLoanApplyDO.getFinancial_service_fee() != null && confLoanApplyDO.getFinancial_service_fee_compard() != null) {
                     compardNum(confLoanApplyDO.getFinancial_service_fee_compard(), financialServiceFee.divide(new BigDecimal("10000")), confLoanApplyDO.getFinancial_service_fee(), "金融手续费");
                 }
+                if (confLoanApplyDO.getCar_ratio() != null && confLoanApplyDO.getCar_ratio_compard() != null) {
+                    compardNum(confLoanApplyDO.getCar_ratio_compard(), financialServiceFee, appLoanFinancialPlanParam.getCarPrice().multiply(confLoanApplyDO.getCar_ratio()), "金融手续费2");
+                }
                 if (confLoanApplyDO.getLoan_ratio() != null && confLoanApplyDO.getLoan_ratio_compare() != null) {
                     compardNum(confLoanApplyDO.getLoan_ratio_compare(), loanRate, confLoanApplyDO.getLoan_ratio().divide(new BigDecimal("100")), "贷款比例");
                 }

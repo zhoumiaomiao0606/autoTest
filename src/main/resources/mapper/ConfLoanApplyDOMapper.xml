@@ -12,10 +12,13 @@
     <result column="loan_ratio_compare" property="loan_ratio_compare" jdbcType="VARCHAR" />
     <result column="staging_ratio_compard" property="staging_ratio_compard" jdbcType="VARCHAR" />
     <result column="financial_service_fee_compard" property="financial_service_fee_compard" jdbcType="VARCHAR" />
+    <result column="car_ratio" property="car_ratio" jdbcType="DECIMAL" />
+    <result column="car_ratio_compard" property="car_ratio_compard" jdbcType="VARCHAR" />
   </resultMap>
   <sql id="Base_Column_List" >
     bank, car_type, down_payment_ratio, loan_ratio, financial_service_fee, staging_ratio, 
-    down_payment_ratio_compare, loan_ratio_compare, staging_ratio_compard, financial_service_fee_compard
+    down_payment_ratio_compare, loan_ratio_compare, staging_ratio_compard, financial_service_fee_compard, 
+    car_ratio, car_ratio_compard
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="com.yunche.loan.domain.entity.ConfLoanApplyDOKey" >
     select 
@@ -33,13 +36,13 @@
     insert into conf_loan_apply (bank, car_type, down_payment_ratio, 
       loan_ratio, financial_service_fee, staging_ratio, 
       down_payment_ratio_compare, loan_ratio_compare, 
-      staging_ratio_compard, financial_service_fee_compard
-      )
+      staging_ratio_compard, financial_service_fee_compard, 
+      car_ratio, car_ratio_compard)
     values (#{bank,jdbcType=VARCHAR}, #{car_type,jdbcType=INTEGER}, #{down_payment_ratio,jdbcType=DECIMAL}, 
       #{loan_ratio,jdbcType=DECIMAL}, #{financial_service_fee,jdbcType=DECIMAL}, #{staging_ratio,jdbcType=DECIMAL}, 
       #{down_payment_ratio_compare,jdbcType=VARCHAR}, #{loan_ratio_compare,jdbcType=VARCHAR}, 
-      #{staging_ratio_compard,jdbcType=VARCHAR}, #{financial_service_fee_compard,jdbcType=VARCHAR}
-      )
+      #{staging_ratio_compard,jdbcType=VARCHAR}, #{financial_service_fee_compard,jdbcType=VARCHAR}, 
+      #{car_ratio,jdbcType=DECIMAL}, #{car_ratio_compard,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.ConfLoanApplyDO" >
     insert into conf_loan_apply
@@ -74,6 +77,12 @@
       <if test="financial_service_fee_compard != null" >
         financial_service_fee_compard,
       </if>
+      <if test="car_ratio != null" >
+        car_ratio,
+      </if>
+      <if test="car_ratio_compard != null" >
+        car_ratio_compard,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="bank != null" >
@@ -106,6 +115,12 @@
       <if test="financial_service_fee_compard != null" >
         #{financial_service_fee_compard,jdbcType=VARCHAR},
       </if>
+      <if test="car_ratio != null" >
+        #{car_ratio,jdbcType=DECIMAL},
+      </if>
+      <if test="car_ratio_compard != null" >
+        #{car_ratio_compard,jdbcType=VARCHAR},
+      </if>
     </trim>
   </insert>
   <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.ConfLoanApplyDO" >
@@ -135,6 +150,12 @@
       <if test="financial_service_fee_compard != null" >
         financial_service_fee_compard = #{financial_service_fee_compard,jdbcType=VARCHAR},
       </if>
+      <if test="car_ratio != null" >
+        car_ratio = #{car_ratio,jdbcType=DECIMAL},
+      </if>
+      <if test="car_ratio_compard != null" >
+        car_ratio_compard = #{car_ratio_compard,jdbcType=VARCHAR},
+      </if>
     </set>
     where bank = #{bank,jdbcType=VARCHAR}
       and car_type = #{car_type,jdbcType=INTEGER}
@@ -148,7 +169,9 @@
       down_payment_ratio_compare = #{down_payment_ratio_compare,jdbcType=VARCHAR},
       loan_ratio_compare = #{loan_ratio_compare,jdbcType=VARCHAR},
       staging_ratio_compard = #{staging_ratio_compard,jdbcType=VARCHAR},
-      financial_service_fee_compard = #{financial_service_fee_compard,jdbcType=VARCHAR}
+      financial_service_fee_compard = #{financial_service_fee_compard,jdbcType=VARCHAR},
+      car_ratio = #{car_ratio,jdbcType=DECIMAL},
+      car_ratio_compard = #{car_ratio_compard,jdbcType=VARCHAR}
     where bank = #{bank,jdbcType=VARCHAR}
       and car_type = #{car_type,jdbcType=INTEGER}
   </update>

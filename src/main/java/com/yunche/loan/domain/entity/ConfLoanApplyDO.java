@@ -3,7 +3,6 @@ package com.yunche.loan.domain.entity;
 import lombok.Data;
 
 import java.math.BigDecimal;
-
 @Data
 public class ConfLoanApplyDO extends ConfLoanApplyDOKey {
     private BigDecimal down_payment_ratio;
@@ -21,4 +20,8 @@ public class ConfLoanApplyDO extends ConfLoanApplyDOKey {
     private String staging_ratio_compard;
 
     private String financial_service_fee_compard;
+
+    private BigDecimal car_ratio;
+
+    private String car_ratio_compard;
 }

@@ -7,5 +7,4 @@ public class ConfLoanApplyDOKey {
     private String bank;
 
     private Integer car_type;
-
 }
