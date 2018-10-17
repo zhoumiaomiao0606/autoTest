@@ -121,6 +121,9 @@ public class BankLendRecordServiceImpl implements BankLendRecordService {
                 if(orders!=null && orders.size()>1){
                     unusualRecord.add("导入失败:" + idCard+" "+ "存在多条订单");
                     continue;
+                }else if(orders!=null && orders.size()==0){
+                    unusualRecord.add("导入失败:" + idCard+" "+ "非系统客户");
+                    continue;
                 }else if(orders==null){
                     unusualRecord.add("导入失败:" + idCard+" "+ "非系统客户");
                     continue;
