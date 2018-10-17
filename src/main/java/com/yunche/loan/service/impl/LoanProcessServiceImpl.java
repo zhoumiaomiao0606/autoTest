@@ -3239,11 +3239,11 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         int i = 0;
         i++;
         if ("1".equals(flag)) {
-            if (now.compareTo(data) == -1) {
+            if (now.compareTo(data) != 1) {
                 throw new BizException(reason + "不能小于等于" + data);
             }
         } else if ("2".equals(flag)) {
-            if (now.compareTo(data) == 1) {
+            if (now.compareTo(data) != -1) {
                 throw new BizException(reason + "不能大于等于" + data);
             }
         } else if ("3".equals(flag)) {

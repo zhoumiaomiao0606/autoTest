@@ -1327,24 +1327,24 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
             }
     }
     //1大于，2小于，3大于等于，4小于等于
-    public void compardNum(String flag,BigDecimal now,BigDecimal data,String reason){
-        int i=0;
+    public void compardNum(String flag, BigDecimal now, BigDecimal data, String reason) {
+        int i = 0;
         i++;
-        if("1".equals(flag)){
-            if(now.compareTo(data) == -1){
-                throw new BizException(reason+"不能小于等于"+data);
+        if ("1".equals(flag)) {
+            if (now.compareTo(data) != 1) {
+                throw new BizException(reason + "不能小于等于" + data);
             }
-        }else if("2".equals(flag)){
-            if(now.compareTo(data) == 1){
-                throw new BizException(reason+"不能大于等于"+data);
+        } else if ("2".equals(flag)) {
+            if (now.compareTo(data) != -1) {
+                throw new BizException(reason + "不能大于等于" + data);
             }
-        }else if("3".equals(flag)){
-            if(now.compareTo(data) == -1){
-                throw new BizException(reason+"不能小于"+data);
+        } else if ("3".equals(flag)) {
+            if (now.compareTo(data) == -1) {
+                throw new BizException(reason + "不能小于" + data);
             }
-        }else if("4".equals(flag)){
-            if(now.compareTo(data) == 1){
-                throw new BizException(reason+"不能大于"+data);
+        } else if ("4".equals(flag)) {
+            if (now.compareTo(data) == 1) {
+                throw new BizException(reason + "不能大于" + data);
             }
         }
     }
