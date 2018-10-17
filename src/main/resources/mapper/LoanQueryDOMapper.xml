@@ -2185,7 +2185,7 @@
 
     </select>
 
-    <select id="selectOrderIdByIdCard" parameterType="java.lang.Long">
+    <select id="selectOrderIdByIdCard" parameterType="java.lang.String" resultType="java.lang.Long">
         SELECT
             loan.id AS orderId
         FROM
@@ -2194,7 +2194,7 @@
             LEFT JOIN loan_customer customer ON loan.loan_customer_id = customer.id
         WHERE
             process.order_status != 3
-            AND customer.id_card = #{customerId}
+            AND customer.id_card = #{idCard}
 
     </select>
 
