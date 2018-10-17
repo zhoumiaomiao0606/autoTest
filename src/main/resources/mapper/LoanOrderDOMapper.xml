@@ -91,6 +91,7 @@
         where id = #{id,jdbcType=BIGINT}
     </select>
 
+
     <insert id="insert" parameterType="com.yunche.loan.domain.entity.LoanOrderDO">
         insert into loan_order (id, process_inst_id, loan_base_info_id,
         loan_customer_id, loan_car_info_id, loan_financial_plan_id,

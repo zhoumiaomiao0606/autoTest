@@ -688,6 +688,8 @@
 
       from (select * from loan_order where id = #{orderId,jdbcType=BIGINT}) main_order
       left join loan_customer customer on main_order.loan_customer_id = customer.principal_cust_id and cust_type !=0
+      where  customer.status !=1
+
     </select>
 
     <!--打款信息-->
@@ -2180,6 +2182,19 @@
         LEFT JOIN   bank                            bk      ON   bk.name = b.bank
 
         WHERE       o.id = #{orderId}
+
+    </select>
+
+    <select id="selectOrderIdByIdCard" parameterType="java.lang.String" resultType="java.lang.Long">
+        SELECT
+            loan.id AS orderId
+        FROM
+            loan_order loan
+            LEFT JOIN loan_process process ON loan.id = process.order_id
+            LEFT JOIN loan_customer customer ON loan.loan_customer_id = customer.id
+        WHERE
+            process.order_status != 3
+            AND customer.id_card = #{idCard}
 
     </select>
 
