@@ -36,7 +36,7 @@
     delete from remit_details
     where id = #{id,jdbcType=BIGINT}
   </delete>
-  <insert id="insert" parameterType="com.yunche.loan.domain.entity.RemitDetailsDO">
+  <insert id="insert" parameterType="com.yunche.loan.domain.entity.RemitDetailsDO"  useGeneratedKeys="true" keyColumn="id" keyProperty="id">
     insert into remit_details (id, beneficiary_bank, beneficiary_account, 
       beneficiary_account_number, remit_amount, 
       return_rate_amount, insurance_situation, 
@@ -52,7 +52,7 @@
       #{status,jdbcType=TINYINT}, #{feature,jdbcType=VARCHAR}, #{remit_bank,jdbcType=VARCHAR}, 
       #{remit_account,jdbcType=VARCHAR}, #{remit_account_number,jdbcType=VARCHAR})
   </insert>
-  <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.RemitDetailsDO">
+  <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.RemitDetailsDO"  useGeneratedKeys="true" keyColumn="id" keyProperty="id">
     insert into remit_details
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="id != null">

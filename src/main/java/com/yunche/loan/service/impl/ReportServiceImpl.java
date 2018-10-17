@@ -995,7 +995,7 @@ public class ReportServiceImpl implements ReportService {
 
 
             ArrayList<String> header = Lists.newArrayList("查询机构", "提交日期", "查询客户", "身份证号",
-                    "经销商/业务员", "业务团队", "业务品种", "提交机构"
+                    "经销商/业务员", "业务团队", "业务品种", "提交机构","结果","征信申请提交时间"
             );
             //申请单号	客户名称	证件类型	证件号	业务员	合伙人团队	贷款金额	gps数量	申请单状态	提交状态	备注	审核员	审核时间
             XSSFRow headRow = sheet.createRow(0);
@@ -1035,6 +1035,12 @@ public class ReportServiceImpl implements ReportService {
                 cell = row.createCell(7);
                 cell.setCellValue(bankCreditPrincipalVO.getSubmitOrganization());
 
+                cell = row.createCell(8);
+                cell.setCellValue(bankCreditPrincipalVO.getBnakResult());
+
+                cell = row.createCell(9);
+                cell.setCellValue(bankCreditPrincipalVO.getCreditApplyTime());
+
 
             }
             //文件宽度自适应
@@ -1046,6 +1052,8 @@ public class ReportServiceImpl implements ReportService {
             sheet.autoSizeColumn((short) 5);
             sheet.autoSizeColumn((short) 6);
             sheet.autoSizeColumn((short) 7);
+            sheet.autoSizeColumn((short) 8);
+            sheet.autoSizeColumn((short) 9);
 
             workbook.write(out);
             //上传OSS

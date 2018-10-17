@@ -3293,19 +3293,20 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             confLoanApplyDOKey.setCar_type(carType);
 
             ConfLoanApplyDO confLoanApplyDO = confLoanApplyDOMapper.selectByPrimaryKey(confLoanApplyDOKey);
-            if (confLoanApplyDO.getDown_payment_ratio() != null && confLoanApplyDO.getDown_payment_ratio_compare() != null) {
-                compardNum(confLoanApplyDO.getDown_payment_ratio_compare(), downPaymentRatio, confLoanApplyDO.getDown_payment_ratio(), "首付比例");
+            if(confLoanApplyDO !=null) {
+                if (confLoanApplyDO.getDown_payment_ratio() != null && confLoanApplyDO.getDown_payment_ratio_compare() != null) {
+                    compardNum(confLoanApplyDO.getDown_payment_ratio_compare(), downPaymentRatio, confLoanApplyDO.getDown_payment_ratio(), "首付比例");
+                }
+                if (confLoanApplyDO.getFinancial_service_fee() != null && confLoanApplyDO.getFinancial_service_fee_compard() != null) {
+                    compardNum(confLoanApplyDO.getFinancial_service_fee_compard(), financialServiceFee.divide(new BigDecimal("10000")), confLoanApplyDO.getFinancial_service_fee(), "金融手续费");
+                }
+                if (confLoanApplyDO.getLoan_ratio() != null && confLoanApplyDO.getLoan_ratio_compare() != null) {
+                    compardNum(confLoanApplyDO.getLoan_ratio_compare(), loanRate, confLoanApplyDO.getLoan_ratio().divide(new BigDecimal("100")), "贷款比例");
+                }
+                if (confLoanApplyDO.getStaging_ratio() != null && confLoanApplyDO.getStaging_ratio_compard() != null) {
+                    compardNum(confLoanApplyDO.getStaging_ratio_compard(), stagingRatio, confLoanApplyDO.getStaging_ratio(), "银行分期比例");
+                }
             }
-            if (confLoanApplyDO.getFinancial_service_fee() != null && confLoanApplyDO.getFinancial_service_fee_compard() != null) {
-                compardNum(confLoanApplyDO.getFinancial_service_fee_compard(), financialServiceFee.divide(new BigDecimal("10000")), confLoanApplyDO.getFinancial_service_fee(), "金融手续费");
-            }
-            if (confLoanApplyDO.getLoan_ratio() != null && confLoanApplyDO.getLoan_ratio_compare() != null) {
-                compardNum(confLoanApplyDO.getLoan_ratio_compare(), loanRate, confLoanApplyDO.getLoan_ratio().divide(new BigDecimal("100")), "贷款比例");
-            }
-            if (confLoanApplyDO.getStaging_ratio() != null && confLoanApplyDO.getStaging_ratio_compard() != null) {
-                compardNum(confLoanApplyDO.getStaging_ratio_compard(), stagingRatio, confLoanApplyDO.getStaging_ratio(), "银行分期比例");
-            }
-
 
             // 2、贷款申请提交后，提交视频面签登记
             if (TASK_PROCESS_TODO.equals(loanProcessDO.getLoanInfoRecord())

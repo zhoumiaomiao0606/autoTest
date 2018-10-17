@@ -423,7 +423,7 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
                     loanFinancialPlanVO.setFinancialServiceFee(String.valueOf(loanFinancialPlanDO.getBankPeriodPrincipal().subtract(loanFinancialPlanDO.getLoanAmount())));
                 }
                 if (loanFinancialPlanDO.getLoanAmount() != null && loanFinancialPlanDO.getCarPrice() != null) {
-                    loanFinancialPlanVO.setLoanRate(String.valueOf(loanFinancialPlanDO.getLoanAmount().divide(loanFinancialPlanDO.getCarPrice(),2,BigDecimal.ROUND_HALF_UP)));
+                    loanFinancialPlanVO.setLoanRate(String.valueOf(loanFinancialPlanDO.getLoanAmount().multiply(new BigDecimal("100")).divide(loanFinancialPlanDO.getCarPrice(),2,BigDecimal.ROUND_HALF_UP)));
                 }
             }
         }
@@ -511,6 +511,7 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
         AppLoanFinancialPlanVO appLoanFinancialPlanVO = new AppLoanFinancialPlanVO();
         LoanFinancialPlanVO loanFinancialPlanVO = calcResult.getData();
         if (null != loanFinancialPlanVO) {
+            loanFinancialPlanVO.setLoanRate(String.valueOf(loanFinancialPlanParam.getLoanAmount().multiply(new BigDecimal("100")).divide(loanFinancialPlanParam.getCarPrice(),2,BigDecimal.ROUND_HALF_UP)));
             BeanUtils.copyProperties(loanFinancialPlanVO, appLoanFinancialPlanVO);
         }
 
@@ -1307,17 +1308,19 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
             confLoanApplyDOKey.setBank(bankName);
             confLoanApplyDOKey.setCar_type(carType);
             ConfLoanApplyDO confLoanApplyDO = confLoanApplyDOMapper.selectByPrimaryKey(confLoanApplyDOKey);
-            if(confLoanApplyDO.getDown_payment_ratio() !=null &&confLoanApplyDO.getDown_payment_ratio_compare() !=null){
-                compardNum(confLoanApplyDO.getDown_payment_ratio_compare(),downPaymentRatio,confLoanApplyDO.getDown_payment_ratio(),"首付比例");
-            }
-            if(confLoanApplyDO.getFinancial_service_fee() !=null && confLoanApplyDO.getFinancial_service_fee_compard() !=null){
-                compardNum(confLoanApplyDO.getFinancial_service_fee_compard(),financialServiceFee.divide(new BigDecimal("10000")),confLoanApplyDO.getFinancial_service_fee(),"金融手续费");
-            }
-            if(confLoanApplyDO.getLoan_ratio() !=null && confLoanApplyDO.getLoan_ratio_compare() !=null){
-                compardNum(confLoanApplyDO.getLoan_ratio_compare(),loanRate,confLoanApplyDO.getLoan_ratio().divide(new BigDecimal("100")),"贷款比例");
-            }
-            if(confLoanApplyDO.getStaging_ratio() !=null && confLoanApplyDO.getStaging_ratio_compard() !=null){
-                compardNum(confLoanApplyDO.getStaging_ratio_compard(),stagingRatio,confLoanApplyDO.getStaging_ratio(),"银行分期比例");
+            if(confLoanApplyDO!=null) {
+                if (confLoanApplyDO.getDown_payment_ratio() != null && confLoanApplyDO.getDown_payment_ratio_compare() != null) {
+                    compardNum(confLoanApplyDO.getDown_payment_ratio_compare(), downPaymentRatio, confLoanApplyDO.getDown_payment_ratio(), "首付比例");
+                }
+                if (confLoanApplyDO.getFinancial_service_fee() != null && confLoanApplyDO.getFinancial_service_fee_compard() != null) {
+                    compardNum(confLoanApplyDO.getFinancial_service_fee_compard(), financialServiceFee.divide(new BigDecimal("10000")), confLoanApplyDO.getFinancial_service_fee(), "金融手续费");
+                }
+                if (confLoanApplyDO.getLoan_ratio() != null && confLoanApplyDO.getLoan_ratio_compare() != null) {
+                    compardNum(confLoanApplyDO.getLoan_ratio_compare(), loanRate, confLoanApplyDO.getLoan_ratio().divide(new BigDecimal("100")), "贷款比例");
+                }
+                if (confLoanApplyDO.getStaging_ratio() != null && confLoanApplyDO.getStaging_ratio_compard() != null) {
+                    compardNum(confLoanApplyDO.getStaging_ratio_compard(), stagingRatio, confLoanApplyDO.getStaging_ratio(), "银行分期比例");
+                }
             }
     }
     //1大于，2小于，3大于等于，4小于等于
