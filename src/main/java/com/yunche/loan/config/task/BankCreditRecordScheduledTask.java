@@ -158,8 +158,10 @@ public class BankCreditRecordScheduledTask {
 
 
             // enable_type
-            String ids = enableCustomerIdSet.stream().map(String::valueOf).collect(Collectors.joining(","));
-            loanCustomerService.enable(ids, ENABLE_TYPE_BANK);
+            if (!CollectionUtils.isEmpty(enableCustomerIdSet)) {
+                String ids = enableCustomerIdSet.stream().map(String::valueOf).collect(Collectors.joining(","));
+                loanCustomerService.enable(ids, ENABLE_TYPE_BANK);
+            }
 
 
             // 提交打回
@@ -168,6 +170,15 @@ public class BankCreditRecordScheduledTask {
 
         });
 
+    }
+
+    public static void main(String[] args) {
+
+        HashSet<Long> enableCustomerIdSet = Sets.newHashSet();
+
+        String ids = enableCustomerIdSet.stream().map(String::valueOf).collect(Collectors.joining(","));
+
+        System.out.println(ids);
     }
 
 
