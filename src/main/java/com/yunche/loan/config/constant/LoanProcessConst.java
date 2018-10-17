@@ -18,7 +18,7 @@ public class LoanProcessConst {
     public static final Set<String> LOAN_PROCESS_BRIDGE_PAY_KEYS = Sets.newHashSet(
             BRIDGE_HANDLE.getCode(),
             BRIDGE_REPAY_RECORD.getCode(),
-            BRIDGE_INTEREST_RECORD.getCode(),
+//            BRIDGE_INTEREST_RECORD.getCode(),
             BRIDGE_REPAY_INFO.getCode()
     );
 

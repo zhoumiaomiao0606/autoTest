@@ -86,6 +86,7 @@ public class JinTouHangAccommodationApplyServiceImpl implements JinTouHangAccomm
 
     /**
      * 提交接口 业务后处理
+     *
      * @param param
      * @return
      */
@@ -93,17 +94,18 @@ public class JinTouHangAccommodationApplyServiceImpl implements JinTouHangAccomm
     public void dealTask(ApprovalParam param) {
 
         //金投行过桥处理 -反审
-        if(ACTION_ROLL_BACK.equals(param.getAction()) && BRIDGE_HANDLE.getCode().equals(param.getTaskDefinitionKey())){
+        if (ACTION_ROLL_BACK.equals(param.getAction()) && BRIDGE_HANDLE.getCode().equals(param.getTaskDefinitionKey())) {
             ThirdPartyFundBusinessDO businessDO = thirdPartyFundBusinessDOMapper.selectByPrimaryKey(param.getProcessId());
             businessDO.setLendStatus(IDict.K_CJZT.K_CJZT_NO);
             int count = thirdPartyFundBusinessDOMapper.updateByPrimaryKeySelective(businessDO);
-            Preconditions.checkArgument(count>0,"更新状态[未出借]失败");
+            Preconditions.checkArgument(count > 0, "更新状态[未出借]失败");
         }
 
     }
 
     /**
-     *拒绝出借
+     * 拒绝出借
+     *
      * @param param
      * @return
      */
@@ -118,14 +120,14 @@ public class JinTouHangAccommodationApplyServiceImpl implements JinTouHangAccomm
         fundBusinessDO.setOrderId(param.getIdPair().getOrderId());
         fundBusinessDO.setBridgeProcecssId(param.getIdPair().getBridgeProcessId());
         fundBusinessDO.setLendStatus(param.getLendStatus());
-        if(thirdPartyFundBusinessDO==null){
+        if (thirdPartyFundBusinessDO == null) {
             fundBusinessDO.setGmtCreate(new Date());
             count = thirdPartyFundBusinessDOMapper.insertSelective(fundBusinessDO);
-        }else {
+        } else {
             count = thirdPartyFundBusinessDOMapper.updateByPrimaryKeySelective(fundBusinessDO);
         }
-        Preconditions.checkArgument(count>0,"拒绝出借操作失败");
-        return ResultBean.ofSuccess(null,"拒绝出借操作成功");
+        Preconditions.checkArgument(count > 0, "拒绝出借操作失败");
+        return ResultBean.ofSuccess(null, "拒绝出借操作成功");
     }
 
     /**
@@ -212,6 +214,7 @@ public class JinTouHangAccommodationApplyServiceImpl implements JinTouHangAccomm
 
     /**
      * 导入文件
+     *
      * @param key
      * @return
      */
@@ -242,7 +245,7 @@ public class JinTouHangAccommodationApplyServiceImpl implements JinTouHangAccomm
                     }
 
 
-                    if(StringUtil.isEmpty(row[7].trim())){
+                    if (StringUtil.isEmpty(row[7].trim())) {
                         throw new BizException("第" + rowNum + "行，第8列格式有误：【借款金额不能为空】");
                     }
                     try {
@@ -282,12 +285,12 @@ public class JinTouHangAccommodationApplyServiceImpl implements JinTouHangAccomm
                             //更新状态为已出借
                             ThirdPartyFundBusinessDO thirdPartyFundBusinessDO = thirdPartyFundBusinessDOMapper.selectByPrimaryKey(e.getBridgeProcecssId());
                             int count;
-                            if(thirdPartyFundBusinessDO==null){
+                            if (thirdPartyFundBusinessDO == null) {
                                 count = thirdPartyFundBusinessDOMapper.insertSelective(e);
-                            }else{
+                            } else {
                                 count = thirdPartyFundBusinessDOMapper.updateByPrimaryKeySelective(e);
                             }
-                            Preconditions.checkArgument(count>0,"更新状态[已出借]失败");
+                            Preconditions.checkArgument(count > 0, "更新状态[已出借]失败");
                         });
             }
 
@@ -308,7 +311,7 @@ public class JinTouHangAccommodationApplyServiceImpl implements JinTouHangAccomm
 
         List<ExportApplyLoanPushVO> voList = loanStatementDOMapper.exportApplyLoanPush(param);
         List<String> header = Lists.newArrayList("流水号", "委托人（购车人、借款人）", "身份证号",
-                "车辆品牌型号", "车价", "首付款", "甲方垫款金额（导出）","乙方借款金额（导入）", "借款期限", "利率", "借据号", "最终放款银行"
+                "车辆品牌型号", "车价", "首付款", "甲方垫款金额（导出）", "乙方借款金额（导入）", "借款期限", "利率", "借据号", "最终放款银行"
         );
         //生成Excel文件
         String ossResultKey = POIUtil.createExcelFile("购车融资业务推送清单", voList, header, ExportApplyLoanPushVO.class, ossConfig);
@@ -316,19 +319,19 @@ public class JinTouHangAccommodationApplyServiceImpl implements JinTouHangAccomm
         // 更新记录为已导出
         voList.parallelStream()
                 .filter(Objects::nonNull)
-                .forEach(e->{
+                .forEach(e -> {
                     ThirdPartyFundBusinessDO fundBusinessDO = thirdPartyFundBusinessDOMapper.selectByPrimaryKey(Long.valueOf(e.getBridgeProcessId()));
-                    if(fundBusinessDO==null){
+                    if (fundBusinessDO == null) {
                         ThirdPartyFundBusinessDO thirdPartyFundBusinessDO = new ThirdPartyFundBusinessDO();
                         thirdPartyFundBusinessDO.setBridgeProcecssId(Long.valueOf(e.getBridgeProcessId()));
                         thirdPartyFundBusinessDO.setOrderId(Long.valueOf(e.getLoanForm()));
                         thirdPartyFundBusinessDO.setLendStatus(IDict.K_CJZT.K_CJZT_NO);
                         thirdPartyFundBusinessDO.setGmtCreate(new Date());
                         thirdPartyFundBusinessDOMapper.insertSelective(thirdPartyFundBusinessDO);
-                    }else{
+                    } else {
                         fundBusinessDO.setLendStatus(IDict.K_CJZT.K_CJZT_NO);
                         int count = thirdPartyFundBusinessDOMapper.updateByPrimaryKeySelective(fundBusinessDO);
-                        Preconditions.checkArgument(count>0,"更新失败");
+                        Preconditions.checkArgument(count > 0, "更新失败");
                     }
                 });
 
@@ -345,7 +348,7 @@ public class JinTouHangAccommodationApplyServiceImpl implements JinTouHangAccomm
 
         List<JinTouHangRepayInfoVO> voList = loanStatementDOMapper.exportJinTouHangRepayInfo(param);
         List<String> header = Lists.newArrayList("主贷姓名", "身份证号", "借款时间",
-                "银行放款时间", "还款时间", "借款天数", "借款金额", "放款本金" ,"放款-借款","还款类型","利息","手续费","备注"
+                "银行放款时间", "还款时间", "借款天数", "借款金额", "放款本金", "放款-借款", "还款类型", "利息", "手续费", "备注"
         );
 
         String ossResultKey = POIUtil.createExcelFile("金投行还款信息", voList, header, JinTouHangRepayInfoVO.class, ossConfig);
@@ -370,12 +373,12 @@ public class JinTouHangAccommodationApplyServiceImpl implements JinTouHangAccomm
     }
 
     @Override
-    public ResultBean calMoney(Long bridgeProcessId, Long orderId,String repayDate) {
+    public ResultBean calMoney(Long bridgeProcessId, Long orderId, String repayDate) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         CalMoneyVO calMoneyVO = new CalMoneyVO();
-        Long conf_third_party_id ;
-        BigDecimal yearRate ;
-        BigDecimal singleRate ;
+        Long conf_third_party_id;
+        BigDecimal yearRate;
+        BigDecimal singleRate;
         BigDecimal lend_amount;
         Date lendDate;
         Date repayDate1;
@@ -392,31 +395,31 @@ public class JinTouHangAccommodationApplyServiceImpl implements JinTouHangAccomm
                 repayDate1 = sdf.parse(repayDate);
                 timeNum = (int) ((repayDate1.getTime() - lendDate.getTime()) / (1000 * 3600 * 24));
                 lend_amount = thirdPartyFundBusinessDO.getLendAmount();
-                if(lend_amount == null){
+                if (lend_amount == null) {
                     lend_amount = new BigDecimal("0.00");
                 }
                 calMoneyVO.setInterest(String.valueOf(yearRate.divide(BigDecimal.valueOf(100)).multiply(lend_amount).multiply(BigDecimal.valueOf(timeNum)).divide(BigDecimal.valueOf(365), 2, BigDecimal.ROUND_HALF_UP)));
                 calMoneyVO.setPoundage(String.valueOf(singleRate.divide(BigDecimal.valueOf(100)).multiply(lend_amount).multiply(BigDecimal.valueOf(timeNum)).divide(BigDecimal.valueOf(365), 2, BigDecimal.ROUND_HALF_UP)));
                 calMoneyVO.setTimeNum(String.valueOf(timeNum));
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return ResultBean.ofSuccess(calMoneyVO);
     }
 
     @Override
-    public ResultBean calMoneyDetail(Long bridgeProcessId, Long orderId,String repayDate,String flag) {
+    public ResultBean calMoneyDetail(Long bridgeProcessId, Long orderId, String repayDate, String flag) {
         CalMoneyVO calMoneyVO = new CalMoneyVO();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        BigDecimal yearRate ;
-        BigDecimal singleRate ;
+        BigDecimal yearRate;
+        BigDecimal singleRate;
         BigDecimal lend_amount;
         Date lendDate;
         Date repayDate1;
         int timeNum;
 
-        Long conf_third_party_id ;
+        Long conf_third_party_id;
         try {
             //0没有还款记录
             if ("0".equals(flag)) {
@@ -431,7 +434,7 @@ public class JinTouHangAccommodationApplyServiceImpl implements JinTouHangAccomm
                     repayDate1 = sdf.parse(repayDate);
                     timeNum = (int) ((repayDate1.getTime() - lendDate.getTime()) / (1000 * 3600 * 24));
                     lend_amount = thirdPartyFundBusinessDO.getLendAmount();
-                    if(lend_amount == null){
+                    if (lend_amount == null) {
                         lend_amount = new BigDecimal("0.00");
                     }
                     calMoneyVO.setInterest(String.valueOf(yearRate.divide(BigDecimal.valueOf(100)).multiply(lend_amount).multiply(BigDecimal.valueOf(timeNum)).divide(BigDecimal.valueOf(365), 2, BigDecimal.ROUND_HALF_UP)));
@@ -467,7 +470,7 @@ public class JinTouHangAccommodationApplyServiceImpl implements JinTouHangAccomm
                     calMoneyVO.setBankDate(sdf.format(c.getTime()));
                 }
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return ResultBean.ofSuccess(calMoneyVO);
@@ -476,13 +479,13 @@ public class JinTouHangAccommodationApplyServiceImpl implements JinTouHangAccomm
     @Override
     public ResultBean isReturn(Long bridgeProcessId, Long orderId) {
         ThirdPartyFundBusinessDO thirdPartyFundBusinessDO = thirdPartyFundBusinessDOMapper.selectByPrimaryKey(bridgeProcessId);
-        if(thirdPartyFundBusinessDO != null){
-            if(thirdPartyFundBusinessDO.getRepayDate() == null){
+        if (thirdPartyFundBusinessDO != null) {
+            if (thirdPartyFundBusinessDO.getRepayDate() == null) {
                 return ResultBean.ofSuccess("0");
-            }else{
+            } else {
                 return ResultBean.ofSuccess(thirdPartyFundBusinessDO.getRepayDate());
             }
-        }else{
+        } else {
             return ResultBean.ofSuccess("0");
         }
     }
@@ -504,7 +507,6 @@ public class JinTouHangAccommodationApplyServiceImpl implements JinTouHangAccomm
 //            String bankName = bankCache.getNameById(bankId);
 //            thirdPartyFundBusinessDO.setConfThirdPartyBankName(bankName);
 //        }
-
 
 
         List<UniversalCustomerVO> customers = loanQueryDOMapper.selectUniversalCustomer(orderId);

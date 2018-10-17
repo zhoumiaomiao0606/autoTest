@@ -91,7 +91,9 @@ public class LoanProcessBridgeServiceImpl implements LoanProcessBridgeService {
         // 节点实时状态
         LoanProcessBridgeDO loanProcessDO = getLoanProcess(approval.getProcessId());
 
+        // 反审
         if (ACTION_ROLL_BACK.equals(approval.getAction())) {
+
             // 过桥业务后处理
             jinTouHangAccommodationApplyService.dealTask(approval);
 
@@ -118,10 +120,6 @@ public class LoanProcessBridgeServiceImpl implements LoanProcessBridgeService {
 
         // 异步推送
         loanProcessApprovalCommonService.asyncPush(loanOrderDO, approval);
-
-
-
-
 
 
         return ResultBean.ofSuccess(null, "[" + LoanProcessEnum.getNameByCode(approval.getOriginalTaskDefinitionKey()) + "]任务执行成功");

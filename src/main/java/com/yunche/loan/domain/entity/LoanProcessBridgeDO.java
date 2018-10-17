@@ -17,6 +17,8 @@ public class LoanProcessBridgeDO implements LoanProcessDO_ {
 
     private Byte bridgeRepayRecord;
 
+    // 已删除除此节点
+    @Deprecated
     private Byte bridgeInterestRecord;
 
     private Byte bridgeRepayInfo;

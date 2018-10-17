@@ -143,7 +143,7 @@ public enum LoanProcessEnum {
     ///////////////////////////////////////// ↓↓↓↓↓--三方过桥资金--↓↓↓↓↓ /////////////////////////////////////////////////
     BRIDGE_HANDLE("usertask_bridge_handle", "过桥处理(乙)"),
     BRIDGE_REPAY_RECORD("usertask_bridge_repay_record", "还款登记(甲)"),
-    BRIDGE_INTEREST_RECORD("usertask_bridge_interest_record", "息费登记(甲)"),
+    //    BRIDGE_INTEREST_RECORD("usertask_bridge_interest_record", "息费登记(甲)"),
     BRIDGE_REPAY_INFO("usertask_bridge_repay_info", "还款信息(甲乙)");
     //////////////////////////////////////// ↑↑↑↑↑--三方过桥资金----↑↑↑↑↑ ////////////////////////////////////////////////
 
