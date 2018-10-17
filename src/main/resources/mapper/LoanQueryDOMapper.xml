@@ -203,10 +203,12 @@
     <select id="checkCollectionUserRole" resultType="java.lang.Boolean" parameterType="java.lang.Long">
         <![CDATA[
 
+
         SELECT
               case when max( t.collection_level ) = 7 then 1 else 0 end AS flag
               FROM
               ( SELECT ug.* FROM employee_rela_user_group eg INNER JOIN user_group ug ON eg.user_group_id = ug.id AND eg.employee_id = #{loginUserId} ) t
+
 
         ]]>
     </select>
@@ -216,18 +218,18 @@
     <!-- commonSql_customerOrder_getSelfAndChild -->
     <sql id="commonSql_customerOrder_getSelfAndChild">
         AND
-            CASE
-                WHEN #{maxGroupLevel}  = 0
-                    THEN FALSE
-                WHEN  #{maxGroupLevel} = 1
-                    THEN
-                        b.salesman_id IN
-                        <foreach item="item" collection="juniorIds" open="(" separator="," close=")">
-                            #{item}
-                        </foreach>
-                ELSE
-                    TRUE
-            END
+        CASE
+        WHEN #{maxGroupLevel} = 0
+        THEN FALSE
+        WHEN #{maxGroupLevel} = 1
+        THEN
+        b.salesman_id IN
+        <foreach item="item" collection="juniorIds" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        ELSE
+        TRUE
+        END
     </sql>
 
     <select id="selectUniversalModifyCustomerOrder" resultType="com.yunche.loan.domain.vo.UniversalCustomerOrderVO">
@@ -236,9 +238,9 @@
         c.name AS customer_name,
         c.id_card AS customer_id_card
         from loan_order o
-        left join loan_process   p   on p.order_id = o.id
-        left join loan_customer  c   on c.id = o.loan_customer_id
-        left join loan_base_info b   on b.id = o.loan_base_info_id
+        left join loan_process p on p.order_id = o.id
+        left join loan_customer c on c.id = o.loan_customer_id
+        left join loan_base_info b on b.id = o.loan_base_info_id
         where
         (
         (p.telephone_verify = 1 and p.loan_review != 1)
@@ -255,65 +257,65 @@
 
     <select id="selectUniversalRefundCustomerOrder" resultType="com.yunche.loan.domain.vo.UniversalCustomerOrderVO">
         SELECT
-                    o.id                         AS  order_id,
-                    c.id                         AS  customer_id,
-                    c.name                       AS  customer_name,
-                    c.id_card                    AS  customer_id_card,
-                    c.mobile                     AS  customer_mobile,
-                    e.id                         AS  salesman_id,
-                    e.name                       AS  salesman_name,
-                    d.id                         AS  department_id,
-                    d.name                       AS  department_name,
-                    p.id                         AS  partner_id,
-                    p.name                       AS  partner_name,
-                    b.bank                       AS  bank_name,
-                    r.remit_amount               AS  remit_amount,
-                    DATE_FORMAT(r.remit_time, '%Y-%m-%d %H:%i:%S')
-                                                 AS  remit_time
+        o.id AS order_id,
+        c.id AS customer_id,
+        c.name AS customer_name,
+        c.id_card AS customer_id_card,
+        c.mobile AS customer_mobile,
+        e.id AS salesman_id,
+        e.name AS salesman_name,
+        d.id AS department_id,
+        d.name AS department_name,
+        p.id AS partner_id,
+        p.name AS partner_name,
+        b.bank AS bank_name,
+        r.remit_amount AS remit_amount,
+        DATE_FORMAT(r.remit_time, '%Y-%m-%d %H:%i:%S')
+        AS remit_time
 
-        FROM        loan_order          o
-        LEFT JOIN   loan_process        pc       ON  o.id = pc.order_id
-        LEFT JOIN   loan_customer       c        ON  c.id = o.loan_customer_id
-        LEFT JOIN   loan_base_info      b        ON  o.loan_base_info_id = b.id
-        LEFT JOIN   employee            e        ON  e.id = b.salesman_id
-        LEFT JOIN   partner             p        ON  p.id = b.partner_id
-        LEFT JOIN   department          d        ON  d.id = p.department_id
-        LEFT JOIN   remit_details       r        ON  r.id = o.remit_details_id
+        FROM loan_order o
+        LEFT JOIN loan_process pc ON o.id = pc.order_id
+        LEFT JOIN loan_customer c ON c.id = o.loan_customer_id
+        LEFT JOIN loan_base_info b ON o.loan_base_info_id = b.id
+        LEFT JOIN employee e ON e.id = b.salesman_id
+        LEFT JOIN partner p ON p.id = b.partner_id
+        LEFT JOIN department d ON d.id = p.department_id
+        LEFT JOIN remit_details r ON r.id = o.remit_details_id
 
         WHERE
 
-            <!--订单正常进行中-->
-            pc.order_status = 1
+        <!--订单正常进行中-->
+        pc.order_status = 1
 
-            <!--打款确认-->
-            AND pc.remit_review = 1
+        <!--打款确认-->
+        AND pc.remit_review = 1
 
-            <if test=" name != null and name != '' ">
-                AND c.name LIKE CONCAT('%', #{name}, '%')
-            </if>
+        <if test=" name != null and name != '' ">
+            AND c.name LIKE CONCAT('%', #{name}, '%')
+        </if>
 
-            <include refid="commonSql_customerOrder_getSelfAndChild"/>
+        <include refid="commonSql_customerOrder_getSelfAndChild"/>
 
     </select>
 
     <select id="selectUniversalLoanApplyCustomerOrder" resultType="com.yunche.loan.domain.vo.UniversalCustomerOrderVO">
 
         SELECT
-                o.id                         AS  order_id,
-                c.id                         AS  customer_id,
-                c.name                       AS  customer_name,
-                c.id_card                    AS  customer_id_card
+        o.id AS order_id,
+        c.id AS customer_id,
+        c.name AS customer_name,
+        c.id_card AS customer_id_card
 
 
-        FROM        loan_order          o
-        LEFT JOIN   loan_process        pc       ON  o.id = pc.order_id
-        LEFT JOIN   loan_customer       c        ON  c.id = o.loan_customer_id
-        LEFT JOIN   loan_base_info      b        ON  b.id = o.loan_base_info_id
+        FROM loan_order o
+        LEFT JOIN loan_process pc ON o.id = pc.order_id
+        LEFT JOIN loan_customer c ON c.id = o.loan_customer_id
+        LEFT JOIN loan_base_info b ON b.id = o.loan_base_info_id
 
-        WHERE       pc.order_status = 1
+        WHERE pc.order_status = 1
 
         <!-- 银行征信已提交，且未流转到电审的订单 -->
-        AND     pc.bank_credit_record = 1   AND     pc.telephone_verify = 0
+        AND pc.bank_credit_record = 1 AND pc.telephone_verify = 0
 
         <if test="name != null and name != '' ">
             AND c.name LIKE CONCAT('%', #{name} ,'%')
@@ -698,7 +700,7 @@
 
       from (select * from loan_order where id = #{orderId,jdbcType=BIGINT}) main_order
       left join loan_customer customer on main_order.loan_customer_id = customer.principal_cust_id and cust_type !=0
-      where   customer.status !=1
+      where  customer.status != 1
     </select>
 
     <!--打款信息-->
@@ -1056,14 +1058,14 @@
     <select id="selectUniversalCustomerFileByTypes" resultType="com.yunche.loan.domain.vo.UniversalMaterialRecordVO">
 
         SELECT
-                        f.path                                AS urls,
-                        f.type                                AS type,
-                        useFileTypeCastName(f.type)           AS name
+        f.path AS urls,
+        f.type AS type,
+        useFileTypeCastName(f.type) AS name
 
         FROM
-                        loan_file                             f
+        loan_file f
 
-        LEFT JOIN       loan_info_supplement 				  s  ON s.id = f.info_supplement_id
+        LEFT JOIN loan_info_supplement s ON s.id = f.info_supplement_id
 
         WHERE
 
@@ -1077,14 +1079,14 @@
         </if>
 
         AND
-            CASE
-                WHEN f.upload_type = 1 THEN
-                    TRUE
-                WHEN f.upload_type = 2 THEN
-                    s.status = 1
-                ELSE
-                    FALSE
-            END
+        CASE
+        WHEN f.upload_type = 1 THEN
+        TRUE
+        WHEN f.upload_type = 2 THEN
+        s.status = 1
+        ELSE
+        FALSE
+        END
 
     </select>
 
@@ -1093,14 +1095,14 @@
 
 
         SELECT
-                        f.path                                AS urls,
-                        f.type                                AS type,
-                        useFileTypeCastName(f.type)           AS name
+        f.path AS urls,
+        f.type AS type,
+        useFileTypeCastName(f.type) AS name
 
         FROM
-                        loan_file                             f
+        loan_file f
 
-        LEFT JOIN       loan_info_supplement 				  s  ON s.id = f.info_supplement_id
+        LEFT JOIN loan_info_supplement s ON s.id = f.info_supplement_id
 
         WHERE
 
@@ -1114,14 +1116,14 @@
         </if>
 
         AND
-            CASE
-                WHEN f.upload_type = 1 THEN
-                    TRUE
-                WHEN f.upload_type = 2 THEN
-                    s.status = 1
-                ELSE
-                    FALSE
-            END
+        CASE
+        WHEN f.upload_type = 1 THEN
+        TRUE
+        WHEN f.upload_type = 2 THEN
+        s.status = 1
+        ELSE
+        FALSE
+        END
 
     </select>
 
@@ -1335,39 +1337,39 @@
     <select id="selectUniversalInsuranceUrgeEmployee"
             resultType="com.yunche.loan.domain.vo.UniversalTelephoneCollectionEmployee">
         SELECT
-            x.*
+        x.*
         FROM
         (
-            SELECT
-                employee.id,
-                employee.NAME,
-                ug.NAME AS role,
-                ug.insurance_urge_level
-            FROM
-                employee employee
-                INNER JOIN employee_rela_user_group eg ON eg.employee_id = employee.id
-                INNER JOIN user_group ug ON ug.id = eg.user_group_id
+        SELECT
+        employee.id,
+        employee.NAME,
+        ug.NAME AS role,
+        ug.insurance_urge_level
+        FROM
+        employee employee
+        INNER JOIN employee_rela_user_group eg ON eg.employee_id = employee.id
+        INNER JOIN user_group ug ON ug.id = eg.user_group_id
         ) x
         WHERE
         x.id NOT IN (
-            SELECT DISTINCT
-                t.id
-            FROM
-            (
-                SELECT
-                    employee.id,
-                    employee.NAME,
-                    ug.NAME AS role,
-                    ug.LEVEL
-                FROM
-                    employee employee
-                    LEFT JOIN employee_rela_user_group eg ON eg.employee_id = employee.id
-                    LEFT JOIN user_group ug ON ug.id = eg.user_group_id
-            ) t
-             WHERE
-                t.LEVEL = 3
+        SELECT DISTINCT
+        t.id
+        FROM
+        (
+        SELECT
+        employee.id,
+        employee.NAME,
+        ug.NAME AS role,
+        ug.LEVEL
+        FROM
+        employee employee
+        LEFT JOIN employee_rela_user_group eg ON eg.employee_id = employee.id
+        LEFT JOIN user_group ug ON ug.id = eg.user_group_id
+        ) t
+        WHERE
+        t.LEVEL = 3
         )
-        AND x.insurance_urge_level  &lt;  7
+        AND x.insurance_urge_level &lt; 7
     </select>
 
 
@@ -1381,16 +1383,18 @@
     </select>
 
 
-    <select id="selectUniversalLatestBankInterfaceSerial" resultType="com.yunche.loan.domain.vo.UniversalBankInterfaceSerialVO">
+    <select id="selectUniversalLatestBankInterfaceSerial"
+            resultType="com.yunche.loan.domain.vo.UniversalBankInterfaceSerialVO">
         select
-            serial_no                                      as serialNo,
-            customer_id                                    as customerId,
-            api_status                                     as apiStatus,
-            status                                         as status,
-            reject_reason                                  as rejectReason,
-            DATE_FORMAT(request_time,'%Y-%m-%d %H:%i:%S')  as requestTime,
-            DATE_FORMAT(callback_time,'%Y-%m-%d %H:%i:%S') as callbackTime
-        from bank_interface_serial where customer_id = #{customerId} and trans_code = #{transCode} order by request_time desc limit 1
+        serial_no as serialNo,
+        customer_id as customerId,
+        api_status as apiStatus,
+        status as status,
+        reject_reason as rejectReason,
+        DATE_FORMAT(request_time,'%Y-%m-%d %H:%i:%S') as requestTime,
+        DATE_FORMAT(callback_time,'%Y-%m-%d %H:%i:%S') as callbackTime
+        from bank_interface_serial where customer_id = #{customerId} and trans_code = #{transCode} order by request_time
+        desc limit 1
     </select>
     <!--=============================================end===================================================-->
 
@@ -1428,33 +1432,33 @@
 
     <!--保险客户信息-->
     <select id="selectInsuranceCustomerByYear" resultType="com.yunche.loan.domain.vo.InsuranceCustomerVO">
-      select
-              o.id                              AS order_id,
-              i.id                              AS insurance_info_id,
-              c.id                              AS customer_id,
-              c.name                            AS cname,
-              c.id_card                         AS id_card,
-              c.mobile                          AS mobile,
-              e.name                            AS ename,
-              p.name                            AS pname,
-              i.insurance_year                  AS insurance_year,
-              i.issue_bills_date                AS issue_bills_date,
-              c.address                         AS residential_address,
-              (select sum(insurance_amount) from insurance_relevance where insurance_info_id = i.id )
-                                                AS total_insurance_amount
+        select
+        o.id AS order_id,
+        i.id AS insurance_info_id,
+        c.id AS customer_id,
+        c.name AS cname,
+        c.id_card AS id_card,
+        c.mobile AS mobile,
+        e.name AS ename,
+        p.name AS pname,
+        i.insurance_year AS insurance_year,
+        i.issue_bills_date AS issue_bills_date,
+        c.address AS residential_address,
+        (select sum(insurance_amount) from insurance_relevance where insurance_info_id = i.id )
+        AS total_insurance_amount
 
-      from
-            (select * from loan_order where id = #{orderId,jdbcType=BIGINT}) o
-                left join insurance_info i on i.order_id = o.id and i.insurance_year = #{insuranceYear,jdbcType=TINYINT}
-                left join loan_customer c on c.id = o.loan_customer_id
-                left join loan_base_info b on b.id = o.loan_base_info_id
-                left join employee e on e.id = b.salesman_id
-                left join partner p on p.id = b.partner_id
+        from
+        (select * from loan_order where id = #{orderId,jdbcType=BIGINT}) o
+        left join insurance_info i on i.order_id = o.id and i.insurance_year = #{insuranceYear,jdbcType=TINYINT}
+        left join loan_customer c on c.id = o.loan_customer_id
+        left join loan_base_info b on b.id = o.loan_base_info_id
+        left join employee e on e.id = b.salesman_id
+        left join partner p on p.id = b.partner_id
 
-    ORDER BY i.issue_bills_date asc
+        ORDER BY i.issue_bills_date asc
 
 
-  </select>
+    </select>
 
     <!--保险客户信息-->
     <select id="selectInsuranceCustomerNormalizeInsuranceYear"
@@ -1503,73 +1507,72 @@
     <!--金融方案-->
     <select id="selectFinancialScheme" resultType="com.yunche.loan.domain.vo.FinancialSchemeVO"
             parameterType="java.lang.Long">
-    select
-             o.id                                 AS order_id,
-             c.id                                 AS customer_id,
-             c.name                               AS cname,
-             c.id_card                            AS id_card,
-             c.signature_type                     AS customer_signature_type,
-             c.ctelzone                           AS customer_ctelzone,
-             f.financial_product_name             AS financial_product_name,
-             f.financial_product_id               AS financial_product_id,
-             h.license_plate_number               AS license_plate_number,
-             h.registration_certificate_number    AS registration_certificate_number,
-             h.apply_license_plate_date           AS apply_license_plate_date,
-             a.apply_license_plate_deposit_date   AS apply_license_plate_deposit_date,
-             f.loan_time                          AS loan_time,
-             f.car_price                          AS car_price,
-             f.actual_car_price                   AS actual_car_price,
-             b.bank                               AS bank,
-             f.sign_rate                          AS sign_rate,
-             f.down_payment_money                 AS down_payment_money,
-             f.loan_amount                        AS loan_amount,
-             f.down_payment_ratio                 AS down_payment_ratio,
-             f.bank_period_principal              AS bank_period_principal,
-             f.bank_fee                           AS bank_fee,
-             f.principal_interest_sum             AS principal_interest_sum,
-             f.first_month_repay                  AS first_month_repay,
-             f.each_month_repay                   AS each_month_repay,
-             f.appraisal                          AS appraisal,
-             useCalculateStagingRatio(product.formula_id,f.loan_amount,f.sign_rate,useGetBankRate(f.financial_product_id,f.loan_time),f.car_price)
-                                                  AS financial_bank_staging_ratio,
-             p.bank_rate                          AS bank_base_rate,
-             applay_quota(f.bank_period_principal,f.bank_fee)                              AS applayQuota,
-             product.category_superior            AS category_superior,
-             par.name                             AS partner_name,
-             par.area_id                          AS partner_area_id
+        select
+        o.id AS order_id,
+        c.id AS customer_id,
+        c.name AS cname,
+        c.id_card AS id_card,
+        c.signature_type AS customer_signature_type,
+        c.ctelzone AS customer_ctelzone,
+        f.financial_product_name AS financial_product_name,
+        f.financial_product_id AS financial_product_id,
+        h.license_plate_number AS license_plate_number,
+        h.registration_certificate_number AS registration_certificate_number,
+        h.apply_license_plate_date AS apply_license_plate_date,
+        a.apply_license_plate_deposit_date AS apply_license_plate_deposit_date,
+        f.loan_time AS loan_time,
+        f.car_price AS car_price,
+        f.actual_car_price AS actual_car_price,
+        b.bank AS bank,
+        f.sign_rate AS sign_rate,
+        f.down_payment_money AS down_payment_money,
+        f.loan_amount AS loan_amount,
+        f.down_payment_ratio AS down_payment_ratio,
+        f.bank_period_principal AS bank_period_principal,
+        f.bank_fee AS bank_fee,
+        f.principal_interest_sum AS principal_interest_sum,
+        f.first_month_repay AS first_month_repay,
+        f.each_month_repay AS each_month_repay,
+        f.appraisal AS appraisal,
+        useCalculateStagingRatio(product.formula_id,f.loan_amount,f.sign_rate,useGetBankRate(f.financial_product_id,f.loan_time),f.car_price)
+        AS financial_bank_staging_ratio,
+        p.bank_rate AS bank_base_rate,
+        applay_quota(f.bank_period_principal,f.bank_fee) AS applayQuota,
+        product.category_superior AS category_superior,
+        par.name AS partner_name,
+        par.area_id AS partner_area_id
 
 
         from (select * from loan_order where id = #{orderId,jdbcType=BIGINT}) o
 
-    left join loan_customer c on o.loan_customer_id= c.id
+        left join loan_customer c on o.loan_customer_id= c.id
 
-    left join loan_base_info b on o.loan_base_info_id = b.id
+        left join loan_base_info b on o.loan_base_info_id = b.id
 
-    left join partner  par on par.id = b.partner_id
+        left join partner par on par.id = b.partner_id
 
-    left join loan_car_info i on o.loan_car_info_id = i.id
+        left join loan_car_info i on o.loan_car_info_id = i.id
 
-    left join loan_financial_plan f on o.loan_financial_plan_id = f.id
+        left join loan_financial_plan f on o.loan_financial_plan_id = f.id
 
-    left join cost_details d on o.cost_details_id = d.id
+        left join cost_details d on o.cost_details_id = d.id
 
-    left join remit_details r on o.remit_details_id = r.id
+        left join remit_details r on o.remit_details_id = r.id
 
-    left join vehicle_information h on o.vehicle_information_id = h.id
+        left join vehicle_information h on o.vehicle_information_id = h.id
 
-    left join apply_license_plate_deposit_info a on o.apply_license_plate_deposit_info_id = a.id
+        left join apply_license_plate_deposit_info a on o.apply_license_plate_deposit_info_id = a.id
 
-    left join material_audit m on o.material_audit_id = m.id
+        left join material_audit m on o.material_audit_id = m.id
 
-    left join loan_home_visit v on o.loan_home_visit_id = v.id
+        left join loan_home_visit v on o.loan_home_visit_id = v.id
 
-    left join financial_product product on f.financial_product_id = product.prod_id
+        left join financial_product product on f.financial_product_id = product.prod_id
 
-    left join product_rate p on (p.prod_id = f.financial_product_id  and p.loan_time = f.loan_time)
+        left join product_rate p on (p.prod_id = f.financial_product_id and p.loan_time = f.loan_time)
 
 
-
-  </select>
+    </select>
 
     <!--计算明细的信息-->
     <select id="selectCostCalculateInfo" resultType="com.yunche.loan.domain.vo.CostCalculateInfoVO"
@@ -1623,44 +1626,44 @@
 
     <select id="selectBankLendRecordDetail" resultType="com.yunche.loan.domain.vo.BankLendRecordVO"
             parameterType="java.lang.Long">
-         SELECT
-                    a.id                                        AS orderId,
-                    b.id_card                                   AS idCard,
-                    b.name                                      AS principalLenderName,
-                    h.name                                      AS salesman,
-                    e. NAME                                     AS departmentName,
-                    a.loan_customer_id                          AS customerId,
-                    a.gmt_create                                AS gmtCreate,
-					j.bank_period_principal                     AS bankPeriodPrincipal,
-                    c.bank,
-                    (select
-                        case when
-                            END_TIME_ = null
-                        then
-                            null
-                        else
-                            DATE_FORMAT(END_TIME_,'%Y-%m-%d %H:%i:%S')
-                        end
-                    from act_hi_taskinst
-                    where
-                        PROC_INST_ID_ = a.process_inst_id
-                        and TASK_DEF_KEY_ = 'usertask_loan_review'
-                        order by START_TIME_
-                        desc limit 1)                           AS remitGmtCreate,
-                    f.lend_date                                 AS lendDate,
-                    f.lend_amount                               AS lendAmount,
-                    d.name                                      AS partnerName
+        SELECT
+        a.id AS orderId,
+        b.id_card AS idCard,
+        b.name AS principalLenderName,
+        h.name AS salesman,
+        e. NAME AS departmentName,
+        a.loan_customer_id AS customerId,
+        a.gmt_create AS gmtCreate,
+        j.bank_period_principal AS bankPeriodPrincipal,
+        c.bank,
+        (select
+        case when
+        END_TIME_ = null
+        then
+        null
+        else
+        DATE_FORMAT(END_TIME_,'%Y-%m-%d %H:%i:%S')
+        end
+        from act_hi_taskinst
+        where
+        PROC_INST_ID_ = a.process_inst_id
+        and TASK_DEF_KEY_ = 'usertask_loan_review'
+        order by START_TIME_
+        desc limit 1) AS remitGmtCreate,
+        f.lend_date AS lendDate,
+        f.lend_amount AS lendAmount,
+        d.name AS partnerName
         FROM
-            loan_order a
-            LEFT JOIN  bank_lend_record f on a.bank_lend_record_id=f.id
-            LEFT JOIN loan_customer b ON a.loan_customer_id = b.id
-            LEFT JOIN loan_base_info c ON a.loan_base_info_id = c.id
-            LEFT JOIN employee h ON h.id=c.salesman_id
-            LEFT JOIN partner d ON c.partner_id = d.id
-            LEFT JOIN department e ON d.department_id = e.id
-						LEFT JOIN loan_financial_plan j on a.loan_financial_plan_id=j.id
+        loan_order a
+        LEFT JOIN bank_lend_record f on a.bank_lend_record_id=f.id
+        LEFT JOIN loan_customer b ON a.loan_customer_id = b.id
+        LEFT JOIN loan_base_info c ON a.loan_base_info_id = c.id
+        LEFT JOIN employee h ON h.id=c.salesman_id
+        LEFT JOIN partner d ON c.partner_id = d.id
+        LEFT JOIN department e ON d.department_id = e.id
+        LEFT JOIN loan_financial_plan j on a.loan_financial_plan_id=j.id
         WHERE
-            a.id =#{orderId}
+        a.id =#{orderId}
     </select>
 
 
@@ -1699,14 +1702,15 @@
 
     <select id="checkCustomerHavingCreditON14Day" resultType="java.lang.Boolean">
         select count(1) from
-		(
-			select tab.credit_id from
-			(
-				select customer.id_card as customer_id_card,credit.id as credit_id,credit.gmt_modify from loan_customer customer
-				left join loan_credit_info credit on customer.id = credit.customer_id
-				where customer.id = #{customerId} and credit.type = 1 and credit.result is not null and credit.result in (0,1,2) and UNIX_TIMESTAMP(NOW())- UNIX_TIMESTAMP(credit.gmt_modify) &lt; 14*24*60*60 and customer.cust_type in (1,2,3)
-			) tab GROUP BY tab.customer_id_card
-		) b
+        (
+        select tab.credit_id from
+        (
+        select customer.id_card as customer_id_card,credit.id as credit_id,credit.gmt_modify from loan_customer customer
+        left join loan_credit_info credit on customer.id = credit.customer_id
+        where customer.id = #{customerId} and credit.type = 1 and credit.result is not null and credit.result in (0,1,2)
+        and UNIX_TIMESTAMP(NOW())- UNIX_TIMESTAMP(credit.gmt_modify) &lt; 14*24*60*60 and customer.cust_type in (1,2,3)
+        ) tab GROUP BY tab.customer_id_card
+        ) b
     </select>
 
     <select id="selectLastBankInterfaceSerialNoteByTransCode" resultType="java.lang.String">
@@ -1719,17 +1723,18 @@
 		  ) orderdata on orderdata.serial_no = serial.serial_no and serial.trans_code = #{transCode}
 		  and serial.customer_id = #{customerId}
     </select>
-    <select id="selectLastBankInterfaceSerialByTransCode" resultType="com.yunche.loan.domain.vo.BankInterfaceSerialReturnVO">
-		  select serial.api_status,serial.api_msg,serial.status,serial.reject_reason,serial.request_time,
-		         serial.callback_time,serial.file_num,serial.trans_code,serial.auto_reject
-		  from bank_interface_serial serial
-		  inner join
-		  (
-		  select SUBSTRING_INDEX(GROUP_CONCAT(serial_no order by request_time desc separator ','),',',1)
-		  				as serial_no
-		  from bank_interface_serial GROUP BY trans_code,customer_id
-		  ) orderdata on orderdata.serial_no = serial.serial_no and serial.trans_code = #{transCode}
-		  and serial.customer_id = #{customerId}
+    <select id="selectLastBankInterfaceSerialByTransCode"
+            resultType="com.yunche.loan.domain.vo.BankInterfaceSerialReturnVO">
+        select serial.api_status,serial.api_msg,serial.status,serial.reject_reason,serial.request_time,
+        serial.callback_time,serial.file_num,serial.trans_code,serial.auto_reject
+        from bank_interface_serial serial
+        inner join
+        (
+        select SUBSTRING_INDEX(GROUP_CONCAT(serial_no order by request_time desc separator ','),',',1)
+        as serial_no
+        from bank_interface_serial GROUP BY trans_code,customer_id
+        ) orderdata on orderdata.serial_no = serial.serial_no and serial.trans_code = #{transCode}
+        and serial.customer_id = #{customerId}
     </select>
     <select id="selectLastBankInterfaceSerialStatusByTransCode" resultType="java.lang.String">
           select serial.status from bank_interface_serial serial
@@ -1741,20 +1746,21 @@
           ) orderdata on orderdata.serial_no = serial.serial_no and serial.trans_code = #{transCode}
           and serial.customer_id = #{customerId}
     </select>
-    <select id="selectBankInterFaceSerialOrderStatusByOrderId" resultType="com.yunche.loan.domain.vo.BankInterFaceSerialOrderStatusVO">
-              select
-                  ss.order_id,
-                  ss.status,
-                  ss.api_status
-               from (
-                      select serial.order_id,serial.status,serial.api_status  from bank_interface_serial serial
-                      inner join
-                      (
-                      select SUBSTRING_INDEX(GROUP_CONCAT(serial_no order by request_time desc separator ','),',',1)
-                      as serial_no
-                      from bank_interface_serial GROUP BY trans_code,customer_id
-                      ) orderdata on orderdata.serial_no = serial.serial_no and serial.trans_code = #{transCode}
-              ) ss GROUP BY  ss.order_id having order_id = #{orderId}
+    <select id="selectBankInterFaceSerialOrderStatusByOrderId"
+            resultType="com.yunche.loan.domain.vo.BankInterFaceSerialOrderStatusVO">
+        select
+        ss.order_id,
+        ss.status,
+        ss.api_status
+        from (
+        select serial.order_id,serial.status,serial.api_status from bank_interface_serial serial
+        inner join
+        (
+        select SUBSTRING_INDEX(GROUP_CONCAT(serial_no order by request_time desc separator ','),',',1)
+        as serial_no
+        from bank_interface_serial GROUP BY trans_code,customer_id
+        ) orderdata on orderdata.serial_no = serial.serial_no and serial.trans_code = #{transCode}
+        ) ss GROUP BY ss.order_id having order_id = #{orderId}
     </select>
 
 
@@ -1845,7 +1851,8 @@
 
     </select>
 
-    <select id="selectSuccessBankInterfaceFileSerialBySeriesNoAndFileType" resultType="com.yunche.loan.domain.vo.UniversalBankInterfaceFileSerialDO">
+    <select id="selectSuccessBankInterfaceFileSerialBySeriesNoAndFileType"
+            resultType="com.yunche.loan.domain.vo.UniversalBankInterfaceFileSerialDO">
         select
              id, serial_no, file_name, file_path, file_type, success, request_time, error
          from bank_interface_file_serial where success = 1 and serial_no = #{serialNo} and file_type = #{fileType}
@@ -1891,52 +1898,52 @@
     <select id="selectUniversalDataFlowCustomerOrder" resultType="com.yunche.loan.domain.vo.UniversalCustomerOrderVO">
 
         SELECT
-                  a.id                              AS order_id,
-                  DATE_FORMAT(a.gmt_create ,'%Y-%m-%d %H:%i:%S')
-                                                    AS order_gmt_create,
-                  c.id_card                         AS customer_id_card,
-                  c.id                              AS customer_id,
-                  c.name                            AS customer_name,
-                  c.mobile                          AS customer_mobile,
-                  e.id                              AS salesman_id,
-                  e.name                            AS salesman_name,
-                  d.id                              AS department_id,
-                  d.name                            AS department_name,
-                  p.id                              AS partner_id,
-                  p.name                            AS partner_name,
-                  b.bank                            AS bank_name
+        a.id AS order_id,
+        DATE_FORMAT(a.gmt_create ,'%Y-%m-%d %H:%i:%S')
+        AS order_gmt_create,
+        c.id_card AS customer_id_card,
+        c.id AS customer_id,
+        c.name AS customer_name,
+        c.mobile AS customer_mobile,
+        e.id AS salesman_id,
+        e.name AS salesman_name,
+        d.id AS department_id,
+        d.name AS department_name,
+        p.id AS partner_id,
+        p.name AS partner_name,
+        b.bank AS bank_name
 
-      FROM
-                  loan_order              a
+        FROM
+        loan_order a
 
-      LEFT JOIN   loan_process            pc       ON  a.id = pc.order_id
-      LEFT JOIN   loan_base_info          b        ON  b.id = a.loan_base_info_id
-      LEFT JOIN   loan_customer           c        ON  c.id = a.loan_customer_id
-      LEFT JOIN   employee                e        ON  e.id = b.salesman_id
-      LEFT JOIN   partner                 p        ON  p.id = b.partner_id
-      LEFT JOIN   department              d        ON  d.id = p.department_id
+        LEFT JOIN loan_process pc ON a.id = pc.order_id
+        LEFT JOIN loan_base_info b ON b.id = a.loan_base_info_id
+        LEFT JOIN loan_customer c ON c.id = a.loan_customer_id
+        LEFT JOIN employee e ON e.id = b.salesman_id
+        LEFT JOIN partner p ON p.id = b.partner_id
+        LEFT JOIN department d ON d.id = p.department_id
 
-      WHERE    pc.telephone_verify = 1
+        WHERE pc.telephone_verify = 1
 
-	  AND      pc.data_flow_mortgage_b2c = 0
+        AND pc.data_flow_mortgage_b2c = 0
 
-	  <if test="name != null and name != '' ">
-          AND  c.name LIKE CONCAT('%', #{name} ,'%')
-      </if>
+        <if test="name != null and name != '' ">
+            AND c.name LIKE CONCAT('%', #{name} ,'%')
+        </if>
 
-      AND
-          CASE
-              WHEN #{maxGroupLevel}  = 0
-                  THEN    false
-              WHEN  #{maxGroupLevel} = 1
-                  THEN
-                      b.salesman_id IN
-                      <foreach item="item" index="index" collection="juniorIds" open="(" separator="," close=")">
-                          #{item}
-                      </foreach>
-              ELSE
-                    true
-          END
+        AND
+        CASE
+        WHEN #{maxGroupLevel} = 0
+        THEN false
+        WHEN #{maxGroupLevel} = 1
+        THEN
+        b.salesman_id IN
+        <foreach item="item" index="index" collection="juniorIds" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        ELSE
+        true
+        END
 
     </select>
 
@@ -1948,13 +1955,14 @@
 
     </select>
 
-    <select id="selectUniversalCollectionInfoSupplement" resultType="com.yunche.loan.domain.vo.UniversalInfoSupplementVO">
+    <select id="selectUniversalCollectionInfoSupplement"
+            resultType="com.yunche.loan.domain.vo.UniversalInfoSupplementVO">
 
         <include refid="universalInfoSupplement"/>
 
         WHERE s.order_id = #{orderId}
 
-        AND   s.status = 1
+        AND s.status = 1
 
     </select>
 
@@ -2114,7 +2122,8 @@
 
     </select>
 
-    <select id="selectUniversalFileByLegworkReimbursementId"  resultType="com.yunche.loan.domain.vo.UniversalLegworkReimbursement" parameterType="java.lang.Long" >
+    <select id="selectUniversalFileByLegworkReimbursementId"
+            resultType="com.yunche.loan.domain.vo.UniversalLegworkReimbursement" parameterType="java.lang.Long">
         select
         urls
         from legwork_reimbursement_file
@@ -2123,13 +2132,13 @@
 
 
     <!--======================================通用模糊客户查询=========================================================-->
-    <select id="selectCustomerOrder"  resultType="com.yunche.loan.domain.vo.CustomerOrderVO">
+    <select id="selectCustomerOrder" resultType="com.yunche.loan.domain.vo.CustomerOrderVO">
         select
-        main_order.id                                                                           AS order_id,
-        customer.id_card                                                                        AS customer_id_card,
-        customer.name                                                                           AS customer_name,
-        partner.name                                                                            AS partner_name,
-        salesman.name                                                                           AS salesman_name
+        main_order.id AS order_id,
+        customer.id_card AS customer_id_card,
+        customer.name AS customer_name,
+        partner.name AS partner_name,
+        salesman.name AS salesman_name
         from loan_order main_order
         left join loan_customer customer on customer.id = main_order.loan_customer_id
         left join loan_process p on main_order.id = p.order_id
@@ -2196,6 +2205,19 @@
         LEFT JOIN   bank                            bk      ON   bk.name = b.bank
 
         WHERE       o.id = #{orderId}
+
+    </select>
+
+    <select id="selectOrderIdByIdCard" parameterType="java.lang.String" resultType="java.lang.Long">
+        SELECT
+            loan.id AS orderId
+        FROM
+            loan_order loan
+            LEFT JOIN loan_process process ON loan.id = process.order_id
+            LEFT JOIN loan_customer customer ON loan.loan_customer_id = customer.id
+        WHERE
+            process.order_status != 3
+            AND customer.id_card = #{idCard}
 
     </select>
 

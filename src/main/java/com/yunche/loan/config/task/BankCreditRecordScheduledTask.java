@@ -5,9 +5,9 @@ import com.alibaba.fastjson.JSONObject;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.yunche.loan.config.anno.DistributedLock;
 import com.yunche.loan.config.constant.BaseConst;
-import com.yunche.loan.config.constant.LoanCustomerConst;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.entity.BankInterfaceSerialDO;
 import com.yunche.loan.domain.entity.LoanCreditInfoDO;
@@ -28,9 +28,8 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.yunche.loan.config.constant.LoanCustomerConst.CREDIT_TYPE_BANK;
 import static com.yunche.loan.config.constant.LoanCustomerConst.ENABLE_TYPE_BANK;
@@ -120,6 +119,9 @@ public class BankCreditRecordScheduledTask {
             approval.setOrderId(orderId);
             // info拼接
             final String[] info = {null};
+            //
+            Set<Long> enableCustomerIdSet = Sets.newHashSet();
+
 
             dos.stream()
                     .filter(Objects::nonNull)
@@ -149,7 +151,16 @@ public class BankCreditRecordScheduledTask {
                                 info[0] += "   " + approval.getInfo();
                             }
                         }
+
+                        enableCustomerIdSet.add(bankInterfaceSerialDO.getCustomerId());
                     });
+
+
+            // enable_type
+            if (!CollectionUtils.isEmpty(enableCustomerIdSet)) {
+                String ids = enableCustomerIdSet.stream().map(String::valueOf).collect(Collectors.joining(","));
+                loanCustomerService.enable(ids, ENABLE_TYPE_BANK);
+            }
 
 
             // 提交打回
