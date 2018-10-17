@@ -172,15 +172,6 @@ public class BankCreditRecordScheduledTask {
 
     }
 
-    public static void main(String[] args) {
-
-        HashSet<Long> enableCustomerIdSet = Sets.newHashSet();
-
-        String ids = enableCustomerIdSet.stream().map(String::valueOf).collect(Collectors.joining(","));
-
-        System.out.println(ids);
-    }
-
 
     /**
      * 根据orderId排序
