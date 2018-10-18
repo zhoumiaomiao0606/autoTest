@@ -1457,7 +1457,7 @@
         remit.remit_amount AS remitAmount,
         financial.bank_period_principal AS bankPeriodPrincipal,
         financial.bank_period_principal - remit.remit_amount AS differMoney,
-·        CASE
+        CASE
         WHEN fund.repay_type  = 1 THEN
         '银行放款'
         WHEN fund.repay_type = 2 THEN
