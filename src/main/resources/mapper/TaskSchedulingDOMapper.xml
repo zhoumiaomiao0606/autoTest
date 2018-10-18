@@ -1144,6 +1144,12 @@
                   </when>
                   <when test="taskDefinitionKey == 'usertask_bridge_repay_info'">
                       AND case when #{taskStatus} = 0 then deputy_b.bridge_repay_info !=0 else deputy_b.bridge_repay_info = #{taskStatus} end
+                      <if test="startRepayDate !=null">
+                          AND third_party.repay_date &gt;= #{startRepayDate}
+                      </if>
+                      <if test="endRepayDate !=null">
+                          AND third_party.repay_date &lt;= #{endRepayDate}
+                      </if>
                   </when>
                   <otherwise>
                       AND 1=2
