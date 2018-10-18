@@ -2688,12 +2688,12 @@ public class LoanProcessServiceImpl implements LoanProcessService {
     private void fillLoanAmount(Map<String, Object> variables, Byte action, String taskDefinitionKey, LoanOrderDO loanOrderDO) {
 
         // [征信申请] & [PASS]
-        boolean isApplyVerifyTaskAndActionIsPass = CREDIT_APPLY.getCode().equals(taskDefinitionKey) && ACTION_PASS.equals(action);
+        boolean isCreditApplyTaskAndActionIsPass = CREDIT_APPLY.getCode().equals(taskDefinitionKey) && ACTION_PASS.equals(action);
 
         // [银行&社会征信录入]
         boolean isBankAndSocialCreditRecordTask = BANK_CREDIT_RECORD.getCode().equals(taskDefinitionKey) || SOCIAL_CREDIT_RECORD.getCode().equals(taskDefinitionKey);
 
-        if (isApplyVerifyTaskAndActionIsPass || isBankAndSocialCreditRecordTask) {
+        if (isCreditApplyTaskAndActionIsPass || isBankAndSocialCreditRecordTask) {
 
             // 预计贷款金额
             LoanBaseInfoDO loanBaseInfoDO = getLoanBaseInfoDO(loanOrderDO.getLoanBaseInfoId());
@@ -2764,7 +2764,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 //            variables.put(PROCESS_VARIABLE_LOAN_AMOUNT_ACTUAL, actualLoanAmount);
 
                 // 预计 < 13W, 但实际 >= 13W
-                if (EXPECT_LOAN_AMOUNT_LT_13W.equals(expectLoanAmount) && actualLoanAmount >= ACTUAL_LOAN_AMOUNT_13W) {
+                if (TASK_PROCESS_INIT.equals(loanProcessDO.getSocialCreditRecord()) && actualLoanAmount >= ACTUAL_LOAN_AMOUNT_13W) {
 
                     // 社会征信记录
                     List<LoanCreditInfoDO> socialCreditInfoDOS = loanCreditInfoDOMapper.getByCustomerIdAndType(loanOrderDO.getLoanCustomerId(), CREDIT_TYPE_SOCIAL);
