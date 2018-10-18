@@ -800,7 +800,8 @@
                           DATE_FORMAT(third_party.repay_interest_date, '%Y-%m-%d %H:%i:%S')
                                                                        AS bridgeRepayInterestDate,
                           third_party.repay_register_remark            AS bridgeRepayRegisterRemark,
-                          third_party.lend_status                      AS bridgeLendStatus
+                          third_party.lend_status                      AS bridgeLendStatus,
+                          third_party.lend_amount                      AS bridgeLendAmount
                       </when>
 
                       <otherwise>

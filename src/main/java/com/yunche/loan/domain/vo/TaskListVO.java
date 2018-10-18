@@ -156,6 +156,7 @@ public class TaskListVO {
     private String bridgeRepayRegisterRemark;//还款登记备注
     private String confThirdLoanTime;//借款期限
     private String bridgeLendStatus;//出借状态
+    private String bridgeLendAmount;//金投行借款金额
 
     /////////////////////////////--过桥资金--//////////////////////////////
 }
