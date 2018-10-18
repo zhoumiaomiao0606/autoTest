@@ -1457,7 +1457,14 @@
         remit.remit_amount AS remitAmount,
         financial.bank_period_principal AS bankPeriodPrincipal,
         financial.bank_period_principal - remit.remit_amount AS differMoney,
-        fund.repay_type AS repayType,
+·        CASE
+        WHEN fund.repay_type  = 1 THEN
+        '银行放款'
+        WHEN fund.repay_type = 2 THEN
+        '客户退单'
+        ELSE
+        '银行拒贷'
+        END  AS repayType,
         fund.interest AS interest,
         fund.poundage AS poundage,
         fund.repay_remark AS repayRemark
