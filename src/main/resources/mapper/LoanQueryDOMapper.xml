@@ -632,7 +632,7 @@
             car.car_category                                                        AS car_category
 
         from (select * from loan_order where id = #{orderId,jdbcType=BIGINT}) main_order
-        left join (select * from loan_process_log  where order_id =  #{orderId,jdbcType=BIGINT} and task_definition_key = '"usertask_commit_key"' order by create_time desc LIMIT 1) needCollectKeyTab on needCollectKeyTab.order_id = main_order.id
+        left join (select * from loan_process_log  where order_id =  #{orderId,jdbcType=BIGINT} and task_definition_key = 'usertask_commit_key' order by create_time desc LIMIT 1) needCollectKeyTab on needCollectKeyTab.order_id = main_order.id
         left join loan_car_info car on main_order.loan_car_info_id = car.id
         left join loan_financial_plan financial on main_order.loan_financial_plan_id = financial.id
         left join vehicle_information vehicle on main_order.vehicle_information_id = vehicle.id
