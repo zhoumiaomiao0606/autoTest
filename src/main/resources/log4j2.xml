@@ -25,7 +25,7 @@
             </Policies>
 
             <!-- 单天最大保存文件数 超过自动覆盖-->
-            <DefaultRolloverStrategy max="20"/>
+            <DefaultRolloverStrategy max="50"/>
 
         </RollingFile>
     </Appenders>

@@ -1448,26 +1448,25 @@
     <select id="exportJinTouHangRepayInfo" parameterType="com.yunche.loan.domain.param.ExportApplyLoanPushParam"
             resultType="com.yunche.loan.domain.vo.JinTouHangRepayInfoVO">
         select
-        customer.`name` AS name,
-        customer.id_card AS idCard,
-        DATE_FORMAT(fund.lend_date , '%Y-%m-%d' ) AS lendDate,
-        DATE_FORMAT(record.lend_date, '%Y-%m-%d' ) AS bankLendDate,
-        DATE_FORMAT(fund.repay_date, '%Y-%m-%d' ) AS repayDate,
-        datediff( DATE_FORMAT( fund.repay_date, '%Y-%m-%d' ), DATE_FORMAT( fund.lend_date, '%Y-%m-%d' ) ) AS differTime,
-        remit.remit_amount AS remitAmount,
-        financial.bank_period_principal AS bankPeriodPrincipal,
-        financial.bank_period_principal - remit.remit_amount AS differMoney,
-        CASE
-        WHEN fund.repay_type  = 1 THEN
-        '银行放款'
-        WHEN fund.repay_type = 2 THEN
-        '客户退单'
-        ELSE
-        '银行拒贷'
-        END  AS repayType,
-        fund.interest AS interest,
-        fund.poundage AS poundage,
-        fund.repay_remark AS repayRemark
+            customer.`name`                                         AS name,
+            customer.id_card                                        AS idCard,
+            DATE_FORMAT(fund.lend_date , '%Y-%m-%d' )               AS lendDate,
+            DATE_FORMAT(record.lend_date, '%Y-%m-%d' )              AS bankLendDate,
+            DATE_FORMAT(fund.repay_date, '%Y-%m-%d' )               AS repayDate,
+            datediff( DATE_FORMAT( fund.repay_date, '%Y-%m-%d' ), DATE_FORMAT( fund.lend_date, '%Y-%m-%d' ) ) AS differTime,
+            fund.lend_amount                                        AS remitAmount,
+            financial.bank_period_principal                         AS bankPeriodPrincipal,
+            financial.bank_period_principal - remit.remit_amount    AS differMoney,
+
+            CASE WHEN fund.repay_type  = 1 THEN '银行放款'
+                 WHEN fund.repay_type = 2  THEN '客户退单'
+            ELSE
+                '银行拒贷'
+            END                                                     AS repayType,
+
+            fund.interest                                           AS interest,
+            fund.poundage                                           AS poundage,
+            fund.repay_remark                                       AS repayRemark
         from
         (select * from loan_process_bridge where bridge_repay_info=2) process
         LEFT JOIN loan_order loan ON process.order_id = loan.id

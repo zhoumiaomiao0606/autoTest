@@ -27,7 +27,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.math.BigDecimal;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -298,7 +297,7 @@ public class JinTouHangAccommodationApplyServiceImpl implements JinTouHangAccomm
             throw new BizException(e.getMessage());
         }
 
-        return null;
+        return ResultBean.ofSuccess(null,"导入成功!");
     }
 
     /**
