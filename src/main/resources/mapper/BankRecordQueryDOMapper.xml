@@ -124,9 +124,13 @@
         ORDER BY
             id DESC
     </select>
-    <select id="selectBankRecordDetail" resultMap="BaseResultMap">
+    <select id="selectBankRecordDetail" resultType="com.yunche.loan.domain.entity.BankFileListRecordDO">
         select
-        <include refid="Base_Column_List" />
+        bank_file_list_id, customer_id, order_id, area_id, plat_no, guaranty_unit, opencard_date,
+        card_number, name, card_type, credential_no, hairpin_flag, account_statement, repay_date,
+        gmt_greate, status, card_balance, optimal_return, cumulative_breach_number, consecutive_breach_number,
+        run_bank, instalment_types, instalment_amount, sum_number, sum_amount, reminders,
+        is_customer, batch_date
         from
             bank_file_list_record
         where

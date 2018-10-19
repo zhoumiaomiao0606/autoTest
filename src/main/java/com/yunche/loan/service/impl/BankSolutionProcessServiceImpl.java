@@ -129,7 +129,7 @@ public class BankSolutionProcessServiceImpl implements BankSolutionProcessServic
         /*
         001:通过；
         003:不通过；
-        099:退回，由于资料不全等原因退回
+        099:退回，由于资料不全等原因/api/v1/loanorder/bankfile退回
         */
 
         logger.info("征信查询回调 状态 ===============================================================" + applyCreditCallback.getPub().getCmpseq() + "：" + applyCreditCallback.getReq().getResult());
