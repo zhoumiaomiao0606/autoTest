@@ -1234,7 +1234,7 @@
         FROM
         loan_process_log z
         INNER JOIN ( SELECT SUBSTRING_INDEX( GROUP_CONCAT( id ORDER BY create_time DESC SEPARATOR ',' ), ',', 1 ) AS id
-        FROM loan_process_log WHERE task_definition_key = "usertask_loan_apply" and action = 1 GROUP BY order_id ) g ON
+        FROM loan_process_log WHERE task_definition_key = "usertask_loan_apply"  GROUP BY order_id ) g ON
         g.id = z.id
         LEFT JOIN loan_order a on a.id = z.order_id
         LEFT JOIN loan_base_info b ON a.loan_base_info_id = b.id
@@ -1244,7 +1244,7 @@
         LEFT JOIN loan_process f ON f.order_id = a.id
         left join employee emp on emp.id = b.salesman_id
         WHERE
-        1 = 1
+        1 = 1 and z.action = 1
         <if test="makeMoneyState !=null and makeMoneyState != ''">
             AND f.remit_review = #{makeMoneyState}
         </if>
@@ -1369,7 +1369,6 @@
         loan_process_log
         WHERE
         task_definition_key = "usertask_telephone_verify"
-        AND action = 1
         GROUP BY
         order_id
         ) g ON g.id = z.id
@@ -1382,7 +1381,7 @@
         LEFT JOIN loan_car_info car ON car.id = b.loan_car_info_id
         LEFT JOIN car_detail detail ON detail.id = car.car_detail_id
         LEFT JOIN car_model model ON model.id = detail.model_id
-        WHERE 1=1
+        WHERE 1=1 AND z.action = 1
         <if test="gmtCreateStart1 != null and gmtCreateStart1 != ''">
             <![CDATA[ AND z.create_time >= #{gmtCreateStart1}]]>
         </if>
@@ -1440,7 +1439,7 @@
         loan_process_log
         WHERE
         task_definition_key = "usertask_remit_review"
-        AND action = 1
+
         GROUP BY
         order_id
         ) g ON g.id = z.id
@@ -1448,7 +1447,8 @@
         LEFT JOIN loan_base_info base ON base.id = loan.loan_base_info_id
         LEFT JOIN employee e ON e.id = base.salesman_id
         LEFT JOIN loan_financial_plan financial ON financial.id = loan.loan_financial_plan_id
-        where case when(SELECT count(id) from loan_refund_apply where order_id = z.order_id) = 0 then true
+        where 1 = 1 AND z.action = 1 and
+        case when(SELECT count(id) from loan_refund_apply where order_id = z.order_id) = 0 then true
         else false end
         <if test="gmtCreateStart1 != null and gmtCreateStart1 != ''">
             <![CDATA[ AND z.create_time >= #{gmtCreateStart1}]]>
@@ -1502,7 +1502,7 @@
         loan_process_log
         WHERE
         task_definition_key = "usertask_remit_review"
-        AND action = 1
+
         GROUP BY
         order_id
         ) g ON g.id = z.id
@@ -1512,7 +1512,7 @@
         LEFT JOIN loan_financial_plan financial ON financial.id = loan.loan_financial_plan_id
         LEFT JOIN loan_customer cus ON cus.id = loan.loan_customer_id
         LEFT JOIN loan_car_info car ON car.id = loan.loan_car_info_id
-        WHERE
+        WHERE 1 = 1 AND z.action = 1 and
         CASE
         WHEN ( SELECT count( id ) FROM loan_refund_apply WHERE order_id = z.order_id ) = 0 THEN
         TRUE ELSE FALSE
@@ -1561,7 +1561,7 @@
         loan_process_log
         WHERE
         task_definition_key = "usertask_remit_review"
-        AND action = 1
+
         <if test="gmtCreateStart1 != null and gmtCreateStart1 != ''">
             <![CDATA[ AND create_time >= #{gmtCreateStart1}]]>
         </if>
@@ -1577,6 +1577,7 @@
         left join loan_base_info base on base.id = loan.loan_base_info_id
         left join employee e on e.id = base.salesman_id
         where process.apply_license_plate_deposit_info !=1
+        AND z.action = 1
         and
         case when #{maxGroupLevel} = 0 then false
         when #{maxGroupLevel} = 1 then
@@ -1619,7 +1620,7 @@
         loan_process_log
         WHERE
         task_definition_key = "usertask_remit_review"
-        AND action = 1
+
         <if test="gmtCreateStart1 != null and gmtCreateStart1 != ''">
             <![CDATA[ AND create_time >= #{gmtCreateStart1}]]>
         </if>
@@ -1635,7 +1636,7 @@
         LEFT JOIN loan_base_info base ON base.id = loan.loan_base_info_id
         LEFT JOIN employee e ON e.id = base.salesman_id
         LEFT JOIN material_audit audit ON audit.id = loan.material_audit_id
-        WHERE
+        WHERE  z.action = 1 and
         1 = (
         CASE
         WHEN audit.complete_material_date IS NULL THEN
@@ -1692,7 +1693,7 @@
         loan_process_log
         WHERE
         task_definition_key = "usertask_remit_review"
-        AND action = 1
+
         GROUP BY
         order_id
         ) g ON g.id = z.id
@@ -1702,7 +1703,7 @@
         LEFT JOIN loan_customer cus ON cus.id = loan.loan_customer_id
         LEFT JOIN loan_car_info car ON car.id = loan.loan_car_info_id
         LEFT JOIN vehicle_information info ON info.id = loan.vehicle_information_id
-        WHERE
+        WHERE z.action = 1 and
         CASE
         WHEN ( SELECT count( id ) FROM loan_refund_apply WHERE order_id = z.order_id ) = 0 THEN
         TRUE ELSE FALSE
@@ -1765,7 +1766,7 @@
         loan_process_log
         WHERE
         task_definition_key = "usertask_remit_review"
-        AND action = 1
+
         GROUP BY
         order_id
         ) g ON g.id = z.id
@@ -1775,7 +1776,7 @@
         LEFT JOIN loan_customer cus ON cus.id = loan.loan_customer_id
         LEFT JOIN loan_car_info car ON car.id = loan.loan_car_info_id
         LEFT JOIN vehicle_information info ON info.id = loan.vehicle_information_id
-        WHERE
+        WHERE z.action = 1 and
         CASE
         WHEN ( SELECT count( id ) FROM loan_refund_apply WHERE order_id = z.order_id ) = 0 THEN
         TRUE ELSE FALSE
