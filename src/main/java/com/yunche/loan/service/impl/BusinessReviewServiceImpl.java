@@ -118,7 +118,7 @@ public class BusinessReviewServiceImpl implements BusinessReviewService {
         param.setAreaId(universalInfoVO.getVehicle_apply_license_plate_area_id());
 
 
-        String financeResult = businessReviewManager.financeUnisal(param, "/costcalculation");
+        /*String financeResult = businessReviewManager.financeUnisal(param, "/costcalculation");
         FinanceResult financeResult1 = new FinanceResult();
         if (financeResult !=null && !"".equals(financeResult))
         {
@@ -126,7 +126,7 @@ public class BusinessReviewServiceImpl implements BusinessReviewService {
              financeResult1 = gson.fromJson(financeResult, FinanceResult.class);
         }
 
-        recombinationVO.setFinanceResult1(financeResult1);
+        recombinationVO.setFinanceResult1(financeResult1);*/
 
         return recombinationVO;
     }
