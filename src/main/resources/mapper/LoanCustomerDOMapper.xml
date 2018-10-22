@@ -1213,6 +1213,9 @@
         <if test="enableType != null">
             , enable_type = #{enableType,jdbcType=TINYINT}
         </if>
+        <if test="enableType == null">
+            , enable_type = NULL
+        </if>
         WHERE
         <if test="idList != null and idList.size() > 0">
             id IN

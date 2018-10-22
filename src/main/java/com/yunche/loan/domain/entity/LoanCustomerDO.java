@@ -217,7 +217,7 @@ public class LoanCustomerDO {
     private Byte enableType;
 
     /**
-     * 银行征信打回标记：0-否；1-是；
+     * 银行征信打回（拒绝）标记：0-否；1-是；
      */
     private Byte bankCreditReject;
 }
