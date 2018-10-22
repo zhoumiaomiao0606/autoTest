@@ -20,18 +20,19 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class CustomersLoanFinanceInfoByPartnerServiceImpl implements CustomersLoanFinanceInfoByPartnerService
-{
+public class CustomersLoanFinanceInfoByPartnerServiceImpl implements CustomersLoanFinanceInfoByPartnerService {
     @Autowired
     private CustomersLoanFinanceInfoByPartnerMapper customersLoanFinanceInfoByPartnerMapper;
 
     @Autowired
     private LoanApplyCompensationDOMapper loanApplyCompensationDOMapper;
+
     public static enum CustomersLoanFinance {
-        BADBALANCE(1,"不良余额"),
-        OVERDUEBALANCE(2,"逾期余额"),
-        INGUARANTEEBALANCE(3,"在保余额"),
-        LOANBALANCE(4,"贷款余额");
+        BADBALANCE(1, "不良余额"),
+        OVERDUEBALANCE(2, "逾期余额"),
+        INGUARANTEEBALANCE(3, "在保余额"),
+        LOANBALANCE(4, "贷款余额"),
+        COMPENSATION(5, "代偿");
 
         private int code;
 
@@ -61,59 +62,54 @@ public class CustomersLoanFinanceInfoByPartnerServiceImpl implements CustomersLo
 
 
     @Override
-    public ResultBean selectCustomersLoanFinanceInfoByPartner(CustomersLoanFinanceInfoByPartnerParam customersLoanFinanceInfoByPartnerParam)
-    {
-        Preconditions.checkNotNull(customersLoanFinanceInfoByPartnerParam.getPartnerId(),"合伙人id不能为空");
-        Preconditions.checkNotNull(customersLoanFinanceInfoByPartnerParam.getCode(),"查询类型不能为空");
+    public ResultBean selectCustomersLoanFinanceInfoByPartner(CustomersLoanFinanceInfoByPartnerParam customersLoanFinanceInfoByPartnerParam) {
+        Preconditions.checkNotNull(customersLoanFinanceInfoByPartnerParam.getPartnerId(), "合伙人id不能为空");
+        Preconditions.checkNotNull(customersLoanFinanceInfoByPartnerParam.getCode(), "查询类型不能为空");
 
-        if (customersLoanFinanceInfoByPartnerParam.getCode() == CustomersLoanFinance.BADBALANCE.getCode())
-        {
+        if (customersLoanFinanceInfoByPartnerParam.getCode() == CustomersLoanFinance.BADBALANCE.getCode()) {
             //分页
-            PageHelper.startPage(customersLoanFinanceInfoByPartnerParam.getPageIndex(),customersLoanFinanceInfoByPartnerParam.getPageSize(), true);
+            PageHelper.startPage(customersLoanFinanceInfoByPartnerParam.getPageIndex(), customersLoanFinanceInfoByPartnerParam.getPageSize(), true);
             List<BadBalanceByPartnerVO> badBalanceByPartnerVOS = customersLoanFinanceInfoByPartnerMapper.selectBadBalance(customersLoanFinanceInfoByPartnerParam.getPartnerId());
             // 取分页信息
             PageInfo<BadBalanceByPartnerVO> pageInfo = new PageInfo<>(badBalanceByPartnerVOS);
             return ResultBean.ofSuccess(pageInfo);
 
-        }else if (customersLoanFinanceInfoByPartnerParam.getCode() == CustomersLoanFinance.OVERDUEBALANCE.getCode())
-        {
+        } else if (customersLoanFinanceInfoByPartnerParam.getCode() == CustomersLoanFinance.OVERDUEBALANCE.getCode()) {
             //分页
-            PageHelper.startPage(customersLoanFinanceInfoByPartnerParam.getPageIndex(),customersLoanFinanceInfoByPartnerParam.getPageSize(), true);
+            PageHelper.startPage(customersLoanFinanceInfoByPartnerParam.getPageIndex(), customersLoanFinanceInfoByPartnerParam.getPageSize(), true);
             List<OverdueBalanceByPartnerVO> overdueBalanceByPartnerVOS = customersLoanFinanceInfoByPartnerMapper.selectOverdueBalance(customersLoanFinanceInfoByPartnerParam.getPartnerId());
             // 取分页信息
             PageInfo<OverdueBalanceByPartnerVO> pageInfo = new PageInfo<>(overdueBalanceByPartnerVOS);
             return ResultBean.ofSuccess(pageInfo);
 
-        }else if (customersLoanFinanceInfoByPartnerParam.getCode() == CustomersLoanFinance.INGUARANTEEBALANCE.getCode())
-        {
+        } else if (customersLoanFinanceInfoByPartnerParam.getCode() == CustomersLoanFinance.INGUARANTEEBALANCE.getCode()) {
             //分页
-            PageHelper.startPage(customersLoanFinanceInfoByPartnerParam.getPageIndex(),customersLoanFinanceInfoByPartnerParam.getPageSize(), true);
+            PageHelper.startPage(customersLoanFinanceInfoByPartnerParam.getPageIndex(), customersLoanFinanceInfoByPartnerParam.getPageSize(), true);
             List<InGuaranteeBalanceByPartnerVO> inGuaranteeBalanceByPartnerVOS = customersLoanFinanceInfoByPartnerMapper.selectInGuaranteeBalance(customersLoanFinanceInfoByPartnerParam.getPartnerId());
             // 取分页信息
             PageInfo<InGuaranteeBalanceByPartnerVO> pageInfo = new PageInfo<>(inGuaranteeBalanceByPartnerVOS);
             return ResultBean.ofSuccess(pageInfo);
 
-        }else if (customersLoanFinanceInfoByPartnerParam.getCode() == CustomersLoanFinance.LOANBALANCE.getCode())
-        {
+        } else if (customersLoanFinanceInfoByPartnerParam.getCode() == CustomersLoanFinance.LOANBALANCE.getCode()) {
             //分页
-            PageHelper.startPage(customersLoanFinanceInfoByPartnerParam.getPageIndex(),customersLoanFinanceInfoByPartnerParam.getPageSize(), true);
+            PageHelper.startPage(customersLoanFinanceInfoByPartnerParam.getPageIndex(), customersLoanFinanceInfoByPartnerParam.getPageSize(), true);
             List<LoanBalanceByPartnerVO> loanBalanceByPartnerVOS = customersLoanFinanceInfoByPartnerMapper.selectLoanBalance(customersLoanFinanceInfoByPartnerParam.getPartnerId());
             // 取分页信息
             PageInfo<LoanBalanceByPartnerVO> pageInfo = new PageInfo<>(loanBalanceByPartnerVOS);
             return ResultBean.ofSuccess(pageInfo);
 
+        } else if(customersLoanFinanceInfoByPartnerParam.getCode() == CustomersLoanFinance.COMPENSATION.getCode()){
+            FSysCompensationVO fSysCompensationVO = customersLoanFinanceInfoByPartnerMapper.selectCompensationInfoByPartner(customersLoanFinanceInfoByPartnerParam.getPartnerId());
+            return ResultBean.ofSuccess(fSysCompensationVO);
+        }else{
+            return ResultBean.ofError("参数有错误");
         }
-        else
-            {
-                return ResultBean.ofError("参数有错误");
-            }
 
     }
 
     @Override
-    public ResultBean selectTotalLoanFinanceInfoByPartner(Long partnerId)
-    {
-        Preconditions.checkNotNull(partnerId,"合伙人id不能为空");
+    public ResultBean selectTotalLoanFinanceInfoByPartner(Long partnerId) {
+        Preconditions.checkNotNull(partnerId, "合伙人id不能为空");
 
         List<BadBalanceByPartnerVO> badBalanceByPartnerVOS = customersLoanFinanceInfoByPartnerMapper.selectBadBalance(partnerId);
 
@@ -123,37 +119,34 @@ public class CustomersLoanFinanceInfoByPartnerServiceImpl implements CustomersLo
 
         List<LoanBalanceByPartnerVO> loanBalanceByPartnerVOS = customersLoanFinanceInfoByPartnerMapper.selectLoanBalance(partnerId);
 
-        TotalLoanFinanceInfoByPartnerVO totalLoanFinanceInfoByPartnerVO =new TotalLoanFinanceInfoByPartnerVO();
+        TotalLoanFinanceInfoByPartnerVO totalLoanFinanceInfoByPartnerVO = new TotalLoanFinanceInfoByPartnerVO();
 
         //统计不良总额
-        if (badBalanceByPartnerVOS!=null && badBalanceByPartnerVOS.size()>0)
-        {
+        if (badBalanceByPartnerVOS != null && badBalanceByPartnerVOS.size() > 0) {
             Optional<BigDecimal> totalBadBalance = badBalanceByPartnerVOS.stream()
-                    .filter(badBalanceByPartnerVO -> badBalanceByPartnerVO.getBadBalance()!=null)
+                    .filter(badBalanceByPartnerVO -> badBalanceByPartnerVO.getBadBalance() != null)
                     .map(badBalanceByPartnerVO -> badBalanceByPartnerVO.getBadBalance())
                     .reduce((x, y) -> x.add(y));
-            if (totalBadBalance.isPresent()){
+            if (totalBadBalance.isPresent()) {
                 totalLoanFinanceInfoByPartnerVO.setTotalBadBalance(totalBadBalance.get());
             }
         }
 
         //统计逾期总额
-        if (overdueBalanceByPartnerVOS!=null && overdueBalanceByPartnerVOS.size()>0)
-        {
+        if (overdueBalanceByPartnerVOS != null && overdueBalanceByPartnerVOS.size() > 0) {
             Optional<BigDecimal> totalOverdueBalance = overdueBalanceByPartnerVOS.stream()
-                    .filter(overdueBalanceByPartnerVO -> overdueBalanceByPartnerVO.getOverdueBalance()!=null)
+                    .filter(overdueBalanceByPartnerVO -> overdueBalanceByPartnerVO.getOverdueBalance() != null)
                     .map(badBalanceByPartnerVO -> badBalanceByPartnerVO.getOverdueBalance())
                     .reduce((x, y) -> x.add(y));
-            if (totalOverdueBalance.isPresent()){
+            if (totalOverdueBalance.isPresent()) {
                 totalLoanFinanceInfoByPartnerVO.setTotalOverdueBalance(totalOverdueBalance.get());
             }
         }
 
         //统计逾期总额
-        if (inGuaranteeBalanceByPartnerVOS!=null && inGuaranteeBalanceByPartnerVOS.size()>0)
-        {
+        if (inGuaranteeBalanceByPartnerVOS != null && inGuaranteeBalanceByPartnerVOS.size() > 0) {
             Optional<BigDecimal> totalInGuaranteeBalance = inGuaranteeBalanceByPartnerVOS.stream()
-                    .filter(inGuaranteeBalanceByPartnerVO -> inGuaranteeBalanceByPartnerVO.getInGuaranteeBalance()!=null)
+                    .filter(inGuaranteeBalanceByPartnerVO -> inGuaranteeBalanceByPartnerVO.getInGuaranteeBalance() != null)
                     .map(badBalanceByPartnerVO -> badBalanceByPartnerVO.getInGuaranteeBalance())
                     .reduce((x, y) -> x.add(y));
             if (totalInGuaranteeBalance.isPresent()) {
@@ -162,13 +155,12 @@ public class CustomersLoanFinanceInfoByPartnerServiceImpl implements CustomersLo
         }
 
         //统计贷款总额
-        if (loanBalanceByPartnerVOS!=null && loanBalanceByPartnerVOS.size()>0)
-        {
+        if (loanBalanceByPartnerVOS != null && loanBalanceByPartnerVOS.size() > 0) {
             Optional<BigDecimal> totalLoanBalance = loanBalanceByPartnerVOS.stream()
-                    .filter(loanBalanceByPartnerVO -> loanBalanceByPartnerVO.getFinancialBankPeriodPrincipal()!=null)
+                    .filter(loanBalanceByPartnerVO -> loanBalanceByPartnerVO.getFinancialBankPeriodPrincipal() != null)
                     .map(badBalanceByPartnerVO -> badBalanceByPartnerVO.getFinancialBankPeriodPrincipal())
                     .reduce((x, y) -> x.add(y));
-            if (totalLoanBalance.isPresent()){
+            if (totalLoanBalance.isPresent()) {
                 totalLoanFinanceInfoByPartnerVO.setTotalLoanBalance(totalLoanBalance.get());
             }
         }
@@ -177,21 +169,17 @@ public class CustomersLoanFinanceInfoByPartnerServiceImpl implements CustomersLo
     }
 
     @Override
-    public ResultBean getOrderByCustomerId(Long customerId)
-    {
+    public ResultBean getOrderByCustomerId(Long customerId) {
         List<OrderByCustomerIdVO> list = customersLoanFinanceInfoByPartnerMapper.getOrderByCustomerId(customerId);
         //根据订单查询代偿
-        if (list!=null && list.size()>0)
-        {
+        if (list != null && list.size() > 0) {
             list.stream()
                     .forEach(orderByCustomerIdVO ->
                     {
-                        if (orderByCustomerIdVO.getNum()!=null)
-                        {
+                        if (orderByCustomerIdVO.getNum() != null) {
                             List<LoanApplyCompensationDO> loanApplyCompensationDOS = loanApplyCompensationDOMapper.selectByOrderId(orderByCustomerIdVO.getNum());
-                            for (LoanApplyCompensationDO loanApplyCompensationDO :loanApplyCompensationDOS)
-                            {
-                                PartnerCompensations partnerCompensations =new PartnerCompensations();
+                            for (LoanApplyCompensationDO loanApplyCompensationDO : loanApplyCompensationDOS) {
+                                PartnerCompensations partnerCompensations = new PartnerCompensations();
 
                                 partnerCompensations.setCompensatoryAmount(loanApplyCompensationDO.getPartnerCompensationAmount());
                                 partnerCompensations.setCompensatoryTime(loanApplyCompensationDO.getPartnerDcReviewDate());
@@ -212,18 +200,16 @@ public class CustomersLoanFinanceInfoByPartnerServiceImpl implements CustomersLo
     }
 
     @Override
-    public ResultBean getCustomerInfoByCustomerName(CustomerInfoByCustomerNameParam customerInfoByCustomerNameParam)
-    {
-        List<CustomerInfoForFinanceSys> customerInfoForFinanceSys =customersLoanFinanceInfoByPartnerMapper.getCustomerInfoByCustomerName(customerInfoByCustomerNameParam);
+    public ResultBean getCustomerInfoByCustomerName(CustomerInfoByCustomerNameParam customerInfoByCustomerNameParam) {
+        List<CustomerInfoForFinanceSys> customerInfoForFinanceSys = customersLoanFinanceInfoByPartnerMapper.getCustomerInfoByCustomerName(customerInfoByCustomerNameParam);
         return ResultBean.ofSuccess(customerInfoForFinanceSys);
     }
 
     @Override
-    public ResultBean selectRefundOrderInfoByPartner(RefundOrderInfoByPartnerParam refundOrderInfoByPartnerParam)
-    {
-        Preconditions.checkNotNull(refundOrderInfoByPartnerParam.getPartnerId(),"合伙人id不能为空");
+    public ResultBean selectRefundOrderInfoByPartner(RefundOrderInfoByPartnerParam refundOrderInfoByPartnerParam) {
+        Preconditions.checkNotNull(refundOrderInfoByPartnerParam.getPartnerId(), "合伙人id不能为空");
         //分页
-        PageHelper.startPage(refundOrderInfoByPartnerParam.getPageIndex(),refundOrderInfoByPartnerParam.getPageSize(), true);
+        PageHelper.startPage(refundOrderInfoByPartnerParam.getPageIndex(), refundOrderInfoByPartnerParam.getPageSize(), true);
         List<RefundOrderInfoByPartnerVO> refundOrderInfoByPartnerVOS = customersLoanFinanceInfoByPartnerMapper.selectRefundOrderInfoByPartner(refundOrderInfoByPartnerParam.getPartnerId());
         // 取分页信息
         PageInfo<RefundOrderInfoByPartnerVO> pageInfo = new PageInfo<>(refundOrderInfoByPartnerVOS);
