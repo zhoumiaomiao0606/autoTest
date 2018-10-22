@@ -3170,8 +3170,11 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      * @param processInstanceId
      */
     private void dealCancelTask(String processInstanceId) {
-        // 弃单 -> 直接终止所有流程 => 所有运行中的act_ru_task
-        runtimeService.deleteProcessInstance(processInstanceId, "弃单");
+        List<Task> currentTaskList = loanProcessApprovalCommonService.getCurrentTaskList(processInstanceId);
+        if (!CollectionUtils.isEmpty(currentTaskList)) {
+            // 弃单 -> 直接终止所有流程 => 所有运行中的act_ru_task
+            runtimeService.deleteProcessInstance(processInstanceId, "弃单");
+        }
     }
 
     /**
