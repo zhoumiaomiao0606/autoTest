@@ -250,4 +250,18 @@ FROM
 
 
     </select>
+
+    <select id="selectCompensationInfoByPartner" parameterType="java.lang.Long" resultType="com.yunche.loan.domain.vo.FSysCompensationVO" >
+        select
+            sum(compensation.compensation_amount) AS compensatoryAmount,
+            sum(compensation.partner_compensation_amount) AS compensatoryPaid,
+            sum(compensation.compensation_amount) -sum(compensation.partner_compensation_amount) AS compensatoryRest
+        from loan_process_instead_pay instead
+            LEFT JOIN loan_apply_compensation compensation  on instead.bank_repay_imp_record_id=compensation.id
+            LEFT JOIN loan_order loan on compensation.order_id=loan.id
+            LEFT JOIN loan_base_info base on loan.loan_base_info_id = base.id
+        where
+            base.partner_id=#{partnerId} and instead.partner_instead_pay_review=1
+
+    </select>
 </mapper>
