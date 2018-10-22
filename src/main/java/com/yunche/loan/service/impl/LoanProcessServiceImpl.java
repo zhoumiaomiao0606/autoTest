@@ -3034,14 +3034,21 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         // 是否都通过了    -> 既非BANK，也非SOCIAL
         if (!CollectionUtils.isEmpty(tasks)) {
 
-            long count = tasks.stream()
+            long bank_social_count = tasks.stream()
                     .filter(Objects::nonNull)
+                    // BANK || SOCIAL
                     .filter(e -> BANK_CREDIT_RECORD.getCode().equals(e.getTaskDefinitionKey())
                             || SOCIAL_CREDIT_RECORD.getCode().equals(e.getTaskDefinitionKey()))
                     .count();
 
+            long bank_social_filter_count = tasks.stream()
+                    .filter(Objects::nonNull)
+                    // 只能为 BANK_SOCIAL_FILTER
+                    .filter(e -> BANK_SOCIAL_CREDIT_RECORD_FILTER.getCode().equals(e.getTaskDefinitionKey()))
+                    .count();
+
             // 是 -> 放行
-            if (count == 0) {
+            if (bank_social_count == 0 && (bank_social_filter_count == 1 || bank_social_filter_count == 2)) {
 
                 // 当前已经不会有子任务为：BANK或SOCIAL    只需从所有filter任务中找到-主任务 -> 通过即可！  然后剩余"filter子任务"全部弃单即可！
                 Map<String, Object> passVariables = Maps.newHashMap();
@@ -3195,8 +3202,11 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      * @param processInstanceId
      */
     private void dealCancelTask(String processInstanceId) {
-        // 弃单 -> 直接终止所有流程 => 所有运行中的act_ru_task
-        runtimeService.deleteProcessInstance(processInstanceId, "弃单");
+        List<Task> currentTaskList = loanProcessApprovalCommonService.getCurrentTaskList(processInstanceId);
+        if (!CollectionUtils.isEmpty(currentTaskList)) {
+            // 弃单 -> 直接终止所有流程 => 所有运行中的act_ru_task
+            runtimeService.deleteProcessInstance(processInstanceId, "弃单");
+        }
     }
 
     /**

@@ -75,7 +75,7 @@ public class LoanCreditInfoServiceImpl implements LoanCreditInfoService {
     public Long create(LoanCreditInfoDO loanCreditInfoDO) {
         Preconditions.checkNotNull(loanCreditInfoDO.getCustomerId(), "客户ID不能为空");
         Preconditions.checkNotNull(loanCreditInfoDO.getType(), "征信类型不能为空");
-        Preconditions.checkNotNull(loanCreditInfoDO.getResult(), "征信结果不能为空");
+//        Preconditions.checkNotNull(loanCreditInfoDO.getResult(), "征信结果不能为空");
 
         List<LoanCreditInfoDO> loanCreditInfoDOS = loanCreditInfoDOMapper.getByCustomerIdAndType(loanCreditInfoDO.getCustomerId(), loanCreditInfoDO.getType());
 
