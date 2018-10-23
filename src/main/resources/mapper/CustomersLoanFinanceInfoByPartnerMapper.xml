@@ -264,4 +264,70 @@ FROM
             base.partner_id=#{partnerId} and instead.partner_instead_pay_review=1
 
     </select>
+
+
+    <select id="listCompensationInfoByPartner" parameterType="java.lang.Long" resultType="com.yunche.loan.domain.vo.FSysCompensationVO" >
+        select
+                customer.name AS customerName,
+                customer.id_card AS customerCardId,
+                customer.mobile AS customerPhone,
+                financial.bank_period_principal AS financialBankPeriodPrincipal,
+                compensation.review_date AS compensatoryTime,
+                compensation.compensation_amount AS compensatoryMoney,
+                compensation.risk_taking_ratio AS proportion,
+                compensation.partner_compensation_amount AS partnerMoney
+        from loan_process_instead_pay instead
+            LEFT JOIN loan_apply_compensation compensation  on instead.bank_repay_imp_record_id=compensation.id
+            LEFT JOIN loan_order loan on compensation.order_id=loan.id
+            LEFT JOIN loan_financial_plan financial on loan.loan_financial_plan_id=financial.id
+            LEFT JOIN loan_customer customer on loan.loan_customer_id =customer.id
+            LEFT JOIN loan_base_info base on loan.loan_base_info_id = base.id
+        where
+            base.partner_id=#{partnerId} and instead.partner_instead_pay_review=1
+
+    </select>
+
+    <select id="rebateDetailsList" parameterType="com.yunche.loan.domain.param.FSysRebateParam" resultType="com.yunche.loan.domain.vo.FSysRebateVO">
+        select
+            partner.`name`                  AS name,
+            partner.leader_name             AS leaderName,
+            rebate.periods    							AS periods,
+            rebate.rebate_amount   				 	AS amount
+        from financial_rebate_detail rebate
+            LEFT JOIN partner partner on  rebate.partner_id = partner.id
+        where 1=1
+        <if test="type !=null">
+            AND  rebate.enter_account_flag=#{type}
+        </if>
+        <if  test="partnerId !=null">
+            AND rebate.partner_id=#{partnerId}
+        </if>
+        <if test="periods !=null">
+            AND rebate.periods=#{periods}
+        </if>
+    </select>
+
+
+    <select id="generateCurrRebateRecord" resultType="com.yunche.loan.domain.vo.FSysRebateVO">
+        select
+            base.partner_id AS partnerId,
+            partner.`name` AS name,
+            partner.leader_name AS leaderName,
+            sum(remit.return_rate_amount) amount,
+            date_format(NOW(),'%m') AS periods
+        from
+            (select * from loan_process where 1=1 and bank_lend_record=1 and remit_review=1) process
+            LEFT JOIN loan_order loan on process.order_id = loan.id
+            LEFT JOIN bank_lend_record bank_lend on bank_lend.id = loan.bank_lend_record_id
+            LEFT JOIN current_node_manager node on node.order_id=loan.id
+            LEFT JOIN loan_base_info base on loan.loan_base_info_id = base.id
+            LEFT JOIN partner partner on  base.partner_id = partner.id
+            LEFT JOIN remit_details remit on remit.id=loan.remit_details_id
+        where 1=1
+            and bank_lend.lend_date &lt;= now()
+            and node.usertask_remit_review_create_time&lt;=DATE_ADD(curdate(),interval -day(curdate())+1 day)
+            and loan.rebate_entry=1
+        GROUP BY
+            base.partner_id
+    </select>
 </mapper>

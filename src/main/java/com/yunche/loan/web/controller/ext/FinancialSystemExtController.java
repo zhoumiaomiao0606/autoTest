@@ -3,9 +3,11 @@ package com.yunche.loan.web.controller.ext;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.param.CustomerInfoByCustomerNameParam;
 import com.yunche.loan.domain.param.CustomersLoanFinanceInfoByPartnerParam;
+import com.yunche.loan.domain.param.FSysRebateParam;
 import com.yunche.loan.domain.param.RefundOrderInfoByPartnerParam;
 import com.yunche.loan.service.CustomersLoanFinanceInfoByPartnerService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -61,6 +63,25 @@ public class FinancialSystemExtController {
     public ResultBean selectRefundOrderInfoByPartner(@RequestBody RefundOrderInfoByPartnerParam refundOrderInfoByPartnerParam)
     {
         return customersLoanFinanceInfoByPartnerservice.selectRefundOrderInfoByPartner(refundOrderInfoByPartnerParam);
+    }
+
+
+    /**
+     * 代偿明细
+     * @param param
+     * @return
+     */
+    @PostMapping(value = "/compensationDetail",consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResultBean compensationDetail(@RequestBody CustomersLoanFinanceInfoByPartnerParam param){
+        return  customersLoanFinanceInfoByPartnerservice.compensationDetail(param);
+    }
+
+    /**
+     *返利明细-列表
+     */
+    @PostMapping(value = "/remitDetailsList",consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResultBean rebateDetailsList(@RequestBody FSysRebateParam param){
+        return customersLoanFinanceInfoByPartnerservice.rebateDetailsList(param);
     }
 
 }

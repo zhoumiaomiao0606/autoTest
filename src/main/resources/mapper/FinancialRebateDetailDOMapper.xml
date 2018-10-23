@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunche.loan.mapper.FinancialRebateDetailDOMapper">
+  <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.FinancialRebateDetailDO">
+    <id column="partner_id" jdbcType="BIGINT" property="partnerId" />
+    <id column="periods" jdbcType="INTEGER" property="periods" />
+    <result column="rebate_amount" jdbcType="DECIMAL" property="rebateAmount" />
+    <result column="enter_account_flag" jdbcType="TINYINT" property="enterAccountFlag" />
+    <result column="gmt_create" jdbcType="DATE" property="gmtCreate" />
+    <result column="gmt_modify" jdbcType="DATE" property="gmtModify" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    partner_id, periods, rebate_amount, enter_account_flag, gmt_create, gmt_modify
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="com.yunche.loan.domain.entity.FinancialRebateDetailDOKey" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from financial_rebate_detail
+    where partner_id = #{partnerId,jdbcType=BIGINT}
+      and periods = #{periods,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="com.yunche.loan.domain.entity.FinancialRebateDetailDOKey">
+    delete from financial_rebate_detail
+    where partner_id = #{partnerId,jdbcType=BIGINT}
+      and periods = #{periods,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.yunche.loan.domain.entity.FinancialRebateDetailDO">
+    insert into financial_rebate_detail (partner_id, periods, rebate_amount, 
+      enter_account_flag, gmt_create, gmt_modify
+      )
+    values (#{partnerId,jdbcType=BIGINT}, #{periods,jdbcType=INTEGER}, #{rebateAmount,jdbcType=DECIMAL}, 
+      #{enterAccountFlag,jdbcType=TINYINT}, #{gmtCreate,jdbcType=DATE}, #{gmtModify,jdbcType=DATE}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.FinancialRebateDetailDO">
+    insert into financial_rebate_detail
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="partnerId != null">
+        partner_id,
+      </if>
+      <if test="periods != null">
+        periods,
+      </if>
+      <if test="rebateAmount != null">
+        rebate_amount,
+      </if>
+      <if test="enterAccountFlag != null">
+        enter_account_flag,
+      </if>
+      <if test="gmtCreate != null">
+        gmt_create,
+      </if>
+      <if test="gmtModify != null">
+        gmt_modify,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="partnerId != null">
+        #{partnerId,jdbcType=BIGINT},
+      </if>
+      <if test="periods != null">
+        #{periods,jdbcType=INTEGER},
+      </if>
+      <if test="rebateAmount != null">
+        #{rebateAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="enterAccountFlag != null">
+        #{enterAccountFlag,jdbcType=TINYINT},
+      </if>
+      <if test="gmtCreate != null">
+        #{gmtCreate,jdbcType=DATE},
+      </if>
+      <if test="gmtModify != null">
+        #{gmtModify,jdbcType=DATE},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.FinancialRebateDetailDO">
+    update financial_rebate_detail
+    <set>
+      <if test="rebateAmount != null">
+        rebate_amount = #{rebateAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="enterAccountFlag != null">
+        enter_account_flag = #{enterAccountFlag,jdbcType=TINYINT},
+      </if>
+      <if test="gmtCreate != null">
+        gmt_create = #{gmtCreate,jdbcType=DATE},
+      </if>
+      <if test="gmtModify != null">
+        gmt_modify = #{gmtModify,jdbcType=DATE},
+      </if>
+    </set>
+    where partner_id = #{partnerId,jdbcType=BIGINT}
+      and periods = #{periods,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.FinancialRebateDetailDO">
+    update financial_rebate_detail
+    set rebate_amount = #{rebateAmount,jdbcType=DECIMAL},
+      enter_account_flag = #{enterAccountFlag,jdbcType=TINYINT},
+      gmt_create = #{gmtCreate,jdbcType=DATE},
+      gmt_modify = #{gmtModify,jdbcType=DATE}
+    where partner_id = #{partnerId,jdbcType=BIGINT}
+      and periods = #{periods,jdbcType=INTEGER}
+  </update>
+</mapper>

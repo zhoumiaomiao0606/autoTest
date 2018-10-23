@@ -55,4 +55,8 @@ public class LoanOrderDO {
     private Date gmtModify;
 
     private String feature;
+
+    private   Byte rebateEntry;
+    private   Integer  rebatePeriods;
+
 }

@@ -7,6 +7,7 @@ import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.entity.LoanApplyCompensationDO;
 import com.yunche.loan.domain.param.CustomerInfoByCustomerNameParam;
 import com.yunche.loan.domain.param.CustomersLoanFinanceInfoByPartnerParam;
+import com.yunche.loan.domain.param.FSysRebateParam;
 import com.yunche.loan.domain.param.RefundOrderInfoByPartnerParam;
 import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.mapper.CustomersLoanFinanceInfoByPartnerMapper;
@@ -213,6 +214,35 @@ public class CustomersLoanFinanceInfoByPartnerServiceImpl implements CustomersLo
         List<RefundOrderInfoByPartnerVO> refundOrderInfoByPartnerVOS = customersLoanFinanceInfoByPartnerMapper.selectRefundOrderInfoByPartner(refundOrderInfoByPartnerParam.getPartnerId());
         // 取分页信息
         PageInfo<RefundOrderInfoByPartnerVO> pageInfo = new PageInfo<>(refundOrderInfoByPartnerVOS);
+        return ResultBean.ofSuccess(pageInfo);
+    }
+
+    /**
+     *  代偿明细
+     * @param param
+     * @return
+     */
+    @Override
+    public ResultBean compensationDetail(CustomersLoanFinanceInfoByPartnerParam param) {
+        Preconditions.checkNotNull(param.getPartnerId(),"参数有误：合伙人ID不能为空");
+        PageHelper.startPage(param.getPageIndex(), param.getPageSize(), true);
+        List<FSysCompensationVO> compensationDetails = customersLoanFinanceInfoByPartnerMapper.listCompensationInfoByPartner(param.getPartnerId());
+        PageInfo<FSysCompensationVO> pageInfo = new PageInfo<>(compensationDetails);
+        return ResultBean.ofSuccess(pageInfo);
+
+    }
+
+    /**
+     * 返利明细列表
+     * @param param
+     * @return
+     */
+    @Override
+    public ResultBean rebateDetailsList(FSysRebateParam param) {
+        Preconditions.checkNotNull(param.getType(),"参数有误：是否入账参数不能为空 ");
+        PageHelper.startPage(param.getPageIndex(), param.getPageSize(), true);
+        List<FSysRebateVO> fSysRebateVOS = customersLoanFinanceInfoByPartnerMapper.rebateDetailsList(param);
+        PageInfo<FSysRebateVO> pageInfo = new PageInfo<>(fSysRebateVOS);
         return ResultBean.ofSuccess(pageInfo);
     }
 }

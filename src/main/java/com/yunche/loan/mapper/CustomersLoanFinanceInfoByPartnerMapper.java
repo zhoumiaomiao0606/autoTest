@@ -1,6 +1,7 @@
 package com.yunche.loan.mapper;
 
 import com.yunche.loan.domain.param.CustomerInfoByCustomerNameParam;
+import com.yunche.loan.domain.param.FSysRebateParam;
 import com.yunche.loan.domain.vo.*;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -29,4 +30,10 @@ public interface CustomersLoanFinanceInfoByPartnerMapper
     List<RefundOrderInfoByPartnerVO> selectRefundOrderInfoByPartner(Long partnerId);
 
     FSysCompensationVO selectCompensationInfoByPartner(Long partnerId);
+
+    List<FSysCompensationVO> listCompensationInfoByPartner(Long partnerId);
+
+    List<FSysRebateVO> rebateDetailsList(FSysRebateParam param);
+
+    List<FSysRebateVO> generateCurrRebateRecord();
 }
