@@ -186,6 +186,9 @@ public class LoanProcessServiceImpl implements LoanProcessService {
     @Autowired
     private ConfLoanApplyDOMapper confLoanApplyDOMapper;
 
+    @Autowired
+    private VideoFaceNumDOMapper videoFaceNumDOMapper;
+
     @Override
     @Transactional(rollbackFor = Exception.class)
     public ResultBean<Void> approval(ApprovalParam approval) {
@@ -3034,21 +3037,14 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         // 是否都通过了    -> 既非BANK，也非SOCIAL
         if (!CollectionUtils.isEmpty(tasks)) {
 
-            long bank_social_count = tasks.stream()
+            long count = tasks.stream()
                     .filter(Objects::nonNull)
-                    // BANK || SOCIAL
                     .filter(e -> BANK_CREDIT_RECORD.getCode().equals(e.getTaskDefinitionKey())
                             || SOCIAL_CREDIT_RECORD.getCode().equals(e.getTaskDefinitionKey()))
                     .count();
 
-            long bank_social_filter_count = tasks.stream()
-                    .filter(Objects::nonNull)
-                    // 只能为 BANK_SOCIAL_FILTER
-                    .filter(e -> BANK_SOCIAL_CREDIT_RECORD_FILTER.getCode().equals(e.getTaskDefinitionKey()))
-                    .count();
-
             // 是 -> 放行
-            if (bank_social_count == 0 && (bank_social_filter_count == 1 || bank_social_filter_count == 2)) {
+            if (count == 0) {
 
                 // 当前已经不会有子任务为：BANK或SOCIAL    只需从所有filter任务中找到-主任务 -> 通过即可！  然后剩余"filter子任务"全部弃单即可！
                 Map<String, Object> passVariables = Maps.newHashMap();
@@ -3202,11 +3198,8 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      * @param processInstanceId
      */
     private void dealCancelTask(String processInstanceId) {
-        List<Task> currentTaskList = loanProcessApprovalCommonService.getCurrentTaskList(processInstanceId);
-        if (!CollectionUtils.isEmpty(currentTaskList)) {
-            // 弃单 -> 直接终止所有流程 => 所有运行中的act_ru_task
-            runtimeService.deleteProcessInstance(processInstanceId, "弃单");
-        }
+        // 弃单 -> 直接终止所有流程 => 所有运行中的act_ru_task
+        runtimeService.deleteProcessInstance(processInstanceId, "弃单");
     }
 
     /**
@@ -3241,8 +3234,28 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
         // 附带任务-[弃单]
         doAttachTask_CancelTask(approval, loanOrderDO);
-    }
 
+        // 附带任务-[视频审核记录次数]
+        doAttachTask_VideoFaceNum(approval, loanOrderDO);
+    }
+    private void doAttachTask_VideoFaceNum(ApprovalParam approval,LoanOrderDO loanOrderDO){
+        if(VIDEO_REVIEW.getCode().equals(approval.getTaskDefinitionKey())&& ACTION_PASS.equals(approval.getAction())){
+            VideoFaceNumDO videoFaceNumDO = videoFaceNumDOMapper.selectByPrimaryKey(loanOrderDO.getId());
+            VideoFaceNumDO videoFaceNumDO1 = new VideoFaceNumDO();
+            videoFaceNumDO1.setOrder_id(loanOrderDO.getId());
+            if(videoFaceNumDO == null){
+                videoFaceNumDO1.setFace_num(1);
+                videoFaceNumDOMapper.insertSelective(videoFaceNumDO1);
+            }else{
+                if(videoFaceNumDO.getFace_num() == null){
+                    videoFaceNumDO1.setFace_num(1);
+                }else {
+                    videoFaceNumDO1.setFace_num(1 + videoFaceNumDO.getFace_num());
+                }
+                videoFaceNumDOMapper.updateByPrimaryKeySelective(videoFaceNumDO1);
+            }
+        }
+    }
 
     //1大于，2小于，3大于等于，4小于等于
     public void compardNum(String flag, BigDecimal now, BigDecimal data, String reason) {

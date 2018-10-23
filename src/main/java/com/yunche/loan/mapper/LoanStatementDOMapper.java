@@ -4,6 +4,7 @@ import com.yunche.loan.domain.param.*;
 import com.yunche.loan.domain.query.LoanCreditExportQuery;
 import com.yunche.loan.domain.vo.*;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -44,5 +45,7 @@ public interface LoanStatementDOMapper {
     List<JinTouHangInterestRegisterVO> exportJinTouHangInterestRegister(ExportApplyLoanPushParam param);
 
     List<CreditPicExportVO> selectCreditPicExport(LoanCreditExportQuery param);
+
+    String selectMaxLevelByOrderId(@Param("orderId")Long orderId);
 
 }
