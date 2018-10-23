@@ -245,4 +245,23 @@ public class CustomersLoanFinanceInfoByPartnerServiceImpl implements CustomersLo
         PageInfo<FSysRebateVO> pageInfo = new PageInfo<>(fSysRebateVOS);
         return ResultBean.ofSuccess(pageInfo);
     }
+
+    /**
+     * 返利明细详情
+     * @param param
+     * @return
+     */
+
+    @Override
+    public ResultBean rebateDetails(FSysRebateParam param) {
+
+        Preconditions.checkNotNull(param.getType(),"参数有误：是否入账参数不能为空 ");
+        Preconditions.checkNotNull(param.getPartnerId(),"参数有误：合伙人ID不能为空 ");
+        Preconditions.checkNotNull(param.getPeriods(),"参数有误：期数不能为空 ");
+        PageHelper.startPage(param.getPageIndex(), param.getPageSize(), true);
+
+        List<FSysRebateDetailVO> fSysRebateDetailVOS = customersLoanFinanceInfoByPartnerMapper.rebateDetail(param);
+        PageInfo<FSysRebateDetailVO> pageInfo = new PageInfo<>(fSysRebateDetailVOS);
+        return ResultBean.ofSuccess(pageInfo);
+    }
 }

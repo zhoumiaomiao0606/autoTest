@@ -292,7 +292,8 @@ FROM
             partner.`name`                  AS name,
             partner.leader_name             AS leaderName,
             rebate.periods    							AS periods,
-            rebate.rebate_amount   				 	AS amount
+            rebate.rebate_amount   				 	AS amount,
+            rebate.partner_id               AS partnerId
         from financial_rebate_detail rebate
             LEFT JOIN partner partner on  rebate.partner_id = partner.id
         where 1=1
@@ -313,8 +314,9 @@ FROM
             base.partner_id AS partnerId,
             partner.`name` AS name,
             partner.leader_name AS leaderName,
-            sum(remit.return_rate_amount) amount,
-            date_format(NOW(),'%m') AS periods
+            remit.return_rate_amount amount,
+            date_format(NOW(),'%m') AS periods,
+            loan.id                 AS orderId
         from
             (select * from loan_process where 1=1 and bank_lend_record=1 and remit_review=1) process
             LEFT JOIN loan_order loan on process.order_id = loan.id
@@ -326,8 +328,35 @@ FROM
         where 1=1
             and bank_lend.lend_date &lt;= now()
             and node.usertask_remit_review_create_time&lt;=DATE_ADD(curdate(),interval -day(curdate())+1 day)
-            and loan.rebate_entry=1
-        GROUP BY
+            and loan.rebate_entry=1 and loan.rebate_periods is null
+       ORDER BY
             base.partner_id
+    </select>
+
+
+    <select id="rebateDetail" parameterType="com.yunche.loan.domain.param.FSysRebateParam" resultType="com.yunche.loan.domain.vo.FSysRebateDetailVO">
+        select
+                loan.id                                 AS id,
+                customer.NAME                           AS customerName,
+                customer.id_card                        AS customerCardId,
+                customer.mobile                         AS customerPhone,
+                base.bank  			                    AS bank,
+                financial.loan_amount                   AS loans,
+                financial.bank_period_principal         AS financialBankPeriodPrincipal,
+                base.partner_id                         AS partnerId,
+                remit.return_rate_amount                AS 	amount,
+                remit.remit_amount                      AS replaceMoney,
+                (select create_time from loan_process_log where task_definition_key='usertask_remit_review' and order_id=loan.id order by create_time limit 1 ) AS replaceTime,
+                lend.lend_date                          AS bankTime
+        from loan_order  loan
+            LEFT JOIN loan_customer customer on loan.loan_customer_id=customer.id
+            LEFT JOIN loan_base_info base on base.id=loan.loan_base_info_id
+            LEFT JOIN loan_financial_plan financial on loan.loan_financial_plan_id=financial.id
+            LEFT JOIN remit_details remit on loan.remit_details_id=remit.id
+            LEFT JOIN bank_lend_record lend on loan.bank_lend_record_id =lend.id
+        where 1=1
+            AND base.partner_id= #{partnerId}
+            AND loan.rebate_periods=#{periods}
+            AND loan.rebate_entry=#{type}
     </select>
 </mapper>

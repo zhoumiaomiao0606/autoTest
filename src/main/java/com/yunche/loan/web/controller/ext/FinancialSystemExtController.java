@@ -79,9 +79,17 @@ public class FinancialSystemExtController {
     /**
      *返利明细-列表
      */
-    @PostMapping(value = "/remitDetailsList",consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @PostMapping(value = "/rebateDetailsList",consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean rebateDetailsList(@RequestBody FSysRebateParam param){
         return customersLoanFinanceInfoByPartnerservice.rebateDetailsList(param);
+    }
+
+    /**
+     *返利明细-详情
+     */
+    @PostMapping(value = "/rebateDetails",consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResultBean rebateDetails(@RequestBody FSysRebateParam param){
+        return customersLoanFinanceInfoByPartnerservice.rebateDetails(param);
     }
 
 }

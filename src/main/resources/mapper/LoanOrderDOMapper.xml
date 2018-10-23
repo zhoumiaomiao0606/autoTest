@@ -13,21 +13,22 @@
         <result column="cost_details_id" property="costDetailsId" jdbcType="BIGINT"/>
         <result column="remit_details_id" property="remitDetailsId" jdbcType="BIGINT"/>
         <result column="vehicle_information_id" property="vehicleInformationId" jdbcType="BIGINT"/>
-        <result column="apply_license_plate_deposit_info_id" property="applyLicensePlateDepositInfoId"
-                jdbcType="BIGINT"/>
+        <result column="apply_license_plate_deposit_info_id" property="applyLicensePlateDepositInfoId" jdbcType="BIGINT"/>
         <result column="bank_card_record_id" property="bankCardRecordId" jdbcType="BIGINT"/>
         <result column="bank_lend_record_id" property="bankLendRecordId" jdbcType="BIGINT"/>
         <result column="status" property="status" jdbcType="TINYINT"/>
         <result column="gmt_create" property="gmtCreate" jdbcType="TIMESTAMP"/>
         <result column="gmt_modify" property="gmtModify" jdbcType="TIMESTAMP"/>
         <result column="feature" property="feature" jdbcType="VARCHAR"/>
+        <result column="rebate_entry" jdbcType="TINYINT" property="rebateEntry" />
+        <result column="rebate_periods" jdbcType="INTEGER" property="rebatePeriods" />
     </resultMap>
 
     <sql id="Base_Column_List">
         id, process_inst_id, loan_base_info_id, loan_customer_id, loan_car_info_id, loan_financial_plan_id,
         loan_home_visit_id, material_audit_id, cost_details_id, remit_details_id, vehicle_information_id,
         apply_license_plate_deposit_info_id, bank_card_record_id, bank_lend_record_id, status,
-        gmt_create, gmt_modify, feature
+        gmt_create, gmt_modify, feature, rebate_entry,rebate_periods
     </sql>
 
     <!--getCustIdById-->
@@ -98,14 +99,15 @@
         loan_home_visit_id, material_audit_id, cost_details_id,
         remit_details_id, vehicle_information_id, apply_license_plate_deposit_info_id,
         bank_card_record_id, bank_lend_record_id, status,
-        gmt_create, gmt_modify, feature
+        gmt_create, gmt_modify, feature, rebate_entry,rebate_periods
         )
         values (#{id,jdbcType=BIGINT}, #{processInstId,jdbcType=VARCHAR}, #{loanBaseInfoId,jdbcType=BIGINT},
         #{loanCustomerId,jdbcType=BIGINT}, #{loanCarInfoId,jdbcType=BIGINT}, #{loanFinancialPlanId,jdbcType=BIGINT},
         #{loanHomeVisitId,jdbcType=BIGINT}, #{materialAuditId,jdbcType=BIGINT}, #{costDetailsId,jdbcType=BIGINT},
         #{remitDetailsId,jdbcType=BIGINT}, #{vehicleInformationId,jdbcType=BIGINT}, #{applyLicensePlateDepositInfoId,jdbcType=BIGINT},
         #{bankCardRecordId,jdbcType=BIGINT}, #{bankLendRecordId,jdbcType=BIGINT}, #{status,jdbcType=TINYINT},
-        #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModify,jdbcType=TIMESTAMP}, #{feature,jdbcType=VARCHAR}
+        #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModify,jdbcType=TIMESTAMP}, #{feature,jdbcType=VARCHAR},
+        #{rebateEntry,jdbcType=TINYINT},#{rebatePeriods,jdbcType=INTEGER}
         )
     </insert>
 
@@ -166,6 +168,13 @@
             <if test="feature != null">
                 feature,
             </if>
+            <if test="rebateEntry != null">
+                rebate_entry,
+            </if>
+            <if test="rebatePeriods != null">
+                rebate_periods,
+            </if>
+
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="id != null">
@@ -222,6 +231,13 @@
             <if test="feature != null">
                 #{feature,jdbcType=VARCHAR},
             </if>
+            <if test="rebateEntry != null">
+                #{rebateEntry,jdbcType=TINYINT},
+            </if>
+            <if test="rebatePeriods != null">
+                #{rebatePeriods,jdbcType=INTEGER},
+            </if>
+
         </trim>
     </insert>
 
@@ -279,6 +295,13 @@
             <if test="feature != null">
                 feature = #{feature,jdbcType=VARCHAR},
             </if>
+            <if test="rebateEntry != null">
+                rebate_entry = #{rebateEntry,jdbcType=TINYINT},
+            </if>
+            <if test="rebatePeriods != null">
+                rebate_periods = #{rebatePeriods,jdbcType=INTEGER},
+            </if>
+
         </set>
         where id = #{id,jdbcType=BIGINT}
     </update>
@@ -301,7 +324,9 @@
         status = #{status,jdbcType=TINYINT},
         gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
         gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
-        feature = #{feature,jdbcType=VARCHAR}
+        feature = #{feature,jdbcType=VARCHAR},
+        rebate_entry = #{rebateEntry,jdbcType=TINYINT},
+        rebate_periods = #{rebatePeriods,jdbcType=INTEGER}
         where id = #{id,jdbcType=BIGINT}
     </update>
 

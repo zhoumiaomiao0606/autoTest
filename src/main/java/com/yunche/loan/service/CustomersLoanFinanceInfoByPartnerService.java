@@ -21,4 +21,5 @@ public interface CustomersLoanFinanceInfoByPartnerService
     ResultBean compensationDetail(CustomersLoanFinanceInfoByPartnerParam param);
 
     ResultBean rebateDetailsList(FSysRebateParam param);
+    ResultBean rebateDetails(FSysRebateParam param);
 }
