@@ -306,4 +306,26 @@ public class CustomersLoanFinanceInfoByPartnerServiceImpl implements CustomersLo
         financialRebateDetailDOMapper.updateByPrimaryKeySelective(financialRebateDetailDO);
         return ResultBean.ofSuccess("入账成功");
     }
+
+    /**
+     * 返利明细-刷新
+     * @param param
+     * @return
+     */
+    @Override
+    public ResultBean rebateDetailsefresh(FSysRebateParam param) {
+        Preconditions.checkNotNull(param.getPartnerId(),"参数有误：合伙人ID不能为空 ");
+        Preconditions.checkNotNull(param.getPeriods(),"参数有误：期数不能为空 ");
+        FSysRebateVO fSysRebateVO = customersLoanFinanceInfoByPartnerMapper.rebateDetailsefresh(param);
+        if(fSysRebateVO!=null){
+            FinancialRebateDetailDO financialRebateDetailDO = new FinancialRebateDetailDO();
+            financialRebateDetailDO.setPartnerId(fSysRebateVO.getPartnerId());
+            financialRebateDetailDO.setPeriods(fSysRebateVO.getPeriods());
+            financialRebateDetailDO.setRebateAmount(fSysRebateVO.getAmount());
+            financialRebateDetailDO.setGmtModify(new Date());
+            int count = financialRebateDetailDOMapper.updateByPrimaryKeySelective(financialRebateDetailDO);
+            Preconditions.checkArgument(count>0,"返利明细-刷新失败");
+        }
+        return ResultBean.ofSuccess(null,"刷新成功");
+    }
 }

@@ -20,4 +20,5 @@ public interface CustomersLoanFinanceInfoByPartnerService
     ResultBean rebateDetailsList(FSysRebateParam param);
     ResultBean rebateDetails(FSysRebateParam param);
     ResultBean rebateEnterAccount(FinancialRebateEnterAccountparam param);
+    ResultBean rebateDetailsefresh(FSysRebateParam param);
 }

@@ -99,4 +99,12 @@ public class FinancialSystemExtController {
         return customersLoanFinanceInfoByPartnerservice.rebateEnterAccount(param);
     }
 
+    /**
+     *返利明细-详情
+     */
+    @PostMapping(value = "/rebateDetailsefresh",consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResultBean rebateDetailsefresh(@RequestBody FSysRebateParam param){
+        return customersLoanFinanceInfoByPartnerservice.rebateDetailsefresh(param);
+    }
+
 }

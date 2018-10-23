@@ -38,4 +38,6 @@ public interface CustomersLoanFinanceInfoByPartnerMapper
     List<FSysRebateVO> generateCurrRebateRecord();
 
     List<FSysRebateDetailVO> rebateDetail(FSysRebateParam param);
+
+    FSysRebateVO rebateDetailsefresh(FSysRebateParam param);
 }
