@@ -4,20 +4,24 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.common.base.Preconditions;
 import com.yunche.loan.config.result.ResultBean;
+import com.yunche.loan.domain.entity.FinancialRebateDetailDO;
 import com.yunche.loan.domain.entity.LoanApplyCompensationDO;
-import com.yunche.loan.domain.param.CustomerInfoByCustomerNameParam;
-import com.yunche.loan.domain.param.CustomersLoanFinanceInfoByPartnerParam;
-import com.yunche.loan.domain.param.FSysRebateParam;
-import com.yunche.loan.domain.param.RefundOrderInfoByPartnerParam;
+import com.yunche.loan.domain.entity.LoanOrderDO;
+import com.yunche.loan.domain.param.*;
 import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.mapper.CustomersLoanFinanceInfoByPartnerMapper;
+import com.yunche.loan.mapper.FinancialRebateDetailDOMapper;
 import com.yunche.loan.mapper.LoanApplyCompensationDOMapper;
+import com.yunche.loan.mapper.LoanOrderDOMapper;
 import com.yunche.loan.service.CustomersLoanFinanceInfoByPartnerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -27,6 +31,12 @@ public class CustomersLoanFinanceInfoByPartnerServiceImpl implements CustomersLo
 
     @Autowired
     private LoanApplyCompensationDOMapper loanApplyCompensationDOMapper;
+
+    @Autowired
+    private LoanOrderDOMapper loanOrderDOMapper;
+
+    @Autowired
+    private FinancialRebateDetailDOMapper financialRebateDetailDOMapper;
 
     public static enum CustomersLoanFinance {
         BADBALANCE(1, "不良余额"),
@@ -263,5 +273,37 @@ public class CustomersLoanFinanceInfoByPartnerServiceImpl implements CustomersLo
         List<FSysRebateDetailVO> fSysRebateDetailVOS = customersLoanFinanceInfoByPartnerMapper.rebateDetail(param);
         PageInfo<FSysRebateDetailVO> pageInfo = new PageInfo<>(fSysRebateDetailVOS);
         return ResultBean.ofSuccess(pageInfo);
+    }
+
+    /**
+     * 返利明细-入账
+     * @param param
+     * @return
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public ResultBean rebateEnterAccount(FinancialRebateEnterAccountparam param) {
+        Preconditions.checkNotNull(param.getPartnerId(),"参数有误：合伙人ID不能为空 ");
+        Preconditions.checkNotNull(param.getPeriods(),"参数有误：期数不能为空 ");
+
+        //更新loan_order 表中的 rebate_entry=2
+
+        param.getIds().stream().filter(Objects::nonNull).forEach(e->{
+            LoanOrderDO tmpDo = loanOrderDOMapper.selectByPrimaryKey(Long.valueOf(e));
+            if(tmpDo !=null){
+                tmpDo.setRebateEntry(new Byte("2"));//已入账
+                loanOrderDOMapper.updateByPrimaryKeySelective(tmpDo);
+            }
+
+        });
+
+        //更新financial_rebate_detail 对应的合伙人 +期数的记录为已入账
+        FinancialRebateDetailDO financialRebateDetailDO = new FinancialRebateDetailDO();
+        financialRebateDetailDO.setPartnerId(param.getPartnerId());
+        financialRebateDetailDO.setPeriods(param.getPeriods());
+        financialRebateDetailDO.setEnterAccountFlag(new Byte("2"));//已入账
+        financialRebateDetailDO.setGmtModify(new Date());
+        financialRebateDetailDOMapper.updateByPrimaryKeySelective(financialRebateDetailDO);
+        return ResultBean.ofSuccess("入账成功");
     }
 }

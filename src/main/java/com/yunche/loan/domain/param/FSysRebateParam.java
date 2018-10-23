@@ -9,4 +9,5 @@ public class FSysRebateParam {
     private byte type;
     private int pageIndex;
     private int pageSize;
+
 }

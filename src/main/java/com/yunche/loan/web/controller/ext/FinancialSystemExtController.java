@@ -1,10 +1,7 @@
 package com.yunche.loan.web.controller.ext;
 
 import com.yunche.loan.config.result.ResultBean;
-import com.yunche.loan.domain.param.CustomerInfoByCustomerNameParam;
-import com.yunche.loan.domain.param.CustomersLoanFinanceInfoByPartnerParam;
-import com.yunche.loan.domain.param.FSysRebateParam;
-import com.yunche.loan.domain.param.RefundOrderInfoByPartnerParam;
+import com.yunche.loan.domain.param.*;
 import com.yunche.loan.service.CustomersLoanFinanceInfoByPartnerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -90,6 +87,16 @@ public class FinancialSystemExtController {
     @PostMapping(value = "/rebateDetails",consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean rebateDetails(@RequestBody FSysRebateParam param){
         return customersLoanFinanceInfoByPartnerservice.rebateDetails(param);
+    }
+
+    /**
+     * 返利入账
+     * @param param
+     * @return
+     */
+    @PostMapping(value = "/rebateEnterAccount",consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResultBean rebateEnterAccount(@RequestBody FinancialRebateEnterAccountparam param){
+        return customersLoanFinanceInfoByPartnerservice.rebateEnterAccount(param);
     }
 
 }

@@ -1,10 +1,7 @@
 package com.yunche.loan.service;
 
 import com.yunche.loan.config.result.ResultBean;
-import com.yunche.loan.domain.param.CustomerInfoByCustomerNameParam;
-import com.yunche.loan.domain.param.CustomersLoanFinanceInfoByPartnerParam;
-import com.yunche.loan.domain.param.FSysRebateParam;
-import com.yunche.loan.domain.param.RefundOrderInfoByPartnerParam;
+import com.yunche.loan.domain.param.*;
 
 public interface CustomersLoanFinanceInfoByPartnerService
 {
@@ -22,4 +19,5 @@ public interface CustomersLoanFinanceInfoByPartnerService
 
     ResultBean rebateDetailsList(FSysRebateParam param);
     ResultBean rebateDetails(FSysRebateParam param);
+    ResultBean rebateEnterAccount(FinancialRebateEnterAccountparam param);
 }
