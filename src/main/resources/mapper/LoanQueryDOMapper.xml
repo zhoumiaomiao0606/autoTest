@@ -362,8 +362,11 @@
 					his.auditor_name 								AS auditor_name,
                     DATE_FORMAT(his.start_time,'%Y-%m-%d %H:%i:%S') AS start_time,
 					DATE_FORMAT(his.end_time,'%Y-%m-%d %H:%i:%S')   AS end_time,
-					his.status 										AS status
+					his.status 										AS status,
+                    useCalculateStagingRatio(product.formula_id,his.financial_loan_amount,his.financial_sign_rate,useGetBankRate(his.financial_product_id,his.financial_loan_time), his.financial_car_price)
+                                                                    AS financial_bank_staging_ratio
             from loan_financial_plan_temp_his his
+            left join financial_product product on his.financial_product_id = product.prod_id
 			left join loan_order main_order on his.order_id = main_order.id
 			left join loan_base_info loan on main_order.loan_base_info_id = loan.id
 			left join loan_customer customer on main_order.loan_customer_id = customer.id
