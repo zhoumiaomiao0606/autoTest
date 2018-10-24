@@ -40,7 +40,7 @@ public class BizLogHandler {
     private static final Logger logger = LoggerFactory.getLogger(BizLogHandler.class);
 
 
-    @Around(value = "execution(* com.yunche.loan.web.controller.*.*(..))")
+    @Around(value = "execution(* com.yunche.loan.web.controller..*.*(..))")
     public Object doAround(ProceedingJoinPoint pjp) throws Throwable {
 
         long startTime = System.currentTimeMillis();
