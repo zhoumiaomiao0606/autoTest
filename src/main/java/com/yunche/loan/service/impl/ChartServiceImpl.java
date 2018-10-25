@@ -326,12 +326,12 @@ public class ChartServiceImpl implements ChartService
                     .reduce((x, y) -> x.add(y));
 
             Optional<BigDecimal> totalRemitAmount = list.stream()
-                    .filter(f -> f.getLoan_amount()!=null)
+                    .filter(f -> f.getRemit_amount()!=null)
                     .map(f -> f.getRemit_amount())
                     .reduce((x, y) -> x.add(y));
 
             Optional<BigDecimal> totalBankPeriodPrincipal = list.stream()
-                    .filter(f -> f.getLoan_amount()!=null)
+                    .filter(f -> f.getBank_period_principal()!=null)
                     .map(financialDepartmentRemitDetailChartVO -> financialDepartmentRemitDetailChartVO.getBank_period_principal())
                     .reduce((x, y) -> x.add(y));
             shortcutStatisticsVO.setTotalBankPeriodPrincipal(totalBankPeriodPrincipal.get());

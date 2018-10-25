@@ -76,6 +76,8 @@ public class ExportOrdersParam {
     private String usertask_bank_lend_record_create_time_end;//银行放款时间
     private String usertask_bank_card_send_create_time_start;//银行寄送时间
     private String usertask_bank_card_send_create_time_end;//银行寄送时间
+    private String express_receive_date_start;
+    private String express_receive_date_end;
 
     List<Long> partnerList;
 

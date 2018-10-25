@@ -541,6 +541,7 @@ public class ExportQueryServiceImpl implements ExportQueryService
                 ,"资料归档时间"
                 ,"银行放款时间"
                 ,"银行卡寄送时间"
+                ,"资料接收时间"
         );
         String ossResultKey = POIUtil.createExcelFile("MortgageOrders",list,header,ExportOrdersVO.class,ossConfig);
         return ossResultKey;

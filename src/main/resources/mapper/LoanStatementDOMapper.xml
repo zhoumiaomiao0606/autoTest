@@ -28,7 +28,11 @@
         WHEN process.telephone_verify = 7 THEN
         '电审总监提交'
         WHEN process.telephone_verify = 1 THEN
-        1
+        case when tal.telephone_verify_level = 7 then '电审总监过单'
+        when tal.telephone_verify_level = 6 then '电审主管过单'
+        when tal.telephone_verify_level = 5 then '电审组长过单'
+        when tal.telephone_verify_level = 4 then '电审专员过单'
+        else '异常提交' end
         ELSE '待处理'
         END AS commit_status,
         orders.id AS order_id,
@@ -96,6 +100,13 @@
         order_id
         ) g ON g.id = z.id) log   on log.order_id = orders.id
         left join employee operation on operation.id = log.user_id
+        left join(
+        SELECT
+        ug.employee_id,max( g.telephone_verify_level ) as telephone_verify_level
+        FROM
+        employee_rela_user_group ug
+        LEFT JOIN user_group g ON ug.user_group_id = g.id group by ug.employee_id
+        ) tal on tal.employee_id = log.user_id
         WHERE
         telephone_verify IN ( 0, 1, 2, 4, 5, 6, 7, 12 )
         ) tab
@@ -1018,8 +1029,8 @@
         current.usertask_remit_review_create_time as usertask_remit_review_create_time,
         current.usertask_material_manage_create_time as usertask_material_manage_create_time,
         lend.lend_date as usertask_bank_lend_record_create_time,
-        send.express_send_date as usertask_bank_card_send_create_time
-
+        send.express_send_date as usertask_bank_card_send_create_time,
+        flow.express_receive_date   as express_receive_date_time
 
         FROM
         loan_order orders
@@ -1037,6 +1048,23 @@
         LEFT JOIN employee saleman ON baseinfo.salesman_id = saleman.id
         LEFT JOIN department department ON saleman.department_id = department.id
         LEFT JOIN loan_credit_info credit_info ON credit_info.customer_id = customer.id
+        left join (
+        SELECT DISTINCT z.*
+        FROM
+        loan_data_flow z
+        INNER JOIN (
+        SELECT
+        SUBSTRING_INDEX( GROUP_CONCAT( id ORDER BY express_receive_date DESC SEPARATOR ',' ), ',', 1 ) AS id
+        FROM
+        loan_data_flow
+        WHERE
+        type =2
+
+        GROUP BY
+        order_id
+        ) g ON g.id = z.id
+
+        ) flow on flow.order_id = orders.id
         where 1=1
         and (credit_info.type = 1 OR credit_info.type is NULL)
         AND
@@ -1231,6 +1259,10 @@
         <if test="usertask_bank_card_send_create_time_start!=null and usertask_bank_card_send_create_time_start!='' and usertask_bank_card_send_create_time_end!=null and usertask_bank_card_send_create_time_end!=''">
             AND TO_DAYS(usertask_bank_card_send_create_time) &gt;= TO_DAYS(#{usertask_bank_card_send_create_time_start})
             AND TO_DAYS(usertask_bank_card_send_create_time) &lt;= TO_DAYS(#{usertask_bank_card_send_create_time_end})
+        </if>
+        <if test="express_receive_date_start!=null and express_receive_date_start!='' and express_receive_date_end!=null and express_receive_date_end!=''">
+            AND TO_DAYS(flow.express_receive_date) &gt;= TO_DAYS(#{express_receive_date_start})
+            AND TO_DAYS(flow.express_receive_date) &lt;= TO_DAYS(#{express_receive_date_end})
         </if>
     </select>
     <!--=======================================导出 EXCEL 财务垫款明细查询-财务打款单=========================================-->
