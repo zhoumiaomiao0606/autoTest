@@ -14,7 +14,10 @@ public interface CustomersLoanFinanceInfoByPartnerService
 
     ResultBean getOrderByCustomerId(Long customerId);
 
+    ResultBean getOrderByOrderId(Long orderId);
+
     ResultBean getCustomerInfoByCustomerName(CustomerInfoByCustomerNameParam customerInfoByCustomerNameParam);
 
     ResultBean selectRefundOrderInfoByPartner(RefundOrderInfoByPartnerParam refundOrderInfoByPartnerParam);
+
 }

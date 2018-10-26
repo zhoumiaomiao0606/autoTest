@@ -29,4 +29,6 @@ public interface CustomersLoanFinanceInfoByPartnerMapper
     List<RefundOrderInfoByPartnerVO> selectRefundOrderInfoByPartner(Long partnerId);
 
     FSysCompensationVO selectCompensationInfoByPartner(Long partnerId);
+
+    OrderByCustomerIdVO getOrderByOrderId(Long orderId);
 }
