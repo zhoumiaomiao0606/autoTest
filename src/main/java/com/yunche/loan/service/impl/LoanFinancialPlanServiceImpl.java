@@ -128,6 +128,7 @@ public class LoanFinancialPlanServiceImpl implements LoanFinancialPlanService {
             loanFinancialPlanVO.setPrincipalInterestSum(calcParamVO.getTotalRepayment());
 
             // 银行分期本金
+            //额外判断该订单的征信申请时间，如果是2018年11月1日之前申请的，则使用老版公式
             loanFinancialPlanVO.setBankPeriodPrincipal(calcParamVO.getBankPeriodPrincipal());
             // 银行手续费
             loanFinancialPlanVO.setBankFee(calcParamVO.getBankFee());

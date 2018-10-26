@@ -35,8 +35,8 @@ public class FinancialRebateTask {
     private LoanOrderDOMapper loanOrderDOMapper;
 
 
-//    @Scheduled(cron = "0 0 0 15 * ?")
-    @Scheduled(cron = "0 0/1 * * * ?")
+    @Scheduled(cron = "0 0 0 15 * ?")
+//    @Scheduled(cron = "0 0/1 * * * ?")
 //    @DistributedLock(60)
     @Transactional(rollbackFor = Exception.class)
     public void doAutoGenRebate(){
