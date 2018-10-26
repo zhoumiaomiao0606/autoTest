@@ -86,6 +86,7 @@ public class FinancialSystemExtController {
      */
     @PostMapping(value = "/rebateDetails",consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean rebateDetails(@RequestBody FSysRebateParam param){
+
         return customersLoanFinanceInfoByPartnerservice.rebateDetails(param);
     }
 

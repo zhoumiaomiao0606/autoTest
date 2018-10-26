@@ -42,8 +42,9 @@ public class CustomersLoanFinanceInfoByPartnerServiceImpl implements CustomersLo
         BADBALANCE(1, "不良余额"),
         OVERDUEBALANCE(2, "逾期余额"),
         INGUARANTEEBALANCE(3, "在保余额"),
-        LOANBALANCE(4, "贷款余额"),
-        COMPENSATION(5, "代偿");
+        LOANBALANCE(4, "贷款余额");
+
+//        COMPENSATION(5, "代偿");
 
         private int code;
 
@@ -109,10 +110,12 @@ public class CustomersLoanFinanceInfoByPartnerServiceImpl implements CustomersLo
             PageInfo<LoanBalanceByPartnerVO> pageInfo = new PageInfo<>(loanBalanceByPartnerVOS);
             return ResultBean.ofSuccess(pageInfo);
 
-        } else if(customersLoanFinanceInfoByPartnerParam.getCode() == CustomersLoanFinance.COMPENSATION.getCode()){
-            FSysCompensationVO fSysCompensationVO = customersLoanFinanceInfoByPartnerMapper.selectCompensationInfoByPartner(customersLoanFinanceInfoByPartnerParam.getPartnerId());
-            return ResultBean.ofSuccess(fSysCompensationVO);
-        }else{
+        }
+//        else if (customersLoanFinanceInfoByPartnerParam.getCode() == CustomersLoanFinance.COMPENSATION.getCode()) {
+//            FSysCompensationVO fSysCompensationVO = customersLoanFinanceInfoByPartnerMapper.selectCompensationInfoByPartner(customersLoanFinanceInfoByPartnerParam.getPartnerId());
+//            return ResultBean.ofSuccess(fSysCompensationVO);
+//        }
+        else {
             return ResultBean.ofError("参数有错误");
         }
 
@@ -129,6 +132,10 @@ public class CustomersLoanFinanceInfoByPartnerServiceImpl implements CustomersLo
         List<InGuaranteeBalanceByPartnerVO> inGuaranteeBalanceByPartnerVOS = customersLoanFinanceInfoByPartnerMapper.selectInGuaranteeBalance(partnerId);
 
         List<LoanBalanceByPartnerVO> loanBalanceByPartnerVOS = customersLoanFinanceInfoByPartnerMapper.selectLoanBalance(partnerId);
+
+
+        FSysCompensationVO fSysCompensationVO = customersLoanFinanceInfoByPartnerMapper.selectCompensationInfoByPartner(partnerId);
+
 
         TotalLoanFinanceInfoByPartnerVO totalLoanFinanceInfoByPartnerVO = new TotalLoanFinanceInfoByPartnerVO();
 
@@ -174,6 +181,12 @@ public class CustomersLoanFinanceInfoByPartnerServiceImpl implements CustomersLo
             if (totalLoanBalance.isPresent()) {
                 totalLoanFinanceInfoByPartnerVO.setTotalLoanBalance(totalLoanBalance.get());
             }
+        }
+        //代偿统计
+        if(fSysCompensationVO!=null){
+            totalLoanFinanceInfoByPartnerVO.setCompensatoryAmount(fSysCompensationVO.getCompensatoryAmount());
+            totalLoanFinanceInfoByPartnerVO.setCompensatoryPaid(fSysCompensationVO.getCompensatoryPaid());
+            totalLoanFinanceInfoByPartnerVO.setCompensatoryRest(fSysCompensationVO.getCompensatoryRest());
         }
         //统计
         return ResultBean.ofSuccess(totalLoanFinanceInfoByPartnerVO);
@@ -228,36 +241,39 @@ public class CustomersLoanFinanceInfoByPartnerServiceImpl implements CustomersLo
     }
 
     /**
-     *  代偿明细
+     * 代偿明细
+     *
      * @param param
      * @return
      */
     @Override
     public ResultBean compensationDetail(CustomersLoanFinanceInfoByPartnerParam param) {
-        Preconditions.checkNotNull(param.getPartnerId(),"参数有误：合伙人ID不能为空");
+        Preconditions.checkNotNull(param.getPartnerId(), "参数有误：合伙人ID不能为空");
         PageHelper.startPage(param.getPageIndex(), param.getPageSize(), true);
         List<FSysCompensationVO> compensationDetails = customersLoanFinanceInfoByPartnerMapper.listCompensationInfoByPartner(param.getPartnerId());
         PageInfo<FSysCompensationVO> pageInfo = new PageInfo<>(compensationDetails);
-        return ResultBean.ofSuccess(pageInfo);
+        return ResultBean.ofSuccess(compensationDetails, (int) pageInfo.getTotal(), pageInfo.getPageNum(), pageInfo.getPageSize());
 
     }
 
     /**
      * 返利明细列表
+     *
      * @param param
      * @return
      */
     @Override
     public ResultBean rebateDetailsList(FSysRebateParam param) {
-        Preconditions.checkNotNull(param.getType(),"参数有误：是否入账参数不能为空 ");
+        Preconditions.checkNotNull(param.getType(), "参数有误：是否入账参数不能为空 ");
         PageHelper.startPage(param.getPageIndex(), param.getPageSize(), true);
         List<FSysRebateVO> fSysRebateVOS = customersLoanFinanceInfoByPartnerMapper.rebateDetailsList(param);
         PageInfo<FSysRebateVO> pageInfo = new PageInfo<>(fSysRebateVOS);
-        return ResultBean.ofSuccess(pageInfo);
+        return ResultBean.ofSuccess(fSysRebateVOS, (int) pageInfo.getTotal(), pageInfo.getPageNum(), pageInfo.getPageSize());
     }
 
     /**
      * 返利明细详情
+     *
      * @param param
      * @return
      */
@@ -265,32 +281,35 @@ public class CustomersLoanFinanceInfoByPartnerServiceImpl implements CustomersLo
     @Override
     public ResultBean rebateDetails(FSysRebateParam param) {
 
-        Preconditions.checkNotNull(param.getType(),"参数有误：是否入账参数不能为空 ");
-        Preconditions.checkNotNull(param.getPartnerId(),"参数有误：合伙人ID不能为空 ");
-        Preconditions.checkNotNull(param.getPeriods(),"参数有误：期数不能为空 ");
+        Preconditions.checkNotNull(param.getType(), "参数有误：是否入账参数不能为空 ");
+        Preconditions.checkNotNull(param.getPartnerId(), "参数有误：合伙人ID不能为空 ");
+        Preconditions.checkNotNull(param.getPeriods(), "参数有误：期数不能为空 ");
         PageHelper.startPage(param.getPageIndex(), param.getPageSize(), true);
 
         List<FSysRebateDetailVO> fSysRebateDetailVOS = customersLoanFinanceInfoByPartnerMapper.rebateDetail(param);
         PageInfo<FSysRebateDetailVO> pageInfo = new PageInfo<>(fSysRebateDetailVOS);
-        return ResultBean.ofSuccess(pageInfo);
+
+
+        return ResultBean.ofSuccess(fSysRebateDetailVOS, (int) pageInfo.getTotal(), pageInfo.getPageNum(), pageInfo.getPageSize());
     }
 
     /**
      * 返利明细-入账
+     *
      * @param param
      * @return
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
     public ResultBean rebateEnterAccount(FinancialRebateEnterAccountparam param) {
-        Preconditions.checkNotNull(param.getPartnerId(),"参数有误：合伙人ID不能为空 ");
-        Preconditions.checkNotNull(param.getPeriods(),"参数有误：期数不能为空 ");
+        Preconditions.checkNotNull(param.getPartnerId(), "参数有误：合伙人ID不能为空 ");
+        Preconditions.checkNotNull(param.getPeriods(), "参数有误：期数不能为空 ");
 
         //更新loan_order 表中的 rebate_entry=2
 
-        param.getIds().stream().filter(Objects::nonNull).forEach(e->{
+        param.getIds().stream().filter(Objects::nonNull).forEach(e -> {
             LoanOrderDO tmpDo = loanOrderDOMapper.selectByPrimaryKey(Long.valueOf(e));
-            if(tmpDo !=null){
+            if (tmpDo != null) {
                 tmpDo.setRebateEntry(new Byte("2"));//已入账
                 loanOrderDOMapper.updateByPrimaryKeySelective(tmpDo);
             }
@@ -309,23 +328,24 @@ public class CustomersLoanFinanceInfoByPartnerServiceImpl implements CustomersLo
 
     /**
      * 返利明细-刷新
+     *
      * @param param
      * @return
      */
     @Override
     public ResultBean rebateDetailsefresh(FSysRebateParam param) {
-        Preconditions.checkNotNull(param.getPartnerId(),"参数有误：合伙人ID不能为空 ");
-        Preconditions.checkNotNull(param.getPeriods(),"参数有误：期数不能为空 ");
+        Preconditions.checkNotNull(param.getPartnerId(), "参数有误：合伙人ID不能为空 ");
+        Preconditions.checkNotNull(param.getPeriods(), "参数有误：期数不能为空 ");
         FSysRebateVO fSysRebateVO = customersLoanFinanceInfoByPartnerMapper.rebateDetailsefresh(param);
-        if(fSysRebateVO!=null){
+        if (fSysRebateVO != null) {
             FinancialRebateDetailDO financialRebateDetailDO = new FinancialRebateDetailDO();
             financialRebateDetailDO.setPartnerId(fSysRebateVO.getPartnerId());
             financialRebateDetailDO.setPeriods(fSysRebateVO.getPeriods());
             financialRebateDetailDO.setRebateAmount(fSysRebateVO.getAmount());
             financialRebateDetailDO.setGmtModify(new Date());
             int count = financialRebateDetailDOMapper.updateByPrimaryKeySelective(financialRebateDetailDO);
-            Preconditions.checkArgument(count>0,"返利明细-刷新失败");
+            Preconditions.checkArgument(count > 0, "返利明细-刷新失败");
         }
-        return ResultBean.ofSuccess(null,"刷新成功");
+        return ResultBean.ofSuccess(null, "刷新成功");
     }
 }

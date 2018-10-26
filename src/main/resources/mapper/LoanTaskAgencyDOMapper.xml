@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunche.loan.mapper.LoanTaskAgencyDOMapper">
+  <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.LoanTaskAgencyDO">
+    <id column="order_id" jdbcType="BIGINT" property="orderId" />
+    <id column="task_definition_key" jdbcType="VARCHAR" property="taskDefinitionKey" />
+    <id column="status" jdbcType="TINYINT" property="status" />
+    <result column="employee_id" jdbcType="BIGINT" property="employeeId" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    order_id, task_definition_key, status, employee_id
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="com.yunche.loan.domain.entity.LoanTaskAgencyDOKey" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from loan_task_agency
+    where order_id = #{orderId,jdbcType=BIGINT}
+      and task_definition_key = #{taskDefinitionKey,jdbcType=VARCHAR}
+      and status = #{status,jdbcType=TINYINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="com.yunche.loan.domain.entity.LoanTaskAgencyDOKey">
+    delete from loan_task_agency
+    where order_id = #{orderId,jdbcType=BIGINT}
+      and task_definition_key = #{taskDefinitionKey,jdbcType=VARCHAR}
+      and status = #{status,jdbcType=TINYINT}
+  </delete>
+  <insert id="insert" parameterType="com.yunche.loan.domain.entity.LoanTaskAgencyDO">
+    insert into loan_task_agency (order_id, task_definition_key, status, 
+      employee_id)
+    values (#{orderId,jdbcType=BIGINT}, #{taskDefinitionKey,jdbcType=VARCHAR}, #{status,jdbcType=TINYINT}, 
+      #{employeeId,jdbcType=BIGINT})
+  </insert>
+  <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.LoanTaskAgencyDO">
+    insert into loan_task_agency
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="orderId != null">
+        order_id,
+      </if>
+      <if test="taskDefinitionKey != null">
+        task_definition_key,
+      </if>
+      <if test="status != null">
+        status,
+      </if>
+      <if test="employeeId != null">
+        employee_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="orderId != null">
+        #{orderId,jdbcType=BIGINT},
+      </if>
+      <if test="taskDefinitionKey != null">
+        #{taskDefinitionKey,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=TINYINT},
+      </if>
+      <if test="employeeId != null">
+        #{employeeId,jdbcType=BIGINT},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.LoanTaskAgencyDO">
+    update loan_task_agency
+    <set>
+      <if test="employeeId != null">
+        employee_id = #{employeeId,jdbcType=BIGINT},
+      </if>
+    </set>
+    where order_id = #{orderId,jdbcType=BIGINT}
+      and task_definition_key = #{taskDefinitionKey,jdbcType=VARCHAR}
+      and status = #{status,jdbcType=TINYINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.LoanTaskAgencyDO">
+    update loan_task_agency
+    set employee_id = #{employeeId,jdbcType=BIGINT}
+    where order_id = #{orderId,jdbcType=BIGINT}
+      and task_definition_key = #{taskDefinitionKey,jdbcType=VARCHAR}
+      and status = #{status,jdbcType=TINYINT}
+  </update>
+</mapper>

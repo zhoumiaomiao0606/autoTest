@@ -328,4 +328,7 @@ public interface LoanQueryDOMapper {
 
 
     List<Long> selectOrderIdByIdCard(@Param("idCard")String idCard);
+
+
+    List<ActRuTaskVO> select_act_ru_task(@Param("procInstId") String procInstId);
 }
