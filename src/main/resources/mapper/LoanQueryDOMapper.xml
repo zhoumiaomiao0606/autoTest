@@ -2224,14 +2224,5 @@
 
     </select>
 
-    <select id="select_act_ru_task" parameterType="java.lang.String" resultType="com.yunche.loan.domain.vo.ActRuTaskVO">
-        select
-            PROC_INST_ID_ AS procInstId,
-            NAME_ AS name,
-            TASK_DEF_KEY_ AS taskDefKey
-        from
-            act_ru_task
-        where PROC_INST_ID_=#{procInstId}
-    </select>
 
 </mapper>

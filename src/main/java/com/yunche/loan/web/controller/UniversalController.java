@@ -12,11 +12,8 @@ import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.*;
 import com.yunche.loan.domain.entity.LoanCustomerDO;
-import com.yunche.loan.domain.entity.LoanOrderDO;
-import com.yunche.loan.domain.entity.LoanTaskAgencyDO;
 import com.yunche.loan.domain.entity.PartnerDO;
 import com.yunche.loan.domain.query.LoanCreditExportQuery;
-import com.yunche.loan.domain.vo.ActRuTaskVO;
 import com.yunche.loan.domain.vo.CreditPicExportVO;
 import com.yunche.loan.domain.vo.UniversalMaterialRecordVO;
 import com.yunche.loan.mapper.*;
@@ -74,9 +71,6 @@ public class UniversalController {
     @Autowired
     private LoanOrderDOMapper loanOrderDOMapper;
 
-    @Autowired
-    private LoanTaskAgencyDOMapper loanTaskAgencyDOMapper;
-
 
     @GetMapping(value = "/customer")
     public ResultBean customerDetail(@RequestParam String customer_id) {
@@ -118,33 +112,7 @@ public class UniversalController {
     public ResultBean test1() {
         return materialService.downSupplementFiles2OSS(Long.valueOf("1809051406599576357"), true, Long.valueOf("193"));
     }
-    @GetMapping("/jjq2")
-    public ResultBean test2() {
-        Long orderId=1809071517239521883l;
-        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
-        String processInstId = loanOrderDO.getProcessInstId();
-        List<ActRuTaskVO> actRuTaskVOS = loanQueryDOMapper.select_act_ru_task(processInstId);
 
-        actRuTaskVOS.stream().forEach(e->{
-            Long id = SessionUtils.getLoginUser().getId();
-            LoanTaskAgencyDO loanTaskAgencyDO = new LoanTaskAgencyDO();
-            loanTaskAgencyDO.setOrderId(orderId);
-            loanTaskAgencyDO.setTaskDefinitionKey(e.getTaskDefKey());
-            loanTaskAgencyDO.setStatus(IDict.K_YORN.K_YORN_NO);
-            loanTaskAgencyDO.setEmployeeId(id);
-            LoanTaskAgencyDO agencyDO = loanTaskAgencyDOMapper.selectByPrimaryKey(loanTaskAgencyDO);
-            if(agencyDO==null){
-                int count = loanTaskAgencyDOMapper.insertSelective(loanTaskAgencyDO);
-            }else{
-                loanTaskAgencyDOMapper.updateByPrimaryKeySelective(loanTaskAgencyDO);
-            }
-
-        });
-
-
-
-        return null;
-    }
 
     // 文件下载
     @Limiter(1)
