@@ -98,7 +98,7 @@ public class LoanProcessInsteadPayServiceImpl implements LoanProcessInsteadPaySe
         syncProcess(startTaskIdList, loanProcessDO.getProcessInstId(), approval, loanProcessDO);
 
         // [领取]完成
-        loanProcessApprovalCommonService.finishTask(approval, startTaskIdList, loanOrderDO.getProcessInstId());
+        loanProcessApprovalCommonService.finishTask(approval, startTaskIdList, loanOrderDO.getProcessInstId(), loanProcessDO);
 
         // 异步推送
         loanProcessApprovalCommonService.asyncPush(loanOrderDO, approval);
