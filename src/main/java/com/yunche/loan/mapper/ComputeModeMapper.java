@@ -265,4 +265,8 @@ public interface ComputeModeMapper {
     BigDecimal totalRepayment_8(Map<String, BigDecimal> map);
     BigDecimal stagingRatio_8(Map<String, BigDecimal> map);
 
+
+    //银行分期本金
+    BigDecimal periodPrincipal_new(Map<String, BigDecimal> map);
+
 }

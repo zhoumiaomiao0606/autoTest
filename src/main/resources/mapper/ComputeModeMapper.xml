@@ -179,4 +179,10 @@
     <select id="stagingRatio_8" parameterType="java.util.Map" resultType="java.math.BigDecimal">
         select stagingRatio_8(#{loanAmt},#{carPrice})
     </select>
+
+    <!--公共 银行分期本金新计算公式-->
+    <select id="periodPrincipal_new" parameterType="java.util.Map" resultType="java.math.BigDecimal">
+        select periodPrincipal_new(#{loanAmt},#{exeRate},#{bankBaseRate})
+    </select>
+
 </mapper>

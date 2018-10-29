@@ -8,6 +8,8 @@ import java.math.BigDecimal;
 public class CalcParamVO {
     //银行分期本金
     private BigDecimal bankPeriodPrincipal;
+    private BigDecimal bankPeriodPrincipalNew;//新公式计算值
+
     //还款总额
     private BigDecimal totalRepayment;
     //首月还款
