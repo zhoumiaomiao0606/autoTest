@@ -178,7 +178,7 @@ public class TaskSchedulingController {
      */
     @PostMapping(value = "/get")
     public ResultBean<Void> get(@RequestBody @Validated TaskDistributionParam param) {
-        taskDistributionService.get(Long.valueOf(param.getTaskId()), param.getTaskKey(),param.getOrderId());
+        taskDistributionService.get(Long.valueOf(param.getTaskId()), param.getTaskKey(), param.getOrderId());
         return ResultBean.ofSuccess(null, "操作成功");
     }
 
@@ -188,7 +188,7 @@ public class TaskSchedulingController {
      */
     @PostMapping(value = "/release")
     public ResultBean<Void> release(@RequestBody @Validated TaskDistributionParam param) {
-        taskDistributionService.release(Long.valueOf(param.getTaskId()), param.getTaskKey(),param.getOrderId());
+        taskDistributionService.release(Long.valueOf(param.getTaskId()), param.getOrderId(), param.getTaskKey());
         return ResultBean.ofSuccess(null, "操作成功");
     }
 

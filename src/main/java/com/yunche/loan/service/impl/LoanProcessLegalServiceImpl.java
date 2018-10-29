@@ -107,7 +107,7 @@ public class LoanProcessLegalServiceImpl implements LoanProcessLegalService {
         syncProcess(startTaskIdList, loanProcessDO.getProcessInstId(), approval, loanProcessDO);
 
         // [领取]完成
-        loanProcessApprovalCommonService.finishTask(approval, startTaskIdList, loanProcessDO.getProcessInstId());
+        loanProcessApprovalCommonService.finishTask(approval, startTaskIdList, loanProcessDO.getProcessInstId(), loanProcessDO);
 
         // 异步推送
         loanProcessApprovalCommonService.asyncPush(loanOrderDO, approval);
