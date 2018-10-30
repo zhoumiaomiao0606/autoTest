@@ -37,7 +37,7 @@ public class ComputeModeImpl implements ComputeModeService{
         paramMap.put("carPrice",carPrice);
         switch (id){
             case 1:
-                calcParamVO.setBankPeriodPrincipal(computeModeMapper.periodPrincipal_1(paramMap));
+                 calcParamVO.setBankPeriodPrincipal(computeModeMapper.periodPrincipal_1(paramMap));
                  calcParamVO.setEachMonthRepay(computeModeMapper.eachMonthRepay_1(paramMap));
                  calcParamVO.setFirstRepayment(computeModeMapper.firstRepayment_1(paramMap));
                  calcParamVO.setLoanInterest(computeModeMapper.loanInterest_1(paramMap));
@@ -111,7 +111,8 @@ public class ComputeModeImpl implements ComputeModeService{
                 calcParamVO.setStagingRatio(computeModeMapper.stagingRatio_8(paramMap));
             break;
         }
-
+        //银行分期本金新公式计算
+        calcParamVO.setBankPeriodPrincipalNew(computeModeMapper.periodPrincipal_new(paramMap));
         return ResultBean.ofSuccess(calcParamVO);
     }
 }

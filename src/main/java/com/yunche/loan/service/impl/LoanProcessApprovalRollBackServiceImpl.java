@@ -117,7 +117,7 @@ public class LoanProcessApprovalRollBackServiceImpl implements LoanProcessApprov
         }
 
         // [领取]完成
-        loanProcessApprovalCommonService.finishTask(approval, startTaskIdList, loanOrderDO.getProcessInstId());
+        loanProcessApprovalCommonService.finishTask(approval, startTaskIdList, loanOrderDO.getProcessInstId(), loanProcessDO);
 
         return ResultBean.ofSuccess(null, "[" + LoanProcessEnum.getNameByCode(taskDefinitionKey) + "-反审]发起成功");
     }
@@ -149,7 +149,7 @@ public class LoanProcessApprovalRollBackServiceImpl implements LoanProcessApprov
         }
 
         // [领取]完成
-        loanProcessApprovalCommonService.finishTask(approval, currentTaskIdList, loanOrderDO.getProcessInstId());
+        loanProcessApprovalCommonService.finishTask(approval, currentTaskIdList, loanOrderDO.getProcessInstId(), loanProcessDO);
 
         return ResultBean.ofSuccess(null, "[" + LoanProcessEnum.getNameByCode(taskDefinitionKey) + "-反审]发起成功");
     }

@@ -70,6 +70,8 @@ public class LoanCalculatorServiceImpl implements LoanCalculatorService{
         Preconditions.checkNotNull(productRateDO,"产品利率信息不存在,请配置后操作");
         BigDecimal bankRate = productRateDO.getBankRate();
         ResultBean<CalcParamVO> calc = computeModeService.calc(formulaId, loanAmt, exeRate, bankRate, loanTime, carPrice);
-        return calc;
+        CalcParamVO data = calc.getData();
+        data.setBankPeriodPrincipal(data.getBankPeriodPrincipalNew());
+        return ResultBean.ofSuccess(data);
     }
 }

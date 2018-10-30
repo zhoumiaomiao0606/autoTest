@@ -102,7 +102,7 @@ public class TaskDistributionServiceImpl implements TaskDistributionService {
 
     // 释放
     @Override
-    public void release(Long taskId, String taskKey, Long orderId) {
+    public void release(Long taskId, Long orderId, String taskKey) {
         if (taskId == null || StringUtils.isBlank(taskKey)) {
             throw new BizException("必须传入任务id和任务key");
         }
