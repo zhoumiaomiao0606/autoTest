@@ -191,22 +191,6 @@ public class TelephoneVerifyServiceImpl implements TelephoneVerifyService {
 
             out = new FileOutputStream(file);
             List<TelephoneVerifyNodeOrdersVO> list = loanStatementDOMapper.statisticsTelephoneVerifyNodeOrders(telephoneVerifyParam);
-            /*for(TelephoneVerifyNodeOrdersVO telephoneVerifyNodeOrdersVO:list){
-                if("1".equals(telephoneVerifyNodeOrdersVO.getCommit_status())){
-                    String i = loanStatementDOMapper.selectMaxLevelByOrderId(Long.valueOf(telephoneVerifyNodeOrdersVO.getOrder_id()));
-                    if("7".equals(i)){
-                        telephoneVerifyNodeOrdersVO.setCommit_status("电审总监过单");
-                    }else if("6".equals(i)){
-                        telephoneVerifyNodeOrdersVO.setCommit_status("电审主管过单");
-                    }else if("5".equals(i)){
-                        telephoneVerifyNodeOrdersVO.setCommit_status("电审组长过单");
-                    }else if("4".equals(i)){
-                        telephoneVerifyNodeOrdersVO.setCommit_status("电审专员过单");
-                    }else{
-                        telephoneVerifyNodeOrdersVO.setCommit_status("异常提交");
-                    }
-                }
-            }*/
             workbook = new XSSFWorkbook();
             XSSFSheet sheet = workbook.createSheet();
 
