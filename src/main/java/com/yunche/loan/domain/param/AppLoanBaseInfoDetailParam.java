@@ -10,7 +10,10 @@ import lombok.Data;
 @Data
 public class AppLoanBaseInfoDetailParam {
 
+
     private Long id;
+
+    private Long orderId;
     /**
      * 合伙人对象
      */

@@ -1175,7 +1175,12 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
     @Override
     @Transactional
     public ResultBean<Void> updateBaseInfo(AppLoanBaseInfoDetailParam param) {
+//        Preconditions.checkArgument();
+        AppLoanBaseInfoParam aparam = new AppLoanBaseInfoParam();
+        aparam.setOrderId(param.getOrderId());
+        aparam.setLoanBaseInfo(param);
 
+        checkBankInterfaceSerial(aparam);
         LoanBaseInfoDO loanBaseInfoDO = new LoanBaseInfoDO();
         convertLoanBaseInfo(param, loanBaseInfoDO);
 
