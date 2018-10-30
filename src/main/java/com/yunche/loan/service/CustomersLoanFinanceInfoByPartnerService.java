@@ -11,6 +11,8 @@ public interface CustomersLoanFinanceInfoByPartnerService
 
     ResultBean getOrderByCustomerId(Long customerId);
 
+    ResultBean getOrderByOrderId(Long orderId);
+
     ResultBean getCustomerInfoByCustomerName(CustomerInfoByCustomerNameParam customerInfoByCustomerNameParam);
 
     ResultBean selectRefundOrderInfoByPartner(RefundOrderInfoByPartnerParam refundOrderInfoByPartnerParam);
@@ -21,4 +23,5 @@ public interface CustomersLoanFinanceInfoByPartnerService
     ResultBean rebateDetails(FSysRebateParam param);
     ResultBean rebateEnterAccount(FinancialRebateEnterAccountparam param);
     ResultBean rebateDetailsefresh(FSysRebateParam param);
+
 }

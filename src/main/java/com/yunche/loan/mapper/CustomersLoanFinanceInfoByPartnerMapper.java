@@ -40,4 +40,6 @@ public interface CustomersLoanFinanceInfoByPartnerMapper
     List<FSysRebateDetailVO> rebateDetail(FSysRebateParam param);
 
     FSysRebateVO rebateDetailsefresh(FSysRebateParam param);
+
+    OrderByCustomerIdVO getOrderByOrderId(Long orderId);
 }

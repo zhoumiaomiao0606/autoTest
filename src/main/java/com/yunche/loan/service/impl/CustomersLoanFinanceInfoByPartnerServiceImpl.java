@@ -224,6 +224,32 @@ public class CustomersLoanFinanceInfoByPartnerServiceImpl implements CustomersLo
     }
 
     @Override
+    public ResultBean getOrderByOrderId(Long orderId) {
+        OrderByCustomerIdVO orderByCustomerIdVO = customersLoanFinanceInfoByPartnerMapper.getOrderByOrderId(orderId);
+        //根据订单查询代偿
+
+        if (orderByCustomerIdVO.getNum() != null) {
+            List<LoanApplyCompensationDO> loanApplyCompensationDOS = loanApplyCompensationDOMapper.selectByOrderId(orderByCustomerIdVO.getNum());
+            for (LoanApplyCompensationDO loanApplyCompensationDO : loanApplyCompensationDOS) {
+                PartnerCompensations partnerCompensations = new PartnerCompensations();
+
+                partnerCompensations.setCompensatoryAmount(loanApplyCompensationDO.getPartnerCompensationAmount());
+                partnerCompensations.setCompensatoryTime(loanApplyCompensationDO.getPartnerDcReviewDate());
+                partnerCompensations.setOverdueAmount(loanApplyCompensationDO.getCurrArrears());
+                partnerCompensations.setOverdueDate(loanApplyCompensationDO.getGmtCreate());
+
+                orderByCustomerIdVO.getPartnerCompensationsList().add(partnerCompensations);
+            }
+
+            //逾期代偿---repayment_record
+                       /* List<LoanApplyCompensationDO> loanApplyCompensationDOS = loanApplyCompensationDOMapper.selectByOrderId(orderByCustomerIdVO.getNum());
+                        orderByCustomerIdVO.setLoanApplyCompensationDOS(loanApplyCompensationDOS);*/
+
+        }
+        return ResultBean.ofSuccess(orderByCustomerIdVO);
+    }
+
+    @Override
     public ResultBean getCustomerInfoByCustomerName(CustomerInfoByCustomerNameParam customerInfoByCustomerNameParam) {
         List<CustomerInfoForFinanceSys> customerInfoForFinanceSys = customersLoanFinanceInfoByPartnerMapper.getCustomerInfoByCustomerName(customerInfoByCustomerNameParam);
         return ResultBean.ofSuccess(customerInfoForFinanceSys);
