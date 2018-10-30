@@ -39,4 +39,5 @@ public class UniversalLoanFinancialPlanTempHisVO {
     private String start_time;
     private String end_time;
     private String status;
+    private String financial_bank_staging_ratio;
 }

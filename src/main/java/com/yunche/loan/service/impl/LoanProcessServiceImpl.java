@@ -1233,7 +1233,13 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
             // 天数比较
             String[] expireDateStrArr = expireDateStr.split("\\.");
-            LocalDate idCardExpireDate = LocalDate.of(Integer.valueOf(expireDateStrArr[0]), Integer.valueOf(expireDateStrArr[1]), Integer.valueOf(expireDateStrArr[2]));
+            Preconditions.checkArgument(expireDateStrArr.length == 3, "身份证有效期非法：" + identityValidity);
+            Integer year = Integer.valueOf(expireDateStrArr[0]);
+            Integer month = Integer.valueOf(expireDateStrArr[1]);
+            Integer day = Integer.valueOf(expireDateStrArr[2]);
+            Preconditions.checkArgument(year >= 1900 && year <= 2099 && month >= 1 && month <= 12 && day >= 1 && day <= 31,
+                    "身份证有效期非法：" + identityValidity);
+            LocalDate idCardExpireDate = LocalDate.of(year, month, day);
 
             LocalDate today = LocalDate.now();
 
@@ -3303,7 +3309,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             confLoanApplyDOKey.setCar_type(carType);
 
             ConfLoanApplyDO confLoanApplyDO = confLoanApplyDOMapper.selectByPrimaryKey(confLoanApplyDOKey);
-            if(confLoanApplyDO !=null) {
+            if (confLoanApplyDO != null) {
                 if (confLoanApplyDO.getDown_payment_ratio() != null && confLoanApplyDO.getDown_payment_ratio_compare() != null) {
                     compardNum(confLoanApplyDO.getDown_payment_ratio_compare(), downPaymentRatio, confLoanApplyDO.getDown_payment_ratio(), "首付比例");
                 }
@@ -3516,7 +3522,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             }
             timeNum = (int) ((repayDate.getTime() - lendDate.getTime()) / (1000 * 3600 * 24));
             lend_amount = thirdPartyFundBusinessDO.getLendAmount();
-            if(lend_amount !=null){
+            if (lend_amount != null) {
                 lend_amount = new BigDecimal("0.00");
             }
             calMoneyVO.setInterest(String.valueOf(yearRate.divide(BigDecimal.valueOf(100)).multiply(lend_amount).multiply(BigDecimal.valueOf(timeNum)).divide(BigDecimal.valueOf(365), 2, BigDecimal.ROUND_HALF_UP)));
