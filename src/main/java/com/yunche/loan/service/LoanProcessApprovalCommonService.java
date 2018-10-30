@@ -55,8 +55,9 @@ public interface LoanProcessApprovalCommonService {
      * @param approval
      * @param startTaskIdList
      * @param processInstId
+     * @param loanProcessDO_
      */
-    void finishTask(ApprovalParam approval, List<String> startTaskIdList, String processInstId);
+    void finishTask(ApprovalParam approval, List<String> startTaskIdList, String processInstId, LoanProcessDO_ loanProcessDO_);
 
     /**
      * 异步推送
