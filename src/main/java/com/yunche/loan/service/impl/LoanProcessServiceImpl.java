@@ -9,7 +9,6 @@ import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.DateTimeFormatUtils;
 import com.yunche.loan.config.util.DateUtil;
-import com.yunche.loan.config.util.EventBusCenter;
 import com.yunche.loan.config.util.SessionUtils;
 import com.yunche.loan.domain.entity.*;
 import com.yunche.loan.domain.param.ApprovalParam;
@@ -288,7 +287,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         createRepayPlan(approval.getTaskDefinitionKey(), loanProcessDO, loanOrderDO);
 
         // [领取]完成
-        loanProcessApprovalCommonService.finishTask(approval, getTaskIdList(startTaskList), loanOrderDO.getProcessInstId());
+        loanProcessApprovalCommonService.finishTask(approval, getTaskIdList(startTaskList), loanOrderDO.getProcessInstId(), loanProcessDO);
 
         // 异步打包文件
         asyncPackZipFile(approval.getTaskDefinitionKey(), approval.getAction(), loanProcessDO, 2);
@@ -938,7 +937,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             throw new BizException("流程审核参数有误");
         }
 
-        loanProcessApprovalCommonService.finishTask(approval, currentTaskIdList, loanOrderDO.getProcessInstId());
+        loanProcessApprovalCommonService.finishTask(approval, currentTaskIdList, loanOrderDO.getProcessInstId(), loanProcessDO);
 
         return ResultBean.ofSuccess(null, "[" + LoanProcessEnum.getNameByCode(taskDefinitionKey) + "]任务执行成功");
     }
