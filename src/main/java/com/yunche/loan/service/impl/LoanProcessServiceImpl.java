@@ -3465,20 +3465,24 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
             // 2、自动启动流程 -> [第三方过桥资金]   -杭州城站
             LoanBaseInfoDO loanBaseInfoDO = getLoanBaseInfoDO(loanOrderDO.getLoanBaseInfoId());
-            if (BANK_NAME_ICBC_HangZhou_City_Station_Branch.equals(loanBaseInfoDO.getBank())) {
+            if (BANK_NAME_ICBC_HangZhou_City_Station_Branch.equals(loanBaseInfoDO.getBank()) ||
+                    BANK_NAME_ICBC_TaiZhou_LuQiao_Branch.equals(loanBaseInfoDO.getBank())) {
+                RemitDetailsDO detailsDO = remitDetailsDOMapper.selectByPrimaryKey(loanOrderDO.getRemitDetailsId());
+                if(detailsDO.getRemit_amount().compareTo(new BigDecimal("200000"))<=0){
+                    LoanProcessBridgeDO loanProcessBridgeDO = loanProcessBridgeDOMapper.selectByOrderId(loanOrderDO.getId());
 
-                LoanProcessBridgeDO loanProcessBridgeDO = loanProcessBridgeDOMapper.selectByOrderId(loanOrderDO.getId());
+                    if (loanProcessBridgeDO == null) {
+                        Long startProcessId = loanProcessBridgeService.startProcess(approval.getOrderId());
 
-                if (loanProcessBridgeDO == null) {
-                    Long startProcessId = loanProcessBridgeService.startProcess(approval.getOrderId());
-
-                    // 绑定当前流程到金投行
-                    ConfThirdRealBridgeProcessDO thirdRealBridgeProcessDO = new ConfThirdRealBridgeProcessDO();
-                    thirdRealBridgeProcessDO.setBridgeProcessId(startProcessId);
-                    thirdRealBridgeProcessDO.setConfThirdPartyId(IDict.K_CONF_THIRD_PARTY.K_JTH);
-                    int insertCount = confThirdRealBridgeProcessDOMapper.insert(thirdRealBridgeProcessDO);
-                    Preconditions.checkArgument(insertCount > 0, "插入失败");
+                        // 绑定当前流程到金投行
+                        ConfThirdRealBridgeProcessDO thirdRealBridgeProcessDO = new ConfThirdRealBridgeProcessDO();
+                        thirdRealBridgeProcessDO.setBridgeProcessId(startProcessId);
+                        thirdRealBridgeProcessDO.setConfThirdPartyId(IDict.K_CONF_THIRD_PARTY.K_JTH);
+                        int insertCount = confThirdRealBridgeProcessDOMapper.insert(thirdRealBridgeProcessDO);
+                        Preconditions.checkArgument(insertCount > 0, "插入失败");
+                    }
                 }
+
             }
         }
     }
