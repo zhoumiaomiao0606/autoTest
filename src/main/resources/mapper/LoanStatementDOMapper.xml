@@ -133,14 +133,14 @@
         AND
         CASE
 
-        WHEN telephone_verify IN ( 2, 4, 5, 6, 7 ) THEN
+        /*WHEN telephone_verify IN ( 2, 4, 5, 6, 7 ) THEN
         TRUE ELSE
-        CASE
+        CASE*/
 
         WHEN tab.op_time IS NULL THEN
         TRUE ELSE tab.op_time between #{startDate} and #{endDate}
         END
-        END
+        /*END*/
         <if test="actionList != null and actionList.size() > 0">
             and
             action in
