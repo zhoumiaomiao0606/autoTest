@@ -6,7 +6,6 @@ import com.github.pagehelper.PageHelper;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.yunche.loan.config.common.OSSConfig;
-import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.util.OSSUnit;
 import com.yunche.loan.config.util.POIUtil;
 import com.yunche.loan.config.util.SessionUtils;
@@ -443,9 +442,6 @@ public class ExportQueryServiceImpl implements ExportQueryService
 
 
     public String getAreaName(Long areaId){
-        if (areaId ==null){
-            return "";
-        }
         String tmpApplyLicensePlateArea ="";
         if (areaId != null) {
             BaseAreaDO baseAreaDO = baseAreaDOMapper.selectByPrimaryKey(areaId, VALID_STATUS);
@@ -453,8 +449,11 @@ public class ExportQueryServiceImpl implements ExportQueryService
             if ("3".equals(String.valueOf(baseAreaDO.getLevel()))) {
                 Long parentAreaId = baseAreaDO.getParentAreaId();
                 BaseAreaDO cityDO = baseAreaDOMapper.selectByPrimaryKey(parentAreaId, null);
-                baseAreaDO.setParentAreaId(cityDO.getParentAreaId());
-                baseAreaDO.setParentAreaName(cityDO.getParentAreaName());
+                if(cityDO!=null){
+                    baseAreaDO.setParentAreaId(cityDO.getParentAreaId());
+                    baseAreaDO.setParentAreaName(cityDO.getParentAreaName());
+                }
+
             }
             if (baseAreaDO != null) {
                 if (baseAreaDO.getParentAreaName() != null) {
