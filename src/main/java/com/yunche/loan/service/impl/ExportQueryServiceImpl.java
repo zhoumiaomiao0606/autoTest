@@ -443,6 +443,9 @@ public class ExportQueryServiceImpl implements ExportQueryService
 
 
     public String getAreaName(Long areaId){
+        if (areaId ==null){
+            return "";
+        }
         String tmpApplyLicensePlateArea ="";
         if (areaId != null) {
             BaseAreaDO baseAreaDO = baseAreaDOMapper.selectByPrimaryKey(areaId, VALID_STATUS);
@@ -479,6 +482,7 @@ public class ExportQueryServiceImpl implements ExportQueryService
         param.setJuniorIds(employeeService.getSelfAndCascadeChildIdList(loginUserId));
         param.setMaxGroupLevel(taskSchedulingDOMapper.selectMaxGroupLevel(loginUserId));
 
+        PageHelper.startPage(0, 10000, false);
         List list = chartDOMapper.selectMortgageOverdueChartVO(param);
         ArrayList<String> header = Lists.newArrayList("大区","业务区域", "业务团队", "客户姓名", "身份证号","手机号","征信申请时间",
                 "贷款银行", "车辆型号", "车牌号", "车价", "贷款金额", "银行分期本金", "垫款日期", "银行放款日期", "抵押资料公司寄合伙人",
