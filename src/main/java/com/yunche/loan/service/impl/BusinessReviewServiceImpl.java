@@ -5,10 +5,7 @@ import com.google.gson.Gson;
 import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.util.BeanPlasticityUtills;
 import com.yunche.loan.domain.entity.*;
-import com.yunche.loan.domain.param.BusinessReviewCalculateParam;
-import com.yunche.loan.domain.param.BusinessReviewUpdateParam;
-import com.yunche.loan.domain.param.ParternerRuleParam;
-import com.yunche.loan.domain.param.ParternerRuleSharpTuningeParam;
+import com.yunche.loan.domain.param.*;
 import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.manager.finance.BusinessReviewManager;
 import com.yunche.loan.mapper.*;
@@ -210,7 +207,11 @@ public class BusinessReviewServiceImpl implements BusinessReviewService {
             throw new BizException("打款金额计算错误");
         }*/
 
+
+
         //打款金额校验=================================end
+
+        //财务对接===加规则集合字段
         Long costDetailsId = loanOrderDO.getCostDetailsId();//关联ID
 
         if (costDetailsId == null) {
@@ -266,6 +267,76 @@ public class BusinessReviewServiceImpl implements BusinessReviewService {
 
             }
         }
+    }
+
+    private BusinessReviewUpdateParam saveValue(BusinessReviewUpdateParam businessReviewUpdateParam,ParternerRuleSharpTuningeParam parternerRuleSharpTuningeParam)
+    {
+        for (RuleDetailPara ruleDetailPara :parternerRuleSharpTuningeParam.getListRule())
+        {
+            //swith设置值
+            switch(ruleDetailPara.getId())
+            {
+                case 1:
+                    businessReviewUpdateParam.setService_fee(ruleDetailPara.getValue().toString());
+                    businessReviewUpdateParam.setService_fee_type(ruleDetailPara.getType());
+                    break;
+                    //公司收益
+                case 4:
+                    businessReviewUpdateParam.setFair_assess_fee(ruleDetailPara.getValue().toString());
+                    businessReviewUpdateParam.setFair_assess_fee_type(ruleDetailPara.getType());
+                    break;
+                    //公正评估费
+                case 5:
+                    businessReviewUpdateParam.setRisk_fee(ruleDetailPara.getValue().toString());
+                    businessReviewUpdateParam.setRisk_fee_type(ruleDetailPara.getType());
+                    break;
+                    //风险金
+                case 6:
+                    businessReviewUpdateParam.setPerformance_fee(ruleDetailPara.getValue().toString());
+                    businessReviewUpdateParam.setPerformance_fee_type(ruleDetailPara.getType());
+                    break;
+                    //履约金
+
+                case 7:
+                    businessReviewUpdateParam.setInstall_gps_fee(ruleDetailPara.getValue().toString());
+                    businessReviewUpdateParam.setInstall_gps_fee_type(ruleDetailPara.getType());
+                    break;
+                    //GPS使用费
+                case 10:
+                    businessReviewUpdateParam.setBased_margin_fee(ruleDetailPara.getValue().toString());
+                    businessReviewUpdateParam.setBased_margin_fee_type(ruleDetailPara.getType());
+                    break;
+                    //基础保证金
+
+                case 11:
+                    businessReviewUpdateParam.setApply_license_plate_deposit_fee(ruleDetailPara.getValue().toString());
+                    businessReviewUpdateParam.setApply_license_plate_deposit_fee_type(ruleDetailPara.getType());
+                    break;
+                    //上牌押金
+                case 13:
+                    businessReviewUpdateParam.setApply_license_plate_out_province_fee(ruleDetailPara.getValue().toString());
+                    businessReviewUpdateParam.setApply_license_plate_out_province_fee_type(ruleDetailPara.getType());
+                    break;
+                    //上省外牌
+                case 14:
+                    businessReviewUpdateParam.setOther_fee(ruleDetailPara.getValue().toString());
+                    businessReviewUpdateParam.setOther_fee_type(ruleDetailPara.getType());
+                    break;
+                    //其他
+                case 15:
+                    businessReviewUpdateParam.setExtra_fee(ruleDetailPara.getValue().toString());
+                    businessReviewUpdateParam.setExtra_fee_type(ruleDetailPara.getType());
+                    break;
+                    //额外费用
+
+                case 16:
+                    businessReviewUpdateParam.setRebate_not_deducted(ruleDetailPara.getValue().toString());
+                    break;
+                    //返利不内扣
+            }
+        }
+
+        return businessReviewUpdateParam;
     }
 
     @Override
