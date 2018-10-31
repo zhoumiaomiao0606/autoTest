@@ -1236,7 +1236,8 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             Integer year = Integer.valueOf(expireDateStrArr[0]);
             Integer month = Integer.valueOf(expireDateStrArr[1]);
             Integer day = Integer.valueOf(expireDateStrArr[2]);
-            Preconditions.checkArgument(year >= 1900 && year <= 2099 && month >= 1 && month <= 12 && day >= 1 && day <= 31,
+            // year：长期 -> 9999
+            Preconditions.checkArgument(year >= 1900 && year <= 9999 && month >= 1 && month <= 12 && day >= 1 && day <= 31,
                     "身份证有效期非法：" + identityValidity);
             LocalDate idCardExpireDate = LocalDate.of(year, month, day);
 
