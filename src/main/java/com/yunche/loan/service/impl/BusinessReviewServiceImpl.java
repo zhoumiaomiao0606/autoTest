@@ -100,25 +100,35 @@ public class BusinessReviewServiceImpl implements BusinessReviewService {
         recombinationVO.setSupplement(loanQueryService.selectUniversalInfoSupplementHistory(orderId));
         recombinationVO.setCustomers(customers);
 
-        //请求财务系统初始数据
-        ParternerRuleParam param =new ParternerRuleParam();
-        param.setPartnerId(loanBaseInfoDO.getPartnerId());
-        param.setPayMonth(universalInfoVO.getPay_month());
-        param.setCarType(universalInfoVO.getCar_type());
-        param.setFinancialLoanAmount(universalInfoVO.getFinancial_loan_amount());
-        param.setFinancialBankPeriodPrincipal(universalInfoVO.getFinancial_bank_period_principal());
-        param.setRate(universalInfoVO.getFinancial_sign_rate());
-        param.setYear(universalInfoVO.getFinancial_loan_time());
-        param.setCarGpsNum(universalInfoVO.getCar_gps_num());
-        param.setBankAreaId(universalInfoVO.getBank_id());
 
-        //加收保证金
-        param.setBail(universalInfoVO.getFinancial_cash_deposit());
-        //上牌地城市id
-        param.setAreaId(universalInfoVO.getVehicle_apply_license_plate_area_id());
+        //如果已经保存过的，则查询出原保存规则调用微调规则请求
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
+        if (loanOrderDO == null) {
+            throw new BizException("此业务单不存在");
+        }
+        Long costDetailsId = loanOrderDO.getCostDetailsId();//关联ID
 
+        if (costDetailsId == null)
+        {
 
-        /*String financeResult = businessReviewManager.financeUnisal(param, "/costcalculation");
+            //请求财务系统初始数据
+            ParternerRuleParam param =new ParternerRuleParam();
+            param.setPartnerId(loanBaseInfoDO.getPartnerId());
+            param.setPayMonth(universalInfoVO.getPay_month());
+            param.setCarType(universalInfoVO.getCar_type());
+            param.setFinancialLoanAmount(universalInfoVO.getFinancial_loan_amount());
+            param.setFinancialBankPeriodPrincipal(universalInfoVO.getFinancial_bank_period_principal());
+            param.setRate(universalInfoVO.getFinancial_sign_rate());
+            param.setYear(universalInfoVO.getFinancial_loan_time());
+            param.setCarGpsNum(universalInfoVO.getCar_gps_num());
+            param.setBankAreaId(universalInfoVO.getBank_id());
+
+            //加收保证金
+            param.setBail(universalInfoVO.getFinancial_cash_deposit());
+            //上牌地城市id
+            param.setAreaId(universalInfoVO.getVehicle_apply_license_plate_area_id());
+
+            /*String financeResult = businessReviewManager.financeUnisal(param, "/costcalculation");
         FinanceResult financeResult1 = new FinanceResult();
         if (financeResult !=null && !"".equals(financeResult))
         {
@@ -128,7 +138,17 @@ public class BusinessReviewServiceImpl implements BusinessReviewService {
 
         recombinationVO.setFinanceResult1(financeResult1);*/
 
-        return recombinationVO;
+            return recombinationVO;
+        }else
+            {
+
+                return recombinationVO;
+            }
+
+
+
+
+
     }
 
     @Override

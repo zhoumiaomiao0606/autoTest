@@ -23,6 +23,8 @@ public class BizSessionManager extends DefaultWebSessionManager {
      */
     @Override
     protected Serializable getSessionId(ServletRequest request, ServletResponse response) {
+        String id = WebUtils.toHttp(request).getHeader("authToken");
+        System.out.println("id：" + id);
         // 如果参数中有token,则其值为sessionId
         String sessionId = WebUtils.toHttp(request).getParameter("token");
         if (StringUtils.isNotBlank(sessionId)) {
