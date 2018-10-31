@@ -477,7 +477,7 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
 
         List<Long> customerIdList = loanCustomerDOMapper.listIdByPrincipalCustIdAndType(principalId, null, VALID_STATUS);
 
-        loanCustomerDOMapper.batchUpdateEnable(customerIdList, BaseConst.K_YORN_NO, BaseConst.K_YORN_NO);
+        loanCustomerDOMapper.batchUpdateEnable(customerIdList, BaseConst.K_YORN_NO, null);
     }
 
 
