@@ -99,6 +99,7 @@ public class LoanFinancialPlanServiceImpl implements LoanFinancialPlanService {
         Preconditions.checkNotNull(loanFinancialPlanParam.getLoanAmount(), "贷款金额不能为空");
         Preconditions.checkNotNull(loanFinancialPlanParam.getLoanTime(), "贷款期数不能为空");
         Preconditions.checkNotNull(loanFinancialPlanParam.getBankRate(), "银行利率不能为空");
+        Preconditions.checkNotNull(loanFinancialPlanParam.getOrderId(), "订单号不能为空");
 
         //
         loanFinancialPlanParam.setDownPaymentMoney(loanFinancialPlanParam.getCarPrice().subtract(loanFinancialPlanParam.getLoanAmount()));
