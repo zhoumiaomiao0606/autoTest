@@ -21,6 +21,8 @@ import com.yunche.loan.domain.param.BankOpenCardParam;
 import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.*;
+import org.activiti.engine.TaskService;
+import org.activiti.engine.task.Task;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -112,6 +114,9 @@ public class BankOpenCardServiceImpl implements BankOpenCardService {
     @Autowired
     MsgService msgService;
 
+
+    @Autowired
+    private TaskService taskService;
 
     /**
      * 银行开卡详情页
@@ -321,16 +326,22 @@ public class BankOpenCardServiceImpl implements BankOpenCardService {
                     Preconditions.checkArgument(count2 > 0, "更新银行流水失败");
                 }
                 if (!openCard.equals(LoanOrderProcessConst.TASK_PROCESS_DONE)) {
+
                     try {
-                        ApprovalParam approvalParam = new ApprovalParam();
-                        approvalParam.setOrderId(e.getOrderId());
-                        approvalParam.setTaskDefinitionKey(LoanProcessEnum.BANK_OPEN_CARD.getCode());
-                        approvalParam.setAction(ACTION_PASS);
-                        approvalParam.setNeedLog(true);
-                        approvalParam.setAutoTask(true);
-                        approvalParam.setCheckPermission(false);
-                        ResultBean<Void> approvalResultBean = loanProcessService.approval(approvalParam);
-                        LOG.info(e.getOrderId() + approvalResultBean.getMsg());
+                        if(checkTask(String.valueOf(loanOrderDO.getProcessInstId()),LoanProcessEnum.BANK_OPEN_CARD.getCode())){
+                            ApprovalParam approvalParam = new ApprovalParam();
+                            approvalParam.setOrderId(e.getOrderId());
+                            approvalParam.setTaskDefinitionKey(LoanProcessEnum.BANK_OPEN_CARD.getCode());
+                            approvalParam.setAction(ACTION_PASS);
+                            approvalParam.setNeedLog(true);
+                            approvalParam.setAutoTask(true);
+                            approvalParam.setCheckPermission(false);
+                            ResultBean<Void> approvalResultBean = loanProcessService.approval(approvalParam);
+                            LOG.info(e.getOrderId() + approvalResultBean.getMsg());
+                        }else{
+                            throw new BizException("走特殊处理");
+                        }
+
                     } catch (Exception e2) {
                         LoanProcessDO processDO = loanProcessDOMapper.selectByPrimaryKey(e.getOrderId());
                         processDO.setBankOpenCard(ACTION_PASS);
@@ -361,6 +372,29 @@ public class BankOpenCardServiceImpl implements BankOpenCardService {
         return true;
     }
 
+    /**
+     * 工作流任务任务校验
+     * @param processInstId
+     * @param taskDefinitionKey
+     * @return
+     */
+    boolean checkTask(String processInstId,String taskDefinitionKey){
+        // 获取当前流程task
+        boolean flag=true;
+        try{
+            Task task = taskService.createTaskQuery()
+                    .processInstanceId(processInstId)
+                    .taskDefinitionKey(taskDefinitionKey)
+                    .singleResult();
+            if(task==null){
+                flag=false;
+            }
+        }catch (Exception e){
+            return false;
+        }
+
+        return flag;
+    }
     /**
      * 暂存开卡信息
      *
