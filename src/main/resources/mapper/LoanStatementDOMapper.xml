@@ -412,11 +412,11 @@
         LEFT JOIN loan_process ON principal_orders.id = loan_process.order_id
         <where>
             <if test="state == 1">
-                loan_credit_info_social_his.social_credit_record_time is not null and
+                loan_process.social_credit_record = 1 and
             </if>
 
             <if test="state == 2">
-                loan_credit_info_social_his.social_credit_record_time is null and
+                loan_process.social_credit_record = 2 and
             </if>
 
 
