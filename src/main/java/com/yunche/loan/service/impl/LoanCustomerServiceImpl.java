@@ -1,5 +1,6 @@
 package com.yunche.loan.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.aliyun.oss.OSSClient;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
@@ -16,6 +17,8 @@ import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.LoanCustomerService;
 import com.yunche.loan.service.LoanFileService;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -38,6 +41,9 @@ import static com.yunche.loan.config.constant.LoanOrderProcessConst.ORDER_STATUS
  */
 @Service
 public class LoanCustomerServiceImpl implements LoanCustomerService {
+
+    private static Logger logger = LoggerFactory.getLogger(LoanCustomerServiceImpl.class);
+
 
     @Autowired
     private LoanCustomerDOMapper loanCustomerDOMapper;
@@ -403,9 +409,15 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
     }
 
     @Override
+    @Transactional
     public Long enable(String ids, Byte enableType) {
         Preconditions.checkArgument(StringUtils.isNotBlank(ids), "ids不能为空");
         Preconditions.checkNotNull(enableType, "enableType不能为空");
+
+        System.out.println();
+        logger.info("=====================START========================");
+        logger.info("=====================enable=======================");
+        logger.info("ids : {} , enableType : {}", ids, enableType);
 
         // 1、更新所选客户 打回状态：1 -> 已打回(可编辑)
         List<Long> idList = Arrays.stream(ids.split("\\,"))
@@ -413,23 +425,44 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
                 .map(Long::valueOf)
                 .collect(Collectors.toList());
 
+        logger.info("idList : {}", idList);
+
         Preconditions.checkArgument(!CollectionUtils.isEmpty(idList), "ids不能为空");
 
+
+        logger.info("batchUpdateEnable      >>>     START");
         long count = loanCustomerDOMapper.batchUpdateEnable(idList, BaseConst.K_YORN_YES, enableType);
+        List<LoanCustomerDO> debug_all_customer = loanCustomerDOMapper.listByPrincipalCustIdAndType(idList.get(0), null, VALID_STATUS);
+        logger.info("batchUpdateEnable      >>>     END      >>>        count : {}  ,   debug_all_customer : {}",
+                count, JSON.toJSONString(debug_all_customer));
 
 
         // 2、打回标记重置   此次未打回的客户全部重置为：  0 -> 未打回(不可编辑)
         LoanCustomerDO loanCustomerDO = loanCustomerDOMapper.selectByPrimaryKey(idList.get(0), VALID_STATUS);
+        Preconditions.checkNotNull(loanCustomerDO, "客户不存在，客户ID=" + idList.get(0));
         Long principalCustId = loanCustomerDO.getPrincipalCustId();
+        Preconditions.checkNotNull(principalCustId, "客户异常，无关联主贷人！客户ID=" + idList.get(0));
 
         List<Long> allCustomerId = loanCustomerDOMapper.listIdByPrincipalCustIdAndType(principalCustId, null, VALID_STATUS);
+        logger.info("allCustomerId : {}", JSON.toJSONString(allCustomerId));
         allCustomerId.removeAll(idList);
+        logger.info("removeAll -> idList : {}  >>>后>>>   allCustomerId : {}",
+                JSON.toJSONString(idList), JSON.toJSONString(allCustomerId));
 
         if (!CollectionUtils.isEmpty(allCustomerId)) {
 
             // 其他客户  >>  重置为：0 -> 未打回(不可编辑)
             long count2 = loanCustomerDOMapper.batchUpdateEnable(allCustomerId, BaseConst.K_YORN_NO, null);
+            logger.info("count2 : {}", count2);
+            List<LoanCustomerDO> debug_all_customer_2 = loanCustomerDOMapper.listByPrincipalCustIdAndType(idList.get(0), null, VALID_STATUS);
+            logger.info("batchUpdateEnable      >>>     END      >>>        " +
+                    "debug_all_customer_2 : {}", JSON.toJSONString(debug_all_customer_2));
         }
+
+
+        logger.info("=====================enable=======================");
+        logger.info("=====================END==========================");
+        System.out.println();
 
         return count;
     }
