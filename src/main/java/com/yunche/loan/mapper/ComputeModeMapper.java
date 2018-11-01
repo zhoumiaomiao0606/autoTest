@@ -269,4 +269,27 @@ public interface ComputeModeMapper {
     //银行分期本金
     BigDecimal periodPrincipal_new(Map<String, BigDecimal> map);
 
+
+
+
+    BigDecimal eachMonthRepay_new_1(Map<String, BigDecimal> map);
+    BigDecimal periodPrincipal_new_1(Map<String, BigDecimal> map);
+    BigDecimal firstRepayment_new_1(Map<String, BigDecimal> map);
+    BigDecimal loanInterest_new_1(Map<String, BigDecimal> map);
+    BigDecimal bankFee_new_1(Map<String, BigDecimal> map);
+    BigDecimal totalRepayment_new_1(Map<String, BigDecimal> map);
+    BigDecimal loanToValueRatio_new_1(Map<String, BigDecimal> map);
+    BigDecimal stagingRatio_new_1(Map<String, BigDecimal> map);
+    BigDecimal periodPrincipal_new_3(Map<String, BigDecimal> map);
+    BigDecimal eachMonthRepay_new_3(Map<String, BigDecimal> map);
+    BigDecimal firstRepayment_new_3(Map<String, BigDecimal> map);
+    BigDecimal loanInterest_new_3(Map<String, BigDecimal> map);
+    BigDecimal stagingRatio_new_3(Map<String, BigDecimal> map);
+    BigDecimal bankFee_new_3(Map<String, BigDecimal> map);
+    BigDecimal firstRepayment_new_4(Map<String, BigDecimal> map);
+    BigDecimal eachMonthRepay_new_4(Map<String, BigDecimal> map);
+    BigDecimal firstRepayment_new_6(Map<String, BigDecimal> map);
+
+
+
 }
