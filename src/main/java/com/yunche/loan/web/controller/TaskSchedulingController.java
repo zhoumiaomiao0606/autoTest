@@ -117,7 +117,9 @@ public class TaskSchedulingController {
     public ResultBean<List<ScheduleTaskVO>> scheduletasklist(@RequestParam(required = false) String key,
                                                              @RequestParam Integer pageIndex,
                                                              @RequestParam Integer pageSize) {
-        return taskSchedulingService.scheduleTaskList(key, pageIndex, pageSize);
+
+        return ResultBean.ofError("待办功能维护中！");
+//        return taskSchedulingService.scheduleTaskList(key, pageIndex, pageSize);
     }
 
     /**
@@ -126,7 +128,9 @@ public class TaskSchedulingController {
     @Limiter(2)
     @GetMapping(value = "/countScheduletasklist")
     public ResultBean<Long> countScheduletasklist() {
-        return taskSchedulingService.countScheduletasklist();
+
+        return ResultBean.ofError("待办功能维护中！");
+//        return taskSchedulingService.countScheduletasklist();
     }
 
     /**
