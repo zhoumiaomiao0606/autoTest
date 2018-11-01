@@ -290,7 +290,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         createRepayPlan(approval.getTaskDefinitionKey(), loanProcessDO, loanOrderDO);
 
         // [领取]完成
-        loanProcessApprovalCommonService.finishTask(approval, getTaskIdList(startTaskList), loanOrderDO.getProcessInstId(), loanProcessDO);
+        loanProcessApprovalCommonService.finishTask(approval, getTaskIdList(startTaskList), loanOrderDO.getProcessInstId());
 
         // 异步打包文件
         asyncPackZipFile(approval.getTaskDefinitionKey(), approval.getAction(), loanProcessDO, 2);
@@ -940,7 +940,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             throw new BizException("流程审核参数有误");
         }
 
-        loanProcessApprovalCommonService.finishTask(approval, currentTaskIdList, loanOrderDO.getProcessInstId(), loanProcessDO);
+        loanProcessApprovalCommonService.finishTask(approval, currentTaskIdList, loanOrderDO.getProcessInstId());
 
         return ResultBean.ofSuccess(null, "[" + LoanProcessEnum.getNameByCode(taskDefinitionKey) + "]任务执行成功");
     }
@@ -1044,14 +1044,14 @@ public class LoanProcessServiceImpl implements LoanProcessService {
     /**
      * 流程数据同步： 同步activiti与本地流程数据
      *
-     * @param startTaskList        起始任务列表
+     * @param startTaskList      起始任务列表
      * @param processInstId
      * @param approval
-     * @param currentLoanProcessDO
+     * @param startLoanProcessDO 起始时流程状态-快照
      * @param loanBaseInfoDO
      */
     private void syncProcess(List<Task> startTaskList, String processInstId, ApprovalParam approval,
-                             LoanProcessDO currentLoanProcessDO, LoanBaseInfoDO loanBaseInfoDO) {
+                             LoanProcessDO startLoanProcessDO, LoanBaseInfoDO loanBaseInfoDO) {
 
         // 更新状态
         LoanProcessDO loanProcessDO = new LoanProcessDO();
@@ -1075,13 +1075,18 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         loanProcessApprovalCommonService.updateCurrentTaskProcessStatus(loanProcessDO, approval.getTaskDefinitionKey(), taskProcessStatus, approval);
 
         // 更新新产生的任务状态
-        updateNextTaskProcessStatus(loanProcessDO, processInstId, startTaskList, approval, currentLoanProcessDO);
+        updateNextTaskProcessStatus(loanProcessDO, processInstId, startTaskList, approval, startLoanProcessDO);
 
         // 特殊处理：部分节点的同步  !!!
-        special_syncProcess(approval, loanProcessDO, currentLoanProcessDO, loanBaseInfoDO);
+        special_syncProcess(approval, loanProcessDO, startLoanProcessDO, loanBaseInfoDO);
 
         // 更新本地流程记录
         loanProcessApprovalCommonService.updateLoanProcess(loanProcessDO);
+
+
+        // 更新：起始时流程状态快照
+        LoanProcessDO nowLoanProcess = loanProcessApprovalCommonService.getLoanProcess(startLoanProcessDO.getOrderId());
+        BeanUtils.copyProperties(nowLoanProcess, startLoanProcessDO);
     }
 
     /**

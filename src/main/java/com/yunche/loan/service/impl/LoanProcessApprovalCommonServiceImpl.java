@@ -544,10 +544,9 @@ public class LoanProcessApprovalCommonServiceImpl implements LoanProcessApproval
      * @param approval
      * @param startTaskIdList
      * @param processInstId
-     * @param loanProcessDO_
      */
     @Override
-    public void finishTask(ApprovalParam approval, List<String> startTaskIdList, String processInstId, LoanProcessDO_ loanProcessDO_) {
+    public void finishTask(ApprovalParam approval, List<String> startTaskIdList, String processInstId) {
 
         Byte action = approval.getAction();
 
@@ -559,7 +558,7 @@ public class LoanProcessApprovalCommonServiceImpl implements LoanProcessApproval
             // 电审
             if (TELEPHONE_VERIFY.getCode().equals(approval.getTaskDefinitionKey())) {
 
-                LoanProcessDO loanProcessDO = (LoanProcessDO) loanProcessDO_;
+                LoanProcessDO loanProcessDO = getLoanProcess(approval.getOrderId());
 
                 Byte telephoneVerifyStatus = loanProcessDO.getTelephoneVerify();
                 Preconditions.checkNotNull(telephoneVerifyStatus, "电审状态异常");
