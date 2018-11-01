@@ -6,7 +6,6 @@ import com.github.pagehelper.PageHelper;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.yunche.loan.config.common.OSSConfig;
-import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.util.OSSUnit;
 import com.yunche.loan.config.util.POIUtil;
 import com.yunche.loan.config.util.SessionUtils;
@@ -450,8 +449,11 @@ public class ExportQueryServiceImpl implements ExportQueryService
             if ("3".equals(String.valueOf(baseAreaDO.getLevel()))) {
                 Long parentAreaId = baseAreaDO.getParentAreaId();
                 BaseAreaDO cityDO = baseAreaDOMapper.selectByPrimaryKey(parentAreaId, null);
-                baseAreaDO.setParentAreaId(cityDO.getParentAreaId());
-                baseAreaDO.setParentAreaName(cityDO.getParentAreaName());
+                if(cityDO!=null){
+                    baseAreaDO.setParentAreaId(cityDO.getParentAreaId());
+                    baseAreaDO.setParentAreaName(cityDO.getParentAreaName());
+                }
+
             }
             if (baseAreaDO != null) {
                 if (baseAreaDO.getParentAreaName() != null) {
@@ -479,6 +481,7 @@ public class ExportQueryServiceImpl implements ExportQueryService
         param.setJuniorIds(employeeService.getSelfAndCascadeChildIdList(loginUserId));
         param.setMaxGroupLevel(taskSchedulingDOMapper.selectMaxGroupLevel(loginUserId));
 
+        PageHelper.startPage(0, 10000, false);
         List list = chartDOMapper.selectMortgageOverdueChartVO(param);
         ArrayList<String> header = Lists.newArrayList("大区","业务区域", "业务团队", "客户姓名", "身份证号","手机号","征信申请时间",
                 "贷款银行", "车辆型号", "车牌号", "车价", "贷款金额", "银行分期本金", "垫款日期", "银行放款日期", "抵押资料公司寄合伙人",

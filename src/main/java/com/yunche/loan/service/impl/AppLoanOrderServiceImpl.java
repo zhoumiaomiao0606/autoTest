@@ -1175,7 +1175,7 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
     @Override
     @Transactional
     public ResultBean<Void> updateBaseInfo(AppLoanBaseInfoDetailParam param) {
-//        Preconditions.checkArgument();
+        Preconditions.checkNotNull(param.getOrderId(),"订单号不能为空");
         AppLoanBaseInfoParam aparam = new AppLoanBaseInfoParam();
         aparam.setOrderId(param.getOrderId());
         aparam.setLoanBaseInfo(param);

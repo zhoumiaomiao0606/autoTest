@@ -3043,14 +3043,21 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         // 是否都通过了    -> 既非BANK，也非SOCIAL
         if (!CollectionUtils.isEmpty(tasks)) {
 
-            long count = tasks.stream()
+            long bank_social_count = tasks.stream()
                     .filter(Objects::nonNull)
+                    // BANK || SOCIAL
                     .filter(e -> BANK_CREDIT_RECORD.getCode().equals(e.getTaskDefinitionKey())
                             || SOCIAL_CREDIT_RECORD.getCode().equals(e.getTaskDefinitionKey()))
                     .count();
 
+            long bank_social_filter_count = tasks.stream()
+                    .filter(Objects::nonNull)
+                    // 只能为 BANK_SOCIAL_FILTER
+                    .filter(e -> BANK_SOCIAL_CREDIT_RECORD_FILTER.getCode().equals(e.getTaskDefinitionKey()))
+                    .count();
+
             // 是 -> 放行
-            if (count == 0) {
+            if (bank_social_count == 0 && (bank_social_filter_count == 1 || bank_social_filter_count == 2)) {
 
                 // 当前已经不会有子任务为：BANK或SOCIAL    只需从所有filter任务中找到-主任务 -> 通过即可！  然后剩余"filter子任务"全部弃单即可！
                 Map<String, Object> passVariables = Maps.newHashMap();
@@ -3244,18 +3251,19 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         // 附带任务-[视频审核记录次数]
         doAttachTask_VideoFaceNum(approval, loanOrderDO);
     }
-    private void doAttachTask_VideoFaceNum(ApprovalParam approval,LoanOrderDO loanOrderDO){
-        if(VIDEO_REVIEW.getCode().equals(approval.getTaskDefinitionKey())&& ACTION_PASS.equals(approval.getAction())){
+
+    private void doAttachTask_VideoFaceNum(ApprovalParam approval, LoanOrderDO loanOrderDO) {
+        if (VIDEO_REVIEW.getCode().equals(approval.getTaskDefinitionKey()) && ACTION_PASS.equals(approval.getAction())) {
             VideoFaceNumDO videoFaceNumDO = videoFaceNumDOMapper.selectByPrimaryKey(loanOrderDO.getId());
             VideoFaceNumDO videoFaceNumDO1 = new VideoFaceNumDO();
             videoFaceNumDO1.setOrder_id(loanOrderDO.getId());
-            if(videoFaceNumDO == null){
+            if (videoFaceNumDO == null) {
                 videoFaceNumDO1.setFace_num(1);
                 videoFaceNumDOMapper.insertSelective(videoFaceNumDO1);
-            }else{
-                if(videoFaceNumDO.getFace_num() == null){
+            } else {
+                if (videoFaceNumDO.getFace_num() == null) {
                     videoFaceNumDO1.setFace_num(1);
-                }else {
+                } else {
                     videoFaceNumDO1.setFace_num(1 + videoFaceNumDO.getFace_num());
                 }
                 videoFaceNumDOMapper.updateByPrimaryKeySelective(videoFaceNumDO1);
@@ -3469,7 +3477,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             if (BANK_NAME_ICBC_HangZhou_City_Station_Branch.equals(loanBaseInfoDO.getBank()) ||
                     BANK_NAME_ICBC_TaiZhou_LuQiao_Branch.equals(loanBaseInfoDO.getBank())) {
                 RemitDetailsDO detailsDO = remitDetailsDOMapper.selectByPrimaryKey(loanOrderDO.getRemitDetailsId());
-                if(detailsDO.getRemit_amount().compareTo(new BigDecimal("200000"))<=0){
+                if (detailsDO.getRemit_amount().compareTo(new BigDecimal("200000")) <= 0) {
                     LoanProcessBridgeDO loanProcessBridgeDO = loanProcessBridgeDOMapper.selectByOrderId(loanOrderDO.getId());
 
                     if (loanProcessBridgeDO == null) {
