@@ -168,7 +168,7 @@ CASE
 	AS carPrpperty,
 	car.car_category AS carType,
 	loan_financial_plan.car_price AS carPrice,
-	loan_financial_plan.loan_amount
+	loan_financial_plan.loan_amount as  loanAmount
 FROM
 	( SELECT * FROM loan_order where loan_customer_id = #{customerId}) main_order
 	LEFT JOIN loan_process process ON main_order.id = process.order_id
@@ -440,7 +440,7 @@ CASE
   AS carPrpperty,
   car.car_category AS carType,
   loan_financial_plan.car_price AS carPrice,
-  loan_financial_plan.loan_amount
+  loan_financial_plan.loan_amount as loanAmount
 FROM
   ( SELECT * FROM loan_order where id = #{orderId}) main_order
   LEFT JOIN loan_process process ON main_order.id = process.order_id
