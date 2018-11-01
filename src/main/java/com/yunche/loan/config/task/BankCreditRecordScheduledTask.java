@@ -76,7 +76,7 @@ public class BankCreditRecordScheduledTask {
      * 自动打回任务：  [银行征信查询] -> [征信申请]
      */
     @Scheduled(cron = "0 0/1 * * * ?")
-    @DistributedLock(600)
+    @DistributedLock(60)
     public void doAutoRejectTask() {
 
 
