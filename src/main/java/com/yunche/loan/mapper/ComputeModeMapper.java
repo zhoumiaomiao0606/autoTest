@@ -160,6 +160,18 @@ public interface ComputeModeMapper {
     BigDecimal eachMonthRepay_4(Map<String, BigDecimal> map);
     BigDecimal stagingRatio_4(Map<String, BigDecimal> map);
 
+    BigDecimal periodPrincipal_new_4(Map<String, BigDecimal> map);
+    BigDecimal loanInterest_new_4(Map<String, BigDecimal> map);
+    BigDecimal bankFee_new_4(Map<String, BigDecimal> map);
+    BigDecimal totalRepayment_new_4(Map<String, BigDecimal> map);
+    BigDecimal principalFirstMonthRepay_new_4(Map<String, BigDecimal> map);
+    BigDecimal principalEachMonthRepay_new_4(Map<String, BigDecimal> map);
+    BigDecimal firstMonthBankFee_new_4(Map<String, BigDecimal> map);
+    BigDecimal eachMonthBankFee_new_4(Map<String, BigDecimal> map);
+    BigDecimal firstRepayment_new_4(Map<String, BigDecimal> map);
+    BigDecimal eachMonthRepay_new_4(Map<String, BigDecimal> map);
+    BigDecimal stagingRatio_new_4(Map<String, BigDecimal> map);
+
 
 
     //公式五
@@ -251,6 +263,15 @@ public interface ComputeModeMapper {
     BigDecimal totalRepayment_6(Map<String, BigDecimal> map);
     BigDecimal stagingRatio_6(Map<String, BigDecimal> map);
 
+
+    BigDecimal periodPrincipal_new_6(Map<String, BigDecimal> map);
+    BigDecimal eachMonthRepay_new_6(Map<String, BigDecimal> map);
+    BigDecimal firstRepayment_new_6(Map<String, BigDecimal> map);
+    BigDecimal loanInterest_new_6(Map<String, BigDecimal> map);
+    BigDecimal bankFee_new_6(Map<String, BigDecimal> map);
+    BigDecimal totalRepayment_new_6(Map<String, BigDecimal> map);
+    BigDecimal stagingRatio_new_6(Map<String, BigDecimal> map);
+
     //公式七
     BigDecimal eachMonthRepay_7(Map<String, BigDecimal> map);
     BigDecimal firstRepayment_7(Map<String, BigDecimal> map);
@@ -286,10 +307,6 @@ public interface ComputeModeMapper {
     BigDecimal loanInterest_new_3(Map<String, BigDecimal> map);
     BigDecimal stagingRatio_new_3(Map<String, BigDecimal> map);
     BigDecimal bankFee_new_3(Map<String, BigDecimal> map);
-    BigDecimal firstRepayment_new_4(Map<String, BigDecimal> map);
-    BigDecimal eachMonthRepay_new_4(Map<String, BigDecimal> map);
-    BigDecimal firstRepayment_new_6(Map<String, BigDecimal> map);
-
 
 
 }
