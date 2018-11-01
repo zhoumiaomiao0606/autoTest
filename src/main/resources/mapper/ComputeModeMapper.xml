@@ -115,6 +115,9 @@
     <select id="totalRepayment_3" parameterType="java.util.Map" resultType="java.math.BigDecimal">
         select totalRepayment_3(#{loanAmt},#{exeRate},#{bankBaseRate})
     </select>
+    <select id="totalRepayment_new_3" parameterType="java.util.Map" resultType="java.math.BigDecimal">
+        select totalRepayment_new_3(#{loanAmt},#{exeRate},#{bankBaseRate})
+    </select>
 
 
     <!--方法四-->
@@ -145,14 +148,8 @@
     <select id="firstRepayment_4" parameterType="java.util.Map" resultType="java.math.BigDecimal">
         select firstRepayment_4(#{loanAmt},#{exeRate},#{bankBaseRate},#{year})
     </select>
-    <select id="firstRepayment_new_4" parameterType="java.util.Map" resultType="java.math.BigDecimal">
-        select firstRepayment_new_4(#{loanAmt},#{exeRate},#{bankBaseRate},#{year})
-    </select>
     <select id="eachMonthRepay_4" parameterType="java.util.Map" resultType="java.math.BigDecimal">
         select eachMonthRepay_4(#{loanAmt},#{exeRate},#{bankBaseRate},#{year})
-    </select>
-    <select id="eachMonthRepay_new_4" parameterType="java.util.Map" resultType="java.math.BigDecimal">
-        select eachMonthRepay_new_4(#{loanAmt},#{exeRate},#{bankBaseRate},#{year})
     </select>
     <select id="stagingRatio_4" parameterType="java.util.Map" resultType="java.math.BigDecimal">
         select stagingRatio_4(#{loanAmt},#{exeRate},#{bankBaseRate},#{carPrice})
@@ -181,9 +178,6 @@
     </select>
      <select id="firstRepayment_6" parameterType="java.util.Map" resultType="java.math.BigDecimal">
         select firstRepayment_6(#{loanAmt},#{exeRate},#{bankBaseRate},#{year})
-    </select>
-    <select id="firstRepayment_new_6" parameterType="java.util.Map" resultType="java.math.BigDecimal">
-        select firstRepayment_new_6(#{loanAmt},#{exeRate},#{bankBaseRate},#{year})
     </select>
      <select id="loanInterest_6" parameterType="java.util.Map" resultType="java.math.BigDecimal">
         select loanInterest_6(#{loanAmt},#{exeRate},#{bankBaseRate})
@@ -276,7 +270,7 @@
         select periodPrincipal_new_6(#{loanAmt},#{exeRate},#{bankBaseRate})
     </select>
     <select id="eachMonthRepay_new_6" parameterType="java.util.Map" resultType="java.math.BigDecimal">
-        select eachMonthRepa_newy_6(#{loanAmt},#{exeRate},#{bankBaseRate},#{year})
+        select eachMonthRepay_new_6(#{loanAmt},#{exeRate},#{bankBaseRate},#{year})
     </select>
     <select id="firstRepayment_new_6" parameterType="java.util.Map" resultType="java.math.BigDecimal">
         select firstRepayment_new_6(#{loanAmt},#{exeRate},#{bankBaseRate},#{year})

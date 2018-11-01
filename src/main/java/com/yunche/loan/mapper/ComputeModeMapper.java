@@ -307,6 +307,7 @@ public interface ComputeModeMapper {
     BigDecimal loanInterest_new_3(Map<String, BigDecimal> map);
     BigDecimal stagingRatio_new_3(Map<String, BigDecimal> map);
     BigDecimal bankFee_new_3(Map<String, BigDecimal> map);
+    BigDecimal totalRepayment_new_3(Map<String, BigDecimal> map);
 
 
 }

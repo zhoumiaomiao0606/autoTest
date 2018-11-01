@@ -48,14 +48,14 @@ public class ComputeModeImpl implements ComputeModeService{
         switch (id){
             case 1:
                 if(checkCreditTime(orderId)){
-                    calcParamVO.setBankPeriodPrincipal(computeModeMapper.periodPrincipal_1(paramMap));
-                    calcParamVO.setEachMonthRepay(computeModeMapper.eachMonthRepay_1(paramMap));
-                    calcParamVO.setFirstRepayment(computeModeMapper.firstRepayment_1(paramMap));
-                    calcParamVO.setLoanInterest(computeModeMapper.loanInterest_1(paramMap));
-                    calcParamVO.setBankFee(computeModeMapper.bankFee_1(paramMap));
-                    calcParamVO.setTotalRepayment(computeModeMapper.totalRepayment_1(paramMap));
-                    calcParamVO.setLoanToValueRatio(computeModeMapper.loanToValueRatio_1(paramMap));
-                    calcParamVO.setStagingRatio(computeModeMapper.stagingRatio_1(paramMap));
+                    calcParamVO.setBankPeriodPrincipal(computeModeMapper.periodPrincipal_new_1(paramMap));
+                    calcParamVO.setEachMonthRepay(computeModeMapper.eachMonthRepay_new_1(paramMap));
+                    calcParamVO.setFirstRepayment(computeModeMapper.firstRepayment_new_1(paramMap));
+                    calcParamVO.setLoanInterest(computeModeMapper.loanInterest_new_1(paramMap));
+                    calcParamVO.setBankFee(computeModeMapper.bankFee_new_1(paramMap));
+                    calcParamVO.setTotalRepayment(computeModeMapper.totalRepayment_new_1(paramMap));
+                    calcParamVO.setLoanToValueRatio(computeModeMapper.loanToValueRatio_new_1(paramMap));
+                    calcParamVO.setStagingRatio(computeModeMapper.stagingRatio_new_1(paramMap));
                 }else{
                     calcParamVO.setBankPeriodPrincipal(computeModeMapper.periodPrincipal_1(paramMap));
                     calcParamVO.setEachMonthRepay(computeModeMapper.eachMonthRepay_1(paramMap));
@@ -69,7 +69,7 @@ public class ComputeModeImpl implements ComputeModeService{
 
                  break;
             case 2:
-                if(checkCreditTime(orderId)){
+
                     calcParamVO.setBankPeriodPrincipal(loanAmt);
                     calcParamVO.setLoanInterest(calcParamVO.getBankPeriodPrincipal().subtract(loanAmt));
                     calcParamVO.setEachMonthRepay(computeModeMapper.eachMonthRepay_2(paramMap));
@@ -77,26 +77,17 @@ public class ComputeModeImpl implements ComputeModeService{
                     calcParamVO.setStagingRatio(computeModeMapper.stagingRatio_2(paramMap));
                     calcParamVO.setBankFee(computeModeMapper.bankFee_2(paramMap));
                     calcParamVO.setTotalRepayment(computeModeMapper.totalRepayment_2(paramMap));
-                }else{
-                    calcParamVO.setBankPeriodPrincipal(loanAmt);
-                    calcParamVO.setLoanInterest(calcParamVO.getBankPeriodPrincipal().subtract(loanAmt));
-                    calcParamVO.setEachMonthRepay(computeModeMapper.eachMonthRepay_2(paramMap));
-                    calcParamVO.setFirstRepayment(computeModeMapper.firstRepayment_2(paramMap));
-                    calcParamVO.setStagingRatio(computeModeMapper.stagingRatio_2(paramMap));
-                    calcParamVO.setBankFee(computeModeMapper.bankFee_2(paramMap));
-                    calcParamVO.setTotalRepayment(computeModeMapper.totalRepayment_2(paramMap));
-                }
 
                 break;
             case 3:
                 if(checkCreditTime(orderId)){
-                    calcParamVO.setBankPeriodPrincipal(computeModeMapper.periodPrincipal_3(paramMap));
-                    calcParamVO.setEachMonthRepay(computeModeMapper.eachMonthRepay_3(paramMap));
-                    calcParamVO.setFirstRepayment(computeModeMapper.firstRepayment_3(paramMap));
-                    calcParamVO.setLoanInterest(computeModeMapper.loanInterest_3(paramMap));
-                    calcParamVO.setStagingRatio(computeModeMapper.stagingRatio_3(paramMap));
-                    calcParamVO.setBankFee(computeModeMapper.bankFee_3(paramMap));
-                    calcParamVO.setTotalRepayment(computeModeMapper.totalRepayment_3(paramMap));
+                    calcParamVO.setBankPeriodPrincipal(computeModeMapper.periodPrincipal_new_3(paramMap));
+                    calcParamVO.setEachMonthRepay(computeModeMapper.eachMonthRepay_new_3(paramMap));
+                    calcParamVO.setFirstRepayment(computeModeMapper.firstRepayment_new_3(paramMap));
+                    calcParamVO.setLoanInterest(computeModeMapper.loanInterest_new_3(paramMap));
+                    calcParamVO.setStagingRatio(computeModeMapper.stagingRatio_new_3(paramMap));
+                    calcParamVO.setBankFee(computeModeMapper.bankFee_new_3(paramMap));
+                    calcParamVO.setTotalRepayment(computeModeMapper.totalRepayment_new_3(paramMap));
                 }else{
                     calcParamVO.setBankPeriodPrincipal(computeModeMapper.periodPrincipal_3(paramMap));
                     calcParamVO.setEachMonthRepay(computeModeMapper.eachMonthRepay_3(paramMap));
@@ -111,17 +102,17 @@ public class ComputeModeImpl implements ComputeModeService{
 
             case 4:
                 if(checkCreditTime(orderId)){
-                    calcParamVO.setBankPeriodPrincipal(computeModeMapper.periodPrincipal_4(paramMap));
-                    calcParamVO.setLoanInterest(computeModeMapper.loanInterest_4(paramMap));
-                    calcParamVO.setBankFee(computeModeMapper.bankFee_4(paramMap));
-                    calcParamVO.setTotalRepayment(computeModeMapper.totalRepayment_4(paramMap));
-                    calcParamVO.setPrincipalFirstMonthRepay(computeModeMapper.principalFirstMonthRepay_4(paramMap));
-                    calcParamVO.setPrincipalEachMonthRepay(computeModeMapper.principalEachMonthRepay_4(paramMap));
-                    calcParamVO.setFirstMonthBankFee(computeModeMapper.firstMonthBankFee_4(paramMap));
-                    calcParamVO.setEachMonthBankFee(computeModeMapper.eachMonthBankFee_4(paramMap));
-                    calcParamVO.setFirstRepayment(computeModeMapper.firstRepayment_4(paramMap));
-                    calcParamVO.setEachMonthRepay(computeModeMapper.eachMonthRepay_4(paramMap));
-                    calcParamVO.setStagingRatio(computeModeMapper.stagingRatio_4(paramMap));
+                    calcParamVO.setBankPeriodPrincipal(computeModeMapper.periodPrincipal_new_4(paramMap));
+                    calcParamVO.setLoanInterest(computeModeMapper.loanInterest_new_4(paramMap));
+                    calcParamVO.setBankFee(computeModeMapper.bankFee_new_4(paramMap));
+                    calcParamVO.setTotalRepayment(computeModeMapper.totalRepayment_new_4(paramMap));
+                    calcParamVO.setPrincipalFirstMonthRepay(computeModeMapper.principalFirstMonthRepay_new_4(paramMap));
+                    calcParamVO.setPrincipalEachMonthRepay(computeModeMapper.principalEachMonthRepay_new_4(paramMap));
+                    calcParamVO.setFirstMonthBankFee(computeModeMapper.firstMonthBankFee_new_4(paramMap));
+                    calcParamVO.setEachMonthBankFee(computeModeMapper.eachMonthBankFee_new_4(paramMap));
+                    calcParamVO.setFirstRepayment(computeModeMapper.firstRepayment_new_4(paramMap));
+                    calcParamVO.setEachMonthRepay(computeModeMapper.eachMonthRepay_new_4(paramMap));
+                    calcParamVO.setStagingRatio(computeModeMapper.stagingRatio_new_4(paramMap));
                 }else{
                     calcParamVO.setBankPeriodPrincipal(computeModeMapper.periodPrincipal_4(paramMap));
                     calcParamVO.setLoanInterest(computeModeMapper.loanInterest_4(paramMap));
@@ -138,30 +129,24 @@ public class ComputeModeImpl implements ComputeModeService{
 
                 break;
             case 5:
-                if(checkCreditTime(orderId)){
+
                     calcParamVO.setBankPeriodPrincipal(loanAmt);
                     calcParamVO.setEachMonthRepay(computeModeMapper.eachMonthRepay_5(paramMap));
                     calcParamVO.setFirstRepayment(computeModeMapper.firstRepayment_5(paramMap));
                     calcParamVO.setStagingRatio(computeModeMapper.stagingRatio_5(paramMap));
                     calcParamVO.setTotalRepayment(computeModeMapper.totalRepayment_5(paramMap));
-                }else{
-                    calcParamVO.setBankPeriodPrincipal(loanAmt);
-                    calcParamVO.setEachMonthRepay(computeModeMapper.eachMonthRepay_5(paramMap));
-                    calcParamVO.setFirstRepayment(computeModeMapper.firstRepayment_5(paramMap));
-                    calcParamVO.setStagingRatio(computeModeMapper.stagingRatio_5(paramMap));
-                    calcParamVO.setTotalRepayment(computeModeMapper.totalRepayment_5(paramMap));
-                }
+
 
                 break;
             case 6:
                 if(checkCreditTime(orderId)){
-                    calcParamVO.setBankPeriodPrincipal(computeModeMapper.periodPrincipal_6(paramMap));
-                    calcParamVO.setEachMonthRepay(computeModeMapper.eachMonthRepay_6(paramMap));
-                    calcParamVO.setFirstRepayment(computeModeMapper.firstRepayment_6(paramMap));
-                    calcParamVO.setLoanInterest(computeModeMapper.loanInterest_6(paramMap));
-                    calcParamVO.setBankFee(computeModeMapper.bankFee_6(paramMap));
-                    calcParamVO.setTotalRepayment(computeModeMapper.totalRepayment_6(paramMap));
-                    calcParamVO.setStagingRatio(computeModeMapper.stagingRatio_6(paramMap));
+                    calcParamVO.setBankPeriodPrincipal(computeModeMapper.periodPrincipal_new_6(paramMap));
+                    calcParamVO.setEachMonthRepay(computeModeMapper.eachMonthRepay_new_6(paramMap));
+                    calcParamVO.setFirstRepayment(computeModeMapper.firstRepayment_new_6(paramMap));
+                    calcParamVO.setLoanInterest(computeModeMapper.loanInterest_new_6(paramMap));
+                    calcParamVO.setBankFee(computeModeMapper.bankFee_new_6(paramMap));
+                    calcParamVO.setTotalRepayment(computeModeMapper.totalRepayment_new_6(paramMap));
+                    calcParamVO.setStagingRatio(computeModeMapper.stagingRatio_new_6(paramMap));
                 }else{
                     calcParamVO.setBankPeriodPrincipal(computeModeMapper.periodPrincipal_6(paramMap));
                     calcParamVO.setEachMonthRepay(computeModeMapper.eachMonthRepay_6(paramMap));
@@ -174,41 +159,23 @@ public class ComputeModeImpl implements ComputeModeService{
 
                 break;
             case 7:
-                if(checkCreditTime(orderId)){
-                    calcParamVO.setBankPeriodPrincipal(loanAmt);
-                    calcParamVO.setEachMonthRepay(computeModeMapper.eachMonthRepay_7(paramMap));
-                    calcParamVO.setFirstRepayment(computeModeMapper.firstRepayment_7(paramMap));
-                    calcParamVO.setBankFee(computeModeMapper.bankFee_7(paramMap));
-                    calcParamVO.setTotalRepayment(computeModeMapper.totalRepayment_7(paramMap));
-                    calcParamVO.setStagingRatio(computeModeMapper.stagingRatio_7(paramMap));
-                }else{
-                    calcParamVO.setBankPeriodPrincipal(loanAmt);
-                    calcParamVO.setEachMonthRepay(computeModeMapper.eachMonthRepay_7(paramMap));
-                    calcParamVO.setFirstRepayment(computeModeMapper.firstRepayment_7(paramMap));
-                    calcParamVO.setBankFee(computeModeMapper.bankFee_7(paramMap));
-                    calcParamVO.setTotalRepayment(computeModeMapper.totalRepayment_7(paramMap));
-                    calcParamVO.setStagingRatio(computeModeMapper.stagingRatio_7(paramMap));
-                }
 
-                break;
+                    calcParamVO.setBankPeriodPrincipal(loanAmt);
+                    calcParamVO.setEachMonthRepay(computeModeMapper.eachMonthRepay_7(paramMap));
+                    calcParamVO.setFirstRepayment(computeModeMapper.firstRepayment_7(paramMap));
+                    calcParamVO.setBankFee(computeModeMapper.bankFee_7(paramMap));
+                    calcParamVO.setTotalRepayment(computeModeMapper.totalRepayment_7(paramMap));
+                    calcParamVO.setStagingRatio(computeModeMapper.stagingRatio_7(paramMap));
+                     break;
             case 8:
-                if(checkCreditTime(orderId)){
-                    calcParamVO.setBankPeriodPrincipal(loanAmt);
-                    calcParamVO.setEachMonthRepay(computeModeMapper.eachMonthRepay_8(paramMap));
-                    calcParamVO.setFirstRepayment(computeModeMapper.firstRepayment_8(paramMap));
-                    calcParamVO.setBankFee(computeModeMapper.bankFee_8(paramMap));
-                    calcParamVO.setTotalRepayment(computeModeMapper.totalRepayment_8(paramMap));
-                    calcParamVO.setStagingRatio(computeModeMapper.stagingRatio_8(paramMap));
-                }else{
-                    calcParamVO.setBankPeriodPrincipal(loanAmt);
-                    calcParamVO.setEachMonthRepay(computeModeMapper.eachMonthRepay_8(paramMap));
-                    calcParamVO.setFirstRepayment(computeModeMapper.firstRepayment_8(paramMap));
-                    calcParamVO.setBankFee(computeModeMapper.bankFee_8(paramMap));
-                    calcParamVO.setTotalRepayment(computeModeMapper.totalRepayment_8(paramMap));
-                    calcParamVO.setStagingRatio(computeModeMapper.stagingRatio_8(paramMap));
-                }
 
-            break;
+                    calcParamVO.setBankPeriodPrincipal(loanAmt);
+                    calcParamVO.setEachMonthRepay(computeModeMapper.eachMonthRepay_8(paramMap));
+                    calcParamVO.setFirstRepayment(computeModeMapper.firstRepayment_8(paramMap));
+                    calcParamVO.setBankFee(computeModeMapper.bankFee_8(paramMap));
+                    calcParamVO.setTotalRepayment(computeModeMapper.totalRepayment_8(paramMap));
+                    calcParamVO.setStagingRatio(computeModeMapper.stagingRatio_8(paramMap));
+                    break;
         }
         //银行分期本金新公式计算
         calcParamVO.setBankPeriodPrincipalNew(computeModeMapper.periodPrincipal_new(paramMap));
