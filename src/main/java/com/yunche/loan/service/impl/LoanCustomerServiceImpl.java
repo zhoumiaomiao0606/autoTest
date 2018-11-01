@@ -35,6 +35,8 @@ import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
 import static com.yunche.loan.config.constant.LoanCustomerConst.*;
 import static com.yunche.loan.config.constant.LoanFileConst.UPLOAD_TYPE_NORMAL;
 import static com.yunche.loan.config.constant.LoanOrderProcessConst.ORDER_STATUS_CANCEL;
+import static com.yunche.loan.config.task.BankCreditRecordScheduledTask.doAutoRejectTask_RANDOM;
+import static com.yunche.loan.service.impl.LoanProcessServiceImpl.NEW_LINE;
 
 /**
  * Created by zhouguoliang on 2018/1/29.
@@ -414,10 +416,18 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
         Preconditions.checkArgument(StringUtils.isNotBlank(ids), "ids不能为空");
         Preconditions.checkNotNull(enableType, "enableType不能为空");
 
-        System.out.println();
-        logger.info("=====================START========================");
-        logger.info("=====================enable=======================");
-        logger.info("ids : {} , enableType : {}", ids, enableType);
+
+        Long random = null;
+        try {
+            random = doAutoRejectTask_RANDOM.get();
+        } catch (Exception ex) {
+            logger.error("ThreadLocal get error!   msg : {}", ex.getMessage());
+        }
+        logger.info(NEW_LINE);
+
+
+        logger.info("=====================START     enable========================     >>>     random : {}", random);
+        logger.info("ids : {} , enableType : {}       >>>     random : {}", ids, enableType, random);
 
         // 1、更新所选客户 打回状态：1 -> 已打回(可编辑)
         List<Long> idList = Arrays.stream(ids.split("\\,"))
@@ -425,16 +435,16 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
                 .map(Long::valueOf)
                 .collect(Collectors.toList());
 
-        logger.info("idList : {}", idList);
+        logger.info("idList : {}       >>>     random : {}", idList, random);
 
         Preconditions.checkArgument(!CollectionUtils.isEmpty(idList), "ids不能为空");
 
 
-        logger.info("batchUpdateEnable      >>>     START");
+        logger.info("batchUpdateEnable      START       >>>     random : {}", random);
         long count = loanCustomerDOMapper.batchUpdateEnable(idList, BaseConst.K_YORN_YES, enableType);
         List<LoanCustomerDO> debug_all_customer = loanCustomerDOMapper.listByPrincipalCustIdAndType(idList.get(0), null, VALID_STATUS);
-        logger.info("batchUpdateEnable      >>>     END      >>>        count : {}  ,   debug_all_customer : {}",
-                count, JSON.toJSONString(debug_all_customer));
+        logger.info("batchUpdateEnable      END      >>>        count : {}  ,   debug_all_customer : {}       >>>     random : {}",
+                count, JSON.toJSONString(debug_all_customer), random);
 
 
         // 2、打回标记重置   此次未打回的客户全部重置为：  0 -> 未打回(不可编辑)
@@ -444,25 +454,24 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
         Preconditions.checkNotNull(principalCustId, "客户异常，无关联主贷人！客户ID=" + idList.get(0));
 
         List<Long> allCustomerId = loanCustomerDOMapper.listIdByPrincipalCustIdAndType(principalCustId, null, VALID_STATUS);
-        logger.info("allCustomerId : {}", JSON.toJSONString(allCustomerId));
+        logger.info("allCustomerId : {}     >>>     random : {}", JSON.toJSONString(allCustomerId), random);
         allCustomerId.removeAll(idList);
-        logger.info("removeAll -> idList : {}  >>>后>>>   allCustomerId : {}",
-                JSON.toJSONString(idList), JSON.toJSONString(allCustomerId));
+        logger.info("removeAll -> idList : {}  >>>后>>>   allCustomerId : {}     >>>     random : {}",
+                JSON.toJSONString(idList), JSON.toJSONString(allCustomerId), random);
 
         if (!CollectionUtils.isEmpty(allCustomerId)) {
 
             // 其他客户  >>  重置为：0 -> 未打回(不可编辑)
             long count2 = loanCustomerDOMapper.batchUpdateEnable(allCustomerId, BaseConst.K_YORN_NO, null);
-            logger.info("count2 : {}", count2);
-            List<LoanCustomerDO> debug_all_customer_2 = loanCustomerDOMapper.listByPrincipalCustIdAndType(idList.get(0), null, VALID_STATUS);
-            logger.info("batchUpdateEnable      >>>     END      >>>        " +
-                    "debug_all_customer_2 : {}", JSON.toJSONString(debug_all_customer_2));
+            logger.info("count2 : {}     >>>     random : {}", count2, random);
+            List<LoanCustomerDO> debug_all_customer_2 = loanCustomerDOMapper.listByPrincipalCustIdAndType(principalCustId, null, VALID_STATUS);
+            logger.info("batchUpdateEnable  END      >>>        debug_all_customer_2 : {}       >>>     random : {}",
+                    JSON.toJSONString(debug_all_customer_2), random);
         }
 
 
-        logger.info("=====================enable=======================");
-        logger.info("=====================END==========================");
-        System.out.println();
+        logger.info("=====================END   enable==========================     >>>     random : {}", random);
+        logger.info(NEW_LINE);
 
         return count;
     }
