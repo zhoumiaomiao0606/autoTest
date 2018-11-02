@@ -149,7 +149,7 @@
 	v.engine_number AS engineNo,
 	v.registration_certificate_number AS registrationCertificateNo,
 	v.vehicle_identification_number AS vin,
-	v.customize_brand AS carbrand,
+	concat(useGetCarName(car.car_detail_id),model.NAME)    AS carbrand,
 	son.cumulative_breach_number as  overdueNumber,
 	son.optimal_return as  overdueAmount,
 CASE
@@ -167,7 +167,7 @@ CASE
         ELSE
         NULL END
 	AS carPrpperty,
-	car.car_category AS carType,
+	v.car_category AS carType,
 	loan_financial_plan.car_price AS carPrice,
 	loan_financial_plan.loan_amount as  loanAmount
 FROM
@@ -176,6 +176,8 @@ FROM
 	LEFT JOIN loan_customer customer ON main_order.loan_customer_id = customer.id
 	LEFT JOIN loan_base_info loan ON main_order.loan_base_info_id = loan.id
 	LEFT JOIN loan_car_info car ON main_order.loan_car_info_id = car.id
+	LEFT JOIN car_detail detail ON detail.id = car.car_detail_id
+        LEFT JOIN car_model model ON model.id = detail.model_id
 	LEFT JOIN employee salesman ON loan.salesman_id = salesman.id
 	LEFT JOIN partner partner ON loan.partner_id = partner.id
 	LEFT JOIN loan_financial_plan ON main_order.loan_financial_plan_id = loan_financial_plan.id
@@ -422,7 +424,7 @@ FROM
   v.engine_number AS engineNo,
   v.registration_certificate_number AS registrationCertificateNo,
   v.vehicle_identification_number AS vin,
-  v.customize_brand AS carbrand,
+  concat(useGetCarName(car.car_detail_id),model.NAME)    AS carbrand,
   son.cumulative_breach_number as  overdueNumber,
   son.optimal_return as  overdueAmount,
 CASE
@@ -440,7 +442,7 @@ CASE
         ELSE
         NULL END
   AS carPrpperty,
-  car.car_category AS carType,
+  v.car_category AS carType,
   loan_financial_plan.car_price AS carPrice,
   loan_financial_plan.loan_amount as loanAmount
 FROM
@@ -449,6 +451,8 @@ FROM
   LEFT JOIN loan_customer customer ON main_order.loan_customer_id = customer.id
   LEFT JOIN loan_base_info loan ON main_order.loan_base_info_id = loan.id
   LEFT JOIN loan_car_info car ON main_order.loan_car_info_id = car.id
+  LEFT JOIN car_detail detail ON detail.id = car.car_detail_id
+        LEFT JOIN car_model model ON model.id = detail.model_id
   LEFT JOIN employee salesman ON loan.salesman_id = salesman.id
   LEFT JOIN partner partner ON loan.partner_id = partner.id
   LEFT JOIN loan_financial_plan ON main_order.loan_financial_plan_id = loan_financial_plan.id
