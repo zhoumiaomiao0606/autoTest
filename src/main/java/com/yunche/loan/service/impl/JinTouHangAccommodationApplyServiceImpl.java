@@ -8,8 +8,8 @@ import com.yunche.loan.config.constant.IDict;
 import com.yunche.loan.config.constant.ProcessApprovalConst;
 import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.result.ResultBean;
-import com.yunche.loan.config.util.POIUtil;
-import com.yunche.loan.config.util.StringUtil;
+import com.yunche.loan.config.util.*;
+import com.yunche.loan.config.util.Process;
 import com.yunche.loan.domain.entity.*;
 import com.yunche.loan.domain.param.AccommodationApplyParam;
 import com.yunche.loan.domain.param.ApprovalParam;
@@ -20,18 +20,18 @@ import com.yunche.loan.service.JinTouHangAccommodationApplyService;
 import com.yunche.loan.service.LoanProcessBridgeService;
 import com.yunche.loan.service.LoanQueryService;
 import org.apache.commons.lang.ArrayUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
+import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.yunche.loan.config.constant.LoanProcessEnum.BRIDGE_HANDLE;
@@ -42,7 +42,7 @@ import static com.yunche.loan.config.constant.ProcessApprovalConst.ACTION_ROLL_B
 
 public class JinTouHangAccommodationApplyServiceImpl implements JinTouHangAccommodationApplyService {
 
-
+    private Logger logger = LoggerFactory.getLogger(JinTouHangAccommodationApplyServiceImpl.class);
     @Autowired
     private ThirdPartyFundBusinessDOMapper thirdPartyFundBusinessDOMapper;
 
@@ -76,6 +76,18 @@ public class JinTouHangAccommodationApplyServiceImpl implements JinTouHangAccomm
 
     @Autowired
     private BankLendRecordDOMapper bankLendRecordDOMapper;
+
+    @Autowired
+    private LoanCustomerDOMapper loanCustomerDOMapper;
+
+    @Autowired
+    private LoanBaseInfoDOMapper loanBaseInfoDOMapper;
+
+    @Autowired
+    private LoanHomeVisitDOMapper loanHomeVisitDOMapper;
+
+    @Resource
+    private AsyncUpload asyncUpload;
 
 
 //    @Override
@@ -143,7 +155,7 @@ public class JinTouHangAccommodationApplyServiceImpl implements JinTouHangAccomm
         BeanUtils.copyProperties(param, aDo);
         aDo.setBridgeProcecssId(param.getIdPair().getBridgeProcessId());
         aDo.setOrderId(param.getIdPair().getOrderId());
-        aDo.setLendStatus(IDict.K_CJZT.K_CJZT_YES);
+        aDo.setLendStatus(IDict.K_CJZT.K_CJZT_INHAND);
         aDo.setLendAmount(param.getLendAmount());
         ThirdPartyFundBusinessDO fundBusinessDO = thirdPartyFundBusinessDOMapper.selectByPrimaryKey(param.getIdPair().getBridgeProcessId());
         int count;
@@ -153,6 +165,24 @@ public class JinTouHangAccommodationApplyServiceImpl implements JinTouHangAccomm
             count = thirdPartyFundBusinessDOMapper.insertSelective(aDo);
         }
         Preconditions.checkArgument(count > 0, "保存失败");
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(param.getIdPair().getOrderId());
+        LoanCustomerDO loanCustomerDO = loanCustomerDOMapper.selectByPrimaryKey(loanOrderDO.getLoanCustomerId(),new Byte("0"));
+        LoanBaseInfoDO loanBaseInfoDO = loanBaseInfoDOMapper.selectByPrimaryKey(loanOrderDO.getLoanBaseInfoId());
+        LoanHomeVisitDO loanHomeVisitDO = loanHomeVisitDOMapper.selectByPrimaryKey(loanOrderDO.getLoanHomeVisitId());
+        asyncUpload.execute(new Process() {
+            @Override
+            public void process() {
+                JTXCommunicationUtil jtxCommunicationUtil = new JTXCommunicationUtil();
+                Boolean flag = jtxCommunicationUtil.borrowerInfoAuth(loanCustomerDO.getName(),loanCustomerDO.getIdCard(),loanCustomerDO.getMobile(),
+                        loanBaseInfoDO.getBank(),loanHomeVisitDO.getDebitCard());
+                if(flag){
+                    //jtxCommunicationUtil.assetRelease();
+                }else{
+
+                }
+            }
+        });
+
 
         return ResultBean.ofSuccess("借款申请成功");
     }
@@ -487,6 +517,19 @@ public class JinTouHangAccommodationApplyServiceImpl implements JinTouHangAccomm
         } else {
             return ResultBean.ofSuccess("0");
         }
+    }
+
+    @Override
+    public byte[] jtxResult(String param) {
+        try {
+            String xml = JTXByteUtil.decrypt(param,"netwxactive","GBK","des");
+            logger.info("ASSET_03返回信息:"+xml);
+            Map map = MapXmlUtil.Xml2Map(xml);
+        } catch (Exception e) {
+            logger.error("解析金投行数据出错",e);
+        }
+        JTXCommunicationUtil jtxCommunicationUtil = new JTXCommunicationUtil();
+        return jtxCommunicationUtil.buildResultInfo("0000","12","12");
     }
 
     @Override

@@ -128,7 +128,8 @@ public class LoanFinancialPlanServiceImpl implements LoanFinancialPlanService {
             loanFinancialPlanVO.setPrincipalInterestSum(calcParamVO.getTotalRepayment());
 
             //需要额外判断一下该订单的征信申请时间，如果是2018年11月1日之前申请的，则使用老版公式
-            LoanProcessLogDO loanProcessLog = loanProcessLogService.getLoanProcessLog(loanFinancialPlanParam.getOrderId(), CREDIT_APPLY.getCode());
+          LoanProcessLogDO loanProcessLog = loanProcessLogService.getLoanProcessLog(loanFinancialPlanParam.getOrderId(), CREDIT_APPLY.getCode());
+            //LoanProcessLogDO loanProcessLog = null;
             if(loanProcessLog!=null){
                 if(loanProcessLog.getCreateTime().before(DateUtil.getDate("20181101"))){
                     // 银行分期本金

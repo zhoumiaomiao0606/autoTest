@@ -163,4 +163,10 @@ public class JinTouHangAccommodationApplyController {
     ResultBean detail(@RequestParam("bridgeProcessId") Long bridgeProcessId,@RequestParam("orderId") Long orderId) {
         return accommodationApplyService.detail(bridgeProcessId,orderId);
     }
+
+    @GetMapping("/jtxresult")
+    byte[] jtxResult(@RequestParam("param")String param){
+        return accommodationApplyService.jtxResult(param);
+
+    }
 }

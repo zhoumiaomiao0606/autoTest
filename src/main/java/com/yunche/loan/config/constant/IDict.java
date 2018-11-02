@@ -403,6 +403,10 @@ public class IDict {
          * 拒绝
          */
         public static final Byte K_CJZT_REJECT = 3;
+        /**
+         * 处理中
+         */
+        public static final Byte K_CJZT_INHAND = 4;
 
     }
 

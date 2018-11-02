@@ -12,11 +12,12 @@
         <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate"/>
         <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify"/>
         <result column="feature" jdbcType="VARCHAR" property="feature"/>
+        <result column="debit_card" jdbcType="VARCHAR" property="debitCard"/>
     </resultMap>
 
     <sql id="Base_Column_List">
     id, visit_salesman_id, visit_date, survey_report, visit_address, files, status, gmt_create, 
-    gmt_modify, feature
+    gmt_modify, feature, debit_card
   </sql>
 
     <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
@@ -39,11 +40,11 @@
         insert into loan_home_visit (id, visit_salesman_id, visit_date,
         survey_report, visit_address, files,
         status, gmt_create, gmt_modify,
-        feature)
+        feature,debit_card)
         values (#{id,jdbcType=BIGINT}, #{visitSalesmanId,jdbcType=BIGINT}, #{visitDate,jdbcType=DATE},
         #{surveyReport,jdbcType=VARCHAR}, #{visitAddress,jdbcType=VARCHAR}, #{files,jdbcType=VARCHAR},
         #{status,jdbcType=TINYINT}, #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModify,jdbcType=TIMESTAMP},
-        #{feature,jdbcType=VARCHAR})
+        #{feature,jdbcType=VARCHAR},#{debitCard,jdbcType=VARCHAR})
     </insert>
 
     <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.LoanHomeVisitDO">
@@ -83,6 +84,9 @@
             <if test="feature != null">
                 feature,
             </if>
+            <if test="debitCard != null">
+                debit_card,
+            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="id != null">
@@ -114,6 +118,9 @@
             </if>
             <if test="feature != null">
                 #{feature,jdbcType=VARCHAR},
+            </if>
+            <if test="debitCard != null">
+                #{debitCard,jdbcType=VARCHAR},
             </if>
         </trim>
     </insert>
@@ -148,6 +155,9 @@
             <if test="feature != null">
                 feature = #{feature,jdbcType=VARCHAR},
             </if>
+            <if test="debitCard != null">
+                debit_card = #{debitCard,jdbcType=VARCHAR},
+            </if>
         </set>
         where id = #{id,jdbcType=BIGINT}
     </update>
@@ -162,7 +172,8 @@
       status = #{status,jdbcType=TINYINT},
       gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
       gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
-      feature = #{feature,jdbcType=VARCHAR}
+      feature = #{feature,jdbcType=VARCHAR},
+      debit_card = #{debitCard,jdbcType=VARCHAR}
     where id = #{id,jdbcType=BIGINT}
   </update>
 
