@@ -455,8 +455,7 @@
             format(useGetBankRate(financial.financial_product_id,financial.loan_time),3)
                                                                                                     AS financial_bank_rate,
             (100-financial.down_payment_ratio)                                                      AS financial_loan_ratio,
-            useGetBankFee(product.formula_id,financial.loan_amount,financial.sign_rate,useGetBankRate(financial.financial_product_id,financial.loan_time),financial.loan_time)
-                                                                                                    AS financial_bank_fee,
+            financial.bank_fee                                                                      AS financial_bank_fee,
             financial.financial_product_id                                                          AS financial_product_id,
             financial.financial_product_name                                                        AS financial_product_name,
             format(financial.sign_rate,3)                                                           AS financial_sign_rate,
