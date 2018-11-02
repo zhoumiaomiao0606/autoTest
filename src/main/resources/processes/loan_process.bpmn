@@ -492,6 +492,9 @@
     <sequenceFlow id="flow302" name="[电审-反审]弃单" sourceRef="exclusivegateway45" targetRef="endevent44">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 2}]]></conditionExpression>
     </sequenceFlow>
+    <userTask id="usertask_collection_workbench" name="电催处理" activiti:candidateGroups="管理员,总经理,培训经理,催收主管"></userTask>
+    <userTask id="usertask_overdue_collection_list" name="逾期催缴清单文件" activiti:candidateGroups="管理员,总经理,培训经理,催收主管"></userTask>
+    <userTask id="usertask_un_mortgage_file" name="未抵押明细文件" activiti:candidateGroups="管理员,总经理,培训经理,催收主管"></userTask>
   </process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_loan_process">
     <bpmndi:BPMNPlane bpmnElement="loan_process" id="BPMNPlane_loan_process">
@@ -878,6 +881,15 @@
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="endevent44" id="BPMNShape_endevent44">
         <omgdc:Bounds height="35.0" width="35.0" x="3964.0" y="2510.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="usertask_collection_workbench" id="BPMNShape_usertask_collection_workbench">
+        <omgdc:Bounds height="55.0" width="105.0" x="1278.0" y="20.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="usertask_overdue_collection_list" id="BPMNShape_usertask_overdue_collection_list">
+        <omgdc:Bounds height="55.0" width="105.0" x="1278.0" y="113.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="usertask_un_mortgage_file" id="BPMNShape_usertask_un_mortgage_file">
+        <omgdc:Bounds height="55.0" width="105.0" x="1278.0" y="206.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge bpmnElement="flow1" id="BPMNEdge_flow1">
         <omgdi:waypoint x="333.0" y="1086.0"></omgdi:waypoint>
