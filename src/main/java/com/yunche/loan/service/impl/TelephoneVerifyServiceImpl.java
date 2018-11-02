@@ -91,7 +91,7 @@ public class TelephoneVerifyServiceImpl implements TelephoneVerifyService {
 
         LoanBaseInfoDO loanBaseInfoDO = loanBaseInfoDOMapper.getTotalInfoByOrderId(orderId);
         String tmpApplyLicensePlateArea = null;
-        if (loanBaseInfoDO.getAreaId()!=null) {
+        if (loanBaseInfoDO!=null && loanBaseInfoDO.getAreaId()!=null) {
             BaseAreaDO baseAreaDO = baseAreaDOMapper.selectByPrimaryKey(loanBaseInfoDO.getAreaId(), VALID_STATUS);
             //（个性化）如果上牌地是区县一级，则返回形式为 省+区
             if("3".equals(String.valueOf(baseAreaDO.getLevel()))){

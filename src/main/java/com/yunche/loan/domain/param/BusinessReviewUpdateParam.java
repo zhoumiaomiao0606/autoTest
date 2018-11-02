@@ -4,9 +4,15 @@ import lombok.Data;
 import org.hibernate.validator.constraints.NotBlank;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Data
 public class BusinessReviewUpdateParam  {
+
+    //规则信息集合
+    private List<RuleDetailPara> listRules;
+
+    private String listRule;
 
     @NotBlank
     private String order_id;//订单号

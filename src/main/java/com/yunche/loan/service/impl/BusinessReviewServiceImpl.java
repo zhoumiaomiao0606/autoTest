@@ -3,6 +3,7 @@ package com.yunche.loan.service.impl;
 import com.google.common.base.Preconditions;
 import com.google.gson.Gson;
 import com.yunche.loan.config.exception.BizException;
+import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.BeanPlasticityUtills;
 import com.yunche.loan.domain.entity.*;
 import com.yunche.loan.domain.param.BusinessReviewCalculateParam;
@@ -103,7 +104,7 @@ public class BusinessReviewServiceImpl implements BusinessReviewService {
         //请求财务系统初始数据
         ParternerRuleParam param =new ParternerRuleParam();
         param.setPartnerId(loanBaseInfoDO.getPartnerId());
-        param.setPayMonth(universalInfoVO.getPay_month());
+        param.setPayMonth(universalInfoVO.getPartner_pay_month());
         param.setCarType(universalInfoVO.getCar_type());
         param.setFinancialLoanAmount(universalInfoVO.getFinancial_loan_amount());
         param.setFinancialBankPeriodPrincipal(universalInfoVO.getFinancial_bank_period_principal());
@@ -118,7 +119,7 @@ public class BusinessReviewServiceImpl implements BusinessReviewService {
         param.setAreaId(universalInfoVO.getVehicle_apply_license_plate_area_id());
 
 
-        /*String financeResult = businessReviewManager.financeUnisal(param, "/costcalculation");
+        String financeResult = businessReviewManager.financeUnisal(param, "/costcalculation");
         FinanceResult financeResult1 = new FinanceResult();
         if (financeResult !=null && !"".equals(financeResult))
         {
@@ -126,7 +127,7 @@ public class BusinessReviewServiceImpl implements BusinessReviewService {
              financeResult1 = gson.fromJson(financeResult, FinanceResult.class);
         }
 
-        recombinationVO.setFinanceResult1(financeResult1);*/
+        recombinationVO.setFinanceResult1(financeResult1);
 
         return recombinationVO;
     }
@@ -136,6 +137,13 @@ public class BusinessReviewServiceImpl implements BusinessReviewService {
         LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(Long.valueOf(param.getOrder_id()));
         if (loanOrderDO == null) {
             throw new BizException("此业务单不存在");
+        }
+
+        if (param.getListRules()!=null && param.getListRules().size()>0)
+        {
+            Gson gson = new Gson();
+            String objectStr = gson.toJson(param.getListRule());//把对象转为JSON格式的字符串
+            param.setListRule(objectStr);
         }
 
         /*CostCalculateInfoVO costCalculateInfoVO = loanQueryDOMapper.selectCostCalculateInfo(Long.valueOf(param.getOrder_id()));
@@ -351,7 +359,7 @@ public class BusinessReviewServiceImpl implements BusinessReviewService {
     }
 
     @Override
-    public String parternerRuleSharpTuning(ParternerRuleSharpTuningeParam param)
+    public ResultBean parternerRuleSharpTuning(ParternerRuleSharpTuningeParam param)
     {
         Preconditions.checkNotNull(param.getCostType(),"消费类型不能为空");
         Preconditions.checkNotNull(param.getOrderId(),"订单id不能为空");
@@ -361,7 +369,7 @@ public class BusinessReviewServiceImpl implements BusinessReviewService {
         LoanBaseInfoDO loanBaseInfoDO = loanBaseInfoDOMapper.getTotalInfoByOrderId(param.getOrderId());
 
         param.setPartnerId(loanBaseInfoDO.getPartnerId());
-        param.setPayMonth(universalInfoVO.getPay_month());
+        param.setPayMonth(universalInfoVO.getPartner_pay_month());
         param.setCarType(universalInfoVO.getCar_type());
         param.setFinancialLoanAmount(universalInfoVO.getFinancial_loan_amount());
         param.setFinancialBankPeriodPrincipal(universalInfoVO.getFinancial_bank_period_principal());
@@ -371,8 +379,20 @@ public class BusinessReviewServiceImpl implements BusinessReviewService {
         //加收保证金
         param.setBail(universalInfoVO.getFinancial_cash_deposit());
 
+        try {
+            String financeResult = businessReviewManager.financeUnisal(param,"/costcalculation/detail");
+            FinanceResult financeResult1 = new FinanceResult();
+            if (financeResult !=null && !"".equals(financeResult))
+            {
+                Gson gson = new Gson();
+                financeResult1 = gson.fromJson(financeResult, FinanceResult.class);
+            }
 
-        return businessReviewManager.financeUnisal(param,"/costcalculation/detail");
+            return ResultBean.ofSuccess(financeResult1);
+        }catch (Exception e)
+        {
+            return ResultBean.ofError("请求财务错误");
+        }
     }
 
 

@@ -25,6 +25,7 @@
     <result column="other_fee_type" property="other_fee_type" jdbcType="TINYINT" />
     <result column="status" property="status" jdbcType="TINYINT" />
     <result column="feature" property="feature" jdbcType="VARCHAR" />
+    <result column="listrule" property="listrule" jdbcType="VARCHAR" />
 
     <result column="rebate_not_deducted" property="rebate_not_deducted" jdbcType="DECIMAL" />
   </resultMap>
@@ -33,7 +34,7 @@
     risk_fee, fair_assess_fee, apply_license_plate_out_province_fee, based_margin_fee, 
     service_fee_type, apply_license_plate_deposit_fee_type, performance_fee_type, install_gps_fee_type, 
     risk_fee_type, fair_assess_fee_type, apply_license_plate_out_province_fee_type, based_margin_fee_type, 
-    extra_fee, extra_fee_type, other_fee, other_fee_type, status, feature,rebate_not_deducted
+    extra_fee, extra_fee_type, other_fee, other_fee_type, status, feature,listrule,rebate_not_deducted
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
     select 
@@ -117,6 +118,9 @@
       <if test="feature != null" >
         feature,
       </if>
+      <if test="listrule != null" >
+        listrule,
+      </if>
       <if test="rebate_not_deducted != null" >
         rebate_not_deducted,
       </if>
@@ -191,6 +195,9 @@
       <if test="feature != null" >
         #{feature,jdbcType=VARCHAR},
       </if>
+      <if test="listrule != null" >
+        #{listrule,jdbcType=VARCHAR},
+      </if>
       <if test="rebate_not_deducted != null" >
         #{rebate_not_deducted,jdbcType=DECIMAL},
       </if>
@@ -264,6 +271,9 @@
       </if>
       <if test="feature != null" >
         feature = #{feature,jdbcType=VARCHAR},
+      </if>
+      <if test="listrule != null" >
+        listrule = #{listrule,jdbcType=VARCHAR},
       </if>
       <if test="rebate_not_deducted != null" >
         rebate_not_deducted = #{rebate_not_deducted,jdbcType=DECIMAL},

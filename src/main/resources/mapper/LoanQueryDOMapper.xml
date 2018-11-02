@@ -438,6 +438,7 @@
             car.car_key                                                                             AS car_key,
             car.info                                                                                AS car_info,
             car.pay_month                                                                                AS pay_month,
+            partner.pay_month                                                                                AS partner_pay_month,
             vehicle.color                                                                           AS vehicle_color,
             vehicle.now_driving_license_owner                                                       AS vehicle_now_driving_license_owner,
             vehicle.old_driving_license_owner                                                       AS vehicle_old_driving_license_owner,

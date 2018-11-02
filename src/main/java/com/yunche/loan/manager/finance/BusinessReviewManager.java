@@ -17,7 +17,7 @@ import static com.yunche.loan.config.constant.BaseExceptionEnum.EL00000003;
 public class BusinessReviewManager {
     private static final Logger LOG = LoggerFactory.getLogger(BusinessReviewManager.class);
 
-    private static final String HOST = "http://118.31.74.254:8012";
+    private static final String HOST = "http://47.96.78.20:8012";
 
 
    /* public ResultBean parternerRule(ParternerRuleParam param)

@@ -52,5 +52,7 @@ public class CostDetailsDO {
 
     private String feature;
 
+    private String listrule;
+
     private BigDecimal rebate_not_deducted;
 }
