@@ -265,10 +265,14 @@
         <![CDATA[
 
 
+
+
         SELECT
               case when max( t.collection_level ) = 7 then 1 else 0 end AS flag
               FROM
               ( SELECT ug.* FROM employee_rela_user_group eg INNER JOIN user_group ug ON eg.user_group_id = ug.id AND eg.employee_id = #{loginUserId} ) t
+
+
 
 
         ]]>
@@ -1870,6 +1874,77 @@
 
 
     </select>
+
+    <!--金融方案-->
+    <select id="selectFinancialSchemeNew" resultType="com.yunche.loan.domain.vo.FinancialSchemeVO"
+            parameterType="java.lang.Long">
+        select
+        o.id AS order_id,
+        c.id AS customer_id,
+        c.name AS cname,
+        c.id_card AS id_card,
+        c.signature_type AS customer_signature_type,
+        c.ctelzone AS customer_ctelzone,
+        f.financial_product_name AS financial_product_name,
+        f.financial_product_id AS financial_product_id,
+        h.license_plate_number AS license_plate_number,
+        h.registration_certificate_number AS registration_certificate_number,
+        h.apply_license_plate_date AS apply_license_plate_date,
+        a.apply_license_plate_deposit_date AS apply_license_plate_deposit_date,
+        f.loan_time AS loan_time,
+        f.car_price AS car_price,
+        f.actual_car_price AS actual_car_price,
+        b.bank AS bank,
+        f.sign_rate AS sign_rate,
+        f.down_payment_money AS down_payment_money,
+        f.loan_amount AS loan_amount,
+        f.down_payment_ratio AS down_payment_ratio,
+        f.bank_period_principal AS bank_period_principal,
+        f.bank_fee AS bank_fee,
+        f.principal_interest_sum AS principal_interest_sum,
+        f.first_month_repay AS first_month_repay,
+        f.each_month_repay AS each_month_repay,
+        f.appraisal AS appraisal,
+        useCalculateStagingRatioNew(product.formula_id,f.loan_amount,f.sign_rate,useGetBankRate(f.financial_product_id,f.loan_time),f.car_price)
+        AS financial_bank_staging_ratio,
+        p.bank_rate AS bank_base_rate,
+        applay_quota(f.bank_period_principal,f.bank_fee) AS applayQuota,
+        product.category_superior AS category_superior,
+        par.name AS partner_name,
+        par.area_id AS partner_area_id
+
+
+        from (select * from loan_order where id = #{orderId,jdbcType=BIGINT}) o
+
+        left join loan_customer c on o.loan_customer_id= c.id
+
+        left join loan_base_info b on o.loan_base_info_id = b.id
+
+        left join partner par on par.id = b.partner_id
+
+        left join loan_car_info i on o.loan_car_info_id = i.id
+
+        left join loan_financial_plan f on o.loan_financial_plan_id = f.id
+
+        left join cost_details d on o.cost_details_id = d.id
+
+        left join remit_details r on o.remit_details_id = r.id
+
+        left join vehicle_information h on o.vehicle_information_id = h.id
+
+        left join apply_license_plate_deposit_info a on o.apply_license_plate_deposit_info_id = a.id
+
+        left join material_audit m on o.material_audit_id = m.id
+
+        left join loan_home_visit v on o.loan_home_visit_id = v.id
+
+        left join financial_product product on f.financial_product_id = product.prod_id
+
+        left join product_rate p on (p.prod_id = f.financial_product_id and p.loan_time = f.loan_time)
+
+
+    </select>
+
 
     <!--计算明细的信息-->
     <select id="selectCostCalculateInfo" resultType="com.yunche.loan.domain.vo.CostCalculateInfoVO"
