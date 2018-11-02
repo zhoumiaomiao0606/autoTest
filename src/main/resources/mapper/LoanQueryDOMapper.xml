@@ -33,7 +33,7 @@
 	        financial.bank_period_principal           AS financial_bank_period_principal,
 	        financial.loan_time                       as financial_loan_time,
             financial.appraisal                       as financial_appraisal,
-	        useGetBankFee(product.formula_id,financial.loan_amount,financial.sign_rate,useGetBankRate(financial.financial_product_id,financial.loan_time),financial.loan_time)
+            financial.bank_fee
                                                       AS financial_bank_fee,
             useCalculateStagingRatio(product.formula_id,financial.loan_amount,financial.sign_rate,useGetBankRate(financial.financial_product_id,financial.loan_time),financial.car_price)
                                                       AS financial_bank_staging_ratio,
@@ -572,7 +572,7 @@
                 financial.down_payment_money                                                        AS financial_down_payment_money,
                 financial.bank_period_principal                                                     AS financial_bank_period_principal,
                 financial.each_month_repay                                                          AS financial_each_month_repay,
-                useGetBankFee(product.formula_id,financial.loan_amount,financial.sign_rate,useGetBankRate(financial.financial_product_id,financial.loan_time),financial.loan_time)
+                financial.bank_fee
                                                                                                     AS financial_bank_fee,
                 useCalculateStagingRatio(product.formula_id,financial.loan_amount,financial.sign_rate,useGetBankRate(financial.financial_product_id,financial.loan_time),financial.car_price)
                                                                                                     AS financial_bank_staging_ratio,
