@@ -442,9 +442,7 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
 
         logger.info("batchUpdateEnable      START       >>>     random : {}", random);
         long count = loanCustomerDOMapper.batchUpdateEnable(idList, BaseConst.K_YORN_YES, enableType);
-        List<LoanCustomerDO> debug_all_customer = loanCustomerDOMapper.listByPrincipalCustIdAndType(idList.get(0), null, VALID_STATUS);
-        logger.info("batchUpdateEnable      END      >>>        count : {}  ,   debug_all_customer : {}       >>>     random : {}",
-                count, JSON.toJSONString(debug_all_customer), random);
+        logger.info("batchUpdateEnable      END      >>>        count : {}       >>>     random : {}", count, random);
 
 
         // 2、打回标记重置   此次未打回的客户全部重置为：  0 -> 未打回(不可编辑)
@@ -453,11 +451,17 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
         Long principalCustId = loanCustomerDO.getPrincipalCustId();
         Preconditions.checkNotNull(principalCustId, "客户异常，无关联主贷人！客户ID=" + idList.get(0));
 
+
+        List<LoanCustomerDO> debug_all_customer_1 = loanCustomerDOMapper.listByPrincipalCustIdAndType(principalCustId, null, VALID_STATUS);
+        logger.info("debug_all_customer_1 : {}       >>>     random : {}", JSON.toJSONString(debug_all_customer_1), random);
+
+
         List<Long> allCustomerId = loanCustomerDOMapper.listIdByPrincipalCustIdAndType(principalCustId, null, VALID_STATUS);
         logger.info("allCustomerId : {}     >>>     random : {}", JSON.toJSONString(allCustomerId), random);
         allCustomerId.removeAll(idList);
         logger.info("removeAll -> idList : {}  >>>后>>>   allCustomerId : {}     >>>     random : {}",
                 JSON.toJSONString(idList), JSON.toJSONString(allCustomerId), random);
+
 
         if (!CollectionUtils.isEmpty(allCustomerId)) {
 
