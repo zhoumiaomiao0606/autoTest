@@ -1,5 +1,6 @@
 package com.yunche.loan.mapper;
 
+import com.yunche.loan.config.anno.FunctionTime;
 import com.yunche.loan.domain.vo.*;
 import org.apache.ibatis.annotations.Param;
 
@@ -32,7 +33,12 @@ public interface LoanQueryDOMapper {
     BankInterfaceSerialReturnVO selectLastBankInterfaceSerialByTransCode(@Param("customerId") Long customerId,
                                                                          @Param("transCode") String transCode);
 
+
+    @FunctionTime
     ApplyDiviGeneralInfoVO selectApplyDiviGeneralInfo(Long orderId);
+
+    ApplyDiviGeneralInfoVO selectApplyDiviGeneralInfoNew(Long orderId);
+
 
     String selectLastBankInterfaceSerialStatusByTransCode(@Param("customerId") Long customerId,
                                                           @Param("transCode") String transCode);
@@ -81,8 +87,14 @@ public interface LoanQueryDOMapper {
 
     ApplyLicensePlateDepositInfoVO selectApplyLicensePlateDepositInfo(Long orderId);
 
+
+    @FunctionTime
     UniversalLoanFinancialPlanTempHisVO selectUniversalLoanFinancialPlanTempHis(@Param("orderId") Long orderId,
                                                                                 @Param("hisId") Long hisId);
+
+    UniversalLoanFinancialPlanTempHisVO selectUniversalLoanFinancialPlanTempHisNew(@Param("orderId") Long orderId,
+                                                                                   @Param("hisId") Long hisId);
+
 
     UniversalLoanRefundApplyVO selectUniversalLoanRefundApply(@Param("orderId") Long orderId,
                                                               @Param("refundId") Long refundId);
@@ -101,12 +113,20 @@ public interface LoanQueryDOMapper {
      * @param orderId
      * @return
      */
+    @FunctionTime
     UniversalInfoVO selectUniversalInfo(Long orderId);
+
+    UniversalInfoVO selectUniversalInfoNew(Long orderId);
+
 
     UniversalApprovalInfo selectUniversalApprovalInfo(@Param("taskDefinitionKey") String taskDefinitionKey,
                                                       @Param("orderId") Long orderId);
 
+    @FunctionTime
     UniversalLoanInfoVO selectUniversalLoanInfo(Long orderId);
+
+    UniversalLoanInfoVO selectUniversalLoanInfoNew(Long orderId);
+
 
     List<String> selectUniversalRelevanceOrderId(Long orderId);
 
@@ -284,7 +304,10 @@ public interface LoanQueryDOMapper {
 
     List<InsuranceRelevanceVO> selectInsuranceRelevance(Long insuranceInfoId);
 
+    @FunctionTime
     FinancialSchemeVO selectFinancialScheme(Long orderId);
+
+    FinancialSchemeVO selectFinancialSchemeNew(Long orderId);
 
     CostCalculateInfoVO selectCostCalculateInfo(Long orderId);
 
@@ -327,5 +350,5 @@ public interface LoanQueryDOMapper {
     List<CustomerOrderVO> selectCustomerOrder(@Param("name") String name);
 
 
-    List<Long> selectOrderIdByIdCard(@Param("idCard")String idCard);
+    List<Long> selectOrderIdByIdCard(@Param("idCard") String idCard);
 }

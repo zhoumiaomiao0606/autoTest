@@ -349,6 +349,30 @@
         a.id=#{orderId};
     </select>
 
+    <select id="selectProductInfoByOrderIdNew" parameterType="java.lang.Long" resultType="java.util.HashMap">
+        SELECT
+        c.category_superior AS categorySuperior,
+        d.bank_rate AS bankRate,
+        useCalculateStagingRatioNew (
+        c.formula_id,
+        b.loan_amount,
+        b.sign_rate,
+        useGetBankRate (
+        b.financial_product_id,
+        b.loan_time
+        ),
+        b.car_price
+        ) AS stagingRatio
+        FROM
+        loan_order a
+        LEFT JOIN loan_financial_plan b ON a.loan_financial_plan_id = b.id
+        LEFT JOIN financial_product c ON b.financial_product_id = c.prod_id
+        LEFT JOIN product_rate d ON c.prod_id = d.prod_id
+        AND b.loan_time = d.loan_time
+        WHERE
+        a.id=#{orderId};
+    </select>
+
     <select id="listAll" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
