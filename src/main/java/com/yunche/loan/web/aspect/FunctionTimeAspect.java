@@ -38,7 +38,6 @@ public class FunctionTimeAspect {
      * @param point
      */
     @Around("@annotation(com.yunche.loan.config.anno.FunctionTime)")
-
     public Object around(ProceedingJoinPoint point) throws Throwable {
 
 
@@ -79,8 +78,6 @@ public class FunctionTimeAspect {
         String newMethodName = methodName + "New";
 
         Class<?> clazz = method.getDeclaringClass();
-
-//        Class<? extends LoanQueryDOMapper> clazz = loanQueryDOMapper.getClass();
 
 
         Object result = null;
