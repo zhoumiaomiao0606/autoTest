@@ -6,10 +6,7 @@ import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.BeanPlasticityUtills;
 import com.yunche.loan.domain.entity.*;
-import com.yunche.loan.domain.param.BusinessReviewCalculateParam;
-import com.yunche.loan.domain.param.BusinessReviewUpdateParam;
-import com.yunche.loan.domain.param.ParternerRuleParam;
-import com.yunche.loan.domain.param.ParternerRuleSharpTuningeParam;
+import com.yunche.loan.domain.param.*;
 import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.manager.finance.BusinessReviewManager;
 import com.yunche.loan.mapper.*;
@@ -22,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
@@ -101,25 +99,34 @@ public class BusinessReviewServiceImpl implements BusinessReviewService {
         recombinationVO.setSupplement(loanQueryService.selectUniversalInfoSupplementHistory(orderId));
         recombinationVO.setCustomers(customers);
 
-        //请求财务系统初始数据
-        ParternerRuleParam param =new ParternerRuleParam();
-        param.setPartnerId(loanBaseInfoDO.getPartnerId());
-        param.setPayMonth(universalInfoVO.getPartner_pay_month());
-        param.setCarType(universalInfoVO.getCar_type());
-        param.setFinancialLoanAmount(universalInfoVO.getFinancial_loan_amount());
-        param.setFinancialBankPeriodPrincipal(universalInfoVO.getFinancial_bank_period_principal());
-        param.setRate(universalInfoVO.getFinancial_sign_rate());
-        param.setYear(universalInfoVO.getFinancial_loan_time());
-        param.setCarGpsNum(universalInfoVO.getCar_gps_num());
-        param.setBankAreaId(universalInfoVO.getBank_id());
+        //如果已经保存过的，则查询出原保存规则调用微调规则请求
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
+        if (loanOrderDO == null) {
+            throw new BizException("此业务单不存在");
+        }
+        Long costDetailsId = loanOrderDO.getCostDetailsId();//关联ID
 
-        //加收保证金
-        param.setBail(universalInfoVO.getFinancial_cash_deposit());
-        //上牌地城市id
-        param.setAreaId(universalInfoVO.getVehicle_apply_license_plate_area_id());
+        if (costDetailsId == null)
+        {
 
+            //请求财务系统初始数据
+            ParternerRuleParam param =new ParternerRuleParam();
+            param.setPartnerId(loanBaseInfoDO.getPartnerId());
+            param.setPayMonth(universalInfoVO.getPartner_pay_month());
+            param.setCarType(universalInfoVO.getCar_type());
+            param.setFinancialLoanAmount(universalInfoVO.getFinancial_loan_amount());
+            param.setFinancialBankPeriodPrincipal(universalInfoVO.getFinancial_bank_period_principal());
+            param.setRate(universalInfoVO.getFinancial_sign_rate());
+            param.setYear(universalInfoVO.getFinancial_loan_time());
+            param.setCarGpsNum(universalInfoVO.getCar_gps_num());
+            param.setBankAreaId(universalInfoVO.getBank_id());
 
-        String financeResult = businessReviewManager.financeUnisal(param, "/costcalculation");
+            //加收保证金
+            param.setBail(universalInfoVO.getFinancial_cash_deposit());
+            //上牌地城市id
+            param.setAreaId(universalInfoVO.getVehicle_apply_license_plate_area_id());
+
+            String financeResult = businessReviewManager.financeUnisal(param, "/costcalculation");
         FinanceResult financeResult1 = new FinanceResult();
         if (financeResult !=null && !"".equals(financeResult))
         {
@@ -129,7 +136,25 @@ public class BusinessReviewServiceImpl implements BusinessReviewService {
 
         recombinationVO.setFinanceResult1(financeResult1);
 
-        return recombinationVO;
+            recombinationVO.setQtype(1);
+
+            return recombinationVO;
+        }else
+        {
+            CostDetailsDO costDetailsDO = costDetailsDOMapper.selectByPrimaryKey(costDetailsId);
+            /*String listrules = costDetailsDO.getListrule();
+            if (listrules !=null && !"".equals(listrules)){
+                Gson gson = new Gson();
+                List<RuleDetailPara> listRule =new ArrayList<>();
+                listRule =  gson.fromJson(listrules,listRule.getClass());
+
+                ParternerRuleSharpTuningeParam param =new ParternerRuleSharpTuningeParam();
+            }*/
+            recombinationVO.setJsonString(costDetailsDO.getListrule());
+
+            recombinationVO.setQtype(2);
+            return recombinationVO;
+        }
     }
 
     @Override
@@ -139,12 +164,14 @@ public class BusinessReviewServiceImpl implements BusinessReviewService {
             throw new BizException("此业务单不存在");
         }
 
-        if (param.getListRules()!=null && param.getListRules().size()>0)
+        System.out.println("=====保存参数"+param);
+
+        /*if (param.getListRules()!=null && param.getListRules().size()>0)
         {
             Gson gson = new Gson();
             String objectStr = gson.toJson(param.getListRule());//把对象转为JSON格式的字符串
             param.setListRule(objectStr);
-        }
+        }*/
 
         /*CostCalculateInfoVO costCalculateInfoVO = loanQueryDOMapper.selectCostCalculateInfo(Long.valueOf(param.getOrder_id()));
         if(costCalculateInfoVO == null){
@@ -204,6 +231,9 @@ public class BusinessReviewServiceImpl implements BusinessReviewService {
         if (costDetailsId == null) {
             //新增提交
             CostDetailsDO V = BeanPlasticityUtills.copy(CostDetailsDO.class, param);
+
+            System.out.println("=====保存数据库"+V);
+
             costDetailsDOMapper.insertSelective(V);
             //进行绑定
             Long id = V.getId();
@@ -214,6 +244,8 @@ public class BusinessReviewServiceImpl implements BusinessReviewService {
                 //那order表中是脏数据
                 //进行新增 但是id得用order_id表中存在的id
                 CostDetailsDO V = BeanPlasticityUtills.copy(CostDetailsDO.class, param);
+                System.out.println("=====保存数据库"+V);
+
                 V.setId(costDetailsId);
                 costDetailsDOMapper.insertSelective(V);
                 //但是不用更新loanOrder 因为已经存在
@@ -221,6 +253,8 @@ public class BusinessReviewServiceImpl implements BusinessReviewService {
                 //代表存在
                 //进行更新
                 CostDetailsDO V = BeanPlasticityUtills.copy(CostDetailsDO.class, param);
+                System.out.println("=====保存数据库"+V);
+
                 V.setId(costDetailsId);
                 costDetailsDOMapper.updateByPrimaryKeySelective(V);
             }

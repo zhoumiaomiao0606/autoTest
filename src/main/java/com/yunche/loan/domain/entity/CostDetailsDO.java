@@ -54,5 +54,9 @@ public class CostDetailsDO {
 
     private String listrule;
 
+    private String  rebateFirst;   //第一道返利
+
+    private String rebateSecond;   //第二道返利
+
     private BigDecimal rebate_not_deducted;
 }

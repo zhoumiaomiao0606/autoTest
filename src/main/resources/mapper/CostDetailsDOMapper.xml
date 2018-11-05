@@ -25,8 +25,9 @@
     <result column="other_fee_type" property="other_fee_type" jdbcType="TINYINT" />
     <result column="status" property="status" jdbcType="TINYINT" />
     <result column="feature" property="feature" jdbcType="VARCHAR" />
+      <result column="rebateFirst" property="rebateFirst" jdbcType="VARCHAR" />
+      <result column="rebateSecond" property="rebateSecond" jdbcType="VARCHAR" />
     <result column="listrule" property="listrule" jdbcType="VARCHAR" />
-
     <result column="rebate_not_deducted" property="rebate_not_deducted" jdbcType="DECIMAL" />
   </resultMap>
   <sql id="Base_Column_List" >
@@ -34,7 +35,7 @@
     risk_fee, fair_assess_fee, apply_license_plate_out_province_fee, based_margin_fee, 
     service_fee_type, apply_license_plate_deposit_fee_type, performance_fee_type, install_gps_fee_type, 
     risk_fee_type, fair_assess_fee_type, apply_license_plate_out_province_fee_type, based_margin_fee_type, 
-    extra_fee, extra_fee_type, other_fee, other_fee_type, status, feature,listrule,rebate_not_deducted
+    extra_fee, extra_fee_type, other_fee, other_fee_type, status, feature,rebateFirst,rebateSecond,listrule,rebate_not_deducted
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
     select 
@@ -118,6 +119,12 @@
       <if test="feature != null" >
         feature,
       </if>
+        <if test="rebateFirst != null" >
+            rebateFirst,
+        </if>
+        <if test="rebateSecond != null" >
+            rebateSecond,
+        </if>
       <if test="listrule != null" >
         listrule,
       </if>
@@ -195,6 +202,12 @@
       <if test="feature != null" >
         #{feature,jdbcType=VARCHAR},
       </if>
+        <if test="rebateFirst != null" >
+            #{rebateFirst,jdbcType=VARCHAR},
+        </if>
+        <if test="rebateSecond != null" >
+            #{rebateSecond,jdbcType=VARCHAR},
+        </if>
       <if test="listrule != null" >
         #{listrule,jdbcType=VARCHAR},
       </if>
@@ -272,6 +285,12 @@
       <if test="feature != null" >
         feature = #{feature,jdbcType=VARCHAR},
       </if>
+        <if test="rebateFirst != null" >
+            rebateFirst = #{rebateFirst,jdbcType=VARCHAR},
+        </if>
+        <if test="rebateSecond != null" >
+            rebateSecond = #{rebateSecond,jdbcType=VARCHAR},
+        </if>
       <if test="listrule != null" >
         listrule = #{listrule,jdbcType=VARCHAR},
       </if>
