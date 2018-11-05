@@ -1073,8 +1073,8 @@
                       AND case when #{taskStatus} = 0 then deputy.video_review != 0
                       else deputy.video_review        = #{taskStatus} end
                       AND  case when join_b.bank = '中国工商银行哈尔滨顾乡支行' then true
-                                when join_b.bank = '中国工商银行南京江宁支行' then true
-                                else
+                      when join_b.bank = '中国工商银行南京江宁支行' then true
+                      else
                       1 = if( (SELECT count( id ) FROM video_face_log WHERE order_id = main.id) &gt; 0, 1, 0 )
                       end
                   </when>

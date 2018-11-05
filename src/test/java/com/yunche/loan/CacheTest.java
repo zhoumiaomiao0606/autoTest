@@ -1,12 +1,11 @@
 package com.yunche.loan;
 
 import com.google.common.collect.Lists;
+import com.jcraft.jsch.SftpException;
 import com.yunche.loan.config.cache.BankCache;
 import com.yunche.loan.config.cache.TokenCache;
 import com.yunche.loan.config.thread.ThreadPool;
-import com.yunche.loan.config.util.CarLoanHttpUtil;
-import com.yunche.loan.config.util.OpenApiUtil;
-import com.yunche.loan.config.util.ZhongAnHttpUtil;
+import com.yunche.loan.config.util.*;
 import com.yunche.loan.domain.entity.PartnerDO;
 import com.yunche.loan.domain.param.ZhongAnCusParam;
 import com.yunche.loan.domain.param.ZhongAnQueryParam;
@@ -14,6 +13,7 @@ import com.yunche.loan.domain.vo.GpsDetailTotalVO;
 import com.yunche.loan.mapper.PartnerDOMapper;
 import com.yunche.loan.service.AppLoanOrderService;
 import com.yunche.loan.service.AuxiliaryService;
+import com.yunche.loan.service.JinTouHangAccommodationApplyService;
 import com.yunche.loan.service.MaterialService;
 import net.sourceforge.pinyin4j.PinyinHelper;
 import net.sourceforge.pinyin4j.format.HanyuPinyinCaseType;
@@ -25,16 +25,15 @@ import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.dom4j.DocumentException;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.Resource;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.util.*;
 
-public class CacheTest  {
+public class CacheTest extends BaseTest{
     @Autowired
     private TokenCache tokenCache;
     @Autowired
@@ -50,8 +49,109 @@ public class CacheTest  {
     AppLoanOrderService appLoanOrderService;
     @Resource
     MaterialService materialService;
+    @Autowired
+    JinTouHangAccommodationApplyService jinTouHangAccommodationApplyService;
+    //@Test
+    public void SDFSDF(){
+        JTXFileUtil sftp = new JTXFileUtil("root", "jtx@1722", "183.136.187.207", 22);
+        sftp.login();
+        //byte[] buff = sftp.download("/opt", "start.sh");
+        //System.out.println(Arrays.toString(buff));
+        File file = new File("/Users/admin/Desktop/jjqTest.txt");
+        InputStream is = null;
+        try {
+            is = new FileInputStream(file);
+            sftp.upload("/root/yunche/reqFile", "jjqTest.txt", is);
+            sftp.logout();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
+
+    }
+    //@Test
+    public void BCXBVXCBX(){
+        JTXFileUtil sftp = new JTXFileUtil("root", "jtx@1722", "183.136.187.207", 22);
+        sftp.login();
+        try {
+            sftp.download("/root/yunche/reqFile/20181031","jjqTest.txt","/Users/admin/Desktop/jjqjjq.txt");
+        } catch (SftpException e) {
+            e.printStackTrace();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        sftp.logout();
+    }
+    //@Test
+    public void doXVZXV(){
+        Map<String, Object>  map = new HashMap();
+        Map map1 = new HashMap();
+        map1.put("A1","小李");
+        map1.put("A2","2");
+        map.put("A",map1);
+        Map map2 = new HashMap();
+        map2.put("B1","1");
+        map2.put("B2","2");
+        map.put("B",map2);
+       System.out.println( MapXmlUtil.createXmlByMap(map,"MsgText"));
+    }
+   // @Test
+    public void asdaksdjals(){
+        String xml ="<?xml version=\"1.0\" encoding=\"GB2312\"?>\n" +
+                "<MsgText>\n" +
+                " <A>\n" +
+                "  <A1>1</A1>\n" +
+                "  <A2>2</A2>\n" +
+                " </A>\n" +
+                " <B>\n" +
+                "  <B2>2</B2>\n" +
+                "  <B1>1</B1>\n" +
+                " </B>\n" +
+                "</MsgText>";
+        try {
+           System.out.println( MapXmlUtil.Xml2Map(xml).toString());
+        } catch (DocumentException e) {
+            e.printStackTrace();
+        }
+    }//
+    //@Test
+    public void asdasdas(){
+        String data ="+Ee3tYz3PT34o6F4LkLjjrkafwTx1IdP6C+ZVewEOUF/U77RXsHRn6v1eJ05ZXYp5Krxa4p+wNCC\n" +
+                "9Y30dtOwtQaoMaSRRtr3j8bQVdPFlRvR1Zekan4Pm/8QQZcqsCPHPegmHG7fn6iEphnglA9VH3ZJ\n" +
+                "lIewvFlyZZIaPBjNkXlbUYv1Vikq70+k8ddLE20VGesQadd2FqRQ61rZ1fUwIjiWHtOEJFrSbo7X\n" +
+                "dp4HsJ4wh/vQ8k6RPAeY32bx9wbczgvQdL8KJ/m/jBLLEWs6Q1elO79iYeJtrxw8gMSFsXet334h\n" +
+                "ibs7RePD9i+7c7b8d67xuC2lRBzpjz5mRnXu8Pm7twoMAhGKx1t1XebdItGAjJnjIhwZtbRW+52E\n" +
+                "kpymnGoL8VBITWD+ZVJ5NRM3nG/i5p/yUDyspbTXtEmuAaFCTWE6pg1KJ3GKIdou+sDO";
+        try {
+            System.out.println(JTXByteUtil.decrypt(data,"netwxactive","GBK","des"));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    //@Test
+    public void bvjkashkj(){
+        try {
+            byte[] param = JTXByteUtil.encrypt("123".getBytes("GBK"), "netwxactive".getBytes("GBK"),"DES");
+            String result = JTXHttpUtil.sendPost("http://121.41.20.151:7013/assetApi/service",param);
+            String xml = JTXByteUtil.decrypt(result,"netwxactive","GBK","des");
+            Map map = MapXmlUtil.Xml2Map(xml);
+            Map map1 = (Map)map.get("MsgBody");
+            System.out.println(map1.get("RetCode"));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
     @Test
+    public void knkjashkjadkd(){
+        System.out.println(jinTouHangAccommodationApplyService.jtxResult("+Ee3tYz3PT34o6F4LkLjjrkafwTx1IdP6C+ZVewEOUF/U77RXsHRn6v1eJ05ZXYp5Krxa4p+wNCC\n" +
+                "9Y30dtOwtQaoMaSRRtr3j8bQVdPFlRvR1Zekan4Pm/8QQZcqsCPHPegmHG7fn6iEphnglA9VH3ZJ\n" +
+                "lIewvFlyZZIaPBjNkXlbUYv1Vikq70+k8ddLE20VGesQadd2FqRQ61rZ1fUwIjiWHtOEJFrSbo7X\n" +
+                "dp4HsJ4wh/vQ8k6RPAeY32bx9wbczgvQdL8KJ/m/jBLLEWs6Q1elO79iYeJtrxw8gMSFsXet334h\n" +
+                "ibs7RePD9i+7c7b8d67xuC2lRBzpjz5mRnXu8Pm7twoMAhGKx1t1XebdItGAjJnjIhwZtbRW+52E\n" +
+                "kpymnGoL8VBITWD+ZVJ5NRM3nG/i5p/yUDyspbTXtEmuAaFCTWE6pg1KJ3GKIdou+sDO"));
+    }
+
+    //@Test
     public void ASDASD(){
         String chinese="金祎朋";
         int length = chinese.length();
