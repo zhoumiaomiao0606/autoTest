@@ -16,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 
 import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
@@ -129,8 +128,7 @@ public class LoanFinancialPlanServiceImpl implements LoanFinancialPlanService {
             loanFinancialPlanVO.setPrincipalInterestSum(calcParamVO.getTotalRepayment());
 
             //需要额外判断一下该订单的征信申请时间，如果是2018年11月1日之前申请的，则使用老版公式
-          LoanProcessLogDO loanProcessLog = loanProcessLogService.getLoanProcessLog(loanFinancialPlanParam.getOrderId(), CREDIT_APPLY.getCode());
-            //LoanProcessLogDO loanProcessLog = null;
+            LoanProcessLogDO loanProcessLog = loanProcessLogService.getLoanProcessLog(loanFinancialPlanParam.getOrderId(), CREDIT_APPLY.getCode());
             if(loanProcessLog!=null){
                 if(loanProcessLog.getCreateTime().before(DateUtil.getDate("20181101"))){
                     // 银行分期本金
@@ -166,43 +164,13 @@ public class LoanFinancialPlanServiceImpl implements LoanFinancialPlanService {
         ResultBean<LoanFinancialPlanVO> resultBean = calc(loanFinancialPlanParam);
         return resultBean;
     }
-    boolean checkCreditTime(Long orderId){
-        boolean flag=true;//true：新公式  false：老公式
-
-
-        if(orderId==null){
-            return flag;
-        }
-        try{
-            //需要额外判断一下该订单的征信申请时间，如果是2018年11月1日之前申请的，则使用老版公式
-            LoanProcessLogDO loanProcessLog = loanProcessLogService.getLoanProcessLog(orderId, CREDIT_APPLY.getCode());
-            if(loanProcessLog!=null ){
-                if( loanProcessLog.getCreateTime().before(DateUtil.getDate("20181101"))){
-                    flag =false;
-                }
-            }else{
-                flag =false;
-            }
-        }catch (Exception e){
-            return false;
-        }
-        return flag;
-    }
 
     @Override
     public ResultBean<LoanFinancialPlanVO> loanFinancialPlanDetail(Long orderId) {
         Preconditions.checkNotNull(orderId, "业务单号不能为空");
 
         Long loanFinancialPlanId = loanOrderDOMapper.getLoanFinancialPlanIdById(orderId);
-        Map map = new HashMap();
-        if(checkCreditTime(orderId)){
-            map = financialProductDOMapper.selectProductInfoByOrderId(orderId);
-        }else{
-            map = financialProductDOMapper.selectProductInfoByOrderId(orderId);
-        }
-
-
-
+        Map map = financialProductDOMapper.selectProductInfoByOrderId(orderId);
 
         LoanFinancialPlanDO loanFinancialPlanDO = loanFinancialPlanDOMapper.selectByPrimaryKey(loanFinancialPlanId);
         LoanFinancialPlanVO loanFinancialPlanVO = new LoanFinancialPlanVO();
