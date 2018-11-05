@@ -165,6 +165,7 @@ public class JinTouHangAccommodationApplyServiceImpl implements JinTouHangAccomm
             count = thirdPartyFundBusinessDOMapper.insertSelective(aDo);
         }
         Preconditions.checkArgument(count > 0, "保存失败");
+
         LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(param.getIdPair().getOrderId());
         LoanCustomerDO loanCustomerDO = loanCustomerDOMapper.selectByPrimaryKey(loanOrderDO.getLoanCustomerId(),new Byte("0"));
         LoanBaseInfoDO loanBaseInfoDO = loanBaseInfoDOMapper.selectByPrimaryKey(loanOrderDO.getLoanBaseInfoId());
