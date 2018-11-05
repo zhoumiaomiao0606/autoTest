@@ -175,10 +175,11 @@ public class JinTouHangAccommodationApplyServiceImpl implements JinTouHangAccomm
             public void process() {
                 JTXCommunicationUtil jtxCommunicationUtil = new JTXCommunicationUtil();
                 Boolean flag = jtxCommunicationUtil.borrowerInfoAuth(loanCustomerDO.getName(),loanCustomerDO.getIdCard(),loanCustomerDO.getMobile(),
-                        loanBaseInfoDO.getBank(),loanHomeVisitDO.getDebitCard());
+                        loanBaseInfoDO.getBank(),loanHomeVisitDO.getDebitCard(),param.getIdPair());
                 if(flag){
                     //jtxCommunicationUtil.assetRelease();
                 }else{
+                    ThirdPartyFundBusinessDO thirdPartyFundBusinessDO = new ThirdPartyFundBusinessDO();
 
                 }
             }
