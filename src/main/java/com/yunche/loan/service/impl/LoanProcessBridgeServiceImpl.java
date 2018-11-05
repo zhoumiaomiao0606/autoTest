@@ -116,7 +116,7 @@ public class LoanProcessBridgeServiceImpl implements LoanProcessBridgeService {
         syncProcess(startTaskIdList, loanProcessDO.getProcessInstId(), approval);
 
         // [领取]完成
-        loanProcessApprovalCommonService.finishTask(approval, startTaskIdList, loanProcessDO.getProcessInstId(), loanProcessDO);
+        loanProcessApprovalCommonService.finishTask(approval, startTaskIdList, loanProcessDO.getProcessInstId());
 
         // 异步推送
         loanProcessApprovalCommonService.asyncPush(loanOrderDO, approval);

@@ -110,7 +110,7 @@ public class LoanFinancialPlanServiceImpl implements LoanFinancialPlanService {
         Integer formulaId = financialProductDO.getFormulaId();
 
         // 根据贷款期数,获取对应银行基准利率
-        ResultBean<CalcParamVO> resultBean = computeModeService.calc(formulaId, loanFinancialPlanParam.getLoanAmount(), loanFinancialPlanParam.getSignRate(),
+        ResultBean<CalcParamVO> resultBean = computeModeService.calc(loanFinancialPlanParam.getOrderId(),formulaId, loanFinancialPlanParam.getLoanAmount(), loanFinancialPlanParam.getSignRate(),
                 loanFinancialPlanParam.getBankRate(), loanFinancialPlanParam.getLoanTime(), loanFinancialPlanParam.getCarPrice());
         Preconditions.checkArgument(resultBean.getSuccess(), resultBean.getMsg());
 
