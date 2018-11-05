@@ -334,7 +334,7 @@ public class VideoFaceServiceImpl implements VideoFaceService {
         String question_2 = "请您将身份证正面面对镜头，并报一下身份证号码；身份证反面面对镜头。参考答案："+redText("{"+videoFaceQuestionAnswerVO.getCustomerIdCard()+"}");
         String question_3 = "请问您是否通过哈尔滨云车汽车服务有限公司向我行申请一笔信用卡汽车分期付款业务用于购买汽车？参考答案：是";
         String question_4 = "购买的车辆是否为家庭自用？参考答案：是";
-        String question_5 = "请问您购买的是什么品牌型号的汽车？参考答案："+redText("{"+videoFaceQuestionAnswerVO.getCarBrandName()+"}");
+        String question_5 = "请问您购买的是什么品牌型号的汽车？参考答案："+redText("{"+videoFaceQuestionAnswerVO.getHebCarName()+"}");
         String question_6 = "请问您现在所处的位置是哪里？参考答案："+redText("{"+videoFaceQuestionAnswerVO.getAddress()+"}");
         String question_7 ="您了解该笔贷款是由哈尔滨云车汽车服务有限公司机构担保，并向您收取一定的汽车金融服务费？参考答案：是";
         String question_8 ="请问您办理业务的个人信息材料都是您本人提供并签字的吗？参考答案：是";
@@ -514,11 +514,13 @@ public class VideoFaceServiceImpl implements VideoFaceService {
         // carInfo
         LoanCarInfoDO loanCarInfoDO = loanCarInfoDOMapper.selectByPrimaryKey(loanOrderDO.getLoanCarInfoId());
         if (null != loanCarInfoDO) {
+            String hebCarName = loanCarInfoDOMapper.selectFullNameById(loanOrderDO.getLoanCarInfoId());
             String car_brand_model_name = carService.getName(loanCarInfoDO.getCarDetailId(), CAR_DETAIL, CAR_MODEL);
             String carBrandName = carService.getName(loanCarInfoDO.getCarDetailId(), CAR_DETAIL, CAR_BRAND);
 
             videoFaceQuestionAnswerVO.setCarName(car_brand_model_name);
             videoFaceQuestionAnswerVO.setCarBrandName(carBrandName);
+            videoFaceQuestionAnswerVO.setHebCarName(hebCarName);
         }
         VideoFaceLogDO videoFaceLogDO = videoFaceLogDOMapper.lastVideoFaceLogByOrderId(loanOrderDO.getId());
         if(videoFaceLogDO != null){
