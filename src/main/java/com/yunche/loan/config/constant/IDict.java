@@ -407,6 +407,18 @@ public class IDict {
          * 处理中
          */
         public static final Byte K_CJZT_INHAND = 4;
+        /*
+        * 借款人信息认证失败
+         */
+        public static final Byte K_CJZT_AUTHINFIO_ERROR = 5;
+        /*
+         * 资产发布失败
+         */
+        public static final Byte K_CJZT_ASSETRELEASE_ERROR = 6;
+        /*
+        *金投行推送成功
+         */
+        public static final Byte K_CJZT_SUCCESS = 7;
 
     }
 

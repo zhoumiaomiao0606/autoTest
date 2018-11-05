@@ -38,8 +38,6 @@ import static com.yunche.loan.config.constant.LoanProcessEnum.BRIDGE_HANDLE;
 import static com.yunche.loan.config.constant.ProcessApprovalConst.ACTION_ROLL_BACK;
 
 @Service
-@Transactional
-
 public class JinTouHangAccommodationApplyServiceImpl implements JinTouHangAccommodationApplyService {
 
     private Logger logger = LoggerFactory.getLogger(JinTouHangAccommodationApplyServiceImpl.class);
@@ -174,13 +172,27 @@ public class JinTouHangAccommodationApplyServiceImpl implements JinTouHangAccomm
             @Override
             public void process() {
                 JTXCommunicationUtil jtxCommunicationUtil = new JTXCommunicationUtil();
-                Boolean flag = jtxCommunicationUtil.borrowerInfoAuth(loanCustomerDO.getName(),loanCustomerDO.getIdCard(),loanCustomerDO.getMobile(),
+                Map resultMap = jtxCommunicationUtil.borrowerInfoAuth(loanCustomerDO.getName(),loanCustomerDO.getIdCard(),loanCustomerDO.getMobile(),
                         loanBaseInfoDO.getBank(),loanHomeVisitDO.getDebitCard(),param.getIdPair());
-                if(flag){
-                    //jtxCommunicationUtil.assetRelease();
+                if((Boolean) resultMap.get("FLAG")){
+                    Boolean flag1 =false; //jtxCommunicationUtil.assetRelease((String) resultMap.get("REF"),);
+                    if(flag1){
+                        ThirdPartyFundBusinessDO thirdPartyFundBusinessDO = new ThirdPartyFundBusinessDO();
+                        thirdPartyFundBusinessDO.setBridgeProcecssId(param.getIdPair().getBridgeProcessId());
+                        thirdPartyFundBusinessDO.setLendStatus(IDict.K_CJZT.K_CJZT_SUCCESS);
+                        thirdPartyFundBusinessDOMapper.updateByPrimaryKeySelective(thirdPartyFundBusinessDO);
+
+                    }else{
+                        ThirdPartyFundBusinessDO thirdPartyFundBusinessDO = new ThirdPartyFundBusinessDO();
+                        thirdPartyFundBusinessDO.setBridgeProcecssId(param.getIdPair().getBridgeProcessId());
+                        thirdPartyFundBusinessDO.setLendStatus(IDict.K_CJZT.K_CJZT_ASSETRELEASE_ERROR);
+                        thirdPartyFundBusinessDOMapper.updateByPrimaryKeySelective(thirdPartyFundBusinessDO);
+                    }
                 }else{
                     ThirdPartyFundBusinessDO thirdPartyFundBusinessDO = new ThirdPartyFundBusinessDO();
-
+                    thirdPartyFundBusinessDO.setBridgeProcecssId(param.getIdPair().getBridgeProcessId());
+                    thirdPartyFundBusinessDO.setLendStatus(IDict.K_CJZT.K_CJZT_AUTHINFIO_ERROR);
+                    thirdPartyFundBusinessDOMapper.updateByPrimaryKeySelective(thirdPartyFundBusinessDO);
                 }
             }
         });
