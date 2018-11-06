@@ -165,7 +165,7 @@ public class JinTouHangAccommodationApplyController {
     }
 
     @GetMapping("/jtxresult")
-    byte[] jtxResult(@RequestParam("param")String param){
+    String jtxResult(@RequestParam("param")String param){
         return accommodationApplyService.jtxResult(param);
 
     }

@@ -43,5 +43,5 @@ public interface JinTouHangAccommodationApplyService {
 
     ResultBean isReturn(Long bridgeProcessId,Long orderId);
 
-    byte[] jtxResult(String param);
+    String jtxResult(String param);
 }

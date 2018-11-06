@@ -132,7 +132,7 @@ public class CacheTest extends BaseTest{
     public void bvjkashkj(){
         try {
             byte[] param = JTXByteUtil.encrypt("123".getBytes("GBK"), "netwxactive".getBytes("GBK"),"DES");
-            String result = JTXHttpUtil.sendPost("http://121.41.20.151:7013/assetApi/service",param);
+            String result = JTXHttpUtil.sendPost("http://121.41.20.151:7013/assetApi/service","");
             String xml = JTXByteUtil.decrypt(result,"netwxactive","GBK","des");
             Map map = MapXmlUtil.Xml2Map(xml);
             Map map1 = (Map)map.get("MsgBody");

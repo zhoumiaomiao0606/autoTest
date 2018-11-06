@@ -94,6 +94,12 @@ public class JinTouHangAccommodationApplyServiceImpl implements JinTouHangAccomm
     @Autowired
     private JtxCommunicationDOMapper jtxCommunicationDOMapper;
 
+    @Autowired
+    private LoanFinancialPlanDOMapper loanFinancialPlanDOMapper;
+
+    @Autowired
+    private JTXCommunicationUtil jtxCommunicationUtil;
+
 
 //    @Override
 //    public ResultBean revoke(AccommodationApplyParam param) {
@@ -155,6 +161,8 @@ public class JinTouHangAccommodationApplyServiceImpl implements JinTouHangAccomm
     public ResultBean applyLoan(AccommodationApplyParam param) {
         Preconditions.checkNotNull(param, "参数有误");
         Preconditions.checkNotNull(param.getIdPair(), "参数有误");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        String lenDate = sdf.format(param.getLendDate());
 
         ThirdPartyFundBusinessDO aDo = new ThirdPartyFundBusinessDO();
         BeanUtils.copyProperties(param, aDo);
@@ -175,15 +183,17 @@ public class JinTouHangAccommodationApplyServiceImpl implements JinTouHangAccomm
         LoanCustomerDO loanCustomerDO = loanCustomerDOMapper.selectByPrimaryKey(loanOrderDO.getLoanCustomerId(),new Byte("0"));
         LoanBaseInfoDO loanBaseInfoDO = loanBaseInfoDOMapper.selectByPrimaryKey(loanOrderDO.getLoanBaseInfoId());
         LoanHomeVisitDO loanHomeVisitDO = loanHomeVisitDOMapper.selectByPrimaryKey(loanOrderDO.getLoanHomeVisitId());
+        LoanFinancialPlanDO loanFinancialPlanDO = loanFinancialPlanDOMapper.selectByPrimaryKey(loanOrderDO.getLoanFinancialPlanId());
         asyncUpload.execute(new Process() {
             @Override
             public void process() {
-                JTXCommunicationUtil jtxCommunicationUtil = new JTXCommunicationUtil();
+                String interest = param.getLendAmount().multiply(new BigDecimal("0.8").multiply(new BigDecimal("60").divide(new BigDecimal("365"),2,BigDecimal.ROUND_HALF_UP))).multiply(new BigDecimal("100")).setScale(0,BigDecimal.ROUND_HALF_UP)+"";
                 Map resultMap = jtxCommunicationUtil.borrowerInfoAuth(loanCustomerDO.getName(),loanCustomerDO.getIdCard(),loanCustomerDO.getMobile(),
                         loanBaseInfoDO.getBank(),loanHomeVisitDO.getDebitCard(),param.getIdPair());
                 if((Boolean) resultMap.get("FLAG")){
-                    Boolean flag1 = jtxCommunicationUtil.assetRelease((String) resultMap.get("REF"),"","","",
-                            "","", "","","","","","","");
+                    Boolean flag1 = jtxCommunicationUtil.assetRelease((String) resultMap.get("REF"),"云车车贷",param.getLendAmount().multiply(new BigDecimal("100"))+"",
+                            "800", lenDate,"60", interest,"BYMONTH",
+                            "YC","车",loanFinancialPlanDO.getAppraisal()+"","0",loanCustomerDO.getIdCard());
                     if(flag1){
                         ThirdPartyFundBusinessDO thirdPartyFundBusinessDO = new ThirdPartyFundBusinessDO();
                         thirdPartyFundBusinessDO.setBridgeProcecssId(param.getIdPair().getBridgeProcessId());
@@ -205,7 +215,7 @@ public class JinTouHangAccommodationApplyServiceImpl implements JinTouHangAccomm
         });
 
 
-        return ResultBean.ofSuccess("借款申请成功");
+        return ResultBean.ofSuccess("借款申请发起成功");
     }
 
     /**
@@ -541,7 +551,7 @@ public class JinTouHangAccommodationApplyServiceImpl implements JinTouHangAccomm
     }
 
     @Override
-    public byte[] jtxResult(String param) {
+    public String jtxResult(String param) {
         JTXCommunicationUtil jtxCommunicationUtil = new JTXCommunicationUtil();
         try {
             String xml = JTXByteUtil.decrypt(param,"netwxactive","GBK","des");
