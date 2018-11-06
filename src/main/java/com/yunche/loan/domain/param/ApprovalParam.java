@@ -66,6 +66,10 @@ public class ApprovalParam {
      * 默认：false
      */
     private Boolean cancelByOrderId = false;
+    /**
+     * 是否执行-[附加任务]
+     */
+    private Boolean doAttachTask = true;
     ///////////////////////////////////////////////////// Boolean //////////////////////////////////////////////////////
 
 
