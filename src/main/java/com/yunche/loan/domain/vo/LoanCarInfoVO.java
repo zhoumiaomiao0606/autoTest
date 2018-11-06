@@ -62,6 +62,8 @@ public class LoanCarInfoVO {
 
     private String  carCategory;
 
+    private String vehicleCarCategory;
+
     private List<BaseArea> ableApplyLicensePlateAreaList = Collections.EMPTY_LIST;
 
     @Data

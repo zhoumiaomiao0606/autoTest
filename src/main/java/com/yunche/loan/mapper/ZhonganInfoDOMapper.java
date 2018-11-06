@@ -3,10 +3,7 @@ package com.yunche.loan.mapper;
 import com.yunche.loan.domain.entity.BankDO;
 import com.yunche.loan.domain.entity.LoanCustomerDO;
 import com.yunche.loan.domain.entity.ZhonganInfoDO;
-import com.yunche.loan.domain.query.AppBusDetailQuery;
-import com.yunche.loan.domain.query.BankCreditPrincipalQuery;
-import com.yunche.loan.domain.query.BaseQuery;
-import com.yunche.loan.domain.query.ContractSetQuery;
+import com.yunche.loan.domain.query.*;
 import com.yunche.loan.domain.vo.*;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -102,4 +99,6 @@ public interface ZhonganInfoDOMapper {
     List<AppDataTimeCheckReportVO> appDataTimeCheckReport(AppBusDetailQuery query);
 
     List<TelCusDetailVO> telCusDetail(BankCreditPrincipalQuery query);
+
+    List<VideoFaceExportVO> videoFaceExpot(VideoFaceExportQuery query);
 }

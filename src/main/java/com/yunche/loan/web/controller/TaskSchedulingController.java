@@ -117,7 +117,9 @@ public class TaskSchedulingController {
     public ResultBean<List<ScheduleTaskVO>> scheduletasklist(@RequestParam(required = false) String key,
                                                              @RequestParam Integer pageIndex,
                                                              @RequestParam Integer pageSize) {
-        return taskSchedulingService.scheduleTaskList(key, pageIndex, pageSize);
+
+        return ResultBean.ofError("待办功能维护中！");
+//        return taskSchedulingService.scheduleTaskList(key, pageIndex, pageSize);
     }
 
     /**
@@ -126,7 +128,9 @@ public class TaskSchedulingController {
     @Limiter(2)
     @GetMapping(value = "/countScheduletasklist")
     public ResultBean<Long> countScheduletasklist() {
-        return taskSchedulingService.countScheduletasklist();
+
+        return ResultBean.ofError("待办功能维护中！");
+//        return taskSchedulingService.countScheduletasklist();
     }
 
     /**
@@ -142,7 +146,7 @@ public class TaskSchedulingController {
     }
 
     /**
-     * 查询接口
+     * 查询接口--列表
      */
     @Limiter(3)
     @PostMapping(value = "/queryTaskList")
@@ -178,7 +182,7 @@ public class TaskSchedulingController {
      */
     @PostMapping(value = "/get")
     public ResultBean<Void> get(@RequestBody @Validated TaskDistributionParam param) {
-        taskDistributionService.get(Long.valueOf(param.getTaskId()), param.getTaskKey(),param.getOrderId());
+        taskDistributionService.get(Long.valueOf(param.getTaskId()), param.getTaskKey(), param.getOrderId());
         return ResultBean.ofSuccess(null, "操作成功");
     }
 
@@ -188,7 +192,7 @@ public class TaskSchedulingController {
      */
     @PostMapping(value = "/release")
     public ResultBean<Void> release(@RequestBody @Validated TaskDistributionParam param) {
-        taskDistributionService.release(Long.valueOf(param.getTaskId()), param.getTaskKey(),param.getOrderId());
+        taskDistributionService.release(Long.valueOf(param.getTaskId()), param.getOrderId(), param.getTaskKey());
         return ResultBean.ofSuccess(null, "操作成功");
     }
 

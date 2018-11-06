@@ -9,7 +9,6 @@ import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.DateTimeFormatUtils;
 import com.yunche.loan.config.util.DateUtil;
-import com.yunche.loan.config.util.EventBusCenter;
 import com.yunche.loan.config.util.SessionUtils;
 import com.yunche.loan.domain.entity.*;
 import com.yunche.loan.domain.param.ApprovalParam;
@@ -185,6 +184,9 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
     @Autowired
     private ConfLoanApplyDOMapper confLoanApplyDOMapper;
+
+    @Autowired
+    private VideoFaceNumDOMapper videoFaceNumDOMapper;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -1042,14 +1044,14 @@ public class LoanProcessServiceImpl implements LoanProcessService {
     /**
      * 流程数据同步： 同步activiti与本地流程数据
      *
-     * @param startTaskList        起始任务列表
+     * @param startTaskList      起始任务列表
      * @param processInstId
      * @param approval
-     * @param currentLoanProcessDO
+     * @param startLoanProcessDO 起始时流程状态-快照
      * @param loanBaseInfoDO
      */
     private void syncProcess(List<Task> startTaskList, String processInstId, ApprovalParam approval,
-                             LoanProcessDO currentLoanProcessDO, LoanBaseInfoDO loanBaseInfoDO) {
+                             LoanProcessDO startLoanProcessDO, LoanBaseInfoDO loanBaseInfoDO) {
 
         // 更新状态
         LoanProcessDO loanProcessDO = new LoanProcessDO();
@@ -1073,13 +1075,18 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         loanProcessApprovalCommonService.updateCurrentTaskProcessStatus(loanProcessDO, approval.getTaskDefinitionKey(), taskProcessStatus, approval);
 
         // 更新新产生的任务状态
-        updateNextTaskProcessStatus(loanProcessDO, processInstId, startTaskList, approval, currentLoanProcessDO);
+        updateNextTaskProcessStatus(loanProcessDO, processInstId, startTaskList, approval, startLoanProcessDO);
 
         // 特殊处理：部分节点的同步  !!!
-        special_syncProcess(approval, loanProcessDO, currentLoanProcessDO, loanBaseInfoDO);
+        special_syncProcess(approval, loanProcessDO, startLoanProcessDO, loanBaseInfoDO);
 
         // 更新本地流程记录
         loanProcessApprovalCommonService.updateLoanProcess(loanProcessDO);
+
+
+        // 更新：起始时流程状态快照
+        LoanProcessDO nowLoanProcess = loanProcessApprovalCommonService.getLoanProcess(startLoanProcessDO.getOrderId());
+        BeanUtils.copyProperties(nowLoanProcess, startLoanProcessDO);
     }
 
     /**
@@ -1237,7 +1244,8 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             Integer year = Integer.valueOf(expireDateStrArr[0]);
             Integer month = Integer.valueOf(expireDateStrArr[1]);
             Integer day = Integer.valueOf(expireDateStrArr[2]);
-            Preconditions.checkArgument(year >= 1900 && year <= 2099 && month >= 1 && month <= 12 && day >= 1 && day <= 31,
+            // year：长期 -> 9999
+            Preconditions.checkArgument(year >= 1900 && year <= 9999 && month >= 1 && month <= 12 && day >= 1 && day <= 31,
                     "身份证有效期非法：" + identityValidity);
             LocalDate idCardExpireDate = LocalDate.of(year, month, day);
 
@@ -1324,6 +1332,13 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         else if (BANK_OPEN_CARD.getCode().equals(taskDefinitionKey)) {
             // 前置开卡校验
             preCondition4BankOpenCard(loanOrderDO, loanProcessDO);
+        }
+
+        // [002-合同资料合伙人至公司-确认接收]
+        else if (DATA_FLOW_CONTRACT_P2C_REVIEW.getCode().equals(taskDefinitionKey)) {
+            // 如果有待收钥匙的待办，未完成，则不能提交“资料流转002”，点击后弹出报错提示：该订单尚未完成待办：待收钥匙
+            Byte commitKeyStatus = loanProcessDO.getCommitKey();
+            Preconditions.checkArgument(TASK_PROCESS_DONE.equals(commitKeyStatus), "当前订单[待收钥匙]未提交");
         }
     }
 
@@ -3247,8 +3262,29 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
         // 附带任务-[弃单]
         doAttachTask_CancelTask(approval, loanOrderDO);
+
+        // 附带任务-[视频审核记录次数]
+        doAttachTask_VideoFaceNum(approval, loanOrderDO);
     }
 
+    private void doAttachTask_VideoFaceNum(ApprovalParam approval, LoanOrderDO loanOrderDO) {
+        if (VIDEO_REVIEW.getCode().equals(approval.getTaskDefinitionKey()) && ACTION_PASS.equals(approval.getAction())) {
+            VideoFaceNumDO videoFaceNumDO = videoFaceNumDOMapper.selectByPrimaryKey(loanOrderDO.getId());
+            VideoFaceNumDO videoFaceNumDO1 = new VideoFaceNumDO();
+            videoFaceNumDO1.setOrder_id(loanOrderDO.getId());
+            if (videoFaceNumDO == null) {
+                videoFaceNumDO1.setFace_num(1);
+                videoFaceNumDOMapper.insertSelective(videoFaceNumDO1);
+            } else {
+                if (videoFaceNumDO.getFace_num() == null) {
+                    videoFaceNumDO1.setFace_num(1);
+                } else {
+                    videoFaceNumDO1.setFace_num(1 + videoFaceNumDO.getFace_num());
+                }
+                videoFaceNumDOMapper.updateByPrimaryKeySelective(videoFaceNumDO1);
+            }
+        }
+    }
 
     //1大于，2小于，3大于等于，4小于等于
     public void compardNum(String flag, BigDecimal now, BigDecimal data, String reason) {
@@ -3453,20 +3489,24 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
             // 2、自动启动流程 -> [第三方过桥资金]   -杭州城站
             LoanBaseInfoDO loanBaseInfoDO = getLoanBaseInfoDO(loanOrderDO.getLoanBaseInfoId());
-            if (BANK_NAME_ICBC_HangZhou_City_Station_Branch.equals(loanBaseInfoDO.getBank())) {
+            if (BANK_NAME_ICBC_HangZhou_City_Station_Branch.equals(loanBaseInfoDO.getBank()) ||
+                    BANK_NAME_ICBC_TaiZhou_LuQiao_Branch.equals(loanBaseInfoDO.getBank())) {
+                RemitDetailsDO detailsDO = remitDetailsDOMapper.selectByPrimaryKey(loanOrderDO.getRemitDetailsId());
+                if (detailsDO.getRemit_amount().compareTo(new BigDecimal("200000")) <= 0) {
+                    LoanProcessBridgeDO loanProcessBridgeDO = loanProcessBridgeDOMapper.selectByOrderId(loanOrderDO.getId());
 
-                LoanProcessBridgeDO loanProcessBridgeDO = loanProcessBridgeDOMapper.selectByOrderId(loanOrderDO.getId());
+                    if (loanProcessBridgeDO == null) {
+                        Long startProcessId = loanProcessBridgeService.startProcess(approval.getOrderId());
 
-                if (loanProcessBridgeDO == null) {
-                    Long startProcessId = loanProcessBridgeService.startProcess(approval.getOrderId());
-
-                    // 绑定当前流程到金投行
-                    ConfThirdRealBridgeProcessDO thirdRealBridgeProcessDO = new ConfThirdRealBridgeProcessDO();
-                    thirdRealBridgeProcessDO.setBridgeProcessId(startProcessId);
-                    thirdRealBridgeProcessDO.setConfThirdPartyId(IDict.K_CONF_THIRD_PARTY.K_JTH);
-                    int insertCount = confThirdRealBridgeProcessDOMapper.insert(thirdRealBridgeProcessDO);
-                    Preconditions.checkArgument(insertCount > 0, "插入失败");
+                        // 绑定当前流程到金投行
+                        ConfThirdRealBridgeProcessDO thirdRealBridgeProcessDO = new ConfThirdRealBridgeProcessDO();
+                        thirdRealBridgeProcessDO.setBridgeProcessId(startProcessId);
+                        thirdRealBridgeProcessDO.setConfThirdPartyId(IDict.K_CONF_THIRD_PARTY.K_JTH);
+                        int insertCount = confThirdRealBridgeProcessDOMapper.insert(thirdRealBridgeProcessDO);
+                        Preconditions.checkArgument(insertCount > 0, "插入失败");
+                    }
                 }
+
             }
         }
     }

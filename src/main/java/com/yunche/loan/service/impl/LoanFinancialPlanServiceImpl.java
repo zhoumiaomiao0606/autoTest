@@ -2,18 +2,13 @@ package com.yunche.loan.service.impl;
 
 import com.google.common.base.Preconditions;
 import com.yunche.loan.config.result.ResultBean;
-import com.yunche.loan.domain.entity.FinancialProductDO;
-import com.yunche.loan.domain.entity.LoanBaseInfoDO;
-import com.yunche.loan.domain.entity.LoanFinancialPlanDO;
-import com.yunche.loan.domain.entity.LoanOrderDO;
+import com.yunche.loan.config.util.DateUtil;
+import com.yunche.loan.domain.entity.*;
 import com.yunche.loan.domain.param.LoanFinancialPlanParam;
 import com.yunche.loan.domain.vo.CalcParamVO;
 import com.yunche.loan.domain.vo.LoanFinancialPlanVO;
 import com.yunche.loan.mapper.*;
-import com.yunche.loan.service.ComputeModeService;
-import com.yunche.loan.service.LoanBaseInfoService;
-import com.yunche.loan.service.LoanFinancialPlanService;
-import com.yunche.loan.service.LoanProcessOrderService;
+import com.yunche.loan.service.*;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,6 +20,7 @@ import java.util.Map;
 
 import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
 import static com.yunche.loan.config.constant.LoanAmountConst.*;
+import static com.yunche.loan.config.constant.LoanProcessEnum.CREDIT_APPLY;
 
 /**
  * @author liuzhe
@@ -53,6 +49,9 @@ public class LoanFinancialPlanServiceImpl implements LoanFinancialPlanService {
     private LoanBaseInfoDOMapper loanBaseInfoDOMapper;
     @Autowired
     private LoanBaseInfoService loanBaseInfoService;
+
+    @Autowired
+    private LoanProcessLogService loanProcessLogService;
 
     @Override
     public ResultBean<Long> create(LoanFinancialPlanDO loanFinancialPlanDO) {
@@ -100,6 +99,7 @@ public class LoanFinancialPlanServiceImpl implements LoanFinancialPlanService {
         Preconditions.checkNotNull(loanFinancialPlanParam.getLoanAmount(), "贷款金额不能为空");
         Preconditions.checkNotNull(loanFinancialPlanParam.getLoanTime(), "贷款期数不能为空");
         Preconditions.checkNotNull(loanFinancialPlanParam.getBankRate(), "银行利率不能为空");
+        Preconditions.checkNotNull(loanFinancialPlanParam.getOrderId(), "订单号不能为空");
 
         //
         loanFinancialPlanParam.setDownPaymentMoney(loanFinancialPlanParam.getCarPrice().subtract(loanFinancialPlanParam.getLoanAmount()));
@@ -110,7 +110,7 @@ public class LoanFinancialPlanServiceImpl implements LoanFinancialPlanService {
         Integer formulaId = financialProductDO.getFormulaId();
 
         // 根据贷款期数,获取对应银行基准利率
-        ResultBean<CalcParamVO> resultBean = computeModeService.calc(formulaId, loanFinancialPlanParam.getLoanAmount(), loanFinancialPlanParam.getSignRate(),
+        ResultBean<CalcParamVO> resultBean = computeModeService.calc(loanFinancialPlanParam.getOrderId(),formulaId, loanFinancialPlanParam.getLoanAmount(), loanFinancialPlanParam.getSignRate(),
                 loanFinancialPlanParam.getBankRate(), loanFinancialPlanParam.getLoanTime(), loanFinancialPlanParam.getCarPrice());
         Preconditions.checkArgument(resultBean.getSuccess(), resultBean.getMsg());
 
@@ -127,9 +127,21 @@ public class LoanFinancialPlanServiceImpl implements LoanFinancialPlanService {
             // 本息合计(还款总额)
             loanFinancialPlanVO.setPrincipalInterestSum(calcParamVO.getTotalRepayment());
 
-            // 银行分期本金
-            //额外判断该订单的征信申请时间，如果是2018年11月1日之前申请的，则使用老版公式
-            loanFinancialPlanVO.setBankPeriodPrincipal(calcParamVO.getBankPeriodPrincipal());
+            //需要额外判断一下该订单的征信申请时间，如果是2018年11月1日之前申请的，则使用老版公式
+            LoanProcessLogDO loanProcessLog = loanProcessLogService.getLoanProcessLog(loanFinancialPlanParam.getOrderId(), CREDIT_APPLY.getCode());
+            if(loanProcessLog!=null){
+                if(loanProcessLog.getCreateTime().before(DateUtil.getDate("20181101"))){
+                    // 银行分期本金
+                    loanFinancialPlanVO.setBankPeriodPrincipal(calcParamVO.getBankPeriodPrincipal());
+                }else{
+                    // 银行分期本金
+                    loanFinancialPlanVO.setBankPeriodPrincipal(calcParamVO.getBankPeriodPrincipalNew());
+                }
+            }else{
+                // 银行分期本金
+                loanFinancialPlanVO.setBankPeriodPrincipal(calcParamVO.getBankPeriodPrincipal());
+            }
+
             // 银行手续费
             loanFinancialPlanVO.setBankFee(calcParamVO.getBankFee());
             // 首月还款

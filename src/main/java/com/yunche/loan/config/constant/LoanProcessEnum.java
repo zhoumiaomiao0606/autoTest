@@ -80,8 +80,9 @@ public enum LoanProcessEnum {
     URGE_INSURANCE_WORK_BENCH("usertask_urge_insurance_work_bench", "催保工作台"),
     URGE_INSURANCE_ASSIGN_WORK_BENCH("usertask_urge_insurance_assign_work_bench", "催保分配工作台"),
 
-    COLLECTION_WORKBENCH("usertask_collection_workbench", "催收工作台"),
-    OVERDUE_COLLECTION_LIST("usertask_overdue_collection_list", "逾期催缴清单"),
+    COLLECTION_WORKBENCH("usertask_collection_workbench", "电催处理"),
+    OVERDUE_COLLECTION_LIST("usertask_overdue_collection_list", "逾期催缴清单文件"),
+    UN_MORTGAGE_FILE("usertask_un_mortgage_file", "未抵押明细文件"),
     /////////////////////////////////////////// ↑↑↑↑↑--流程外的节点--↑↑↑↑↑ //////////////////////////////////////////////
 
 

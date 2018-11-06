@@ -166,6 +166,9 @@ public class TaskListQuery {
     // 资料流转-节点列表
     private Set<String> dataFlowNodeSet = Sets.newHashSet();
 
+    //面签筛选
+    private String videoFaceFlag;
+
     public String getIsStraighten() {
         if (StringUtils.isBlank(isStraighten)) {
             return null;

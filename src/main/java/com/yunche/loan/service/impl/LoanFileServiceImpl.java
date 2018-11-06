@@ -391,7 +391,7 @@ public class LoanFileServiceImpl implements LoanFileService {
 
                         loanFileDO.setType(e.getType());
                         loanFileDO.setPath(JSON.toJSONString(e.getUrls()));
-                        loanFileDO.setUploadType(UPLOAD_TYPE_SUPPLEMENT);
+                        loanFileDO.setUploadType(uploadType);
 
                         loanFileDO.setStatus(VALID_STATUS);
                         loanFileDO.setGmtCreate(new Date());

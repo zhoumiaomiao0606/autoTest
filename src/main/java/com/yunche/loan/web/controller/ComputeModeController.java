@@ -19,6 +19,6 @@ public class ComputeModeController {
     private ComputeModeService computeModeService;
     @RequestMapping(value = "/calc",method = RequestMethod.GET)
     public ResultBean<CalcParamVO> getFormulaResult(@RequestParam("id")int id, @RequestParam("loanAmt")BigDecimal loanAmt, @RequestParam("exeRate")BigDecimal exeRate, @RequestParam("bankBaseRate")BigDecimal bankBaseRate, @RequestParam("year")int year, @RequestParam("carPrice")BigDecimal carPrice){
-        return  computeModeService.calc(id,loanAmt,exeRate,bankBaseRate,year,carPrice);
+        return  computeModeService.calc(null,id,loanAmt,exeRate,bankBaseRate,year,carPrice);
     }
 }

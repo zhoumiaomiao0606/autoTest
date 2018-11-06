@@ -12,7 +12,7 @@ public interface ComputeModeService {
      * 计算公式结果计算
      * @return
      */
-      ResultBean<CalcParamVO> calc(@Param("id") int id, @Param("loanAmt") BigDecimal loanAmt,
+      ResultBean<CalcParamVO> calc(@Param("orderId") Long orderId,@Param("id") int id, @Param("loanAmt") BigDecimal loanAmt,
                                    @Param("exeRate") BigDecimal exeRate, @Param("bankBaseRate") BigDecimal bankBaseRate,
                                    @Param("year") int year, @Param("carPrice") BigDecimal carPrice);
 

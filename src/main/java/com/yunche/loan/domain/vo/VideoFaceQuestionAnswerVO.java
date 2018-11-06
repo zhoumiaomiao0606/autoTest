@@ -54,4 +54,6 @@ public class VideoFaceQuestionAnswerVO {
 
     private BigDecimal monthIncome;
 
+    //定位地址
+    private String address;
 }

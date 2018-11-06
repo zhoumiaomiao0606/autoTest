@@ -1002,7 +1002,7 @@ public class MaterialServiceImpl implements MaterialService {
                 param.getVehicle_customize_brand(), param.getVehicle_purchase_car_invoice_price(),
                 param.getVehicle_invoice_down_payment(), param.getVehicle_purchase_car_invoice_date(),
                 param.getVehicle_invoice_car_dealer(), param.getVehicle_displacement(),
-                param.getVehicle_register_date(), param.getQualified_certificate_number()
+                param.getVehicle_register_date(), param.getQualified_certificate_number(),param.getVehicle_car_category()
         )) {
             VehicleInformationDO vehicleInformationDO = new VehicleInformationDO();
             vehicleInformationDO.setId(vid);
@@ -1015,6 +1015,8 @@ public class MaterialServiceImpl implements MaterialService {
             vehicleInformationDO.setCustomize_brand(param.getVehicle_customize_brand());
             vehicleInformationDO.setPurchase_car_invoice_price(StringUtils.isBlank(param.getVehicle_purchase_car_invoice_price()) ? null : new BigDecimal(param.getVehicle_purchase_car_invoice_price()));
             vehicleInformationDO.setInvoice_down_payment(StringUtils.isBlank(param.getVehicle_invoice_down_payment()) ? null : new BigDecimal(param.getVehicle_invoice_down_payment()));
+            vehicleInformationDO.setCar_category(param.getVehicle_car_category());
+
             SimpleDateFormat myFmt = new SimpleDateFormat("yyyy-MM-dd");
 
             try {

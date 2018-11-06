@@ -118,7 +118,7 @@ public class LoanCreditInfoHisServiceImpl implements LoanCreditInfoHisService {
                     });
 
             // 第2+次    过滤出：当前正在查询银行/社会征信的客户
-            customers = filterCustomers(customers, enableType[0], false);
+            customers = filterCustomers_reject(customers, enableType[0], false);
 
             if (!CollectionUtils.isEmpty(customers)) {
 
@@ -213,7 +213,8 @@ public class LoanCreditInfoHisServiceImpl implements LoanCreditInfoHisService {
             return;
         }
 
-        customers = filterCustomers(customers, ENABLE_TYPE_BANK, true);
+        // 过滤出：银行征信还未提交过的客户
+        customers = filterCustomers_bank(customers);
         if (CollectionUtils.isEmpty(customers)) {
             return;
         }
@@ -248,7 +249,7 @@ public class LoanCreditInfoHisServiceImpl implements LoanCreditInfoHisService {
         }
 
         // 过滤出：当前正在查询社会征信的客户
-        customers = filterCustomers(customers, ENABLE_TYPE_SOCIAL, true);
+        customers = filterCustomers_social(customers);
         if (CollectionUtils.isEmpty(customers)) {
             return;
         }
@@ -281,7 +282,7 @@ public class LoanCreditInfoHisServiceImpl implements LoanCreditInfoHisService {
         }
 
         // 过滤出：被打回的客户
-        customers = filterCustomers(customers, ENABLE_TYPE_BANK, false);
+        customers = filterCustomers_reject(customers, ENABLE_TYPE_BANK, false);
         if (CollectionUtils.isEmpty(customers)) {
             return;
         }
@@ -356,7 +357,7 @@ public class LoanCreditInfoHisServiceImpl implements LoanCreditInfoHisService {
         }
 
         // 过滤出：被打回的客户
-        customers = filterCustomers(customers, ENABLE_TYPE_SOCIAL, false);
+        customers = filterCustomers_reject(customers, ENABLE_TYPE_SOCIAL, false);
         if (CollectionUtils.isEmpty(customers)) {
             return;
         }
@@ -382,14 +383,14 @@ public class LoanCreditInfoHisServiceImpl implements LoanCreditInfoHisService {
     }
 
     /**
-     * 过滤出：当前正在查询银行/社会征信的客户
+     * 过滤出：当前被打回至[征信查询]的客户
      *
      * @param customers
      * @param enableType 1-银行打回； 2-社会打回； 3-征信增补打回；
      * @param checkFirst 是否校验 是第一次查询
      * @return
      */
-    private List<LoanCustomerDO> filterCustomers(List<LoanCustomerDO> customers, Byte enableType, boolean checkFirst) {
+    private List<LoanCustomerDO> filterCustomers_reject(List<LoanCustomerDO> customers, Byte enableType, boolean checkFirst) {
         Preconditions.checkNotNull(enableType, "征信打回类型不能为空");
 
         // 需要校验是否第一次查询
@@ -431,12 +432,81 @@ public class LoanCreditInfoHisServiceImpl implements LoanCreditInfoHisService {
             // 第2+次     过滤出：当前正在查询银行征信的客户
             customers = customers.stream()
                     .filter(Objects::nonNull)
-                    .filter(e -> enableType.equals(e.getEnableType()) && BaseConst.K_YORN_YES.equals(e.getEnable())
-                    )
+                    .filter(e -> enableType.equals(e.getEnableType()) && BaseConst.K_YORN_YES.equals(e.getEnable()))
                     .collect(Collectors.toList());
         }
 
         return customers;
+    }
+
+    /**
+     * 过滤出：银行征信还未提交过的客户
+     *
+     * @param customers
+     * @return
+     */
+    private List<LoanCustomerDO> filterCustomers_bank(List<LoanCustomerDO> customers) {
+
+        if (!CollectionUtils.isEmpty(customers)) {
+
+            List<LoanCustomerDO> filterCustomers = customers.stream()
+                    .filter(Objects::nonNull)
+                    .map(e -> {
+
+                        Long customerId = e.getId();
+                        LoanCreditInfoBankHisDO last = loanCreditInfoBankHisDOMapper.lastByCustomerId(customerId);
+                        Preconditions.checkNotNull(last, "客户银行征信历史丢失！客户ID：" + customerId);
+
+                        // 银行征信还未提交过
+                        Date bankCreditRecordTime = last.getBankCreditRecordTime();
+                        if (bankCreditRecordTime == null) {
+                            return e;
+                        }
+
+                        return null;
+                    })
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toList());
+
+            return filterCustomers;
+        }
+
+        return null;
+    }
+
+    /**
+     * 过滤出：社会征信还未提交过的客户
+     *
+     * @param customers
+     * @return
+     */
+    private List<LoanCustomerDO> filterCustomers_social(List<LoanCustomerDO> customers) {
+
+        if (!CollectionUtils.isEmpty(customers)) {
+
+            List<LoanCustomerDO> filterCustomers = customers.stream()
+                    .filter(Objects::nonNull)
+                    .map(e -> {
+
+                        Long customerId = e.getId();
+                        LoanCreditInfoSocialHisDO last = loanCreditInfoSocialHisDOMapper.lastByCustomerId(customerId);
+                        Preconditions.checkNotNull(last, "客户社会征信历史丢失！客户ID：" + customerId);
+
+                        // 社会征信还未提交过
+                        Date socialCreditRecordTime = last.getSocialCreditRecordTime();
+                        if (socialCreditRecordTime == null) {
+                            return e;
+                        }
+
+                        return null;
+                    })
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toList());
+
+            return filterCustomers;
+        }
+
+        return null;
     }
 
     private EmployeeDO getLoginUser() {

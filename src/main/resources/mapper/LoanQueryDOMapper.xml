@@ -33,7 +33,7 @@
 	        financial.bank_period_principal           AS financial_bank_period_principal,
 	        financial.loan_time                       as financial_loan_time,
             financial.appraisal                       as financial_appraisal,
-	        useGetBankFee(product.formula_id,financial.loan_amount,financial.sign_rate,useGetBankRate(financial.financial_product_id,financial.loan_time),financial.loan_time)
+            financial.bank_fee
                                                       AS financial_bank_fee,
             useCalculateStagingRatio(product.formula_id,financial.loan_amount,financial.sign_rate,useGetBankRate(financial.financial_product_id,financial.loan_time),financial.car_price)
                                                       AS financial_bank_staging_ratio,
@@ -69,6 +69,67 @@
         left join car_model m on d.model_id = m.id
         left join car_brand b on m.brand_id = b.id
     </select>
+
+    <select id="selectApplyDiviGeneralInfoNew" resultType="com.yunche.loan.domain.vo.ApplyDiviGeneralInfoVO">
+        select
+        car.car_type                              as car_type,
+        customer.name                             as customer_name,
+        customer.id_card                          as customer_id_card,
+        customer.mobile                           as customer_mobile,
+        customer.address                          as customer_family_address,
+        customer.income_certificate_company_name  as customer_income_certificate_company_name,
+        case when (select id from bank where name = base.bank) = 1
+        then b.name
+        when (select id from bank where name = base.bank) = 3
+        then CONCAT(b.name,replace(m.name,b.name,''))
+        else null end                        as car_name,
+        financial.car_price	                      as financial_car_price,
+        financial.actual_car_price	              as financial_actual_car_price,
+        vehicle.vehicle_identification_number     as vehicle_identification_number,
+        vehicle.registration_certificate_number   as vehicle_registration_certificate_number,
+        vehicle.license_plate_number              as vehicle_license_plate_number,
+        financial.appraisal                       AS car_assess_price,
+        financial.down_payment_money              as financial_down_payment_money,
+        financial.bank_period_principal           AS financial_bank_period_principal,
+        financial.loan_time                       as financial_loan_time,
+        financial.appraisal                       as financial_appraisal,
+        financial.bank_fee
+                                                      AS financial_bank_fee,
+        useCalculateStagingRatioNew(product.formula_id,financial.loan_amount,financial.sign_rate,useGetBankRate(financial.financial_product_id,financial.loan_time),financial.car_price)
+        AS financial_bank_staging_ratio,
+        format(useGetBankRate(financial.financial_product_id,financial.loan_time),3)
+        AS financial_bank_rate,
+        '1' 					                  as is_pledge,
+        customer.lend_card		                  as customer_lend_card,
+        case when (select id from bank where name = base.bank) = 1
+        then b.name
+        when (select id from bank where name = base.bank) = 3
+        then  CONCAT(vehicle.vehicle_identification_number,' ',CONCAT(b.name,replace(m.name,b.name,'')))
+        else null
+        end                                  as customer_collateral,
+        vehicle.assess_org                        as vehicle_assess_org,
+        customer.id                               as customer_id,
+        vehicle.assess_use_year                   as vehicle_assess_use_year,
+        car.car_category                          as car_category,
+        bank_log.operate_name                     as operate_name,
+        DATE_FORMAT(bank_log.operate_date,'%Y-%m-%d %H:%i:%S')   as operate_date,
+        current.usertask_remit_review_create_time    as remit_details_time
+
+        from (select * from loan_order where id = #{orderId}) orders
+        left join (select * from bank_interface_serial where order_id = #{orderId} and trans_code='applydivigeneral' order by request_time DESC limit 1) bank_interface on 1=1
+        left join bank_interface_log bank_log on (orders.id = bank_log.order_id and bank_log.trans_code='applydivigeneral')
+        left join current_node_manager current on orders.id=current.order_id
+        left join loan_car_info car on orders.loan_car_info_id = car.id
+        left join loan_customer customer on orders.loan_customer_id = customer.id
+        left join vehicle_information vehicle on vehicle.id = orders.vehicle_information_id
+        left join loan_financial_plan financial on financial.id = orders.loan_financial_plan_id
+        left join financial_product product on product.prod_id = financial.financial_product_id
+        left join loan_base_info base on base.id = orders.loan_base_info_id
+        left join car_detail d on car.car_detail_id = d.id
+        left join car_model m on d.model_id = m.id
+        left join car_brand b on m.brand_id = b.id
+    </select>
+
     <!--提车资料-->
     <select id="selectVehicleInformation" resultType="com.yunche.loan.domain.vo.VehicleInformationVO"
             parameterType="java.lang.Long">
@@ -204,10 +265,14 @@
         <![CDATA[
 
 
+
+
         SELECT
               case when max( t.collection_level ) = 7 then 1 else 0 end AS flag
               FROM
               ( SELECT ug.* FROM employee_rela_user_group eg INNER JOIN user_group ug ON eg.user_group_id = ug.id AND eg.employee_id = #{loginUserId} ) t
+
+
 
 
         ]]>
@@ -377,6 +442,56 @@
             where his.id = #{hisId,jdbcType=BIGINT} and his.order_id = #{orderId,jdbcType=BIGINT}
     </select>
 
+    <select id="selectUniversalLoanFinancialPlanTempHisNew"
+            resultType="com.yunche.loan.domain.vo.UniversalLoanFinancialPlanTempHisVO">
+        select
+        customer.id                                     AS customer_id,
+        customer.name                                   AS customer_name,
+        customer.id_card								AS customer_id_card,
+        department.name                                 AS department_name,
+        partner.id              						AS partner_id,
+        partner.name                                    AS partner_name,
+        salesman.name                                   AS salesman_name,
+        salesman.id                                     AS salesman_id,
+        his.id 			 								AS his_id,
+        his.order_id 									AS order_id,
+        his.financial_product_id 				 		AS financial_product_id,
+        his.financial_appraisal 				 		AS financial_appraisal,
+        his.financial_category_superior  		 	    AS product_category_superior,
+        his.financial_bank 							 	AS financial_bank,
+        his.financial_loan_time 	                    AS financial_loan_time,
+        his.financial_down_payment_ratio 		 		AS financial_down_payment_ratio,
+        his.financial_bank_fee 					 		AS financial_bank_fee,
+        his.financial_product_name 			 		 	AS financial_product_name,
+        format(his.financial_sign_rate,3)				AS financial_sign_rate,
+        his.financial_loan_amount				 		AS financial_loan_amount,
+        his.financial_first_month_repay  		 	    AS financial_first_month_repay,
+        his.financial_car_price 				 		AS financial_car_price,
+        his.financial_actual_car_price 				 	AS financial_actual_car_price,
+        his.financial_down_payment_money 		 	    AS financial_down_payment_money,
+        his.financial_bank_period_principal  		    AS financial_bank_period_principal,
+        his.financial_each_month_repay 			 		AS financial_each_month_repay,
+        his.financial_total_repayment_amount 			AS financial_total_repayment_amount,
+        his.initiator_id 								AS initiator_id,
+        his.initiator_name                              AS initiator_name,
+        his.auditor_id 									AS auditor_id,
+        his.auditor_name 								AS auditor_name,
+        DATE_FORMAT(his.start_time,'%Y-%m-%d %H:%i:%S') AS start_time,
+        DATE_FORMAT(his.end_time,'%Y-%m-%d %H:%i:%S')   AS end_time,
+        his.status 										AS status,
+        useCalculateStagingRatioNew(product.formula_id,his.financial_loan_amount,his.financial_sign_rate,useGetBankRate(his.financial_product_id,his.financial_loan_time), his.financial_car_price)
+        AS financial_bank_staging_ratio
+        from loan_financial_plan_temp_his his
+        left join loan_order main_order on his.order_id = main_order.id
+        left join financial_product product on his.financial_product_id = product.prod_id
+        left join loan_base_info loan on main_order.loan_base_info_id = loan.id
+        left join loan_customer customer on main_order.loan_customer_id = customer.id
+        left join employee salesman on loan.salesman_id = salesman.id
+        left join partner partner on loan.partner_id = partner.id
+        left join department department on partner.department_id = department.id
+        where his.id = #{hisId,jdbcType=BIGINT} and his.order_id = #{orderId,jdbcType=BIGINT}
+    </select>
+
     <!--通用info-->
     <select id="selectUniversalInfo" resultType="com.yunche.loan.domain.vo.UniversalInfoVO"
             parameterType="java.lang.Long">
@@ -457,8 +572,7 @@
             format(useGetBankRate(financial.financial_product_id,financial.loan_time),3)
                                                                                                     AS financial_bank_rate,
             (100-financial.down_payment_ratio)                                                      AS financial_loan_ratio,
-            useGetBankFee(product.formula_id,financial.loan_amount,financial.sign_rate,useGetBankRate(financial.financial_product_id,financial.loan_time),financial.loan_time)
-                                                                                                    AS financial_bank_fee,
+            financial.bank_fee                                                                      AS financial_bank_fee,
             financial.financial_product_id                                                          AS financial_product_id,
             financial.financial_product_name                                                        AS financial_product_name,
             format(financial.sign_rate,3)                                                           AS financial_sign_rate,
@@ -517,6 +631,145 @@
 
   </select>
 
+
+    <!--通用info-->
+    <select id="selectUniversalInfoNew" resultType="com.yunche.loan.domain.vo.UniversalInfoVO"
+            parameterType="java.lang.Long">
+        select
+        main_order.id                                                                           AS order_id,
+        DATE_FORMAT(material.complete_material_date,'%Y-%m-%d %H:%i:%S')                        AS material_complete_material_date,
+        material.remark                                                                         AS material_remark,
+        material.contract_num                                                                   AS material_contract_num,
+        DATE_FORMAT(loan.gmt_create,'%Y-%m-%d %H:%i:%S')                                        AS loan_gmt_create,
+        product.category_superior                                                               AS product_category_superior,
+        department.name                                                                         AS department_name,
+        customer.id                                                                             AS customer_id,
+        customer.id_card                                                                        AS customer_id_card,
+        customer.name                                                                           AS customer_name,
+        customer.address                                                                        AS customer_address,
+        customer.income_certificate_company_name                                                AS customer_income_certificate_company_name,
+        customer.income_certificate_company_address                                             AS customer_income_certificate_company_address,
+        customer.working_years                                                                  AS customer_working_years,
+        customer.postcode                                                                       AS customer_postcode,
+        customer.company_name                                                                   AS customer_company_name,
+        customer.company_address                                                                AS customer_company_address,
+        customer.mobile                                                                         AS customer_mobile,
+        customer.company_phone                                                                  AS customer_company_phone,
+        DATE_FORMAT(customer.birth,'%Y-%m-%d')                                                  AS customer_birth,
+        customer.sex                                                                            AS customer_sex,
+        customer.age                                                                            AS customer_age,
+        customer.month_income                                                                   AS customer_month_income,
+        customer.education                                                                      AS customer_education,
+        customer.duty                                                                           AS customer_duty,
+        customer.identity_address                                                               AS customer_identity_address,
+        customer.residence_address                                                              AS customer_residence_address,
+        customer.family_person_num                                                              AS customer_family_person_num,
+        customer.reserve_mobile                                                                 AS customer_reserve_mobile,
+        customer.cprovince                                                                      AS customer_cprovince,
+        customer.ccity                                                                          AS customer_ccity,
+        customer.ccounty                                                                        AS customer_ccounty,
+        customer.hprovince                                                                      AS customer_hprovince,
+        customer.hcity                                                                          AS customer_hcity,
+        customer.hcounty                                                                        AS customer_hcounty,
+        customer.lend_card                                                                      AS customer_lend_card,
+        customer.open_card_status                                                               AS customer_open_card_status,
+        customer.signature_type                                                                 AS customer_signature_type,
+        customer.ctelzone                                                                       AS customer_ctelzone,
+        partner.id                                                                              AS partner_id,
+        partner.name                                                                            AS partner_name,
+        useGetAreaFullName(partner.area_id)                                                     AS partner_biz_area,
+        partner.risk_bear_rate                                                                  AS partner_risk_bear_rate,
+        partner.pay_month                                                                       AS partner_pay_month,
+        salesman.id                                                                             AS salesman_id,
+        salesman.name                                                                           AS salesman_name,
+        salesman.mobile                                                                         AS salesman_mobile,
+        car.cooperation_dealer                                                                  AS car_cooperation_dealer,
+        car.car_detail_id                                                                       AS car_detail_id,
+        useGetCarName(car.car_detail_id)                                                        AS car_name,
+        car.car_type                                                                            AS car_type,
+        car.gps_num                                                                             AS car_gps_num,
+        car.business_source                                                                     AS car_business_source,
+        car.vehicle_property                                                                    AS car_vehicle_property,
+        car.car_key                                                                             AS car_key,
+        car.info                                                                                AS car_info,
+        car.pay_month                                                                                AS pay_month,
+        vehicle.color                                                                           AS vehicle_color,
+        vehicle.now_driving_license_owner                                                       AS vehicle_now_driving_license_owner,
+        vehicle.old_driving_license_owner                                                       AS vehicle_old_driving_license_owner,
+        vehicle.license_plate_type                                                              AS vehicle_license_plate_type,
+        CONCAT(area.parent_area_name,area.area_name)                                            AS vehicle_apply_license_plate_area,
+        vehicle.apply_license_plate_area                                           AS vehicle_apply_license_plate_area_id,
+        DATE_FORMAT(bank_credit.gmt_create,'%Y-%m-%d %H:%i:%S')                                 AS bank_credit_gmt_create,
+        society_credit.gmt_create                                                               AS society_credit_gmt_create,
+        financial.id                                                                            AS financial_id,
+        financial.bank                                                                          AS financial_bank,
+        financial.loan_time                                                                     AS financial_loan_time,
+        financial.appraisal                                                                     AS financial_appraisal,
+        financial.down_payment_ratio                                                            AS financial_down_payment_ratio,
+        financial.padding_company                                                               AS financial_padding_company,
+        financial.play_company                                                                  AS financial_play_company,
+        format(useGetBankRate(financial.financial_product_id,financial.loan_time),3)
+        AS financial_bank_rate,
+        (100-financial.down_payment_ratio)                                                      AS financial_loan_ratio,
+        financial.bank_fee                                                                      AS financial_bank_fee,
+        financial.financial_product_id                                                          AS financial_product_id,
+        financial.financial_product_name                                                        AS financial_product_name,
+        format(financial.sign_rate,3)                                                           AS financial_sign_rate,
+        financial.loan_amount                                                                   AS financial_loan_amount,
+        financial.first_month_repay                                                             AS financial_first_month_repay,
+        useCalculateStagingRatioNew(product.formula_id,financial.loan_amount,financial.sign_rate,useGetBankRate(financial.financial_product_id,financial.loan_time),financial.car_price)
+        AS financial_bank_staging_ratio,
+        financial.cash_deposit                                                                  AS financial_cash_deposit,
+        financial.car_price                                                                     AS financial_car_price,
+        financial.actual_car_price                                                              AS financial_actual_car_price,
+        financial.down_payment_money                                                            AS financial_down_payment_money,
+        financial.bank_period_principal                                                         AS financial_bank_period_principal,
+        financial.each_month_repay                                                              AS financial_each_month_repay,
+        financial.principal_interest_sum                                                        AS financial_total_repayment_amount,
+        financial.extra_fee                                                                     AS financial_extra_fee,
+        remit.beneficiary_bank                                                                  AS remit_beneficiary_bank,
+        remit.beneficiary_account                                                               AS remit_beneficiary_account,
+        remit.beneficiary_account_number                                                        AS remit_beneficiary_account_number,
+        remit.remit_amount                                                                      AS remit_amount,
+        remit.return_rate_amount                                                                AS remit_return_rate_amount,
+        remit.application_date                                                                  AS remit_application_date,
+        process.apply_license_plate_deposit_info                                                AS process_apply_license_plate_deposit_info,
+        process.bank_lend_record                                                                AS process_bank_lend_record,
+        process.video_review                                                                    AS process_video_review,
+        bank.repay_date                                                                         AS bank_repay_date,
+        bank.billing_date                                                                       AS bank_billing_date,
+        car.car_category                                                                        AS car_category,
+        cost.performance_fee                                                                    AS performance_fee,
+        repay.overdue_amount                                                                    AS overdue_amount,
+        remit.remit_time                                                                        AS remit_review_time,
+        bank.id                                                    as bank_id,
+        bank_lend.lend_date                                                                     AS bank_lend_date
+
+        from (select * from loan_order where id = #{orderId,jdbcType=BIGINT}) main_order
+        left join current_node_manager current on main_order.id=current.order_id
+        left join loan_process process on main_order.id = process.order_id
+        left join bank_card_record bank on main_order.id = bank.order_id
+        left join loan_customer customer on main_order.loan_customer_id = customer.id
+        left join material_audit material on main_order.material_audit_id = material.id
+        left join loan_base_info loan on main_order.loan_base_info_id = loan.id
+        left join loan_car_info car on main_order.loan_car_info_id = car.id
+        left join remit_details remit on main_order.remit_details_id = remit.id
+        left join vehicle_information vehicle on main_order.vehicle_information_id = vehicle.id
+        left join base_area area on vehicle.apply_license_plate_area = area.area_id
+        left join loan_financial_plan financial on main_order.loan_financial_plan_id = financial.id
+        left join financial_product product on financial.financial_product_id = product.prod_id
+        left join loan_credit_info bank_credit on customer.id = bank_credit.customer_id and bank_credit.type = 1
+        left join loan_credit_info society_credit on customer.id = society_credit.customer_id and society_credit.type = 2
+        left join employee salesman on loan.salesman_id = salesman.id
+        left join partner partner on loan.partner_id = partner.id
+        left join department department on partner.department_id = department.id
+        left join cost_details cost on main_order.cost_details_id = cost.id
+        left join bank_repay_record repay on repay.order_id = main_order.id
+        left join bank_lend_record bank_lend on main_order.bank_lend_record_id = bank_lend.id
+        LEFT JOIN   bank                            bk      ON   bk.name = loan.bank
+
+    </select>
+
     <!--贷后通用客户主要信息info-->
     <select id="selectBaseCustomerInfoInfo" resultType="com.yunche.loan.domain.vo.BaseCustomerInfoVO"
             parameterType="java.lang.Long">
@@ -552,6 +805,49 @@
     </select>
 
     <!--贷款信息-->
+    <select id="selectUniversalLoanInfoNew" parameterType="java.lang.Long"
+            resultType="com.yunche.loan.domain.vo.UniversalLoanInfoVO">
+        select
+        main_order.id                                                                       AS order_id,
+        customer.id_card                                                                    AS customer_id_card,
+        customer.name                                                                       AS customer_name,
+        customer.mobile                                                                     AS customer_mobile,
+        partner.name                                                                        AS partner_name,
+        useGetAreaFullName(partner.area_id)                                                 AS partner_biz_area,
+        salesman.name                                                                       AS salesman_name,
+        car.gps_num                                                                         AS car_gps_num,
+        car.car_key                                                                         AS car_key,
+        financial.bank                                                                      AS financial_bank,
+        financial.loan_time                                                                 AS financial_loan_time,
+        financial.down_payment_ratio                                                        AS financial_down_payment_ratio,
+        financial.financial_product_name                                                    AS financial_product_name,
+        format(financial.sign_rate,3)                                                       AS financial_sign_rate,
+        financial.loan_amount                                                               AS financial_loan_amount,
+        financial.first_month_repay                                                         AS financial_first_month_repay,
+        financial.cash_deposit                                                              AS financial_cash_deposit,
+        financial.down_payment_money                                                        AS financial_down_payment_money,
+        financial.bank_period_principal                                                     AS financial_bank_period_principal,
+        financial.each_month_repay                                                          AS financial_each_month_repay,
+        financial.bank_fee
+                                                                                                    AS financial_bank_fee,
+        useCalculateStagingRatioNew(product.formula_id,financial.loan_amount,financial.sign_rate,useGetBankRate(financial.financial_product_id,financial.loan_time),financial.car_price)
+        AS financial_bank_staging_ratio,
+        format(useGetBankRate(financial.financial_product_id,financial.loan_time),3)
+        AS financial_bank_rate
+
+        from (select * from loan_order where id = #{orderId,jdbcType=BIGINT}) main_order
+        left join loan_process process on main_order.id = process.order_id
+        left join loan_customer customer on main_order.loan_customer_id = customer.id
+        left join loan_base_info loan on main_order.loan_base_info_id = loan.id
+        left join loan_car_info car on main_order.loan_car_info_id = car.id
+        left join loan_financial_plan financial on main_order.loan_financial_plan_id = financial.id
+        left join financial_product product on financial.financial_product_id = product.prod_id
+        left join employee salesman on loan.salesman_id = salesman.id
+        left join partner partner on loan.partner_id = partner.id
+
+    </select>
+
+    <!--贷款信息-->
     <select id="selectUniversalLoanInfo" parameterType="java.lang.Long"
             resultType="com.yunche.loan.domain.vo.UniversalLoanInfoVO">
         select
@@ -575,7 +871,7 @@
                 financial.down_payment_money                                                        AS financial_down_payment_money,
                 financial.bank_period_principal                                                     AS financial_bank_period_principal,
                 financial.each_month_repay                                                          AS financial_each_month_repay,
-                useGetBankFee(product.formula_id,financial.loan_amount,financial.sign_rate,useGetBankRate(financial.financial_product_id,financial.loan_time),financial.loan_time)
+                financial.bank_fee
                                                                                                     AS financial_bank_fee,
                 useCalculateStagingRatio(product.formula_id,financial.loan_amount,financial.sign_rate,useGetBankRate(financial.financial_product_id,financial.loan_time),financial.car_price)
                                                                                                     AS financial_bank_staging_ratio,
@@ -634,6 +930,7 @@
             financial.appraisal                                                     AS financial_appraisal,
             vehicle.qualified_certificate_number                                    AS qualified_certificate_number,
             vehicle.assess_use_year                                                 AS vehicle_assess_use_year,
+            vehicle.car_category                                                    AS vehicle_car_category,
             car.car_category                                                        AS car_category
 
         from (select * from loan_order where id = #{orderId,jdbcType=BIGINT}) main_order
@@ -1578,6 +1875,77 @@
 
 
     </select>
+
+    <!--金融方案-->
+    <select id="selectFinancialSchemeNew" resultType="com.yunche.loan.domain.vo.FinancialSchemeVO"
+            parameterType="java.lang.Long">
+        select
+        o.id AS order_id,
+        c.id AS customer_id,
+        c.name AS cname,
+        c.id_card AS id_card,
+        c.signature_type AS customer_signature_type,
+        c.ctelzone AS customer_ctelzone,
+        f.financial_product_name AS financial_product_name,
+        f.financial_product_id AS financial_product_id,
+        h.license_plate_number AS license_plate_number,
+        h.registration_certificate_number AS registration_certificate_number,
+        h.apply_license_plate_date AS apply_license_plate_date,
+        a.apply_license_plate_deposit_date AS apply_license_plate_deposit_date,
+        f.loan_time AS loan_time,
+        f.car_price AS car_price,
+        f.actual_car_price AS actual_car_price,
+        b.bank AS bank,
+        f.sign_rate AS sign_rate,
+        f.down_payment_money AS down_payment_money,
+        f.loan_amount AS loan_amount,
+        f.down_payment_ratio AS down_payment_ratio,
+        f.bank_period_principal AS bank_period_principal,
+        f.bank_fee AS bank_fee,
+        f.principal_interest_sum AS principal_interest_sum,
+        f.first_month_repay AS first_month_repay,
+        f.each_month_repay AS each_month_repay,
+        f.appraisal AS appraisal,
+        useCalculateStagingRatioNew(product.formula_id,f.loan_amount,f.sign_rate,useGetBankRate(f.financial_product_id,f.loan_time),f.car_price)
+        AS financial_bank_staging_ratio,
+        p.bank_rate AS bank_base_rate,
+        applay_quota(f.bank_period_principal,f.bank_fee) AS applayQuota,
+        product.category_superior AS category_superior,
+        par.name AS partner_name,
+        par.area_id AS partner_area_id
+
+
+        from (select * from loan_order where id = #{orderId,jdbcType=BIGINT}) o
+
+        left join loan_customer c on o.loan_customer_id= c.id
+
+        left join loan_base_info b on o.loan_base_info_id = b.id
+
+        left join partner par on par.id = b.partner_id
+
+        left join loan_car_info i on o.loan_car_info_id = i.id
+
+        left join loan_financial_plan f on o.loan_financial_plan_id = f.id
+
+        left join cost_details d on o.cost_details_id = d.id
+
+        left join remit_details r on o.remit_details_id = r.id
+
+        left join vehicle_information h on o.vehicle_information_id = h.id
+
+        left join apply_license_plate_deposit_info a on o.apply_license_plate_deposit_info_id = a.id
+
+        left join material_audit m on o.material_audit_id = m.id
+
+        left join loan_home_visit v on o.loan_home_visit_id = v.id
+
+        left join financial_product product on f.financial_product_id = product.prod_id
+
+        left join product_rate p on (p.prod_id = f.financial_product_id and p.loan_time = f.loan_time)
+
+
+    </select>
+
 
     <!--计算明细的信息-->
     <select id="selectCostCalculateInfo" resultType="com.yunche.loan.domain.vo.CostCalculateInfoVO"
