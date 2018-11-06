@@ -2250,6 +2250,9 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         // 本次不执行-[附加任务]   为了不重复生成：征信历史记录（增信增补时，会重复生成2条记录！因为这里走了一遍，下面继续走，就会又走一遍！）
         approval.setDoAttachTask(false);
         approval(approval);
+
+        // 上门不走-[附加任务]，这里再走！！！
+        approval.setDoAttachTask(true);
     }
 
     @Override
