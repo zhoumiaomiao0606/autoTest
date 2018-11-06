@@ -2250,11 +2250,14 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         loanProcessApprovalCommonService.updateLoanProcess(loanProcessDO);
 
         // 自动提交打回的【征信申请】
-        approval.setTaskDefinitionKey(CREDIT_APPLY.getCode());
-        approval.setAction(ACTION_PASS);
-        approval.setNeedLog(false);
-        approval.setCheckPermission(false);
-        approval(approval);
+        ApprovalParam approvalParam = new ApprovalParam();
+        approvalParam.setOrderId(approval.getOrderId());
+        approvalParam.setTaskId(approval.getTaskId());
+        approvalParam.setTaskDefinitionKey(CREDIT_APPLY.getCode());
+        approvalParam.setAction(ACTION_PASS);
+        approvalParam.setNeedLog(false);
+        approvalParam.setCheckPermission(false);
+        approval(approvalParam);
     }
 
     @Override
