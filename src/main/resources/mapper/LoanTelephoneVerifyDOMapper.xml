@@ -4,13 +4,14 @@
   <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.LoanTelephoneVerifyDO" >
     <id column="order_id" property="orderId" jdbcType="BIGINT" />
     <result column="info" property="info" jdbcType="VARCHAR" />
+    <result column="riskSharingAddition" property="riskSharingAddition" jdbcType="DECIMAL"/>
     <result column="gmt_create" property="gmtCreate" jdbcType="TIMESTAMP" />
     <result column="gmt_modify" property="gmtModify" jdbcType="TIMESTAMP" />
     <result column="user_name" property="userName" jdbcType="VARCHAR" />
     <result column="user_id" property="userId" jdbcType="BIGINT" />
   </resultMap>
   <sql id="Base_Column_List" >
-    order_id, info, gmt_create, gmt_modify, user_name, user_id
+    order_id, info,riskSharingAddition, gmt_create, gmt_modify, user_name, user_id
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
     select 
@@ -23,10 +24,10 @@
     where order_id = #{orderId,jdbcType=BIGINT}
   </delete>
   <insert id="insert" parameterType="com.yunche.loan.domain.entity.LoanTelephoneVerifyDO" >
-    insert into loan_telephone_verify (order_id, info, gmt_create, 
+    insert into loan_telephone_verify (order_id, info,riskSharingAddition, gmt_create,
       gmt_modify, user_name, user_id
       )
-    values (#{orderId,jdbcType=BIGINT}, #{info,jdbcType=VARCHAR}, #{gmtCreate,jdbcType=TIMESTAMP},
+    values (#{orderId,jdbcType=BIGINT}, #{info,jdbcType=VARCHAR},#{riskSharingAddition,jdbcType=DECIMAL}, #{gmtCreate,jdbcType=TIMESTAMP},
       #{gmtModify,jdbcType=TIMESTAMP}, #{userName,jdbcType=VARCHAR}, #{userId,jdbcType=BIGINT}
       )
   </insert>
@@ -38,6 +39,9 @@
       </if>
       <if test="info != null" >
         info,
+      </if>
+      <if test="riskSharingAddition != null" >
+        riskSharingAddition,
       </if>
       <if test="gmtCreate != null" >
         gmt_create,
@@ -59,6 +63,9 @@
       <if test="info != null" >
         #{info,jdbcType=VARCHAR},
       </if>
+      <if test="riskSharingAddition != null" >
+        #{riskSharingAddition,jdbcType=DECIMAL},
+      </if>
       <if test="gmtCreate != null" >
         #{gmtCreate,jdbcType=TIMESTAMP},
       </if>
@@ -79,6 +86,9 @@
       <if test="info != null" >
         info = #{info,jdbcType=VARCHAR},
       </if>
+      <if test="riskSharingAddition != null" >
+        riskSharingAddition = #{riskSharingAddition,jdbcType=DECIMAL},
+      </if>
       <if test="gmtCreate != null" >
         gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
       </if>
@@ -97,6 +107,7 @@
   <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.LoanTelephoneVerifyDO" >
     update loan_telephone_verify
     set info = #{info,jdbcType=VARCHAR},
+      riskSharingAddition = #{riskSharingAddition,jdbcType=DECIMAL},
       gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
       gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
       user_name = #{userName,jdbcType=VARCHAR},

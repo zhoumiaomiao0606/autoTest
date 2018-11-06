@@ -812,7 +812,7 @@
               from loan_order main
               inner join loan_process deputy               on main.id               = deputy.order_id
               left join (select customer_id,max(id) as credithisId FROM loan_credit_info_bank_his GROUP BY customer_id) tab on
-              tab.customer_id = loan_order.loan_customer_id
+              tab.customer_id = main.loan_customer_id
               left join loan_credit_info_bank_his on tab.credithisId = loan_credit_info_bank_his.id
               left  join loan_customer join_c              on join_c.id             = main.loan_customer_id
               left  join loan_base_info join_b             on join_b.id             = main.loan_base_info_id
