@@ -3243,7 +3243,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
     private void doCurrentNodeAttachTask(ApprovalParam approval, LoanOrderDO loanOrderDO, LoanProcessDO loanProcessDO) {
 
         // 附带任务-[征信申请]
-        doAttachTask_creditApply(approval, loanOrderDO);
+        doAttachTask_CreditApply(approval, loanOrderDO);
 
         // 附带任务-[银行征信]
         doAttachTask_BankCreditRecord(approval, loanOrderDO);
@@ -3252,7 +3252,10 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         doAttachTask_SocialCreditRecord(approval, loanOrderDO);
 
         // 附带任务-[贷款申请]
-        doAttachTask_loanApply(approval, loanOrderDO, loanProcessDO);
+        doAttachTask_LoanApply(approval, loanOrderDO, loanProcessDO);
+
+        // 附带任务-[电审]
+        doAttachTask_TelephoneVerify(approval, loanOrderDO, loanProcessDO);
 
         // 附带任务-[打款确认]
         doAttachTask_RemitReview(approval, loanOrderDO);
@@ -3263,18 +3266,57 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         // 附带任务-[银行放款记录]
         doAttachTask_BankLendRecord(approval, loanOrderDO);
 
+        // 附带任务-[视频审核]
+        doAttachTask_VideoReview(approval, loanOrderDO);
+
         // 附带任务-[弃单]
         doAttachTask_CancelTask(approval, loanOrderDO);
-
-        // 附带任务-[视频审核记录次数]
-        doAttachTask_VideoFaceNum(approval, loanOrderDO);
     }
 
-    private void doAttachTask_VideoFaceNum(ApprovalParam approval, LoanOrderDO loanOrderDO) {
+    /**
+     * 附带任务-[电审]
+     *
+     * @param approval
+     * @param loanOrderDO
+     * @param loanProcessDO
+     */
+    private void doAttachTask_TelephoneVerify(ApprovalParam approval, LoanOrderDO loanOrderDO, LoanProcessDO loanProcessDO) {
+
+        if (TELEPHONE_VERIFY.getCode().equals(approval.getTaskDefinitionKey()) && ACTION_PASS.equals(approval.getAction())) {
+
+            // TODO 例外：如果该订单被电审设置为 风险分担比例100%，则强制不会生成代收钥匙待办（电审选择不重要）
+
+            if (true) {
+
+                Byte commitKeyStatus = loanProcessDO.getCommitKey();
+                if (TASK_PROCESS_TODO.equals(commitKeyStatus) || TASK_PROCESS_REJECT.equals(commitKeyStatus)) {
+
+                    // 直接完成任务
+                    autoCompleteTask(loanOrderDO.getProcessInstId(), loanOrderDO.getId(), COMMIT_KEY.getCode());
+
+                    // 将状态更新为：0 -> init
+                    loanProcessDO.setCommitKey(TASK_PROCESS_INIT);
+                    loanProcessApprovalCommonService.updateLoanProcess(loanProcessDO);
+                }
+            }
+        }
+    }
+
+    /**
+     * 附带任务-[视频审核]
+     *
+     * @param approval
+     * @param loanOrderDO
+     */
+    private void doAttachTask_VideoReview(ApprovalParam approval, LoanOrderDO loanOrderDO) {
+
         if (VIDEO_REVIEW.getCode().equals(approval.getTaskDefinitionKey()) && ACTION_PASS.equals(approval.getAction())) {
+
+            // 视频审核记录次数
             VideoFaceNumDO videoFaceNumDO = videoFaceNumDOMapper.selectByPrimaryKey(loanOrderDO.getId());
             VideoFaceNumDO videoFaceNumDO1 = new VideoFaceNumDO();
             videoFaceNumDO1.setOrder_id(loanOrderDO.getId());
+
             if (videoFaceNumDO == null) {
                 videoFaceNumDO1.setFace_num(1);
                 videoFaceNumDOMapper.insertSelective(videoFaceNumDO1);
@@ -3320,7 +3362,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      * @param loanOrderDO
      * @param loanProcessDO
      */
-    private void doAttachTask_loanApply(ApprovalParam approval, LoanOrderDO loanOrderDO, LoanProcessDO loanProcessDO) {
+    private void doAttachTask_LoanApply(ApprovalParam approval, LoanOrderDO loanOrderDO, LoanProcessDO loanProcessDO) {
 
         if (LOAN_APPLY.getCode().equals(approval.getTaskDefinitionKey()) && ACTION_PASS.equals(approval.getAction())) {
 
@@ -3433,7 +3475,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      * @param approval
      * @param loanOrderDO
      */
-    private void doAttachTask_creditApply(ApprovalParam approval, LoanOrderDO loanOrderDO) {
+    private void doAttachTask_CreditApply(ApprovalParam approval, LoanOrderDO loanOrderDO) {
 
         // 征信申请 && PASS
         if (CREDIT_APPLY.getCode().equals(approval.getTaskDefinitionKey()) && ACTION_PASS.equals(approval.getAction())) {
