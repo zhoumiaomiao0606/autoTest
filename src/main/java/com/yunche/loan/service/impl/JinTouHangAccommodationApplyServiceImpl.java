@@ -113,6 +113,7 @@ public class JinTouHangAccommodationApplyServiceImpl implements JinTouHangAccomm
      * @return
      */
     @Override
+    @Transactional
     public void dealTask(ApprovalParam param) {
 
         //金投行过桥处理 -反审
@@ -132,6 +133,7 @@ public class JinTouHangAccommodationApplyServiceImpl implements JinTouHangAccomm
      * @return
      */
     @Override
+    @Transactional
     public ResultBean reject(AccommodationApplyParam param) {
         Preconditions.checkNotNull(param, "参数有误");
         Preconditions.checkNotNull(param.getIdPair(), "参数有误");
@@ -224,6 +226,7 @@ public class JinTouHangAccommodationApplyServiceImpl implements JinTouHangAccomm
      * @return
      */
     @Override
+    @Transactional
     public ResultBean batchLoan(AccommodationApplyParam param) {
         Preconditions.checkNotNull(param, "参数有误");
         List<AccommodationApplyParam.IDPair> idPairs = param.getIdPairs();
@@ -279,6 +282,7 @@ public class JinTouHangAccommodationApplyServiceImpl implements JinTouHangAccomm
      * @return
      */
     @Override
+    @Transactional
     public ResultBean batchImp(String key) {
         Preconditions.checkNotNull(key, "文件key不能为空");
         List<ThirdPartyFundBusinessDO> partyFundBusinessDOList = Lists.newArrayList();
@@ -367,6 +371,7 @@ public class JinTouHangAccommodationApplyServiceImpl implements JinTouHangAccomm
      * @return
      */
     @Override
+    @Transactional
     public ResultBean export(ExportApplyLoanPushParam param) {
 
         List<ExportApplyLoanPushVO> voList = loanStatementDOMapper.exportApplyLoanPush(param);
@@ -404,6 +409,7 @@ public class JinTouHangAccommodationApplyServiceImpl implements JinTouHangAccomm
      * @return
      */
     @Override
+    @Transactional
     public ResultBean exportJinTouHangRepayInfo(ExportApplyLoanPushParam param) {
 
         List<JinTouHangRepayInfoVO> voList = loanStatementDOMapper.exportJinTouHangRepayInfo(param);
@@ -421,6 +427,7 @@ public class JinTouHangAccommodationApplyServiceImpl implements JinTouHangAccomm
      * @return
      */
     @Override
+    @Transactional
     public ResultBean exportJinTouHangInterestRegister(ExportApplyLoanPushParam param) {
 
         List<JinTouHangInterestRegisterVO> voList = loanStatementDOMapper.exportJinTouHangInterestRegister(param);
@@ -433,6 +440,7 @@ public class JinTouHangAccommodationApplyServiceImpl implements JinTouHangAccomm
     }
 
     @Override
+    @Transactional
     public ResultBean calMoney(Long bridgeProcessId, Long orderId, String repayDate) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         CalMoneyVO calMoneyVO = new CalMoneyVO();
@@ -469,6 +477,7 @@ public class JinTouHangAccommodationApplyServiceImpl implements JinTouHangAccomm
     }
 
     @Override
+    @Transactional
     public ResultBean calMoneyDetail(Long bridgeProcessId, Long orderId, String repayDate, String flag) {
         CalMoneyVO calMoneyVO = new CalMoneyVO();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
@@ -537,6 +546,7 @@ public class JinTouHangAccommodationApplyServiceImpl implements JinTouHangAccomm
     }
 
     @Override
+    @Transactional
     public ResultBean isReturn(Long bridgeProcessId, Long orderId) {
         ThirdPartyFundBusinessDO thirdPartyFundBusinessDO = thirdPartyFundBusinessDOMapper.selectByPrimaryKey(bridgeProcessId);
         if (thirdPartyFundBusinessDO != null) {
@@ -551,6 +561,7 @@ public class JinTouHangAccommodationApplyServiceImpl implements JinTouHangAccomm
     }
 
     @Override
+    @Transactional
     public String jtxResult(String param) {
         JTXCommunicationUtil jtxCommunicationUtil = new JTXCommunicationUtil();
         try {
