@@ -56,4 +56,6 @@ public class VideoFaceQuestionAnswerVO {
 
     //定位地址
     private String address;
+
+    private String hebCarName;
 }

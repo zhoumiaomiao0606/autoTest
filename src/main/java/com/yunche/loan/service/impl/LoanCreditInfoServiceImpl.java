@@ -67,7 +67,7 @@ public class LoanCreditInfoServiceImpl implements LoanCreditInfoService {
         create(loanCreditInfoDO);
 
         // 记录征信结果到 征信his表
-        saveCreditInfoHis_CreditResult(loanCreditInfoDO);
+//        saveCreditInfoHis_CreditResult(loanCreditInfoDO);
     }
 
     @Override
