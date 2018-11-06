@@ -407,7 +407,7 @@
         <select id="selectTaskList" resultType="com.yunche.loan.domain.vo.TaskListVO" parameterType="com.yunche.loan.domain.query.TaskListQuery">
             select complex.*,
             complex_log.usertask_credit_apply_gmt_user_name                                    AS creditMan,
-            DATE_FORMAT(complex_log.usertask_credit_apply_create_time, '%Y-%m-%d %H:%i:%S' )   AS creditDate,
+            DATE_FORMAT(loan_credit_info_bank_his.credit_apply_time, '%Y-%m-%d %H:%i:%S' )   AS creditDate,
             DATE_FORMAT(complex_log.usertask_bank_credit_record_create_time, '%Y-%m-%d %H:%i:%S' )   AS bankCreditDate,
             DATE_FORMAT(complex_log.usertask_social_credit_record_create_time, '%Y-%m-%d %H:%i:%S' )   AS socialCreditDate,
             DATE_FORMAT(complex_log.usertask_remit_review_create_time,'%Y-%m-%d %H:%i:%S')     AS remitGmtCreate,
@@ -811,6 +811,9 @@
                   </choose>
               from loan_order main
               inner join loan_process deputy               on main.id               = deputy.order_id
+              left join (select customer_id,max(id) as credithisId FROM loan_credit_info_bank_his GROUP BY customer_id) tab on
+              tab.customer_id = loan_order.loan_customer_id
+              left join loan_credit_info_bank_his on tab.credithisId = loan_credit_info_bank_his.id
               left  join loan_customer join_c              on join_c.id             = main.loan_customer_id
               left  join loan_base_info join_b             on join_b.id             = main.loan_base_info_id
               left  join loan_financial_plan join_f        on join_f.id             = main.loan_financial_plan_id
