@@ -1333,6 +1333,13 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             // 前置开卡校验
             preCondition4BankOpenCard(loanOrderDO, loanProcessDO);
         }
+
+        // [002-合同资料合伙人至公司-确认接收]
+        else if (DATA_FLOW_CONTRACT_P2C_REVIEW.getCode().equals(taskDefinitionKey)) {
+            // 如果有待收钥匙的待办，未完成，则不能提交“资料流转002”，点击后弹出报错提示：该订单尚未完成待办：待收钥匙
+            Byte commitKeyStatus = loanProcessDO.getCommitKey();
+            Preconditions.checkArgument(TASK_PROCESS_DONE.equals(commitKeyStatus), "当前订单[待收钥匙]未提交");
+        }
     }
 
     /**
