@@ -57,12 +57,12 @@
 
 
 
-        <table tableName="conf_loan_apply" domainObjectName="ConfLoanApplyDO"
-               enableCountByExample="false" enableUpdateByExample="false"
-               enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
-            <!--采用下划线字段-->
-            <property name="useActualColumnNames" value="true"/>
-        </table>
+        <!--<table tableName="conf_loan_apply" domainObjectName="ConfLoanApplyDO"-->
+               <!--enableCountByExample="false" enableUpdateByExample="false"-->
+               <!--enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">-->
+            <!--&lt;!&ndash;采用下划线字段&ndash;&gt;-->
+            <!--<property name="useActualColumnNames" value="true"/>-->
+        <!--</table>-->
 
 
 
@@ -384,7 +384,7 @@
 -->
 
 
-        <table tableName="remit_details" domainObjectName="RemitDetailsDO"
+        <table tableName="loan_telephone_verify" domainObjectName="LoanTelephoneVerifyDO"
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
         </table>

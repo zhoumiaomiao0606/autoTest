@@ -129,6 +129,12 @@ public class LoanProcessServiceImpl implements LoanProcessService {
     private RemitDetailsDOMapper remitDetailsDOMapper;
 
     @Autowired
+    private PartnerDOMapper partnerDOMapper;
+
+    @Autowired
+    private LoanTelephoneVerifyDOMapper loanTelephoneVerifyDOMapper;
+
+    @Autowired
     private ConfThirdRealBridgeProcessDOMapper confThirdRealBridgeProcessDOMapper;
 
     @Autowired
@@ -3290,9 +3296,12 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
         if (TELEPHONE_VERIFY.getCode().equals(approval.getTaskDefinitionKey()) && ACTION_PASS.equals(approval.getAction())) {
 
-            // TODO 例外：如果该订单被电审设置为 风险分担比例100%，则强制不会生成代收钥匙待办（电审选择不重要）
+            // 例外：如果该订单被电审设置为 风险分担比例100%，则强制不会生成代收钥匙待办（电审选择不重要）
 
-            if (true) {
+            // 订单总风险分担比例
+            double total_risk_rate = getOrderTotalRiskRate(loanOrderDO.getId());
+
+            if (total_risk_rate == 100) {
 
                 Byte commitKeyStatus = loanProcessDO.getCommitKey();
                 if (TASK_PROCESS_TODO.equals(commitKeyStatus) || TASK_PROCESS_REJECT.equals(commitKeyStatus)) {
@@ -3306,6 +3315,31 @@ public class LoanProcessServiceImpl implements LoanProcessService {
                 }
             }
         }
+    }
+
+    /**
+     * 订单总风险分担比例
+     *
+     * @param orderId
+     * @return
+     */
+    private double getOrderTotalRiskRate(Long orderId) {
+
+        // 基础风险分担比例
+        PartnerDO partnerDO = partnerDOMapper.queryPartnerInfoByOrderId(orderId);
+        Preconditions.checkNotNull(partnerDO, "当前订单所属合伙人不存在");
+        BigDecimal riskBearRate = partnerDO.getRiskBearRate();
+        Preconditions.checkNotNull(riskBearRate, "合伙人基础风险分担比例不能为空");
+        Preconditions.checkArgument(riskBearRate.doubleValue() <= 100,
+                "合伙人基础风险分担比例不能大于100%！当前：%s%", riskBearRate.doubleValue());
+
+        // 风险分担加成
+        LoanTelephoneVerifyDO loanTelephoneVerifyDO = loanTelephoneVerifyDOMapper.selectByPrimaryKey(orderId);
+        BigDecimal riskSharingAddition = loanTelephoneVerifyDO.getRiskSharingAddition();
+
+        // 总风险分担比例
+        double total_risk_rate = riskBearRate.doubleValue() + riskSharingAddition.doubleValue();
+        return total_risk_rate;
     }
 
     /**
