@@ -8,4 +8,6 @@ public interface FinanceService {
     public RecombinationVO detail(Long orderId);
 
     ResultBean update(RemitDetailsParam remitDetailsParam);
+
+    ResultBean getAccount();
 }

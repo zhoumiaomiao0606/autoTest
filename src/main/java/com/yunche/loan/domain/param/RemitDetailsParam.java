@@ -12,4 +12,8 @@ public class RemitDetailsParam
     private String remit_account;
 
     private String remit_account_number;
+
+    //打款开户行
+    private String remit_business_id;
+
 }

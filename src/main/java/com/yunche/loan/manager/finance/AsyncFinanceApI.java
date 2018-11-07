@@ -26,9 +26,9 @@ public class AsyncFinanceApI
 {
     private static final Logger LOG = LoggerFactory.getLogger(AsyncFinanceApI.class);
 
-    private static final String HOST = "http://";
+    private static final String HOST = "http://47.96.78.20:8012";
 
-    private static final String PATH = "/aaa/aaa";
+    private static final String PATH = "/finance/voucher/insert";
 
     private static final String METHOD = "post";
 
@@ -60,7 +60,6 @@ public class AsyncFinanceApI
         postFinanceData.setPartner(loanBaseInfoDO.getPartnerId());
 
 
-
         //判断是-垫款提交-退款提交-偿款提交----查询相关数据
         if (approvalParam.equals(REMIT_REVIEW.getCode()) && ACTION_PASS.equals(approvalParam.getAction()))
         {
@@ -74,6 +73,11 @@ public class AsyncFinanceApI
             RemitDetailsDO remitDetailsDO = remitDetailsDOMapper.selectByPrimaryKey(remitDetailsId);
 
             postFinanceData.setClientAdvance(remitDetailsDO.getRemit_amount());
+
+            postFinanceData.setType(new Byte("1"));
+
+            postFinanceData.setCompanyId(remitDetailsDO.getRemit_business_id());
+
 
         }
 
@@ -105,8 +109,8 @@ public class AsyncFinanceApI
         //进行推送
         try {
             LOG.error("准备异步发送数据！！！"+postFinanceData.toString());
-            HttpUtils.loginAuth();
-            /*HttpUtils.doPost(HOST,PATH,METHOD,null,null,postFinanceData.toString());*/
+            /* HttpUtils.loginAuth();*/
+            HttpUtils.doPost(HOST,PATH,METHOD,null,null,postFinanceData.toString());
         } catch (Exception e) {
             LOG.error("财务数据异步发送失败！！！",e);
         }

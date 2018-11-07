@@ -11,11 +11,15 @@ public class PostFinanceData
 {
     private long partner;
 
+    private Byte type;//1代客户垫款 2收到银行款项 3客户退款 4公司代客户偿款
+
     private BigDecimal clientDepositReturn;
 
     private BigDecimal clientAdvance;
 
     private BigDecimal companyCompensatory;
+
+    private String companyId;//公司银行账户id
 
 
     @Override
