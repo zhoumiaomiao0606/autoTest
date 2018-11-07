@@ -109,7 +109,6 @@ public class AsyncFinanceApI
         //进行推送
         try {
             LOG.error("准备异步发送数据！！！"+postFinanceData.toString());
-            /* HttpUtils.loginAuth();*/
             HttpUtils.doPost(HOST,PATH,METHOD,null,null,postFinanceData.toString());
         } catch (Exception e) {
             LOG.error("财务数据异步发送失败！！！",e);
