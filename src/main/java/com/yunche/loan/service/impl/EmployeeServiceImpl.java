@@ -642,7 +642,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         if (id == null) {
             throw new BizException("缺少员工ID");
         }
-        EmployeeDO employeeDO = employeeDOMapper.selectByPrimaryKey(id,null);
+        EmployeeDO employeeDO = employeeDOMapper.selectByPrimaryKey(id, null);
         if (employeeDO == null) {
             throw new BizException("缺少员工ID");
         }

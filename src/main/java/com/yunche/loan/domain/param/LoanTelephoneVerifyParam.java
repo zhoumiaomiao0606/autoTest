@@ -10,5 +10,6 @@ import lombok.Data;
 @Data
 public class LoanTelephoneVerifyParam extends LoanTelephoneVerifyDO {
 
+    //签单类型
     private Byte signatureType;
 }

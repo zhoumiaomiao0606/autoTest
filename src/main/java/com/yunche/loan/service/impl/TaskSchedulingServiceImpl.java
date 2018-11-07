@@ -193,7 +193,8 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         query.setBankList(getUserHaveBank(loginUser.getId()));
 
         PageHelper.startPage(pageIndex, pageSize, true);
-        List<ScheduleTaskVO> list = taskSchedulingDOMapper.selectScheduleTaskList(query);
+        //List<ScheduleTaskVO> list = taskSchedulingDOMapper.selectScheduleTaskList(query);
+        List<ScheduleTaskVO> list = new ArrayList<>();
         PageInfo<ScheduleTaskVO> pageInfo = new PageInfo<>(list);
 
         return ResultBean.ofSuccess(list, new Long(pageInfo.getTotal()).intValue(), pageInfo.getPageNum(), pageInfo.getPageSize());
@@ -201,7 +202,7 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
 
     @Override
     public ResultBean<Long> countScheduletasklist() {
-        EmployeeDO loginUser = SessionUtils.getLoginUser();
+        /*EmployeeDO loginUser = SessionUtils.getLoginUser();
         Set<String> juniorIds = employeeService.getSelfAndCascadeChildIdList(loginUser.getId());
         Long telephoneVerifyLevel = taskSchedulingDOMapper.selectTelephoneVerifyLevel(loginUser.getId());
         Long maxGroupLevel = taskSchedulingDOMapper.selectMaxGroupLevel(loginUser.getId());
@@ -228,9 +229,9 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
 
         long count = PageHelper.count(() -> {
             taskSchedulingDOMapper.selectScheduleTaskList(query);
-        });
+        });*/
 
-        return ResultBean.ofSuccess(count);
+        return ResultBean.ofSuccess(Long.valueOf("0"));
     }
 
     @Override

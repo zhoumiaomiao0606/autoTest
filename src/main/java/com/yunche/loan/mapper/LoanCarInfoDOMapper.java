@@ -3,6 +3,7 @@ package com.yunche.loan.mapper;
 import com.yunche.loan.domain.entity.LoanCarInfoDO;
 import com.yunche.loan.domain.entity.LoanProcessLogDO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
 @Mapper
@@ -24,4 +25,6 @@ public interface LoanCarInfoDOMapper {
     Byte getCarKeyByOrderId(Long orderId);
 
     LoanProcessLogDO selectNeedCollectKey(Long orderId);
+
+    String selectFullNameById(@Param("loanCarId")Long loanCarId);
 }

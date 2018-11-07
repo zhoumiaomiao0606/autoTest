@@ -47,4 +47,5 @@ public class ExportOrdersVO {
     private String usertask_material_manage_create_time;//资料归档时间
     private String usertask_bank_lend_record_create_time;//银行放款时间
     private String usertask_bank_card_send_create_time;//银行卡寄送时间
+    private String express_receive_date_time;//资料接收时间
 }

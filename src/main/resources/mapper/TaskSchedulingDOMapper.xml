@@ -407,7 +407,7 @@
         <select id="selectTaskList" resultType="com.yunche.loan.domain.vo.TaskListVO" parameterType="com.yunche.loan.domain.query.TaskListQuery">
             select complex.*,
             complex_log.usertask_credit_apply_gmt_user_name                                    AS creditMan,
-            DATE_FORMAT(complex_log.usertask_credit_apply_create_time, '%Y-%m-%d %H:%i:%S' )   AS creditDate,
+            DATE_FORMAT(complex.creditApplySubmitTime, '%Y-%m-%d %H:%i:%S' )   AS creditDate,
             DATE_FORMAT(complex_log.usertask_bank_credit_record_create_time, '%Y-%m-%d %H:%i:%S' )   AS bankCreditDate,
             DATE_FORMAT(complex_log.usertask_social_credit_record_create_time, '%Y-%m-%d %H:%i:%S' )   AS socialCreditDate,
             DATE_FORMAT(complex_log.usertask_remit_review_create_time,'%Y-%m-%d %H:%i:%S')     AS remitGmtCreate,
@@ -453,6 +453,7 @@
                         </otherwise>
                     </choose>
                   main.id                                      AS id,
+            loan_credit_info_bank_his.credit_apply_time        as creditApplySubmitTime,
                   join_e.id                                    AS salesmanId,
                   join_p.id                                    AS partnerId,
                   join_b.area_id                               AS bizAreaId,
@@ -550,7 +551,8 @@
                           deputy.bank_lend_record                   AS taskStatus
                       </when>
                       <when test="taskDefinitionKey == 'usertask_video_review'">
-                          deputy.video_review                       AS taskStatus
+                          deputy.video_review                       AS taskStatus,
+                          videonum.face_num                         AS faceNum
                       </when>
                       <when test="taskDefinitionKey == 'usertask_info_supplement'">
                           join_s.type                               AS supplementType,
@@ -810,6 +812,9 @@
                   </choose>
               from loan_order main
               inner join loan_process deputy               on main.id               = deputy.order_id
+              left join (select customer_id,max(id) as credithisId FROM loan_credit_info_bank_his GROUP BY customer_id) tab on
+              tab.customer_id = main.loan_customer_id
+              left join loan_credit_info_bank_his on tab.credithisId = loan_credit_info_bank_his.id
               left  join loan_customer join_c              on join_c.id             = main.loan_customer_id
               left  join loan_base_info join_b             on join_b.id             = main.loan_base_info_id
               left  join loan_financial_plan join_f        on join_f.id             = main.loan_financial_plan_id
@@ -917,6 +922,9 @@
                   left join conf_third_real_bridge_process real_b       on deputy_b.id = real_b.bridge_process_id
                   left join conf_third_party_money conf_t               on real_b.conf_third_party_id = conf_t.id
                   left join third_party_fund_business  third_party      on third_party.bridge_procecss_id    = deputy_b.id
+              </if>
+              <if test="taskDefinitionKey == 'usertask_video_review'">
+                  left join video_face_num videonum                 on videonum.order_id = main.id
               </if>
 
               where 1=1
@@ -1066,7 +1074,13 @@
                       AND case when #{taskStatus} = 0 then deputy.loan_info_record != 0                  else deputy.loan_info_record        = #{taskStatus} end
                   </when>
                   <when test="taskDefinitionKey == 'usertask_video_review'">
-                      AND case when #{taskStatus} = 0 then deputy.video_review != 0                      else deputy.video_review        = #{taskStatus} end
+                      AND case when #{taskStatus} = 0 then deputy.video_review != 0
+                      else deputy.video_review        = #{taskStatus} end
+                      AND  case when join_b.bank = '中国工商银行哈尔滨顾乡支行' then true
+                      when join_b.bank = '中国工商银行南京江宁支行' then true
+                      else
+                      1 = if( (SELECT count( id ) FROM video_face_log WHERE order_id = main.id) &gt; 0, 1, 0 )
+                      end
                   </when>
                   <when test="taskDefinitionKey == 'usertask_apply_instead_pay'">
                       AND case when #{taskStatus} = 0 then deputy_.apply_instead_pay != 0                else deputy_.apply_instead_pay        = #{taskStatus} end
@@ -1513,7 +1527,15 @@
             <if test="endRemitGmtCreate != null">
                 AND TO_DAYS(complex_log.usertask_remit_review_create_time) &lt;= TO_DAYS(#{endRemitGmtCreate})
             </if>
-
+            <if test="taskDefinitionKey == 'usertask_video_review'">
+                <if test="videoFaceFlag != null">
+                    and case when #{videoFaceFlag} = '1' then complex.taskDisStatus = 1
+                    when #{videoFaceFlag} = '2'          then complex.taskDisStatus = 2
+                    else (complex.taskDisStatus != 1
+                    AND complex.taskDisStatus != 2 ) or complex.taskDisStatus is null
+                    end
+                </if>
+            </if>
             <if test="taskDefinitionKey == 'usertask_telephone_verify'">
                 <choose>
                     <when test="taskDefinitionKey == 'usertask_collection_workbench'">

@@ -737,6 +737,7 @@ public class LoanOrderServiceImpl implements LoanOrderService {
             loanCarInfoVO.setNowDrivingLicenseOwner(vehicleInformationDO.getNow_driving_license_owner());
             loanCarInfoVO.setLicensePlateType(vehicleInformationDO.getLicense_plate_type() == null ? null : vehicleInformationDO.getLicense_plate_type().toString());
             loanCarInfoVO.setColor(vehicleInformationDO.getColor());
+            loanCarInfoVO.setVehicleCarCategory(vehicleInformationDO.getCar_category());
         }
         String tmpApplyLicensePlateArea = null;
         if (loanBaseInfoDO.getAreaId() != null) {

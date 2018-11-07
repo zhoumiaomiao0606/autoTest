@@ -31,6 +31,7 @@ public class OrderByCustomerIdVO
             private String address;//现住地址
             private String cardAddress;//身份证地址
             private String company;//单位名称
+            private String companyAddress;//单位名称
             private String companyPhone;//单位电话
             private String alternatePhone;//备用电话
 

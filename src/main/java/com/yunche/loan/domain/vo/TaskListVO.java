@@ -159,6 +159,9 @@ public class TaskListVO {
     private String bridgeLendAmount;//金投行借款金额
 
     /////////////////////////////--过桥资金--//////////////////////////////
+
+
+    private String faceNum;
 }
 
 

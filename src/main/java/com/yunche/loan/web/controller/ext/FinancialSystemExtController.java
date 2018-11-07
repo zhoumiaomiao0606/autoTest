@@ -48,6 +48,13 @@ public class FinancialSystemExtController {
         return customersLoanFinanceInfoByPartnerservice.getOrderByCustomerId(customerId);
     }
 
+    //根据客户id获取主单信息
+    @GetMapping("/getOrderByOrderId")
+    public ResultBean getOrderByOrderId(@RequestParam("orderId") Long orderId)
+    {
+        return customersLoanFinanceInfoByPartnerservice.getOrderByOrderId(orderId);
+    }
+
     //模糊查询客户
     @PostMapping("/getCustomerInfoByCustomerName")
     public ResultBean getCustomerInfoByCustomerName(@RequestBody CustomerInfoByCustomerNameParam customerInfoByCustomerNameParam)

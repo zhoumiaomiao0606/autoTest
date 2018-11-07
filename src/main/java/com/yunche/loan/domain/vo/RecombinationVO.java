@@ -12,6 +12,10 @@ public class RecombinationVO<T>
 
     private T info;
 
+    private Integer qtype;
+
+    private String jsonString;
+
     /**
      * 视频面签path
      */

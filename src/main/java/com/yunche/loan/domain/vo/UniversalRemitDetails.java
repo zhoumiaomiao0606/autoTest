@@ -25,4 +25,6 @@ public class UniversalRemitDetails {
     private String remit_application_date;
     private String remark;
 
+    private String remit_business_id;
+
 }

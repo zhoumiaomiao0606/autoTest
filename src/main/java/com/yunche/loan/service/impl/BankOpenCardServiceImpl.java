@@ -5,7 +5,10 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.yunche.loan.config.common.SysConfig;
-import com.yunche.loan.config.constant.*;
+import com.yunche.loan.config.constant.BaseConst;
+import com.yunche.loan.config.constant.IDict;
+import com.yunche.loan.config.constant.LoanOrderProcessConst;
+import com.yunche.loan.config.constant.LoanProcessEnum;
 import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.feign.request.ICBCApiRequest;
 import com.yunche.loan.config.feign.response.ApplycreditstatusResponse;
@@ -18,6 +21,8 @@ import com.yunche.loan.domain.param.BankOpenCardParam;
 import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.*;
+import org.activiti.engine.TaskService;
+import org.activiti.engine.task.Task;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,7 +30,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
 
 import java.io.*;
 import java.util.Date;
@@ -110,6 +114,9 @@ public class BankOpenCardServiceImpl implements BankOpenCardService {
     @Autowired
     MsgService msgService;
 
+
+    @Autowired
+    private TaskService taskService;
 
     /**
      * 银行开卡详情页
@@ -271,10 +278,15 @@ public class BankOpenCardServiceImpl implements BankOpenCardService {
             recordLists = recordLists.stream().filter(Objects::nonNull).collect(Collectors.toList());//去空
             //过滤非系统客户
             List<BankFileListRecordDO> list = recordLists.parallelStream().filter(e -> e.getIsCustomer().equals(K_YORN_YES)).collect(Collectors.toList());
-            if (!CollectionUtils.isEmpty(list)) {
-                int count = bankFileListRecordDOMapper.insertBatch(list);
-                Preconditions.checkArgument(count == list.size(), "批量插入失败");
-            }
+            list.stream().filter(Objects::nonNull).forEach(e->{
+                int count = bankFileListRecordDOMapper.insertSelective(e);
+                Preconditions.checkArgument(count>0, "BankFileListRecordDO插入失败");
+            });
+
+//            if (!CollectionUtils.isEmpty(list)) {
+//                int count = bankFileListRecordDOMapper.insertBatch(list);
+//                Preconditions.checkArgument(count == list.size(), "批量插入失败");
+//            }
             //更新客户表中对应记录中的卡号 （lend_card）
             list.stream().filter(Objects::nonNull).forEach(e -> {
                 LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(e.getOrderId());
@@ -314,16 +326,22 @@ public class BankOpenCardServiceImpl implements BankOpenCardService {
                     Preconditions.checkArgument(count2 > 0, "更新银行流水失败");
                 }
                 if (!openCard.equals(LoanOrderProcessConst.TASK_PROCESS_DONE)) {
+
                     try {
-                        ApprovalParam approvalParam = new ApprovalParam();
-                        approvalParam.setOrderId(e.getOrderId());
-                        approvalParam.setTaskDefinitionKey(LoanProcessEnum.BANK_OPEN_CARD.getCode());
-                        approvalParam.setAction(ACTION_PASS);
-                        approvalParam.setNeedLog(true);
-                        approvalParam.setAutoTask(true);
-                        approvalParam.setCheckPermission(false);
-                        ResultBean<Void> approvalResultBean = loanProcessService.approval(approvalParam);
-                        LOG.info(e.getOrderId() + approvalResultBean.getMsg());
+                        if(checkTask(String.valueOf(loanOrderDO.getProcessInstId()),LoanProcessEnum.BANK_OPEN_CARD.getCode())){
+                            ApprovalParam approvalParam = new ApprovalParam();
+                            approvalParam.setOrderId(e.getOrderId());
+                            approvalParam.setTaskDefinitionKey(LoanProcessEnum.BANK_OPEN_CARD.getCode());
+                            approvalParam.setAction(ACTION_PASS);
+                            approvalParam.setNeedLog(true);
+                            approvalParam.setAutoTask(true);
+                            approvalParam.setCheckPermission(false);
+                            ResultBean<Void> approvalResultBean = loanProcessService.approval(approvalParam);
+                            LOG.info(e.getOrderId() + approvalResultBean.getMsg());
+                        }else{
+                            throw new BizException("走特殊处理");
+                        }
+
                     } catch (Exception e2) {
                         LoanProcessDO processDO = loanProcessDOMapper.selectByPrimaryKey(e.getOrderId());
                         processDO.setBankOpenCard(ACTION_PASS);
@@ -354,6 +372,29 @@ public class BankOpenCardServiceImpl implements BankOpenCardService {
         return true;
     }
 
+    /**
+     * 工作流任务任务校验
+     * @param processInstId
+     * @param taskDefinitionKey
+     * @return
+     */
+    boolean checkTask(String processInstId,String taskDefinitionKey){
+        // 获取当前流程task
+        boolean flag=true;
+        try{
+            Task task = taskService.createTaskQuery()
+                    .processInstanceId(processInstId)
+                    .taskDefinitionKey(taskDefinitionKey)
+                    .singleResult();
+            if(task==null){
+                flag=false;
+            }
+        }catch (Exception e){
+            return false;
+        }
+
+        return flag;
+    }
     /**
      * 暂存开卡信息
      *

@@ -1,10 +1,13 @@
 package com.yunche.loan.service.impl;
 
 import com.google.common.base.Preconditions;
+import com.google.gson.Gson;
+import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.entity.*;
 import com.yunche.loan.domain.param.RemitDetailsParam;
 import com.yunche.loan.domain.vo.*;
+import com.yunche.loan.manager.finance.BusinessReviewManager;
 import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.FinanceService;
 import com.yunche.loan.service.LoanProcessLogService;
@@ -42,6 +45,9 @@ public class FinanceServiceImpl implements FinanceService
 
     @Autowired
     private RemitDetailsDOMapper remitDetailsDOMapper;
+
+    @Resource
+    private BusinessReviewManager businessReviewManager;
 
 
     @Override
@@ -113,9 +119,28 @@ public class FinanceServiceImpl implements FinanceService
 
         RemitDetailsDO remitDetailsDO = remitDetailsDOMapper.selectByPrimaryKey(loanOrderDO.getRemitDetailsId());
 
+        if (remitDetailsDO ==null)
+        {
+             remitDetailsDO = new RemitDetailsDO();
+            remitDetailsDO.setRemit_account(remitDetailsParam.getRemit_account());
+            remitDetailsDO.setRemit_bank(remitDetailsParam.getRemit_bank());
+            remitDetailsDO.setRemit_account_number(remitDetailsParam.getRemit_account_number());
+            remitDetailsDO.setRemit_business_id(remitDetailsParam.getRemit_business_id());
+            remitDetailsDOMapper.insertSelective(remitDetailsDO);
+
+            //进行绑定
+            Long id = remitDetailsDO.getId();
+            loanOrderDO.setRemitDetailsId(id);
+            loanOrderDOMapper.updateByPrimaryKeySelective(loanOrderDO);
+
+            return ResultBean.ofSuccess("成功");
+
+        }
+
         remitDetailsDO.setRemit_account(remitDetailsParam.getRemit_account());
         remitDetailsDO.setRemit_bank(remitDetailsParam.getRemit_bank());
         remitDetailsDO.setRemit_account_number(remitDetailsParam.getRemit_account_number());
+        remitDetailsDO.setRemit_business_id(remitDetailsParam.getRemit_business_id());
 
         int i = remitDetailsDOMapper.updateByPrimaryKeySelective(remitDetailsDO);
 
@@ -127,5 +152,25 @@ public class FinanceServiceImpl implements FinanceService
                 return ResultBean.ofError("错误");
             }
 
+    }
+
+    @Override
+    public ResultBean getAccount()
+    {
+        String financeResult = businessReviewManager.getFinanceUnisal("/costcalculation/finance/account");
+
+        System.out.println("====="+financeResult);
+
+        FinanceRemitResult financeResult1 = new FinanceRemitResult();
+        if (financeResult !=null && !"".equals(financeResult))
+        {
+            Gson gson = new Gson();
+            financeResult1 = gson.fromJson(financeResult, FinanceRemitResult.class);
+        }
+        if(financeResult1 != null && !financeResult1.getResultCode().equals("200"))
+        {
+            throw new BizException("请求财务系统错误");
+        }
+        return ResultBean.ofSuccess(financeResult1);
     }
 }

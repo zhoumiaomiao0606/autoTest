@@ -117,6 +117,7 @@
 	customer.company_address AS customer_company_address,
 	customer.mobile AS phone,
 	customer.company_phone AS companyPhone,
+	customer.company_address AS companyAddress,
 	customer.identity_address AS cardAddress,
 	customer.reserve_mobile AS alternatePhone,
 	partner.NAME AS salesTeam,
@@ -148,7 +149,7 @@
 	v.engine_number AS engineNo,
 	v.registration_certificate_number AS registrationCertificateNo,
 	v.vehicle_identification_number AS vin,
-	v.customize_brand AS carbrand,
+	concat(useGetCarName(car.car_detail_id),model.NAME)    AS carbrand,
 	son.cumulative_breach_number as  overdueNumber,
 	son.optimal_return as  overdueAmount,
 CASE
@@ -166,15 +167,17 @@ CASE
         ELSE
         NULL END
 	AS carPrpperty,
-	car.car_category AS carType,
+	v.car_category AS carType,
 	loan_financial_plan.car_price AS carPrice,
-	loan_financial_plan.loan_amount
+	loan_financial_plan.loan_amount as  loanAmount
 FROM
 	( SELECT * FROM loan_order where loan_customer_id = #{customerId}) main_order
 	LEFT JOIN loan_process process ON main_order.id = process.order_id
 	LEFT JOIN loan_customer customer ON main_order.loan_customer_id = customer.id
 	LEFT JOIN loan_base_info loan ON main_order.loan_base_info_id = loan.id
 	LEFT JOIN loan_car_info car ON main_order.loan_car_info_id = car.id
+	LEFT JOIN car_detail detail ON detail.id = car.car_detail_id
+        LEFT JOIN car_model model ON model.id = detail.model_id
 	LEFT JOIN employee salesman ON loan.salesman_id = salesman.id
 	LEFT JOIN partner partner ON loan.partner_id = partner.id
 	LEFT JOIN loan_financial_plan ON main_order.loan_financial_plan_id = loan_financial_plan.id
@@ -372,5 +375,101 @@ FROM
         WHERE 1=1
             AND base.partner_id =#{partnerId}
             AND loan.rebate_periods = #{periods}
+    </select>
+
+    <select id="getOrderByOrderId" parameterType="java.lang.Long" resultType="com.yunche.loan.domain.vo.OrderByCustomerIdVO" >
+          SELECT
+  main_order.id AS num,
+  partner.leader_name as leaderName,
+  partner.id as partnerId,
+  son.optimal_return as overdueMoney,
+  remit_details.remit_amount as remitAmount,
+
+  customer.id_card AS cardId,
+  customer.NAME AS customerName,
+  customer.address AS address,
+  customer.company_name AS company,
+  customer.company_address AS customer_company_address,
+  customer.mobile AS phone,
+  customer.company_phone AS companyPhone,
+  customer.company_address AS companyAddress,
+  customer.identity_address AS cardAddress,
+  customer.reserve_mobile AS alternatePhone,
+  partner.NAME AS salesTeam,
+  useGetAreaFullName ( partner.area_id ) AS businessArea,
+  salesman.NAME AS salesman,
+  car.business_source AS businessSource,
+  loan.bank AS loanBank,
+  loan_financial_plan.financial_product_name as  financialProductName,
+  loan_financial_plan.loan_time as  loanPeriods,
+  loan_financial_plan.sign_rate as  contractRate,
+  loan_financial_plan.down_payment_money as  payments,
+  loan_financial_plan.down_payment_ratio as  payProportion,
+  loan_financial_plan.bank_period_principal as  bankInstallmentCapital,
+  loan_financial_plan.bank_fee as  bankBoundage,
+  loan_financial_plan.principal_interest_sum as  reimbursementAmount,
+  loan_financial_plan.first_month_repay as firstPayment,
+  loan_financial_plan.each_month_repay as monthlyPayments,
+  v.now_driving_license_owner AS driverLicense,
+  v.color AS carColor,
+  CASE
+
+    WHEN v.license_plate_type = 1 THEN
+    '公牌'
+    WHEN v.license_plate_type = 2 THEN
+    '私牌' ELSE null
+  END
+   AS registrationWay,
+  b.area_name AS registration,
+  v.engine_number AS engineNo,
+  v.registration_certificate_number AS registrationCertificateNo,
+  v.vehicle_identification_number AS vin,
+  concat(useGetCarName(car.car_detail_id),model.NAME)    AS carbrand,
+  son.cumulative_breach_number as  overdueNumber,
+  son.optimal_return as  overdueAmount,
+CASE
+
+    WHEN car.car_type = 0 THEN
+    '新车'
+    WHEN car.car_type = 1 THEN
+    '二手车' ELSE '其他'
+  END AS carModel,
+  CASE
+        WHEN car.vehicle_property = 1 THEN
+        '国产'
+        WHEN car.vehicle_property  = 2 THEN
+        '进口'
+        ELSE
+        NULL END
+  AS carPrpperty,
+  v.car_category AS carType,
+  loan_financial_plan.car_price AS carPrice,
+  loan_financial_plan.loan_amount as loanAmount
+FROM
+  ( SELECT * FROM loan_order where id = #{orderId}) main_order
+  LEFT JOIN loan_process process ON main_order.id = process.order_id
+  LEFT JOIN loan_customer customer ON main_order.loan_customer_id = customer.id
+  LEFT JOIN loan_base_info loan ON main_order.loan_base_info_id = loan.id
+  LEFT JOIN loan_car_info car ON main_order.loan_car_info_id = car.id
+  LEFT JOIN car_detail detail ON detail.id = car.car_detail_id
+        LEFT JOIN car_model model ON model.id = detail.model_id
+  LEFT JOIN employee salesman ON loan.salesman_id = salesman.id
+  LEFT JOIN partner partner ON loan.partner_id = partner.id
+  LEFT JOIN loan_financial_plan ON main_order.loan_financial_plan_id = loan_financial_plan.id
+  LEFT JOIN vehicle_information v ON main_order.vehicle_information_id = v.id
+  left join base_area b on v.apply_license_plate_area = b.area_id
+  left join remit_details on main_order.remit_details_id = remit_details.id
+  LEFT JOIN (
+  SELECT
+    tab.order_id,
+    bank_file_list_record.cumulative_breach_number,
+    bank_file_list_record.optimal_return
+  FROM
+    ( SELECT order_id, max( bank_file_list_id ) AS bank_file_list_id FROM bank_file_list_record WHERE STATUS = 0 GROUP BY order_id ) tab
+    LEFT JOIN bank_file_list_record ON tab.order_id = bank_file_list_record.order_id
+  AND tab.bank_file_list_id = bank_file_list_record.bank_file_list_id
+  ) son ON son.order_id = main_order.id
+
+
     </select>
 </mapper>

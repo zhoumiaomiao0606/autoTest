@@ -6,6 +6,8 @@ import com.google.common.collect.Maps;
 import java.util.List;
 import java.util.Map;
 
+import static com.yunche.loan.service.impl.PermissionServiceImpl.USER_GROUP_ADMIN;
+
 /**
  * @author liuzhe
  * @date 2018/3/22
@@ -66,6 +68,9 @@ public class LoanUserGroupConst {
     public static Map<String, Byte> TELEPHONE_VERIFY_USER_GROUP_LEVEL_MAP = Maps.newHashMap();
 
     static {
+        // 管理员 - 7
+        TELEPHONE_VERIFY_USER_GROUP_LEVEL_MAP.put(USER_GROUP_ADMIN, LEVEL_DIRECTOR);
+
         TELEPHONE_VERIFY_USER_GROUP_LEVEL_MAP.put(USER_GROUP_TELEPHONE_VERIFY_COMMISSIONER, LEVEL_TELEPHONE_VERIFY_COMMISSIONER);
         TELEPHONE_VERIFY_USER_GROUP_LEVEL_MAP.put(USER_GROUP_TELEPHONE_VERIFY_LEADER, LEVEL_TELEPHONE_VERIFY_LEADER);
         TELEPHONE_VERIFY_USER_GROUP_LEVEL_MAP.put(USER_GROUP_TELEPHONE_VERIFY_MANAGER, LEVEL_TELEPHONE_VERIFY_MANAGER);

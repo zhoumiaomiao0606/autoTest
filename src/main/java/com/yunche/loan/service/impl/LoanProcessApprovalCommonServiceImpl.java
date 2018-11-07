@@ -33,9 +33,10 @@ import static com.yunche.loan.config.constant.LoanOrderProcessConst.*;
 import static com.yunche.loan.config.constant.LoanOrderProcessConst.TASK_PROCESS_DONE;
 import static com.yunche.loan.config.constant.LoanOrderProcessConst.TASK_PROCESS_TODO;
 import static com.yunche.loan.config.constant.LoanProcessConst.*;
-import static com.yunche.loan.config.constant.LoanProcessEnum.DATA_FLOW_MORTGAGE_P2C;
-import static com.yunche.loan.config.constant.LoanProcessEnum.BANK_SOCIAL_CREDIT_RECORD_FILTER;
-import static com.yunche.loan.config.constant.LoanProcessEnum.CREDIT_APPLY;
+import static com.yunche.loan.config.constant.LoanProcessEnum.*;
+import static com.yunche.loan.config.constant.LoanUserGroupConst.LEVEL_TELEPHONE_VERIFY_COMMISSIONER;
+import static com.yunche.loan.config.constant.LoanUserGroupConst.LEVEL_TELEPHONE_VERIFY_LEADER;
+import static com.yunche.loan.config.constant.LoanUserGroupConst.LEVEL_TELEPHONE_VERIFY_MANAGER;
 import static com.yunche.loan.config.constant.ProcessApprovalConst.*;
 import static com.yunche.loan.config.constant.ProcessTypeConst.*;
 import static com.yunche.loan.config.thread.ThreadPool.executorService;
@@ -549,46 +550,39 @@ public class LoanProcessApprovalCommonServiceImpl implements LoanProcessApproval
 
         Byte action = approval.getAction();
 
-//        // 1、打回 -> 自动释放所有回滚的任务
-//
-//        // REJECT || ROLL_BACK
-//        if (ACTION_REJECT_MANUAL.equals(action) || ACTION_REJECT_AUTO.equals(action)
-//                || ACTION_ROLL_BACK.equals(action)) {
-//
-//            // 跨节点打回
-//            if (!isBack_B2A) {
-//
-//                Preconditions.checkArgument(!CollectionUtils.isEmpty(reject2Tasks), "跨节点打回，跨节点任务列表：reject2Tasks不能为空");
-//
-//                // 以当前orderId为taskId                  跨区间节点为1->N时，暂不支持！！！
-//                Long taskId = approval.getOrderId();
-//                Long orderId = approval.getOrderId();
-//
-//                // open - reject2Tasks
-//                taskDistributionService.rejectFinish(taskId, orderId, reject2Tasks);
-//            }
-//
-//            // 相邻节点打回
-//            else {
-//
-//                // 相邻节点列表
-//                List<String> newTaskKeyList = getNewTaskKeyList(processInstId, startTaskIdList);
-//
-//                if (!CollectionUtils.isEmpty(newTaskKeyList)) {
-//
-//                    // open - reject2Tasks
-//                    taskDistributionService.rejectFinish(approval.getTaskId(), approval.getOrderId(), newTaskKeyList);
-//                }
-//            }
-//        }
-
         // 1、currentTask
 
         // 当前有taskId，且为：PASS    -->  处理当前任务
         if (null != approval.getTaskId() && ACTION_PASS.equals(action)) {
 
-            // pass-当前task
-            taskDistributionService.finish(approval.getTaskId(), approval.getOrderId(), approval.getTaskDefinitionKey());
+            // 电审
+            if (TELEPHONE_VERIFY.getCode().equals(approval.getTaskDefinitionKey())) {
+
+                LoanProcessDO loanProcessDO = getLoanProcess(approval.getOrderId());
+
+                Byte telephoneVerifyStatus = loanProcessDO.getTelephoneVerify();
+                Preconditions.checkNotNull(telephoneVerifyStatus, "电审状态异常");
+
+                // 1
+                if (TASK_PROCESS_DONE.equals(telephoneVerifyStatus)) {
+
+                    // finish
+                    taskDistributionService.finish(approval.getTaskId(), approval.getOrderId(), approval.getTaskDefinitionKey());
+                }
+                // 4 ~ 6
+                else if (telephoneVerifyStatus >= LEVEL_TELEPHONE_VERIFY_COMMISSIONER && telephoneVerifyStatus <= LEVEL_TELEPHONE_VERIFY_MANAGER) {
+
+                    // release
+                    taskDistributionService.release(approval.getTaskId(), approval.getOrderId(), approval.getTaskDefinitionKey());
+                }
+
+            } else {
+
+                // 其他
+
+                // pass-当前task
+                taskDistributionService.finish(approval.getTaskId(), approval.getOrderId(), approval.getTaskDefinitionKey());
+            }
         }
 
 

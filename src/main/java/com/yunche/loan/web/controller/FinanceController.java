@@ -6,6 +6,8 @@ import com.yunche.loan.domain.entity.RemitDetailsDO;
 import com.yunche.loan.domain.param.RemitDetailsParam;
 import com.yunche.loan.mapper.LoanQueryDOMapper;
 import com.yunche.loan.service.FinanceService;
+import org.springframework.http.MediaType;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -28,5 +30,16 @@ public class FinanceController {
     @PostMapping(value = "/update")
     public ResultBean update(@RequestBody RemitDetailsParam remitDetailsParam) {
         return financeService.update(remitDetailsParam);
+    }
+
+    /**
+     * 财务系统对接-----银行接口
+     */
+    @GetMapping(value = "/account")
+    public ResultBean getAccount()
+    {
+        System.out.println("==================");
+        return financeService.getAccount();
+        //return businessReviewManager.financeUnisal(param,"/costcalculation/detailn");
     }
 }
