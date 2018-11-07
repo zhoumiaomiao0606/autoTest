@@ -3,7 +3,10 @@ package com.yunche.loan.web.aspect;
 import com.alibaba.fastjson.JSON;
 
 import com.yunche.loan.config.util.SessionUtils;
+import com.yunche.loan.domain.entity.EmployeeDO;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.subject.Subject;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -11,6 +14,7 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
@@ -26,6 +30,8 @@ import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static com.yunche.loan.config.util.SessionUtils.LOGIN_USER;
 
 /**
  * 统一日志处理
@@ -48,8 +54,20 @@ public class BizLogHandler {
         // 日志记录
         log(pjp);
 
+        Subject subject = SecurityUtils.getSubject();
+        if (null != subject) {
+            Object principal = subject.getPrincipal();
+            if (null != principal) {
+                EmployeeDO loginUser = new EmployeeDO();
+                BeanUtils.copyProperties(principal, loginUser);
+                LOGIN_USER.set(loginUser);
+            }
+        }
+
         // exec
         Object result = pjp.proceed();
+
+        LOGIN_USER.remove();
 
         // 统计时间
         long totalTime = System.currentTimeMillis() - startTime;
