@@ -2258,7 +2258,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         approval.setDoAttachTask(false);
         approval(approval);
 
-        // 上门不走-[附加任务]，这里再走！！！
+        // 上面不走-[附加任务]，这里再走！！！
         approval.setDoAttachTask(true);
     }
 
