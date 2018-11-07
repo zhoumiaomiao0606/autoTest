@@ -1,6 +1,7 @@
 package com.yunche.loan.service.impl;
 
-import com.github.pagehelper.util.StringUtil;
+import
+        com.github.pagehelper.util.StringUtil;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -318,6 +319,8 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         multimediaUpload.setZoneno(loanBaseInfoDO.getAreaId() == null ? null : loanBaseInfoDO.getAreaId().toString().substring(0, 4));
         multimediaUpload.setPhybrno(phybrno);
         multimediaUpload.setOrderno(orderId.toString());
+        multimediaUpload.setIdno(loanCustomerDO.getIdCard());//证件编号
+
         multimediaUpload.setAssurerno(sysConfig.getAssurerno());
         multimediaUpload.setCmpdate(new SimpleDateFormat("yyyyMMdd").format(new Date()));
         multimediaUpload.setCmptime(new SimpleDateFormat("HHmmss").format(new Date()));

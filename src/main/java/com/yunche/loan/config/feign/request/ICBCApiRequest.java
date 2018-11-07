@@ -65,6 +65,7 @@ public class ICBCApiRequest {
 
     @Data
     public static class MultimediaUpload extends Pub {
+
         @NotNull
         @Valid
         private List<Picture> pictures;//客户照片资料
@@ -367,6 +368,8 @@ public class ICBCApiRequest {
         private String platno;
         @NotEmpty(groups = MultimediaUploadValidated.class)
         private String guestPlatno;
+        @NotEmpty(groups = MultimediaUploadValidated.class)
+        private  String idno;
         @NotEmpty
         private String cmpseq;
         @NotEmpty
