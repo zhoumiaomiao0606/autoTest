@@ -34,6 +34,7 @@ public class AccommodationApplyParam {
 
     private Byte lendStatus;//出借状态 K_CJZT
 
+    private String bankCard;
 
     @Data
     public static class IDPair{

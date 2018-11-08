@@ -419,6 +419,10 @@ public class IDict {
         *金投行推送成功
          */
         public static final Byte K_CJZT_SUCCESS = 7;
+        /*
+         *金投审核不通过
+         */
+        public static final Byte K_CJZT_NOPASS = 8;
 
     }
 
