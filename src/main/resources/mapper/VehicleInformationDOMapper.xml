@@ -30,6 +30,7 @@
     <result column="assess_org" jdbcType="VARCHAR" property="assess_org" />
     <result column="assess_use_year" jdbcType="VARCHAR" property="assess_use_year" />
     <result column="car_category" jdbcType="VARCHAR" property="car_category" />
+    <result column="second_hand_car_vin_id" jdbcType="BIGINT" property="second_hand_car_vin_id" />
   </resultMap>
   <sql id="Base_Column_List">
     id, license_plate_type, color, qualified_certificate_number, register_date, vehicle_identification_number, 
@@ -37,7 +38,7 @@
     transfer_ownership_date, now_driving_license_owner, old_driving_license_owner, engine_number, 
     registration_certificate_number, invoice_car_dealer, purchase_car_invoice_num, purchase_car_invoice_price, 
     invoice_down_payment, purchase_car_invoice_date, retrieve_key, customize_brand, status, 
-    feature, order_id, assess_org, assess_use_year, car_category
+    feature, order_id, assess_org, assess_use_year, car_category,second_hand_car_vin_id
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
     select 
@@ -65,7 +66,7 @@
       purchase_car_invoice_price, invoice_down_payment, 
       purchase_car_invoice_date, retrieve_key, customize_brand, 
       status, feature, order_id, 
-      assess_org, assess_use_year, car_category
+      assess_org, assess_use_year, car_category,second_hand_car_vin_id
       )
     values (#{id,jdbcType=BIGINT}, #{license_plate_type,jdbcType=TINYINT}, #{color,jdbcType=VARCHAR}, 
       #{qualified_certificate_number,jdbcType=VARCHAR}, #{register_date,jdbcType=DATE}, 
@@ -78,7 +79,7 @@
       #{purchase_car_invoice_price,jdbcType=DECIMAL}, #{invoice_down_payment,jdbcType=DECIMAL}, 
       #{purchase_car_invoice_date,jdbcType=DATE}, #{retrieve_key,jdbcType=TINYINT}, #{customize_brand,jdbcType=VARCHAR}, 
       #{status,jdbcType=TINYINT}, #{feature,jdbcType=VARCHAR}, #{order_id,jdbcType=BIGINT}, 
-      #{assess_org,jdbcType=VARCHAR}, #{assess_use_year,jdbcType=VARCHAR}, #{car_category,jdbcType=VARCHAR}
+      #{assess_org,jdbcType=VARCHAR}, #{assess_use_year,jdbcType=VARCHAR}, #{car_category,jdbcType=VARCHAR}, #{second_hand_car_vin_id,jdbcType=BIGINT}
       )
   </insert>
   <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.VehicleInformationDO">
@@ -172,6 +173,9 @@
       <if test="car_category != null">
         car_category,
       </if>
+      <if test="second_hand_car_vin_id != null">
+        second_hand_car_vin_id,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="id != null">
@@ -257,6 +261,9 @@
       </if>
       <if test="car_category != null">
         #{car_category,jdbcType=VARCHAR},
+      </if>
+      <if test="second_hand_car_vin_id != null">
+        #{second_hand_car_vin_id,jdbcType=BIGINT},
       </if>
     </trim>
   </insert>
@@ -344,6 +351,9 @@
       <if test="car_category != null">
         car_category = #{car_category,jdbcType=VARCHAR},
       </if>
+      <if test="second_hand_car_vin_id != null">
+        second_hand_car_vin_id = #{second_hand_car_vin_id,jdbcType=BIGINT},
+      </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
@@ -375,7 +385,8 @@
       order_id = #{order_id,jdbcType=BIGINT},
       assess_org = #{assess_org,jdbcType=VARCHAR},
       assess_use_year = #{assess_use_year,jdbcType=VARCHAR},
-      car_category = #{car_category,jdbcType=VARCHAR}
+      car_category = #{car_category,jdbcType=VARCHAR},
+      second_hand_car_vin_id = #{second_hand_car_vin_id,jdbcType=BIGINT}
     where id = #{id,jdbcType=BIGINT}
   </update>
 </mapper>

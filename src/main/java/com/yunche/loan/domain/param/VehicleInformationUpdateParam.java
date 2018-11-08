@@ -11,6 +11,8 @@ public class VehicleInformationUpdateParam {
 
     private String order_id;
 
+    private Long second_hand_car_vin_id;
+
     //上牌方式
 
     private String license_plate_type;

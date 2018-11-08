@@ -3,7 +3,7 @@ package com.yunche.loan.domain.param;
 import lombok.Data;
 
 @Data
-public class EvaluationPara
+public class DrivinglicensePara
 {
     private String face;
 

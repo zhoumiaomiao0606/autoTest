@@ -188,6 +188,9 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
     @Autowired
     private LoanProcessLogService loanProcessLogService;
 
+    @Autowired
+    private SecondHandCarVinDOMapper secondHandCarVinDOMapper;
+
 
     @Override
     public ResultBean<AppInfoSupplementVO> infoSupplementDetail(Long supplementOrderId) {
@@ -1258,6 +1261,7 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
         vehicleInformationUpdateParam.setLicense_plate_type(loanCarInfoParam.getLicensePlateType());
         vehicleInformationUpdateParam.setNow_driving_license_owner(loanCarInfoParam.getNowDrivingLicenseOwner());
         vehicleInformationUpdateParam.setColor(loanCarInfoParam.getColor());
+        vehicleInformationUpdateParam.setSecond_hand_car_vin_id(loanCarInfoParam.getSecond_hand_car_vin_id());
         vehicleInformationService.update(vehicleInformationUpdateParam);
 
         String s = loanCarInfoParam.getApplyLicensePlateAreaId();
@@ -1298,6 +1302,12 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
         LoanBaseInfoDO loanBaseInfoDO = loanBaseInfoDOMapper.getTotalInfoByOrderId(orderId);
         VehicleInformationDO vehicleInformationDO = vehicleInformationDOMapper.selectByPrimaryKey(vid);
         if (vehicleInformationDO != null) {
+
+            if (vehicleInformationDO.getSecond_hand_car_vin_id()!=null && !"".equals(vehicleInformationDO.getSecond_hand_car_vin_id()))
+            {
+                SecondHandCarVinDO secondHandCarVinDO = secondHandCarVinDOMapper.selectByPrimaryKey(vehicleInformationDO.getSecond_hand_car_vin_id());
+                loanCarInfoVO.setVin(secondHandCarVinDO.getVin());
+            }
 
             loanCarInfoVO.setNowDrivingLicenseOwner(vehicleInformationDO.getNow_driving_license_owner());
             loanCarInfoVO.setLicensePlateType(vehicleInformationDO.getLicense_plate_type() == null ? null : vehicleInformationDO.getLicense_plate_type().toString());

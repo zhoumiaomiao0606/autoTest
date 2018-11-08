@@ -1,15 +1,12 @@
 package com.yunche.loan.service.impl;
 
 import com.google.common.base.Preconditions;
+import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.SessionUtils;
-import com.yunche.loan.domain.entity.EmployeeDO;
-import com.yunche.loan.domain.entity.LoanTelephoneVerifyDO;
+import com.yunche.loan.domain.entity.*;
 import com.yunche.loan.domain.param.LoanTelephoneVerifyParam;
-import com.yunche.loan.mapper.EmployeeDOMapper;
-import com.yunche.loan.mapper.LoanCustomerDOMapper;
-import com.yunche.loan.mapper.LoanOrderDOMapper;
-import com.yunche.loan.mapper.LoanTelephoneVerifyDOMapper;
+import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.LoanTelephoneVerifyService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
 import java.util.Date;
 
 /**
@@ -38,12 +36,29 @@ public class LoanTelephoneVerifyServiceImpl implements LoanTelephoneVerifyServic
     @Autowired
     private LoanOrderDOMapper loanOrderDOMapper;
 
+    @Autowired
+    private LoanBaseInfoDOMapper loanBaseInfoDOMapper;
+
+    @Autowired
+    private PartnerDOMapper partnerDOMapper;
+
     @Override
     @Transactional
     public ResultBean<Void> save(LoanTelephoneVerifyParam loanTelephoneVerifyParam) {
 
         LoanTelephoneVerifyDO loanTelephoneVerifyDO = new LoanTelephoneVerifyDO();
         BeanUtils.copyProperties(loanTelephoneVerifyParam, loanTelephoneVerifyDO);
+
+        Preconditions.checkNotNull(loanTelephoneVerifyParam.getOrderId(),"订单不能为空");
+        //判断风险金加成比例不能大于100%
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(Long.valueOf(loanTelephoneVerifyParam.getOrderId()));
+        LoanBaseInfoDO loanBaseInfoDO = loanBaseInfoDOMapper.selectByPrimaryKey(loanOrderDO.getLoanBaseInfoId());
+        PartnerDO partnerDO = partnerDOMapper.selectByPrimaryKey(loanBaseInfoDO.getPartnerId(), new Byte("0"));
+        BigDecimal riskBearRate = partnerDO.getRiskBearRate();
+        if (loanTelephoneVerifyParam.getRiskSharingAddition().add(riskBearRate).compareTo(new BigDecimal(100))>0)
+        {
+            throw  new BizException("订单风险分担比例不能大于100%");
+        }
 
         EmployeeDO employeeDO = SessionUtils.getLoginUser();
 

@@ -113,6 +113,8 @@ public class TelephoneVerifyServiceImpl implements TelephoneVerifyService {
         UniversalInfoVO universalInfoVO = loanQueryDOMapper.selectUniversalInfo(orderId);
         universalInfoVO.setVehicle_apply_license_plate_area(tmpApplyLicensePlateArea);
         recombinationVO.setInfo(universalInfoVO);
+        LoanTelephoneVerifyDO loanTelephoneVerifyDO = loanTelephoneVerifyDOMapper.selectByPrimaryKey(orderId);
+        //显示
         recombinationVO.setTelephone_des(loanTelephoneVerifyDOMapper.selectByPrimaryKey(orderId));
         recombinationVO.setCredits(credits);
         recombinationVO.setHome(loanQueryDOMapper.selectUniversalHomeVisitInfo(orderId));

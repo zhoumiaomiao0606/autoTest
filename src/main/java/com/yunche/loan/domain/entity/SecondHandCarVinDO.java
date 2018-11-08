@@ -1,5 +1,7 @@
 package com.yunche.loan.domain.entity;
 
+import java.util.Date;
+
 public class SecondHandCarVinDO {
     private Long id;
 
@@ -40,6 +42,8 @@ public class SecondHandCarVinDO {
     private String traction_mass;
 
     private String unladen_mass;
+
+    private Date query_time;
 
     public Long getId() {
         return id;
@@ -199,5 +203,13 @@ public class SecondHandCarVinDO {
 
     public void setUnladen_mass(String unladen_mass) {
         this.unladen_mass = unladen_mass == null ? null : unladen_mass.trim();
+    }
+
+    public Date getQuery_time() {
+        return query_time;
+    }
+
+    public void setQuery_time(Date query_time) {
+        this.query_time = query_time;
     }
 }

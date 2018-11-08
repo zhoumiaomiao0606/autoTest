@@ -65,4 +65,6 @@ public class VehicleInformationDO {
 
     //车辆类型
     private String car_category;
+
+    private Long second_hand_car_vin_id;
 }
