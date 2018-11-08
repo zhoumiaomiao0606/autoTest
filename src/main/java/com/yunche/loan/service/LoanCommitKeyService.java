@@ -8,5 +8,5 @@ import com.yunche.loan.config.result.ResultBean;
  */
 public interface LoanCommitKeyService {
 
-    ResultBean<Void> uncollected(Long orderId);
+    ResultBean<Void> riskUncollected(Long orderId);
 }

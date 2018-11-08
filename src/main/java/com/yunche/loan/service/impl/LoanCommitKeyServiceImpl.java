@@ -38,7 +38,7 @@ public class LoanCommitKeyServiceImpl implements LoanCommitKeyService {
 
     @Override
     @Transactional
-    public ResultBean<Void> uncollected(Long orderId) {
+    public ResultBean<Void> riskUncollected(Long orderId) {
         Preconditions.checkNotNull(orderId, "orderId不能为空");
 
         // 待收钥匙新增按钮“未收，风险100%”，点击后，视同待办完成，但订单的风险承担比例改为100%
