@@ -51,7 +51,11 @@ public class Log2OSSTask {
         if (month < 10) {
             monthStr = 0 + monthStr;
         }
-        String logPath = year + "-" + monthStr + "/" + day;
+        String dayStr = String.valueOf(day);
+        if (day < 10) {
+            dayStr = 0 + dayStr;
+        }
+        String logPath = year + "-" + monthStr + "/" + dayStr;
         String logDirPath = LOG_CLASSPATH + logPath;
 
         File file = new File(logDirPath);
