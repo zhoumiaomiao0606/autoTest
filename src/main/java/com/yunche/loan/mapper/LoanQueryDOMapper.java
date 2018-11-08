@@ -71,6 +71,12 @@ public interface LoanQueryDOMapper {
                                                                          @Param("maxGroupLevel") Long maxGroupLevel,
                                                                          @Param("juniorIds") Set<String> juniorIds);
 
+    List<UniversalCustomerOrderVO> selectUniversalRoleCustomerOrder(@Param("employeeId") Long employeeId,
+                                                                    @Param("name") String name,
+                                                                    @Param("maxGroupLevel") Long maxGroupLevel,
+                                                                    @Param("juniorIds") Set<String> juniorIds);
+
+
     /**
      * 资料流转-新增 客户列表
      *

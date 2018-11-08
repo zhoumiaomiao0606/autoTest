@@ -267,10 +267,34 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
         SELECT
               case when max( t.collection_level ) = 7 then 1 else 0 end AS flag
               FROM
               ( SELECT ug.* FROM employee_rela_user_group eg INNER JOIN user_group ug ON eg.user_group_id = ug.id AND eg.employee_id = #{loginUserId} ) t
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -354,6 +378,46 @@
 
         <!--打款确认-->
         AND pc.remit_review = 1
+
+        <if test=" name != null and name != '' ">
+            AND c.name LIKE CONCAT('%', #{name}, '%')
+        </if>
+
+        <include refid="commonSql_customerOrder_getSelfAndChild"/>
+
+    </select>
+
+
+    <select id="selectUniversalRoleCustomerOrder" resultType="com.yunche.loan.domain.vo.UniversalCustomerOrderVO">
+        SELECT
+        o.id AS order_id,
+        c.id AS customer_id,
+        c.name AS customer_name,
+        c.id_card AS customer_id_card,
+        c.mobile AS customer_mobile,
+        e.id AS salesman_id,
+        e.name AS salesman_name,
+        d.id AS department_id,
+        d.name AS department_name,
+        p.id AS partner_id,
+        p.name AS partner_name,
+        b.bank AS bank_name
+
+        FROM loan_order o
+        LEFT JOIN loan_process pc ON o.id = pc.order_id
+        LEFT JOIN loan_customer c ON c.id = o.loan_customer_id
+        LEFT JOIN loan_base_info b ON o.loan_base_info_id = b.id
+        LEFT JOIN employee e ON e.id = b.salesman_id
+        LEFT JOIN partner p ON p.id = b.partner_id
+        LEFT JOIN department d ON d.id = p.department_id
+
+        WHERE
+
+        <!--订单正常进行中-->
+        pc.order_status = 1
+
+        <!--贷款申请提交前的订单-->
+        AND pc.loan_apply != 1
 
         <if test=" name != null and name != '' ">
             AND c.name LIKE CONCAT('%', #{name}, '%')

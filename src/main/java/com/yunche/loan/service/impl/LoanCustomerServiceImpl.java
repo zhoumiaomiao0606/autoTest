@@ -9,13 +9,16 @@ import com.yunche.loan.config.constant.BaseConst;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.ImageUtil;
 import com.yunche.loan.config.util.OSSUnit;
+import com.yunche.loan.config.util.SessionUtils;
 import com.yunche.loan.domain.entity.*;
 import com.yunche.loan.domain.param.AllCustDetailParam;
 import com.yunche.loan.domain.param.CustomerParam;
 import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.mapper.*;
+import com.yunche.loan.service.EmployeeService;
 import com.yunche.loan.service.LoanCustomerService;
 import com.yunche.loan.service.LoanFileService;
+import com.yunche.loan.service.LoanQueryService;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -70,6 +73,15 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
 
     @Autowired
     private LoanFileDOMapper loanFileDOMapper;
+
+    @Autowired
+    private EmployeeService employeeService;
+
+    @Autowired
+    private TaskSchedulingDOMapper taskSchedulingDOMapper;
+
+    @Autowired
+    private LoanQueryService loanQueryService;
 
     @Autowired
     private OSSConfig ossConfig;
@@ -582,6 +594,39 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
         List<Long> customerIdList = loanCustomerDOMapper.listIdByPrincipalCustIdAndType(principalId, null, VALID_STATUS);
 
         loanCustomerDOMapper.batchUpdateEnable(customerIdList, BaseConst.K_YORN_NO, null);
+    }
+
+    @Override
+    public List<UniversalCustomerOrderVO> queryRoleCustomerOrder(String name) {
+
+        Long loginUserId = SessionUtils.getLoginUser().getId();
+        Set<String> juniorIds = employeeService.getSelfAndCascadeChildIdList(loginUserId);
+        Long maxGroupLevel = taskSchedulingDOMapper.selectMaxGroupLevel(loginUserId);
+
+        List<UniversalCustomerOrderVO> universalCustomerOrderVOS = loanQueryDOMapper.selectUniversalRoleCustomerOrder(
+                loginUserId,
+                StringUtils.isBlank(name) ? null : name.trim(),
+                maxGroupLevel == null ? 0 : maxGroupLevel,
+                juniorIds
+        );
+
+        return universalCustomerOrderVOS;
+    }
+
+    @Override
+    public RecombinationVO detail(Long orderId) {
+
+        List<UniversalCustomerVO> customers = loanQueryDOMapper.selectUniversalCustomer(orderId);
+        for (UniversalCustomerVO universalCustomerVO : customers) {
+            List<UniversalCustomerFileVO> files = loanQueryService.selectUniversalCustomerFile(Long.valueOf(universalCustomerVO.getCustomer_id()));
+            universalCustomerVO.setFiles(files);
+        }
+
+        RecombinationVO recombinationVO = new RecombinationVO();
+        recombinationVO.setInfo(loanQueryDOMapper.selectUniversalBaseInfo(orderId));
+        recombinationVO.setCustomers(customers);
+
+        return recombinationVO;
     }
 
 
