@@ -113,13 +113,16 @@ public class TelephoneVerifyServiceImpl implements TelephoneVerifyService {
         }
 
         RecombinationVO recombinationVO = new RecombinationVO();
-        UniversalInfoVO universalInfoVO = loanQueryDOMapper.selectUniversalInfo(orderId);
-        universalInfoVO.setVehicle_apply_license_plate_area(tmpApplyLicensePlateArea);
-        recombinationVO.setInfo(universalInfoVO);
+
         LoanTelephoneVerifyDO loanTelephoneVerifyDO = loanTelephoneVerifyDOMapper.selectByPrimaryKey(orderId);
         //显示
         PartnerDO partnerDO = partnerDOMapper.selectByPrimaryKey(loanBaseInfoDO.getPartnerId(), new Byte("0"));
-        loanTelephoneVerifyDO.setRiskSharingAddition(loanTelephoneVerifyDO.getRiskSharingAddition().add(partnerDO.getRiskBearRate()));
+
+        UniversalInfoVO universalInfoVO = loanQueryDOMapper.selectUniversalInfo(orderId);
+        universalInfoVO.setVehicle_apply_license_plate_area(tmpApplyLicensePlateArea);
+        universalInfoVO.setRiskBearRate(partnerDO.getRiskBearRate()==null?new BigDecimal("0"):partnerDO.getRiskBearRate());
+        recombinationVO.setInfo(universalInfoVO);
+
         recombinationVO.setTelephone_des(loanTelephoneVerifyDO);
         recombinationVO.setCredits(credits);
         recombinationVO.setHome(loanQueryDOMapper.selectUniversalHomeVisitInfo(orderId));

@@ -54,6 +54,10 @@ public class LoanTelephoneVerifyServiceImpl implements LoanTelephoneVerifyServic
         LoanBaseInfoDO loanBaseInfoDO = loanBaseInfoDOMapper.selectByPrimaryKey(loanOrderDO.getLoanBaseInfoId());
         PartnerDO partnerDO = partnerDOMapper.selectByPrimaryKey(loanBaseInfoDO.getPartnerId(), new Byte("0"));
         BigDecimal riskBearRate = partnerDO.getRiskBearRate();
+        if (riskBearRate ==null)
+        {
+            riskBearRate = new BigDecimal("0");
+        }
         if (loanTelephoneVerifyParam.getRiskSharingAddition().add(riskBearRate).compareTo(new BigDecimal(100))>0)
         {
             throw  new BizException("订单风险分担比例不能大于100%");
