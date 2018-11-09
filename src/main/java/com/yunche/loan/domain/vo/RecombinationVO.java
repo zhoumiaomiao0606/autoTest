@@ -7,8 +7,7 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class RecombinationVO<T>
-{
+public class RecombinationVO<T> {
 
     private T info;
 

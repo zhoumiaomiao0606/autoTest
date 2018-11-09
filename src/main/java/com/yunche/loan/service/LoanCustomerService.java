@@ -4,10 +4,7 @@ import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.entity.LoanCustomerDO;
 import com.yunche.loan.domain.param.AllCustDetailParam;
 import com.yunche.loan.domain.param.CustomerParam;
-import com.yunche.loan.domain.vo.BankAndSocietyResultVO;
-import com.yunche.loan.domain.vo.CustDetailVO;
-import com.yunche.loan.domain.vo.CustomerVO;
-import com.yunche.loan.domain.vo.LoanRepeatVO;
+import com.yunche.loan.domain.vo.*;
 
 import java.util.List;
 
@@ -48,4 +45,8 @@ public interface LoanCustomerService {
      * @param principalId
      */
     void updateCustomerEnable(Long principalId);
+
+    List<UniversalCustomerOrderVO> queryRoleCustomerOrder(String name);
+
+    RecombinationVO detail(Long orderId);
 }

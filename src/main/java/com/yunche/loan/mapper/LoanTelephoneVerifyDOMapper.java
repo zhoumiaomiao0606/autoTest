@@ -1,10 +1,9 @@
 package com.yunche.loan.mapper;
 
 import com.yunche.loan.domain.entity.LoanTelephoneVerifyDO;
-import org.apache.ibatis.annotations.Mapper;
 
-@Mapper
 public interface LoanTelephoneVerifyDOMapper {
+
     int deleteByPrimaryKey(Long orderId);
 
     int insert(LoanTelephoneVerifyDO record);

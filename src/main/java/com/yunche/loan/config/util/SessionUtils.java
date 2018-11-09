@@ -18,12 +18,15 @@ import java.io.Serializable;
  */
 public class SessionUtils {
 
+    public static ThreadLocal<EmployeeDO> LOGIN_USER = new ThreadLocal<>();
+
+
     /**
      * 获取当前登录用户
      *
      * @return
      */
-    public static EmployeeDO getLoginUser() {
+    public static EmployeeDO getLoginUser_() {
 
         Subject subject = SecurityUtils.getSubject();
         if (null == subject) {
@@ -47,6 +50,18 @@ public class SessionUtils {
                 return loginUser;
             }
         }
+    }
+
+    /**
+     * 获取当前登录用户
+     *
+     * @return
+     */
+    public static EmployeeDO getLoginUser() {
+
+        EmployeeDO loginUser = LOGIN_USER.get();
+
+        return loginUser;
     }
 
     /**

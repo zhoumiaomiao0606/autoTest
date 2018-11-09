@@ -20,5 +20,8 @@ public class LoanTelephoneVerifyDO {
 
     private Long userId;
 
+    /**
+     * 风险分担加成
+     */
     private BigDecimal riskSharingAddition;
 }
