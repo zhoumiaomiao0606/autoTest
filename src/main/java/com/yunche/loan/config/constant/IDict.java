@@ -423,6 +423,12 @@ public class IDict {
          *金投审核不通过
          */
         public static final Byte K_CJZT_NOPASS = 8;
+        /*
+        *返回数据处理异常
+         */
+        public static final Byte K_CJZT_HANDLE_ERROR = 9;
+
+
 
     }
 

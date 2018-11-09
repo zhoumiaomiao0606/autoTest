@@ -1122,11 +1122,11 @@
                   </when>
                   <when test="taskDefinitionKey == 'usertask_bridge_handle'">
                       AND case when #{lendStatus} = 1 then deputy_b.bridge_handle in (2,3)
-                                       and if((select count(*) from third_party_fund_business where bridge_procecss_id=deputy_b.id and lend_status in(3,4,5,6,7,8))=1,false,true)
+                                       and if((select count(*) from third_party_fund_business where bridge_procecss_id=deputy_b.id and lend_status in(3,4,5,6,7,8,9))=1,false,true)
                                when #{lendStatus} = 2 then deputy_b.bridge_handle = 1
-                               when #{lendStatus} = 3 then deputy_b.bridge_handle = 2 and third_party.lend_status = 3
-                               when #{lendStatus} = 4 then deputy_b.bridge_handle = 2 and third_party.lend_status in(5,6,8)
-                               when #{lendStatus} = 5 then deputy_b.bridge_handle = 2 and third_party.lend_status = 7
+                               when #{lendStatus} = 3 then deputy_b.bridge_handle = 2 and third_party.lend_status in(3,8)
+                               when #{lendStatus} = 4 then deputy_b.bridge_handle = 2 and third_party.lend_status in(5,6,9)
+                               when #{lendStatus} = 5 then deputy_b.bridge_handle = 2 and third_party.lend_status in(4,7)
                       end
                       <if test="startLendDate !=null">
                           AND third_party.lend_date &gt;= #{startLendDate}

@@ -30,10 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -357,11 +354,11 @@ public class JinTouHangAccommodationApplyServiceImpl implements JinTouHangAccomm
 
                 }
 
-                ApprovalParam approvalParam = new ApprovalParam();
+                /*ApprovalParam approvalParam = new ApprovalParam();
                 approvalParam.setTaskDefinitionKey(BRIDGE_HANDLE.getCode());
                 approvalParam.setAction(ProcessApprovalConst.ACTION_PASS);
                 approvalParam.setNeedLog(true);
-                approvalParam.setCheckPermission(false);
+                approvalParam.setCheckPermission(false);*/
                 //插入数据库
                 partyFundBusinessDOList.stream()
                         .filter(Objects::nonNull)
@@ -615,7 +612,7 @@ public class JinTouHangAccommodationApplyServiceImpl implements JinTouHangAccomm
         JTXCommunicationUtil jtxCommunicationUtil = new JTXCommunicationUtil();
         String ref ="";
         String errorInfo="";
-        String orderId="";
+        Long orderId = System.currentTimeMillis();
         try {
             String xml = JTXByteUtil.decrypt(param,"netwxactive","GBK","des");
             logger.info("ASSET_03返回信息:"+xml);
@@ -631,57 +628,81 @@ public class JinTouHangAccommodationApplyServiceImpl implements JinTouHangAccomm
                 String fileName = (String)bodyMap.get("FileName");
                 String filePath = (String)bodyMap.get("FilePath");
                 if(fileName!=null&&(!"".equals(fileName))&&filePath!=null&&(!"".equals(filePath))){
-
-
-
-                    JTXFileUtil sftp = new JTXFileUtil(jtxConfig.getJtxUserName(), jtxConfig.getJtxPassword(), jtxConfig.getJtxServierIP(), jtxConfig.getJtxPort());
-                    sftp.login();
-                    sftp.download(filePath,fileName,jtxConfig.getJtxTempDirRes()+fileName);
-                    File file = new File(jtxConfig.getJtxTempDirRes()+fileName);
-                    if(file.exists()){
-                        BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
-                        String temp = null;
-                        while ((temp = reader.readLine()) != null){
-                            String[] result = temp.split("\\|");
-                            if(result[1]!=null&&result[3]!=null){
-                                String jtxId = result[1].substring(3);
-                                JtxCommunicationDO jtxCommunicationDO =jtxCommunicationDOMapper.selectByPrimaryKey(jtxId);
-                                if("0000".equals(result[3])){
-                                    if(jtxCommunicationDO !=null){
-                                        //提交任务
-                                        ApprovalParam approvalParam = new ApprovalParam();
-                                        approvalParam.setTaskDefinitionKey(BRIDGE_HANDLE.getCode());
-                                        approvalParam.setAction(ProcessApprovalConst.ACTION_PASS);
-                                        approvalParam.setNeedLog(true);
-                                        approvalParam.setCheckPermission(false);
-                                        approvalParam.setOrderId(jtxCommunicationDO.getOrderId());
-                                        approvalParam.setProcessId(jtxCommunicationDO.getBridgeProcecssId());
-                                        ResultBean<Void> approvalResultBean = loanProcessBridgeService.approval(approvalParam);
-                                        if(approvalResultBean.getSuccess()) {
-                                            ThirdPartyFundBusinessDO thirdPartyFundBusinessDO = new ThirdPartyFundBusinessDO();
-                                            thirdPartyFundBusinessDO.setBridgeProcecssId(jtxCommunicationDO.getBridgeProcecssId());
-                                            thirdPartyFundBusinessDO.setLendStatus(IDict.K_CJZT.K_CJZT_YES);
-                                            thirdPartyFundBusinessDOMapper.updateByPrimaryKeySelective(thirdPartyFundBusinessDO);
+                    asyncUpload.execute(new Process() {
+                        @Override
+                        public void process() {
+                            String asyErrorInfo ="";
+                            BufferedReader reader = null;
+                            try{
+                                JTXFileUtil sftp = new JTXFileUtil(jtxConfig.getJtxUserName(), jtxConfig.getJtxPassword(), jtxConfig.getJtxServierIP(), jtxConfig.getJtxPort());
+                                sftp.login();
+                                sftp.download(filePath,fileName,jtxConfig.getJtxTempDirRes()+fileName);
+                                File file = new File(jtxConfig.getJtxTempDirRes()+fileName);
+                                if(file.exists()){
+                                    reader = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
+                                    String temp = null;
+                                    while ((temp = reader.readLine()) != null){
+                                        String[] result = temp.split("\\|");
+                                        if(result[1]!=null&&result[3]!=null){
+                                            String jtxId = result[1].substring(3);
+                                            JtxCommunicationDO jtxCommunicationDO =jtxCommunicationDOMapper.selectByPrimaryKey(jtxId);
+                                            if(jtxCommunicationDO !=null){
+                                                if("0000".equals(result[3])){
+                                                        //提交任务
+                                                        ApprovalParam approvalParam = new ApprovalParam();
+                                                        approvalParam.setTaskDefinitionKey(BRIDGE_HANDLE.getCode());
+                                                        approvalParam.setAction(ProcessApprovalConst.ACTION_PASS);
+                                                        approvalParam.setNeedLog(true);
+                                                        approvalParam.setCheckPermission(false);
+                                                        approvalParam.setOrderId(jtxCommunicationDO.getOrderId());
+                                                        approvalParam.setProcessId(jtxCommunicationDO.getBridgeProcecssId());
+                                                        ResultBean<Void> approvalResultBean = loanProcessBridgeService.approval(approvalParam);
+                                                        if(approvalResultBean.getSuccess()) {
+                                                            ThirdPartyFundBusinessDO thirdPartyFundBusinessDO = new ThirdPartyFundBusinessDO();
+                                                            thirdPartyFundBusinessDO.setBridgeProcecssId(jtxCommunicationDO.getBridgeProcecssId());
+                                                            thirdPartyFundBusinessDO.setLendStatus(IDict.K_CJZT.K_CJZT_YES);
+                                                            thirdPartyFundBusinessDOMapper.updateByPrimaryKeySelective(thirdPartyFundBusinessDO);
+                                                        }else{
+                                                            ThirdPartyFundBusinessDO thirdPartyFundBusinessDO = new ThirdPartyFundBusinessDO();
+                                                            thirdPartyFundBusinessDO.setBridgeProcecssId(jtxCommunicationDO.getBridgeProcecssId());
+                                                            thirdPartyFundBusinessDO.setLendStatus(IDict.K_CJZT.K_CJZT_HANDLE_ERROR);
+                                                            thirdPartyFundBusinessDOMapper.updateByPrimaryKeySelective(thirdPartyFundBusinessDO);
+                                                            asyErrorInfo = "BridgeProcecssId:"+jtxCommunicationDO.getBridgeProcecssId()+"云车任务提交异常";
+                                                        }
+                                                }else{
+                                                    ThirdPartyFundBusinessDO thirdPartyFundBusinessDO = new ThirdPartyFundBusinessDO();
+                                                    thirdPartyFundBusinessDO.setBridgeProcecssId(jtxCommunicationDO.getBridgeProcecssId());
+                                                    thirdPartyFundBusinessDO.setLendStatus(IDict.K_CJZT.K_CJZT_NOPASS);
+                                                    thirdPartyFundBusinessDOMapper.updateByPrimaryKeySelective(thirdPartyFundBusinessDO);
+                                                }
+                                            }else{
+                                                asyErrorInfo = "jtxId:"+jtxId+"该任务不存在";
+                                            }
                                         }else{
-                                            errorInfo = "云车任务提交异常";
+                                            asyErrorInfo ="金投行数据内容异常";
                                         }
-                                    }else{
-                                        errorInfo = "该任务不存在";
                                     }
+                                    file.delete();
                                 }else{
-                                    ThirdPartyFundBusinessDO thirdPartyFundBusinessDO = new ThirdPartyFundBusinessDO();
-                                    thirdPartyFundBusinessDO.setBridgeProcecssId(jtxCommunicationDO.getBridgeProcecssId());
-                                    thirdPartyFundBusinessDO.setLendStatus(IDict.K_CJZT.K_CJZT_NOPASS);
-                                    thirdPartyFundBusinessDOMapper.updateByPrimaryKeySelective(thirdPartyFundBusinessDO);
+                                    asyErrorInfo = "ftp文件下载不存在";
                                 }
-                            }else{
-                                errorInfo ="金投行数据内容异常";
+                            }catch(Exception e){
+                                logger.error("异步处理数据异常",e);
+                            }finally {
+                                if(!"".equals(asyErrorInfo)){
+                                    logger.error(asyErrorInfo);
+                                }
+                                if(reader!=null){
+                                    try {
+                                        reader.close();
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
                             }
                         }
-                        file.delete();
-                    }else{
-                        errorInfo = "ftp文件下载异常";
-                    }
+                    });
+
                 }else{
                     errorInfo ="文件名或文件路径为空";
                 }
@@ -693,9 +714,9 @@ public class JinTouHangAccommodationApplyServiceImpl implements JinTouHangAccomm
             errorInfo ="解析金投行数据出错";
         }finally {
             if("".equals(errorInfo)){
-                return jtxCommunicationUtil.buildResultInfo("0000","交易成功",orderId,ref);
+                return jtxCommunicationUtil.buildResultInfo("0000","交易成功",orderId+"",ref);
             }else{
-                return jtxCommunicationUtil.buildResultInfo("1111","解析返回报文出错","12",ref);
+                return jtxCommunicationUtil.buildResultInfo("1111",errorInfo,orderId+"",ref);
             }
         }
 
