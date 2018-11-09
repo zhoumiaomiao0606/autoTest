@@ -32,6 +32,10 @@ public class PartnerVO {
 
     private String leaderDingDing;
 
+    private String partnerCode;
+
+    private Byte partnerGroup;
+
     private String tel;
 
     private String fax;

@@ -73,6 +73,9 @@ public class TelephoneVerifyServiceImpl implements TelephoneVerifyService {
     @Autowired
     private BaseAreaDOMapper baseAreaDOMapper;
 
+    @Autowired
+    private PartnerDOMapper partnerDOMapper;
+
     @Override
     public RecombinationVO detail(Long orderId) {
 
@@ -115,7 +118,9 @@ public class TelephoneVerifyServiceImpl implements TelephoneVerifyService {
         recombinationVO.setInfo(universalInfoVO);
         LoanTelephoneVerifyDO loanTelephoneVerifyDO = loanTelephoneVerifyDOMapper.selectByPrimaryKey(orderId);
         //显示
-        recombinationVO.setTelephone_des(loanTelephoneVerifyDOMapper.selectByPrimaryKey(orderId));
+        PartnerDO partnerDO = partnerDOMapper.selectByPrimaryKey(loanBaseInfoDO.getPartnerId(), new Byte("0"));
+        loanTelephoneVerifyDO.setRiskSharingAddition(loanTelephoneVerifyDO.getRiskSharingAddition().add(partnerDO.getRiskBearRate()));
+        recombinationVO.setTelephone_des(loanTelephoneVerifyDO);
         recombinationVO.setCredits(credits);
         recombinationVO.setHome(loanQueryDOMapper.selectUniversalHomeVisitInfo(orderId));
         recombinationVO.setCurrent_msg(loanQueryDOMapper.selectUniversalApprovalInfo(TELEPHONE_VERIFY.getCode(), orderId));
