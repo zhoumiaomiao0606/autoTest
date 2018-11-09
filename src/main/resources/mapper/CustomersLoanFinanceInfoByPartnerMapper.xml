@@ -137,6 +137,7 @@
 	loan_financial_plan.each_month_repay as monthlyPayments,
 	v.now_driving_license_owner AS driverLicense,
 	v.color AS carColor,
+	remit_details.return_rate_amount as rebateAmount,
 	CASE
 
 		WHEN v.license_plate_type = 1 THEN
@@ -411,6 +412,7 @@ FROM
   loan_financial_plan.first_month_repay as firstPayment,
   loan_financial_plan.each_month_repay as monthlyPayments,
   v.now_driving_license_owner AS driverLicense,
+  remit_details.return_rate_amount as rebateAmount,
   v.color AS carColor,
   CASE
 

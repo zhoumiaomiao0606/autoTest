@@ -166,64 +166,7 @@ public class BusinessReviewServiceImpl implements BusinessReviewService {
 
         System.out.println("=====保存参数"+param);
 
-        /*if (param.getListRules()!=null && param.getListRules().size()>0)
-        {
-            Gson gson = new Gson();
-            String objectStr = gson.toJson(param.getListRule());//把对象转为JSON格式的字符串
-            param.setListRule(objectStr);
-        }*/
 
-        /*CostCalculateInfoVO costCalculateInfoVO = loanQueryDOMapper.selectCostCalculateInfo(Long.valueOf(param.getOrder_id()));
-        if(costCalculateInfoVO == null){
-            throw new BizException("异常:无法计算打款金额");
-        }*/
-        //打款金额校验=================================start
-        /*//银行分期本金
-        BigDecimal bank_period_principal = costCalculateInfoVO.getBank_period_principal();
-        //返利金额
-        BigDecimal return_rate_amount = initDecimal(param.getReturn_rate_amount());
-        //是否月结 0 否 1 是
-        String pay_month = costCalculateInfoVO.getPay_month();
-
-        BigDecimal remitAmt = new BigDecimal(0);
-
-        BigDecimal service_fee = initDecimal(param.getService_fee());//服务费
-        BigDecimal apply_license_plate_deposit_fee = initDecimal(param.getApply_license_plate_deposit_fee());//上牌押金
-        BigDecimal performance_fee = initDecimal(param.getPerformance_fee());//履约金
-        BigDecimal install_gps_fee = initDecimal(param.getInstall_gps_fee());//安装gps费用
-        BigDecimal risk_fee = initDecimal(param.getRisk_fee());//风险费用
-        BigDecimal fair_assess_fee = initDecimal(param.getFair_assess_fee());//公正评估费
-        BigDecimal apply_license_plate_out_province_fee = initDecimal(param.getApply_license_plate_out_province_fee());//上省外牌费用
-        BigDecimal based_margin_fee = initDecimal(param.getBased_margin_fee());//基础保证金
-
-        //月结 0 否 1 是
-        if("1".equals(pay_month)){
-            //月结算
-            remitAmt =  new CostCalculate(bank_period_principal,return_rate_amount)
-                    .process(param.getService_fee_type(),service_fee)
-                    .process(param.getApply_license_plate_deposit_fee(),apply_license_plate_deposit_fee)
-                    .process(param.getPerformance_fee_type(),performance_fee)
-                    .process(param.getInstall_gps_fee_type(),install_gps_fee)
-                    .process(param.getRisk_fee_type(),risk_fee)
-                    .process(param.getFair_assess_fee_type(),fair_assess_fee)
-                    .process(param.getApply_license_plate_out_province_fee_type(),apply_license_plate_out_province_fee)
-                    .process(param.getBased_margin_fee_type(),based_margin_fee)
-                    .finalResult().setScale(6,BigDecimal.ROUND_HALF_UP);
-        }else{
-            //日结
-            remitAmt = bank_period_principal
-                    .subtract(service_fee)
-                    .subtract(apply_license_plate_deposit_fee)
-                    .subtract(performance_fee)
-                    .subtract(install_gps_fee)
-                    .subtract(risk_fee)
-                    .subtract(fair_assess_fee)
-                    .subtract(apply_license_plate_out_province_fee)
-                    .subtract(based_margin_fee).setScale(6,BigDecimal.ROUND_HALF_UP);
-        }
-        if(remitAmt.compareTo(new BigDecimal(param.getRemit_amount())) !=0 ){
-            throw new BizException("打款金额计算错误");
-        }*/
 
         //打款金额校验=================================end
         Long costDetailsId = loanOrderDO.getCostDetailsId();//关联ID

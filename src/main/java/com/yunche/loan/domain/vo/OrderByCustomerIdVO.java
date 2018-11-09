@@ -56,6 +56,8 @@ public class OrderByCustomerIdVO
             private String registrationCertificateNo;//登记证书号
             private String vin;//车架号
             private String carbrand;//品牌
+
+            private String rebateAmount;//返利金额
             /*private String overdueNumber;//逾期次数
             private String overdueAmount;//逾期金额*/
 
