@@ -42,7 +42,6 @@ public class LoanTelephoneVerifyServiceImpl implements LoanTelephoneVerifyServic
     @Autowired
     private PartnerDOMapper partnerDOMapper;
 
-    @Override
     @Transactional
     public ResultBean<Void> save(LoanTelephoneVerifyParam loanTelephoneVerifyParam) {
 
@@ -78,4 +77,5 @@ public class LoanTelephoneVerifyServiceImpl implements LoanTelephoneVerifyServic
         }
         return ResultBean.ofSuccess(null);
     }
+
 }

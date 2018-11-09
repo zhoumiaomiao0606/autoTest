@@ -5,6 +5,7 @@ import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.entity.LoanTelephoneVerifyDO;
 import com.yunche.loan.domain.entity.PartnerDO;
 import com.yunche.loan.domain.param.ApprovalParam;
+import com.yunche.loan.domain.param.LoanTelephoneVerifyParam;
 import com.yunche.loan.mapper.PartnerDOMapper;
 import com.yunche.loan.service.LoanCommitKeyService;
 import com.yunche.loan.service.LoanProcessService;
@@ -64,7 +65,7 @@ public class LoanCommitKeyServiceImpl implements LoanCommitKeyService {
 
         // 风险分担加成
         double riskSharingAddition = 100 - riskBearRate.doubleValue();
-        LoanTelephoneVerifyDO loanTelephoneVerifyDO = new LoanTelephoneVerifyDO();
+        LoanTelephoneVerifyParam loanTelephoneVerifyDO = new LoanTelephoneVerifyParam();
         loanTelephoneVerifyDO.setOrderId(String.valueOf(orderId));
         loanTelephoneVerifyDO.setRiskSharingAddition(BigDecimal.valueOf(riskSharingAddition));
 
