@@ -503,6 +503,7 @@ public class EmployeeCache {
             List<String> dingDingList = Lists.newArrayList();
 
             allOnlyProperty.stream()
+                    .filter(Objects::nonNull)
                     .forEach(e -> {
 
                         String idCard = e.getIdCard();
