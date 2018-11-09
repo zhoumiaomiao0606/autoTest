@@ -76,6 +76,23 @@ public class HttpUtils {
         return httpClient.execute(request);
     }
 
+    public static HttpResponse doGet2(String host, String path, String method,
+                                     Map<String, String> headers,
+                                     Map<String, String> querys)
+            throws Exception {
+        HttpClient httpClient = wrapClient(host);
+
+        HttpGet request = new HttpGet(buildUrl2(host, path, querys));
+        if(headers!=null){
+            for (Map.Entry<String, String> e : headers.entrySet()) {
+                request.addHeader(e.getKey(), e.getValue());
+            }
+        }
+
+
+        return httpClient.execute(request);
+    }
+
     /**
      * post form
      *
@@ -291,6 +308,38 @@ public class HttpUtils {
                 sbUrl.append("?").append(sbQuery);
             }
         }
+
+        return sbUrl.toString();
+    }
+
+    private static String buildUrl2(String host, String path, Map<String, String> querys) throws UnsupportedEncodingException {
+        StringBuilder sbUrl = new StringBuilder();
+        sbUrl.append(host);
+        if (!StringUtils.isBlank(path)) {
+            sbUrl.append(path);
+        }
+        if (null != querys) {
+            StringBuilder sbQuery = new StringBuilder();
+            for (Map.Entry<String, String> query : querys.entrySet()) {
+                if (0 < sbQuery.length()) {
+                    sbQuery.append("/");
+                }
+                if (StringUtils.isBlank(query.getKey()) && !StringUtils.isBlank(query.getValue())) {
+                    sbQuery.append(query.getValue());
+                }
+                if (!StringUtils.isBlank(query.getKey())) {
+                    sbQuery.append(query.getKey());
+                    if (!StringUtils.isBlank(query.getValue())) {
+                        sbQuery.append("/");
+                        sbQuery.append(URLEncoder.encode(query.getValue(), "utf-8"));
+                    }
+                }
+            }
+            if (0 < sbQuery.length()) {
+                sbUrl.append("/").append(sbQuery);
+            }
+        }
+        System.out.println("===请求路径"+sbUrl.toString());
 
         return sbUrl.toString();
     }

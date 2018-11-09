@@ -7,13 +7,13 @@ public class SecondHandCarVinDO {
 
     private Long parnter_id;
 
-    private String vin;
+    private String vin;//vin码
 
-    private String plate_num;
+    private String plate_num;//车牌号
 
     private String vehicle_type;
 
-    private String owner;
+    private String owner;//行驶证车主
 
     private String use_character;
 
@@ -21,9 +21,9 @@ public class SecondHandCarVinDO {
 
     private String model;
 
-    private String engine_num;
+    private String engine_num;//发动机号
 
-    private String register_date;
+    private String register_date;//注册日期
 
     private String issue_date;
 

@@ -189,7 +189,7 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
     private LoanProcessLogService loanProcessLogService;
 
     @Autowired
-    private SecondHandCarVinDOMapper secondHandCarVinDOMapper;
+    private SecondHandCarEvaluateDOMapper secondHandCarEvaluateDOMapper;
 
 
     @Override
@@ -1303,10 +1303,10 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
         VehicleInformationDO vehicleInformationDO = vehicleInformationDOMapper.selectByPrimaryKey(vid);
         if (vehicleInformationDO != null) {
 
-            if (vehicleInformationDO.getSecond_hand_car_vin_id()!=null && !"".equals(vehicleInformationDO.getSecond_hand_car_vin_id()))
+            if (vehicleInformationDO.getSecond_hand_car_evuluate_id()!=null && !"".equals(vehicleInformationDO.getSecond_hand_car_evuluate_id()))
             {
-                SecondHandCarVinDO secondHandCarVinDO = secondHandCarVinDOMapper.selectByPrimaryKey(vehicleInformationDO.getSecond_hand_car_vin_id());
-                loanCarInfoVO.setVin(secondHandCarVinDO.getVin());
+                SecondHandCarEvaluateDO secondHandCarEvaluateDO = secondHandCarEvaluateDOMapper.selectByPrimaryKey(vehicleInformationDO.getSecond_hand_car_evuluate_id());
+                loanCarInfoVO.setVin(secondHandCarEvaluateDO.getVin());
             }
 
             loanCarInfoVO.setNowDrivingLicenseOwner(vehicleInformationDO.getNow_driving_license_owner());

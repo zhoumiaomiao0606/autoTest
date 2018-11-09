@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunche.loan.mapper.SecondHandCarEvaluateDOMapper">
+  <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.SecondHandCarEvaluateDO">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="vin" jdbcType="VARCHAR" property="vin" />
+    <result column="parnter_id" jdbcType="BIGINT" property="parnter_id" />
+    <result column="owner" jdbcType="VARCHAR" property="owner" />
+    <result column="plate_num" jdbcType="VARCHAR" property="plate_num" />
+    <result column="engine_num" jdbcType="VARCHAR" property="engine_num" />
+    <result column="register_date" jdbcType="TIMESTAMP" property="register_date" />
+    <result column="make_name" jdbcType="VARCHAR" property="make_name" />
+    <result column="model_name" jdbcType="VARCHAR" property="model_name" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="style_color" jdbcType="VARCHAR" property="style_color" />
+    <result column="evaluate_price" jdbcType="DECIMAL" property="evaluate_price" />
+    <result column="query_time" jdbcType="TIMESTAMP" property="query_time" />
+    <result column="state" jdbcType="TINYINT" property="state" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, vin, parnter_id, owner, plate_num, engine_num, register_date, make_name, model_name, 
+    name, style_color, evaluate_price, query_time, state
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from second_hand_car_evaluate
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from second_hand_car_evaluate
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.yunche.loan.domain.entity.SecondHandCarEvaluateDO">
+    insert into second_hand_car_evaluate (id, vin, parnter_id, 
+      owner, plate_num, engine_num, 
+      register_date, make_name, model_name, 
+      name, style_color, evaluate_price, 
+      query_time, state)
+    values (#{id,jdbcType=BIGINT}, #{vin,jdbcType=VARCHAR}, #{parnter_id,jdbcType=BIGINT}, 
+      #{owner,jdbcType=VARCHAR}, #{plate_num,jdbcType=VARCHAR}, #{engine_num,jdbcType=VARCHAR}, 
+      #{register_date,jdbcType=TIMESTAMP}, #{make_name,jdbcType=VARCHAR}, #{model_name,jdbcType=VARCHAR}, 
+      #{name,jdbcType=VARCHAR}, #{style_color,jdbcType=VARCHAR}, #{evaluate_price,jdbcType=DECIMAL}, 
+      #{query_time,jdbcType=TIMESTAMP}, #{state,jdbcType=TINYINT})
+  </insert>
+  <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.SecondHandCarEvaluateDO">
+    insert into second_hand_car_evaluate
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="vin != null">
+        vin,
+      </if>
+      <if test="parnter_id != null">
+        parnter_id,
+      </if>
+      <if test="owner != null">
+        owner,
+      </if>
+      <if test="plate_num != null">
+        plate_num,
+      </if>
+      <if test="engine_num != null">
+        engine_num,
+      </if>
+      <if test="register_date != null">
+        register_date,
+      </if>
+      <if test="make_name != null">
+        make_name,
+      </if>
+      <if test="model_name != null">
+        model_name,
+      </if>
+      <if test="name != null">
+        name,
+      </if>
+      <if test="style_color != null">
+        style_color,
+      </if>
+      <if test="evaluate_price != null">
+        evaluate_price,
+      </if>
+      <if test="query_time != null">
+        query_time,
+      </if>
+      <if test="state != null">
+        state,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="vin != null">
+        #{vin,jdbcType=VARCHAR},
+      </if>
+      <if test="parnter_id != null">
+        #{parnter_id,jdbcType=BIGINT},
+      </if>
+      <if test="owner != null">
+        #{owner,jdbcType=VARCHAR},
+      </if>
+      <if test="plate_num != null">
+        #{plate_num,jdbcType=VARCHAR},
+      </if>
+      <if test="engine_num != null">
+        #{engine_num,jdbcType=VARCHAR},
+      </if>
+      <if test="register_date != null">
+        #{register_date,jdbcType=TIMESTAMP},
+      </if>
+      <if test="make_name != null">
+        #{make_name,jdbcType=VARCHAR},
+      </if>
+      <if test="model_name != null">
+        #{model_name,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null">
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="style_color != null">
+        #{style_color,jdbcType=VARCHAR},
+      </if>
+      <if test="evaluate_price != null">
+        #{evaluate_price,jdbcType=DECIMAL},
+      </if>
+      <if test="query_time != null">
+        #{query_time,jdbcType=TIMESTAMP},
+      </if>
+      <if test="state != null">
+        #{state,jdbcType=TINYINT},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.SecondHandCarEvaluateDO">
+    update second_hand_car_evaluate
+    <set>
+      <if test="vin != null">
+        vin = #{vin,jdbcType=VARCHAR},
+      </if>
+      <if test="parnter_id != null">
+        parnter_id = #{parnter_id,jdbcType=BIGINT},
+      </if>
+      <if test="owner != null">
+        owner = #{owner,jdbcType=VARCHAR},
+      </if>
+      <if test="plate_num != null">
+        plate_num = #{plate_num,jdbcType=VARCHAR},
+      </if>
+      <if test="engine_num != null">
+        engine_num = #{engine_num,jdbcType=VARCHAR},
+      </if>
+      <if test="register_date != null">
+        register_date = #{register_date,jdbcType=TIMESTAMP},
+      </if>
+      <if test="make_name != null">
+        make_name = #{make_name,jdbcType=VARCHAR},
+      </if>
+      <if test="model_name != null">
+        model_name = #{model_name,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null">
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="style_color != null">
+        style_color = #{style_color,jdbcType=VARCHAR},
+      </if>
+      <if test="evaluate_price != null">
+        evaluate_price = #{evaluate_price,jdbcType=DECIMAL},
+      </if>
+      <if test="query_time != null">
+        query_time = #{query_time,jdbcType=TIMESTAMP},
+      </if>
+      <if test="state != null">
+        state = #{state,jdbcType=TINYINT},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.SecondHandCarEvaluateDO">
+    update second_hand_car_evaluate
+    set vin = #{vin,jdbcType=VARCHAR},
+      parnter_id = #{parnter_id,jdbcType=BIGINT},
+      owner = #{owner,jdbcType=VARCHAR},
+      plate_num = #{plate_num,jdbcType=VARCHAR},
+      engine_num = #{engine_num,jdbcType=VARCHAR},
+      register_date = #{register_date,jdbcType=TIMESTAMP},
+      make_name = #{make_name,jdbcType=VARCHAR},
+      model_name = #{model_name,jdbcType=VARCHAR},
+      name = #{name,jdbcType=VARCHAR},
+      style_color = #{style_color,jdbcType=VARCHAR},
+      evaluate_price = #{evaluate_price,jdbcType=DECIMAL},
+      query_time = #{query_time,jdbcType=TIMESTAMP},
+      state = #{state,jdbcType=TINYINT}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <select id="queryVIN" parameterType="com.yunche.loan.domain.param.QueryVINParam" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from second_hand_car_vin
+    where parnter_id = #{parnter_id,jdbcType=BIGINT} and vin like concat('%',#{queryVIN},'%') and DATE_SUB(CURDATE(), INTERVAL 7 DAY) &lt;= date(query_time);
+  </select>
+</mapper>
