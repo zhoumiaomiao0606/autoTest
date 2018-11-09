@@ -2243,14 +2243,16 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         loanProcessApprovalCommonService.updateLoanProcess(loanProcessDO);
 
         // 自动提交打回的【征信申请】
-        ApprovalParam approvalParam = new ApprovalParam();
-        approvalParam.setOrderId(approval.getOrderId());
-        approvalParam.setTaskId(approval.getTaskId());
-        approvalParam.setTaskDefinitionKey(CREDIT_APPLY.getCode());
-        approvalParam.setAction(ACTION_PASS);
-        approvalParam.setNeedLog(false);
-        approvalParam.setCheckPermission(false);
-        approval(approvalParam);
+        approval.setTaskDefinitionKey(CREDIT_APPLY.getCode());
+        approval.setAction(ACTION_PASS);
+        approval.setNeedLog(false);
+        approval.setCheckPermission(false);
+        // 本次不执行-[附加任务]   为了不重复生成：征信历史记录（增信增补时，会重复生成2条记录！因为这里走了一遍，下面继续走，就会又走一遍！）
+        approval.setDoAttachTask(false);
+        approval(approval);
+
+        // 上门不走-[附加任务]，这里再走！！！
+        approval.setDoAttachTask(true);
     }
 
     @Override
@@ -3234,6 +3236,10 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      * @param loanProcessDO
      */
     private void doCurrentNodeAttachTask(ApprovalParam approval, LoanOrderDO loanOrderDO, LoanProcessDO loanProcessDO) {
+        // 如果不执行-[附加任务]
+        if (!approval.getDoAttachTask()) {
+            return;
+        }
 
         // 附带任务-[征信申请]
         doAttachTask_creditApply(approval, loanOrderDO);
