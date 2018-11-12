@@ -101,6 +101,9 @@ public class JinTouHangAccommodationApplyServiceImpl implements JinTouHangAccomm
     @Autowired
     private JtxConfig jtxConfig;
 
+    @Autowired
+    private LoanProcessBridgeDOMapper loanProcessBridgeDOMapper;
+
 
 //    @Override
 //    public ResultBean revoke(AccommodationApplyParam param) {
@@ -727,6 +730,13 @@ public class JinTouHangAccommodationApplyServiceImpl implements JinTouHangAccomm
         LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
         LoanHomeVisitDO loanHomeVisitDO = loanHomeVisitDOMapper.selectByPrimaryKey(loanOrderDO.getLoanHomeVisitId());
         return ResultBean.ofSuccess(loanHomeVisitDO.getDebitCard());
+    }
+
+    @Override
+    public ResultBean batchEnd(AccommodationApplyParam accommodationApplyParam) {
+        int i =loanProcessBridgeDOMapper.batchEndProcessBridge(accommodationApplyParam.getBridgeIdList());
+        Preconditions.checkArgument(i > 0, "异常订单批量完结失败");
+        return ResultBean.ofSuccess("异常订单批量完结成功");
     }
 
     @Override

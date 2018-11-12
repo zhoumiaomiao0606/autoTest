@@ -36,6 +36,7 @@ public class AccommodationApplyParam {
 
     private String bankCard;
 
+    private List<Long> bridgeIdList = Lists.newArrayList();
     @Data
     public static class IDPair{
         Long orderId;

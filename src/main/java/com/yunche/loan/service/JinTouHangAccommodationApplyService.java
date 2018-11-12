@@ -48,4 +48,6 @@ public interface JinTouHangAccommodationApplyService {
     String jtxResult(String param);
 
     ResultBean getBankCard(Long orderId);
+
+    ResultBean batchEnd(AccommodationApplyParam accommodationApplyParam);
 }

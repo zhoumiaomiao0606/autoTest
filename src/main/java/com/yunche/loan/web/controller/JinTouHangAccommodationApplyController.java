@@ -57,7 +57,7 @@ public class JinTouHangAccommodationApplyController {
      */
     @PostMapping(value = "/applyOldLoan", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     ResultBean applyOldLoan(@RequestBody AccommodationApplyParam param) {
-        return accommodationApplyService.applyLoan(param);
+        return accommodationApplyService.applyOldLoan(param);
     }
 
 
@@ -180,5 +180,14 @@ public class JinTouHangAccommodationApplyController {
     String jtxResult(@RequestBody  String param){
         return accommodationApplyService.jtxResult(param);
 
+    }
+
+
+    /*
+    异常订单处理完结
+     */
+    @PostMapping("/batchend")
+    ResultBean batchEnd(@RequestBody AccommodationApplyParam accommodationApplyParam){
+        return accommodationApplyService.batchEnd(accommodationApplyParam);
     }
 }
