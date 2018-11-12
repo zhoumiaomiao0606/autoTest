@@ -454,12 +454,12 @@ public class JinTouHangAccommodationApplyServiceImpl implements JinTouHangAccomm
 
     @Override
     public ResultBean errorExport(ExportApplyLoanPushParam param) {
-        List<ExportApplyLoanPushVO> voList = loanStatementDOMapper.exportApplyLoanPush(param);
-        List<String> header = Lists.newArrayList("流水号", "委托人（购车人、借款人）", "身份证号",
-                "车辆品牌型号", "车价", "首付款", "甲方垫款金额（导出）", "乙方借款金额（导入）", "借款期限", "利率", "借据号", "最终放款银行"
+        List<ExportErrorOrderVO> voList = loanStatementDOMapper.exportErrorOrder(param);
+        List<String> header = Lists.newArrayList( "委托人（购车人、借款人）", "身份证号",
+                "车辆品牌型号", "车价", "首付款", "甲方垫款金额", "借款期限", "最终放款银行"
         );
         //生成Excel文件
-        String ossResultKey = POIUtil.createExcelFile("异常订单信息清单", voList, header, ExportApplyLoanPushVO.class, ossConfig);
+        String ossResultKey = POIUtil.createExcelFile("异常订单信息清单", voList, header, ExportErrorOrderVO.class, ossConfig);
 
         return ResultBean.ofSuccess(ossResultKey);
     }
@@ -681,7 +681,7 @@ public class JinTouHangAccommodationApplyServiceImpl implements JinTouHangAccomm
                                                             thirdPartyFundBusinessDO.setBridgeProcecssId(jtxCommunicationDO.getBridgeProcecssId());
                                                             thirdPartyFundBusinessDO.setLendStatus(IDict.K_CJZT.K_CJZT_HANDLE_ERROR);
                                                             thirdPartyFundBusinessDOMapper.updateByPrimaryKeySelective(thirdPartyFundBusinessDO);
-                                                            asyErrorInfo = "BridgeProcecssId:"+jtxCommunicationDO.getBridgeProcecssId()+"云车任务提交异常";
+                                                            asyErrorInfo = "BridgeProcecssId:"+jtxCommunicationDO.getBridgeProcecssId()+"云车任务提交异常,"+approvalResultBean.getMsg();
                                                         }
                                                 }else{
                                                     ThirdPartyFundBusinessDO thirdPartyFundBusinessDO = new ThirdPartyFundBusinessDO();
