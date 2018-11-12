@@ -2642,7 +2642,10 @@
         d.name             					AS  departmentName,
         r_c_his.id             			    AS  roleChangeHisId,
         DATE_FORMAT(r_c_his.gmt_create,'%Y-%m-%d %H:%i:%S')
-                                            AS  roleChangeHisCreateTime
+                                            AS  roleChangeHisCreateTime,
+        r_c_his.user_id             		AS  roleChangeHisUserId,
+        r_c_his.user_name             		AS  roleChangeHisUserName
+
 
         FROM        loan_cust_role_change_his	        AS r_c_his
 
