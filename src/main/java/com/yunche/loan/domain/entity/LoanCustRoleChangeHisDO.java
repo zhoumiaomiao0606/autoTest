@@ -6,9 +6,14 @@ import java.util.Date;
 
 @Data
 public class LoanCustRoleChangeHisDO {
+
     private Long id;
 
     private Long orderId;
 
     private Date gmtCreate;
+
+    private Long userId;
+
+    private String userName;
 }

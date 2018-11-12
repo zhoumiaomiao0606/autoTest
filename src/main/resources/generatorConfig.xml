@@ -384,7 +384,7 @@
 -->
 
 
-        <table tableName="loan_cust_role_change_his_detail" domainObjectName="LoanCustRoleChangeHisDetailDO"
+        <table tableName="loan_cust_role_change_his" domainObjectName="LoanCustRoleChangeHisDO"
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
         </table>
