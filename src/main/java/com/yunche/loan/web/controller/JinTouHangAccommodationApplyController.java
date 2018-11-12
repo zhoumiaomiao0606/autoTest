@@ -93,6 +93,12 @@ public class JinTouHangAccommodationApplyController {
         return accommodationApplyService.export(param);
     }
 
+    @PostMapping(value = "/errorexport", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    ResultBean errorExport(@RequestBody ExportApplyLoanPushParam param) {
+        return accommodationApplyService.errorExport(param);
+    }
+
+
     //--------------------------金投行过桥处理------------------------
 
     //--------------------------金投行还款登记------------------------
@@ -190,4 +196,6 @@ public class JinTouHangAccommodationApplyController {
     ResultBean batchEnd(@RequestBody AccommodationApplyParam accommodationApplyParam){
         return accommodationApplyService.batchEnd(accommodationApplyParam);
     }
+
+
 }

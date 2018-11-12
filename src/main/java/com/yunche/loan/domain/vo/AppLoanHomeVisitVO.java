@@ -46,4 +46,6 @@ public class AppLoanHomeVisitVO extends LoanSimpleInfoVO {
     private Date gmtCreate;
 
     private Date gmtModify;
+
+    private String debitCard;
 }

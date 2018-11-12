@@ -43,4 +43,6 @@ public class LoanHomeVisitVO {
     private Date gmtModify;
 
     List<UniversalCustomerVO> customers;
+
+    private  String debitCard;
 }

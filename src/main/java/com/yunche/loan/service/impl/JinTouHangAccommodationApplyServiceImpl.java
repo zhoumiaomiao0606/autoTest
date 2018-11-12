@@ -452,6 +452,18 @@ public class JinTouHangAccommodationApplyServiceImpl implements JinTouHangAccomm
         return ResultBean.ofSuccess(ossResultKey);
     }
 
+    @Override
+    public ResultBean errorExport(ExportApplyLoanPushParam param) {
+        List<ExportApplyLoanPushVO> voList = loanStatementDOMapper.exportApplyLoanPush(param);
+        List<String> header = Lists.newArrayList("流水号", "委托人（购车人、借款人）", "身份证号",
+                "车辆品牌型号", "车价", "首付款", "甲方垫款金额（导出）", "乙方借款金额（导入）", "借款期限", "利率", "借据号", "最终放款银行"
+        );
+        //生成Excel文件
+        String ossResultKey = POIUtil.createExcelFile("异常订单信息清单", voList, header, ExportApplyLoanPushVO.class, ossConfig);
+
+        return ResultBean.ofSuccess(ossResultKey);
+    }
+
     /**
      * 金投行还款信息 -导出
      *
@@ -610,7 +622,6 @@ public class JinTouHangAccommodationApplyServiceImpl implements JinTouHangAccomm
     }
 
     @Override
-    @Transactional
     public String jtxResult(String param) {
         JTXCommunicationUtil jtxCommunicationUtil = new JTXCommunicationUtil();
         String ref ="";
@@ -693,7 +704,7 @@ public class JinTouHangAccommodationApplyServiceImpl implements JinTouHangAccomm
                                 logger.error("异步处理数据异常",e);
                             }finally {
                                 if(!"".equals(asyErrorInfo)){
-                                    logger.error(asyErrorInfo);
+                                    logger.error("03接口文件处理异常:"+asyErrorInfo);
                                 }
                                 if(reader!=null){
                                     try {

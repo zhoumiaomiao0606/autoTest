@@ -1427,7 +1427,7 @@
         LEFT JOIN remit_details remit  ON loan.remit_details_id =remit.id
         LEFT JOIN loan_car_info car ON loan.loan_car_info_id=car.id
         LEFT JOIN third_party_fund_business third_party ON third_party.bridge_procecss_id=process.id
-        where 	if((select count(*) from third_party_fund_business where bridge_procecss_id=process.id and lend_status=3)=1,false,true)
+        where 	if((select count(*) from third_party_fund_business where bridge_procecss_id=process.id and lend_status in (3,4,5,6,7,8,9))=1,false,true)
     </select>
 
     <select id="exportJinTouHangRepayInfo" parameterType="com.yunche.loan.domain.param.ExportApplyLoanPushParam"
