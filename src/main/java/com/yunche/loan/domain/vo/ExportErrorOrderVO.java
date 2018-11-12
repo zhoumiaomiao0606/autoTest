@@ -10,7 +10,6 @@ public class ExportErrorOrderVO {
     String carPrice;
     String downPaymentMoney;
     String remitAmount;
-    String lendAmount;
     String loanTime;
     String bank;
 }

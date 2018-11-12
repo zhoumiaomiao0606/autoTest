@@ -42,10 +42,6 @@ public class JTXCommunicationUtil {
         jtxCommunicationDO.setName(name);
         jtxCommunicationDO.setOrderStatus(1);
         jtxCommunicationDOMapper.insertSelective(jtxCommunicationDO);
-        name ="杨鹏鹏";
-        idCard="411528198811031052";
-        tel="18268275006";
-        bankCard="6217231205005178199";
         Map bodyMap = new HashMap();
         bodyMap.put("Type", "0");
         bodyMap.put("RealName", name);
@@ -166,7 +162,6 @@ public class JTXCommunicationUtil {
         Map<String, Object> paramMap = new HashMap<>();
         headBuild(paramMap, "ASSET_04",ref);
         Map bodyMap = new HashMap();
-        identityNum ="411528198811031052";
         bodyMap.put("Name", name);
         bodyMap.put("Principal", principal);
         bodyMap.put("Rate", rate);
