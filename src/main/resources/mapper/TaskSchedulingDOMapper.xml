@@ -2639,11 +2639,14 @@
         e.name             					AS  salesman,
         b.partner_id      					AS  partnerId,
         p.name             					AS  partner,
-        d.name             					AS  departmentName
+        d.name             					AS  departmentName,
+        r_c_his.id             			    AS  roleChangeHisId,
+        DATE_FORMAT(r_c_his.gmt_create,'%Y-%m-%d %H:%i:%S')
+                                            AS  roleChangeHisCreateTime
 
-        FROM        loan_order           				AS a
+        FROM        loan_cust_role_change_his	        AS r_c_his
 
-        LEFT JOIN   loan_cust_role_change_his	        AS role  ON	  role.order_id = o.id
+        LEFT JOIN   loan_order           				AS a     ON	  a.id = r_c_his.order_id
         LEFT JOIN   loan_process         				AS pc    ON   a.id = pc.order_id
         LEFT JOIN   loan_customer        				AS c     ON   c.id = a.loan_customer_id
         LEFT JOIN   loan_base_info      				AS b     ON   b.id = a.loan_base_info_id
@@ -2695,6 +2698,8 @@
                 </foreach>
             </if>
         </where>
+
+        ORDER BY r_c_his.gmt_create DESC
 
     </select>
 

@@ -34,7 +34,7 @@ public class LoanCustRoleChangeController {
      * @return
      */
     @GetMapping(value = "/queryRoleChangeOrder")
-    public ResultBean<List<UniversalCustomerOrderVO>> queryRoleCustomerOrder(@RequestParam String name) {
+    public ResultBean<List<UniversalCustomerOrderVO>> queryRoleCustomerOrder(@RequestParam(required = false) String name) {
         return ResultBean.ofSuccess(loanCustRoleChangeService.queryRoleChangeOrder(name));
     }
 
@@ -63,7 +63,7 @@ public class LoanCustRoleChangeController {
     }
 
     /**
-     * 历史记录-列表查询
+     * 历史记录-列表条件查询
      *
      * @param taskListQuery
      * @return
@@ -76,11 +76,11 @@ public class LoanCustRoleChangeController {
     /**
      * 历史记录-详情
      *
-     * @param roleChangeId
+     * @param roleChangeHisId
      * @return
      */
-    @PostMapping(value = "/his/detail")
-    public ResultBean<LoanCustRoleChangeHisDetailVO> hisDetail(@RequestParam Long roleChangeId) {
-        return ResultBean.ofSuccess(loanCustRoleChangeService.hisDetail(roleChangeId));
+    @GetMapping(value = "/his/detail")
+    public ResultBean<LoanCustRoleChangeHisDetailVO> hisDetail(@RequestParam Long roleChangeHisId) {
+        return ResultBean.ofSuccess(loanCustRoleChangeService.hisDetail(roleChangeHisId));
     }
 }

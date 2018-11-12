@@ -214,7 +214,7 @@ public class LoanCustRoleChangeServiceImpl implements LoanCustRoleChangeService 
         LoanCustRoleChangeHisDO loanCustRoleChangeHisDO = new LoanCustRoleChangeHisDO();
         loanCustRoleChangeHisDO.setOrderId(orderId);
         loanCustRoleChangeHisDO.setGmtCreate(new Date());
-        int count = loanCustRoleChangeHisDOMapper.insert(loanCustRoleChangeHisDO);
+        int count = loanCustRoleChangeHisDOMapper.insertSelective(loanCustRoleChangeHisDO);
         Preconditions.checkArgument(count > 0, "角色变更历史记录失败");
 
         // 变更历史记录ID
@@ -244,8 +244,10 @@ public class LoanCustRoleChangeServiceImpl implements LoanCustRoleChangeService 
                     LoanCustRoleChangeHisDetailDO loanCustRoleChangeHisDetailDO = new LoanCustRoleChangeHisDetailDO();
                     loanCustRoleChangeHisDetailDO.setRoleChangeHisId(roleChangeHisId);
                     loanCustRoleChangeHisDetailDO.setType(TYPE_BEFORE);
+                    loanCustRoleChangeHisDetailDO.setCustomerId(e.getId());
                     // 变更信息
                     BeanUtils.copyProperties(e, loanCustRoleChangeHisDetailDO);
+                    loanCustRoleChangeHisDetailDO.setId(null);
 
                     loanCustRoleChangeHisDetailDOMapper.insert(loanCustRoleChangeHisDetailDO);
                 });
@@ -258,14 +260,17 @@ public class LoanCustRoleChangeServiceImpl implements LoanCustRoleChangeService 
      * @param customerParam
      */
     private void insertRoleChangeHisDetail_after(Long roleChangeHisId, CustomerParam customerParam) {
+        Preconditions.checkNotNull(customerParam.getId(), "客户ID不能为空");
 
         // 变更后：客户信息历史记录
         LoanCustRoleChangeHisDetailDO loanCustRoleChangeHisDetailDO = new LoanCustRoleChangeHisDetailDO();
         loanCustRoleChangeHisDetailDO.setRoleChangeHisId(roleChangeHisId);
         loanCustRoleChangeHisDetailDO.setType(TYPE_AFTER);
+        loanCustRoleChangeHisDetailDO.setCustomerId(customerParam.getId());
         // 变更信息
         BeanUtils.copyProperties(customerParam, loanCustRoleChangeHisDetailDO);
+        loanCustRoleChangeHisDetailDO.setId(null);
 
-        loanCustRoleChangeHisDetailDOMapper.insert(loanCustRoleChangeHisDetailDO);
+        loanCustRoleChangeHisDetailDOMapper.insertSelective(loanCustRoleChangeHisDetailDO);
     }
 }

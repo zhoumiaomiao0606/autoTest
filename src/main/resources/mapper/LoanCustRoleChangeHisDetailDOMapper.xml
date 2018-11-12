@@ -26,7 +26,8 @@
     delete from loan_cust_role_change_his_detail
     where id = #{id,jdbcType=BIGINT}
   </delete>
-    <insert id="insert" parameterType="com.yunche.loan.domain.entity.LoanCustRoleChangeHisDetailDO">
+    <insert id="insert" parameterType="com.yunche.loan.domain.entity.LoanCustRoleChangeHisDetailDO"
+            useGeneratedKeys="true" keyProperty="id" keyColumn="id">
     insert into loan_cust_role_change_his_detail (id, role_change_his_id, type,
     customer_id, principal_cust_id, cust_type,
     cust_relation, guarantee_type, guarantee_rela
@@ -36,7 +37,8 @@
     #{custRelation,jdbcType=TINYINT}, #{guaranteeType,jdbcType=TINYINT}, #{guaranteeRela,jdbcType=VARCHAR}
     )
   </insert>
-    <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.LoanCustRoleChangeHisDetailDO">
+    <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.LoanCustRoleChangeHisDetailDO"
+            useGeneratedKeys="true" keyProperty="id" keyColumn="id">
         insert into loan_cust_role_change_his_detail
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="id != null">

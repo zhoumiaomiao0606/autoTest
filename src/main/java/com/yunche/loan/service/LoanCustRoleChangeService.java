@@ -24,5 +24,5 @@ public interface LoanCustRoleChangeService {
 
     ResultBean<List<TaskListVO>> queryHisList(TaskListQuery taskListQuery);
 
-    LoanCustRoleChangeHisDetailVO hisDetail(Long roleChangeId);
+    LoanCustRoleChangeHisDetailVO hisDetail(Long roleChangeHisId);
 }
