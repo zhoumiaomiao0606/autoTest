@@ -2624,4 +2624,78 @@
 
     </select>
 
+    <!-- selectRoleChangeHisTaskList -->
+    <select id="selectDataFlowTaskList" parameterType="com.yunche.loan.domain.query.TaskListQuery"
+            resultType="com.yunche.loan.domain.vo.TaskListVO">
+
+        SELECT
+
+        a.id               					AS  id,
+        c.name    				  			AS  customer,
+        c.id_card   						AS  idCard,
+        c.mobile   							AS  mobile,
+        b.bank								AS  bank,
+        b.salesman_id     				    AS  salesmanId,
+        e.name             					AS  salesman,
+        b.partner_id      					AS  partnerId,
+        p.name             					AS  partner,
+        d.name             					AS  departmentName
+
+        FROM        loan_order           				AS a
+
+        LEFT JOIN   loan_cust_role_change_his	        AS role  ON	  role.order_id = o.id
+        LEFT JOIN   loan_process         				AS pc    ON   a.id = pc.order_id
+        LEFT JOIN   loan_customer        				AS c     ON   c.id = a.loan_customer_id
+        LEFT JOIN   loan_base_info      				AS b     ON   b.id = a.loan_base_info_id
+        LEFT JOIN   employee             				AS e     ON   e.id = b.salesman_id
+        LEFT JOIN   department           				AS d     ON	  d.id = e.department_id
+        LEFT JOIN   partner             				AS p     ON   p.id = b.partner_id
+        LEFT JOIN   current_node_manager                AS complex_log on complex_log.order_id = a.id
+
+        <where>
+            <if test="orderId != null and orderId != '' ">
+                AND a.id = #{orderId}
+            </if>
+            <if test="customer != null and customer != '' ">
+                AND	c.name LIKE CONCAT('%', #{customer}, '%')
+            </if>
+            <if test="idCard != null and idCard != '' ">
+                AND c.id_card = #{idCard}
+            </if>
+            <if test="loanBank != null and loanBank != '' ">
+                AND b.bank = #{loanBank}
+            </if>
+            <if test="partnerId != null">
+                AND p.id = #{partnerId}
+            </if>
+            <if test="startPrintGmtCreate != null">
+                AND TO_DAYS(complex_log.usertask_remit_review_create_time) &gt;= TO_DAYS(#{startPrintGmtCreate})
+            </if>
+            <if test="endPrintGmtCreate != null">
+                AND TO_DAYS(complex_log.usertask_remit_review_create_time) &lt;= TO_DAYS(#{endPrintGmtCreate})
+            </if>
+            <if test="dataFlowTypeList != null and dataFlowTypeList.size() > 0">
+                AND  df.type IN
+                <foreach item="item" collection="dataFlowTypeList" open="(" close=")" separator=",">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="bizAreaIdList != null and bizAreaIdList.size() > 0">
+                AND
+                b.partner_id IN
+                <foreach item="item" index="index" collection="bizAreaIdList" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="bankList != null and bankList.size() > 0">
+                AND
+                b.bank IN
+                <foreach item="item" index="index" collection="bankList" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
+
+    </select>
+
 </mapper>

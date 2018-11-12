@@ -46,7 +46,4 @@ public interface LoanCustomerService {
      */
     void updateCustomerEnable(Long principalId);
 
-    List<UniversalCustomerOrderVO> queryRoleCustomerOrder(String name);
-
-    RecombinationVO detail(Long orderId);
 }
