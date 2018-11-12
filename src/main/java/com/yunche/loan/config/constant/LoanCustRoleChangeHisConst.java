@@ -6,7 +6,13 @@ package com.yunche.loan.config.constant;
  */
 public class LoanCustRoleChangeHisConst {
 
+    /**
+     * 角色变更前
+     */
     public static final Byte TYPE_BEFORE = 1;
 
-    public static final Byte TYPE_AFTER = 1;
+    /**
+     * 角色变更后
+     */
+    public static final Byte TYPE_AFTER = 2;
 }

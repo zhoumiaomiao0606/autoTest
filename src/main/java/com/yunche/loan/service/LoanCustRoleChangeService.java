@@ -16,7 +16,7 @@ import java.util.List;
  */
 public interface LoanCustRoleChangeService {
 
-    List<UniversalCustomerOrderVO> queryRoleCustomerOrder(String name);
+    List<UniversalCustomerOrderVO> queryRoleChangeOrder(String name);
 
     RecombinationVO editDetail(Long orderId);
 

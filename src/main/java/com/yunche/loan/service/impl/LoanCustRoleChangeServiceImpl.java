@@ -16,6 +16,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.util.*;
@@ -59,13 +60,13 @@ public class LoanCustRoleChangeServiceImpl implements LoanCustRoleChangeService 
 
 
     @Override
-    public List<UniversalCustomerOrderVO> queryRoleCustomerOrder(String name) {
+    public List<UniversalCustomerOrderVO> queryRoleChangeOrder(String name) {
 
         Long loginUserId = SessionUtils.getLoginUser().getId();
         Set<String> juniorIds = employeeService.getSelfAndCascadeChildIdList(loginUserId);
         Long maxGroupLevel = taskSchedulingDOMapper.selectMaxGroupLevel(loginUserId);
 
-        List<UniversalCustomerOrderVO> universalCustomerOrderVOS = loanQueryDOMapper.selectUniversalRoleCustomerOrder(
+        List<UniversalCustomerOrderVO> universalCustomerOrderVOS = loanQueryDOMapper.selectUniversalRoleChangeOrder(
                 loginUserId,
                 StringUtils.isBlank(name) ? null : name.trim(),
                 maxGroupLevel == null ? 0 : maxGroupLevel,
@@ -92,6 +93,7 @@ public class LoanCustRoleChangeServiceImpl implements LoanCustRoleChangeService 
     }
 
     @Override
+    @Transactional
     public Void editSave(Long orderId, List<CustomerParam> customers) {
         Preconditions.checkNotNull(orderId, "orderId不能为空");
         Preconditions.checkArgument(!CollectionUtils.isEmpty(customers), "客户不能为空");

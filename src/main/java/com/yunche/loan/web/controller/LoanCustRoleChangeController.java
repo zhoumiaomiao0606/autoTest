@@ -33,9 +33,9 @@ public class LoanCustRoleChangeController {
      * @param name 主贷人姓名
      * @return
      */
-    @GetMapping(value = "/queryRoleCustomerOrder")
+    @GetMapping(value = "/queryRoleChangeOrder")
     public ResultBean<List<UniversalCustomerOrderVO>> queryRoleCustomerOrder(@RequestParam String name) {
-        return ResultBean.ofSuccess(loanCustRoleChangeService.queryRoleCustomerOrder(name));
+        return ResultBean.ofSuccess(loanCustRoleChangeService.queryRoleChangeOrder(name));
     }
 
     /**
