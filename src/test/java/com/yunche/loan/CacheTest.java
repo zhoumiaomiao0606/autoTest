@@ -110,7 +110,7 @@ public class CacheTest extends BaseTest{
                 "</MsgText>";
         try {
            System.out.println( MapXmlUtil.Xml2Map(xml).toString());
-        } catch (DocumentException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }//
