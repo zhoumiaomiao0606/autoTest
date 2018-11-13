@@ -314,6 +314,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         ICBCApiRequest.MultimediaUpload multimediaUpload = new ICBCApiRequest.MultimediaUpload();
         multimediaUpload.setPlatno(sysConfig.getPlatno());
         multimediaUpload.setGuestPlatno(sysConfig.getPlatno());
+        multimediaUpload.setIdno(loanCustomerDO.getIdCard());//证件编号
         multimediaUpload.setCmpseq(serNo);
         multimediaUpload.setZoneno(loanBaseInfoDO.getAreaId() == null ? null : loanBaseInfoDO.getAreaId().toString().substring(0, 4));
         multimediaUpload.setPhybrno(phybrno);

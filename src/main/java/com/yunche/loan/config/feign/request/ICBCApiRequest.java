@@ -367,6 +367,8 @@ public class ICBCApiRequest {
         private String platno;
         @NotEmpty(groups = MultimediaUploadValidated.class)
         private String guestPlatno;
+        @NotEmpty(groups = MultimediaUploadValidated.class)
+        private String idno;
         @NotEmpty
         private String cmpseq;
         @NotEmpty
