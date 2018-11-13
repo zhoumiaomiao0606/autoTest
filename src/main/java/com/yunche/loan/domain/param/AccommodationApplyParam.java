@@ -36,6 +36,8 @@ public class AccommodationApplyParam {
 
     private String bankCard;
 
+    private String tel;
+
     private List<Long> bridgeIdList = Lists.newArrayList();
     @Data
     public static class IDPair{

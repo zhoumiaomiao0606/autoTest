@@ -104,6 +104,9 @@ public class JinTouHangAccommodationApplyServiceImpl implements JinTouHangAccomm
     @Autowired
     private LoanProcessBridgeDOMapper loanProcessBridgeDOMapper;
 
+    @Autowired
+    private JtxReturnFileDOMapper jtxReturnFileDOMapper;
+
 
 //    @Override
 //    public ResultBean revoke(AccommodationApplyParam param) {
@@ -194,7 +197,7 @@ public class JinTouHangAccommodationApplyServiceImpl implements JinTouHangAccomm
             @Override
             public void process() {
                 String interest = param.getLendAmount().multiply(new BigDecimal("0.8").multiply(new BigDecimal("60").divide(new BigDecimal("365"),2,BigDecimal.ROUND_HALF_UP))).multiply(new BigDecimal("100")).setScale(0,BigDecimal.ROUND_HALF_UP)+"";
-                Map resultMap = jtxCommunicationUtil.borrowerInfoAuth(loanCustomerDO.getName(),loanCustomerDO.getIdCard(),loanCustomerDO.getMobile(),
+                Map resultMap = jtxCommunicationUtil.borrowerInfoAuth(loanCustomerDO.getName(),loanCustomerDO.getIdCard(),param.getTel(),
                         loanBaseInfoDO.getBank(),param.getBankCard(),param.getIdPair());
                 if((Boolean) resultMap.get("FLAG")){
                     Boolean flag1 = jtxCommunicationUtil.assetRelease((String) resultMap.get("REF"),"云车-"+(String) resultMap.get("REF"),param.getLendAmount().multiply(new BigDecimal("100"))+"",
@@ -642,6 +645,12 @@ public class JinTouHangAccommodationApplyServiceImpl implements JinTouHangAccomm
                 String fileName = (String)bodyMap.get("FileName");
                 String filePath = (String)bodyMap.get("FilePath");
                 if(fileName!=null&&(!"".equals(fileName))&&filePath!=null&&(!"".equals(filePath))){
+                    JtxReturnFileDO jtxReturnFileDO = new JtxReturnFileDO();
+                    jtxReturnFileDO.setJtxid(ref);
+                    jtxReturnFileDO.setFilePath(filePath);
+                    jtxReturnFileDO.setFileName(fileName);
+                    jtxReturnFileDO.setCreateDate(new Date());
+                    jtxReturnFileDOMapper.insertSelective(jtxReturnFileDO);
                     asyncUpload.execute(new Process() {
                         @Override
                         public void process() {
@@ -738,9 +747,13 @@ public class JinTouHangAccommodationApplyServiceImpl implements JinTouHangAccomm
 
     @Override
     public ResultBean getBankCard(Long orderId) {
+        BankCardAndTelVO bankCardAndTelVO = new BankCardAndTelVO();
         LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
         LoanHomeVisitDO loanHomeVisitDO = loanHomeVisitDOMapper.selectByPrimaryKey(loanOrderDO.getLoanHomeVisitId());
-        return ResultBean.ofSuccess(loanHomeVisitDO.getDebitCard());
+        LoanCustomerDO loanCustomerDO = loanCustomerDOMapper.selectByPrimaryKey(loanOrderDO.getLoanCustomerId(),null);
+        bankCardAndTelVO.setBankCard(loanHomeVisitDO.getDebitCard());
+        bankCardAndTelVO.setTel(loanCustomerDO.getMobile());
+        return ResultBean.ofSuccess(bankCardAndTelVO);
     }
 
     @Override
