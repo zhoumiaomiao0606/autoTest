@@ -22,6 +22,8 @@ public class UniversalBaseInfoVO {
 
     private String partner_id;
     private String partner_name;
+    private String partner_code;
+    private String partner_group;
 
     private String department_id;
     private String department_name;

@@ -2,10 +2,7 @@ package com.yunche.loan.service;
 
 
 import com.yunche.loan.config.result.ResultBean;
-import com.yunche.loan.domain.param.DrivinglicensePara;
-import com.yunche.loan.domain.param.EvaluateParam;
-import com.yunche.loan.domain.param.EvaluateWebParam;
-import com.yunche.loan.domain.param.QueryVINParam;
+import com.yunche.loan.domain.param.*;
 
 public interface SecondHandCarService
 {
@@ -18,4 +15,10 @@ public interface SecondHandCarService
     ResultBean evaluate(EvaluateWebParam evaluateWebParam);
 
     ResultBean queryEvuluate(Long orderId);
+
+    ResultBean evaluateList(EvaluateListParam param);
+
+    ResultBean queryEvuluateByEvuluateid(Long evuluateId);
+
+    ResultBean firstCarSite(FirstCarSiteParam param);
 }

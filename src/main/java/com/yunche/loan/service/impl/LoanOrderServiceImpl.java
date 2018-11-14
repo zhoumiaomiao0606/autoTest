@@ -137,6 +137,9 @@ public class LoanOrderServiceImpl implements LoanOrderService {
     @Autowired
     private LoanFileDOMapper loanFileDOMapper;
 
+    @Autowired
+    private SecondHandCarEvaluateDOMapper secondHandCarEvaluateDOMapper;
+
 
     @Override
     public ResultBean<CreditApplyOrderVO> creditApplyOrderDetail(Long orderId) {
@@ -395,6 +398,16 @@ public class LoanOrderServiceImpl implements LoanOrderService {
         Preconditions.checkArgument(null != loanCarInfoParam && null != loanCarInfoParam.getId(), "车辆信息ID不能为空");
         Preconditions.checkNotNull(loanCarInfoParam.getOrderId(), "订单号不能为空");
 
+        //更新绑定
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(loanCarInfoParam.getOrderId());
+        if (loanCarInfoParam.getSecond_hand_car_evuluate_id()==null && "".equals(loanCarInfoParam.getSecond_hand_car_evuluate_id()))
+        {
+            loanOrderDO.setSecond_hand_car_evuluate_id(null);
+            loanOrderDOMapper.updateByPrimaryKeySelective(loanOrderDO);
+        }else {
+            loanOrderDO.setSecond_hand_car_evuluate_id(loanCarInfoParam.getSecond_hand_car_evuluate_id());
+            loanOrderDOMapper.updateByPrimaryKeySelective(loanOrderDO);
+        }
         // convert
         LoanCarInfoDO loanCarInfoDO = new LoanCarInfoDO();
         convertLoanCarInfo(loanCarInfoParam, loanCarInfoDO);
@@ -733,6 +746,14 @@ public class LoanOrderServiceImpl implements LoanOrderService {
         Long vid = loanOrderDOMapper.getVehicleInformationIdById(orderId);
         LoanBaseInfoDO loanBaseInfoDO = loanBaseInfoDOMapper.getTotalInfoByOrderId(orderId);
         VehicleInformationDO vehicleInformationDO = vehicleInformationDOMapper.selectByPrimaryKey(vid);
+
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
+        if (loanOrderDO.getSecond_hand_car_evuluate_id()!=null && !"".equals(loanOrderDO.getSecond_hand_car_evuluate_id()))
+        {
+            SecondHandCarEvaluateDO secondHandCarEvaluateDO = secondHandCarEvaluateDOMapper.selectByPrimaryKey(loanOrderDO.getSecond_hand_car_evuluate_id());
+            loanCarInfoVO.setVin(secondHandCarEvaluateDO.getVin());
+            loanCarInfoVO.setSecond_hand_car_evuluate_id(loanOrderDO.getSecond_hand_car_evuluate_id());
+        }
         if (vehicleInformationDO != null) {
             loanCarInfoVO.setNowDrivingLicenseOwner(vehicleInformationDO.getNow_driving_license_owner());
             loanCarInfoVO.setLicensePlateType(vehicleInformationDO.getLicense_plate_type() == null ? null : vehicleInformationDO.getLicense_plate_type().toString());

@@ -41,6 +41,12 @@
         customer.id_card AS customer_id_card,
         saleman.NAME AS saleman_name,
         partner.NAME AS partner_name,
+        partner.partner_code as partner_code,
+
+        CASE
+        WHEN partner.partner_group is null THEN
+        partner.partner_group ELSE CONCAT(partner.partner_group ,'组')
+        END AS partner_group,
         department.NAME AS saleman_department_name,
         plan.loan_amount AS loan_amount,
 
@@ -754,6 +760,15 @@
         SELECT
         base_area.area_name,
         partner.NAME AS partner_name,
+        partner.partner_code as partner_code,
+
+        CASE
+        WHEN partner.partner_group is null THEN
+        partner.partner_group ELSE CONCAT(partner.partner_group ,'组')
+        END AS partner_group,
+        department.NAME AS saleman_department_name,
+        plan.loan_amount AS loan_amount,
+
         customer.NAME AS customer_name,
         customer.id_card,
         loan_base_info.bank,

@@ -44,7 +44,7 @@ public class PartnerController {
     }
 
     @PostMapping(value = "/update", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultBean<Void> update(@RequestBody PartnerParam partnerParam) {
+    public ResultBean<Void> update(@RequestBody  PartnerParam partnerParam) {
         return partnerService.update(partnerParam);
     }
 

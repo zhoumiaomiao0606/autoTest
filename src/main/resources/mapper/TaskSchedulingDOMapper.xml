@@ -283,6 +283,8 @@
         join_i.car_type AS carType,
         join_h.license_plate_number AS licensePlateNumber,
         join_p.name AS partner,
+        join_p.partner_code AS partnerCode,
+        join_p.partner_group AS partnerGroup,
         join_f.loan_time AS loanTime,
         join_f.down_payment_money AS downPaymentMoney,
         join_car.car_detail_id,
@@ -472,6 +474,8 @@
                   join_i.car_type                              AS carType,
                   join_h.license_plate_number                  AS licensePlateNumber,
                   join_p.name                                  AS partner,
+                  join_p.partner_code                          AS partnerCode,
+                  join_p.partner_group                         AS partnerGroup,
                   join_f.loan_time                             AS loanTime,
                   join_f.down_payment_money                    AS downPaymentMoney,
                   0                                            AS overdueNum,
@@ -1186,6 +1190,12 @@
               <if test="orderId != null">
                   AND tab.id = #{orderId}
               </if>
+            <if test="partnerCode != null and partnerCode !=''">
+                AND tab.partnerCode = #{partnerCode}
+            </if>
+            <if test="partnerGroup != null and partnerGroup !=''">
+                AND tab.partnerGroup = #{partnerGroup}
+            </if>
               <if test="customer != null and customer != ''">
                   AND tab.customer LIKE CONCAT('%', #{customer} ,'%')
               </if>

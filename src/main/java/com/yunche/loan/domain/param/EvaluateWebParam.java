@@ -14,6 +14,8 @@ public class EvaluateWebParam
 
     private String plate_num;//车牌号
 
+    private String Mileage;//里程
+
 
 
     //需要保存的

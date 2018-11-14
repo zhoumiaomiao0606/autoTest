@@ -1249,6 +1249,16 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
         Preconditions.checkArgument(null != loanCarInfoParam && null != loanCarInfoParam.getId(), "车辆信息ID不能为空");
         Preconditions.checkNotNull(loanCarInfoParam.getOrderId(), "订单号不能为空");
 
+        //更新绑定
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(loanCarInfoParam.getOrderId());
+        if (loanCarInfoParam.getSecond_hand_car_evuluate_id()==null && "".equals(loanCarInfoParam.getSecond_hand_car_evuluate_id()))
+        {
+            loanOrderDO.setSecond_hand_car_evuluate_id(null);
+            loanOrderDOMapper.updateByPrimaryKeySelective(loanOrderDO);
+        }else {
+            loanOrderDO.setSecond_hand_car_evuluate_id(loanCarInfoParam.getSecond_hand_car_evuluate_id());
+            loanOrderDOMapper.updateByPrimaryKeySelective(loanOrderDO);
+        }
         // convert
         LoanCarInfoDO loanCarInfoDO = new LoanCarInfoDO();
         convertLoanCarInfo(loanCarInfoParam, loanCarInfoDO);
@@ -1261,7 +1271,6 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
         vehicleInformationUpdateParam.setLicense_plate_type(loanCarInfoParam.getLicensePlateType());
         vehicleInformationUpdateParam.setNow_driving_license_owner(loanCarInfoParam.getNowDrivingLicenseOwner());
         vehicleInformationUpdateParam.setColor(loanCarInfoParam.getColor());
-        vehicleInformationUpdateParam.setSecond_hand_car_vin_id(loanCarInfoParam.getSecond_hand_car_vin_id());
         vehicleInformationService.update(vehicleInformationUpdateParam);
 
         String s = loanCarInfoParam.getApplyLicensePlateAreaId();
@@ -1300,15 +1309,16 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
 
         Long vid = loanOrderDOMapper.getVehicleInformationIdById(orderId);
         LoanBaseInfoDO loanBaseInfoDO = loanBaseInfoDOMapper.getTotalInfoByOrderId(orderId);
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
         VehicleInformationDO vehicleInformationDO = vehicleInformationDOMapper.selectByPrimaryKey(vid);
+
+        if (loanOrderDO.getSecond_hand_car_evuluate_id()!=null && !"".equals(loanOrderDO.getSecond_hand_car_evuluate_id()))
+        {
+            SecondHandCarEvaluateDO secondHandCarEvaluateDO = secondHandCarEvaluateDOMapper.selectByPrimaryKey(loanOrderDO.getSecond_hand_car_evuluate_id());
+            loanCarInfoVO.setVin(secondHandCarEvaluateDO.getVin());
+            loanCarInfoVO.setSecond_hand_car_evuluate_id(loanOrderDO.getSecond_hand_car_evuluate_id());
+        }
         if (vehicleInformationDO != null) {
-
-            if (vehicleInformationDO.getSecond_hand_car_evuluate_id()!=null && !"".equals(vehicleInformationDO.getSecond_hand_car_evuluate_id()))
-            {
-                SecondHandCarEvaluateDO secondHandCarEvaluateDO = secondHandCarEvaluateDOMapper.selectByPrimaryKey(vehicleInformationDO.getSecond_hand_car_evuluate_id());
-                loanCarInfoVO.setVin(secondHandCarEvaluateDO.getVin());
-            }
-
             loanCarInfoVO.setNowDrivingLicenseOwner(vehicleInformationDO.getNow_driving_license_owner());
             loanCarInfoVO.setLicensePlateType(vehicleInformationDO.getLicense_plate_type() == null ? null : vehicleInformationDO.getLicense_plate_type().toString());
             loanCarInfoVO.setColor(vehicleInformationDO.getColor());

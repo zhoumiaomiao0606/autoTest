@@ -45,6 +45,8 @@ public class LoanOrderDO {
 
     private Long bankCardRecordId;
 
+    private Long second_hand_car_evuluate_id;
+
     /**
      * 暂无意义
      */

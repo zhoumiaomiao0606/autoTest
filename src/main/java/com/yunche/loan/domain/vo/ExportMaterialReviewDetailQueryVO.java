@@ -16,6 +16,12 @@ public class ExportMaterialReviewDetailQueryVO
     //业务团队
     private String partner_name;
 
+    //合伙人编码
+    private String partner_code;
+
+    //合伙人组别
+    private String partner_group;
+
     //客户姓名
     private String customer_name;
 

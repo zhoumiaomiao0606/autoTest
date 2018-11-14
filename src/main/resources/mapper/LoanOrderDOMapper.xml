@@ -21,13 +21,14 @@
         <result column="gmt_create" property="gmtCreate" jdbcType="TIMESTAMP"/>
         <result column="gmt_modify" property="gmtModify" jdbcType="TIMESTAMP"/>
         <result column="feature" property="feature" jdbcType="VARCHAR"/>
+        <result column="second_hand_car_evuluate_id" jdbcType="BIGINT" property="second_hand_car_evuluate_id" />
     </resultMap>
 
     <sql id="Base_Column_List">
         id, process_inst_id, loan_base_info_id, loan_customer_id, loan_car_info_id, loan_financial_plan_id,
         loan_home_visit_id, material_audit_id, cost_details_id, remit_details_id, vehicle_information_id,
         apply_license_plate_deposit_info_id, bank_card_record_id, bank_lend_record_id, status,
-        gmt_create, gmt_modify, feature
+        gmt_create, gmt_modify, feature,second_hand_car_evuluate_id
     </sql>
 
     <!--getCustIdById-->
@@ -98,14 +99,14 @@
         loan_home_visit_id, material_audit_id, cost_details_id,
         remit_details_id, vehicle_information_id, apply_license_plate_deposit_info_id,
         bank_card_record_id, bank_lend_record_id, status,
-        gmt_create, gmt_modify, feature
+        gmt_create, gmt_modify, feature,second_hand_car_evuluate_id
         )
         values (#{id,jdbcType=BIGINT}, #{processInstId,jdbcType=VARCHAR}, #{loanBaseInfoId,jdbcType=BIGINT},
         #{loanCustomerId,jdbcType=BIGINT}, #{loanCarInfoId,jdbcType=BIGINT}, #{loanFinancialPlanId,jdbcType=BIGINT},
         #{loanHomeVisitId,jdbcType=BIGINT}, #{materialAuditId,jdbcType=BIGINT}, #{costDetailsId,jdbcType=BIGINT},
         #{remitDetailsId,jdbcType=BIGINT}, #{vehicleInformationId,jdbcType=BIGINT}, #{applyLicensePlateDepositInfoId,jdbcType=BIGINT},
         #{bankCardRecordId,jdbcType=BIGINT}, #{bankLendRecordId,jdbcType=BIGINT}, #{status,jdbcType=TINYINT},
-        #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModify,jdbcType=TIMESTAMP}, #{feature,jdbcType=VARCHAR}
+        #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModify,jdbcType=TIMESTAMP}, #{feature,jdbcType=VARCHAR}, #{second_hand_car_evuluate_id,jdbcType=BIGINT}
         )
     </insert>
 
@@ -166,6 +167,9 @@
             <if test="feature != null">
                 feature,
             </if>
+            <if test="second_hand_car_evuluate_id != null">
+                second_hand_car_evuluate_id,
+            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="id != null">
@@ -221,6 +225,9 @@
             </if>
             <if test="feature != null">
                 #{feature,jdbcType=VARCHAR},
+            </if>
+            <if test="second_hand_car_evuluate_id != null">
+                #{second_hand_car_evuluate_id,jdbcType=BIGINT},
             </if>
         </trim>
     </insert>
@@ -279,6 +286,9 @@
             <if test="feature != null">
                 feature = #{feature,jdbcType=VARCHAR},
             </if>
+            <if test="second_hand_car_evuluate_id != null">
+                second_hand_car_evuluate_id = #{second_hand_car_evuluate_id,jdbcType=BIGINT},
+            </if>
         </set>
         where id = #{id,jdbcType=BIGINT}
     </update>
@@ -302,6 +312,7 @@
         gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
         gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
         feature = #{feature,jdbcType=VARCHAR}
+        second_hand_car_evuluate_id = #{second_hand_car_evuluate_id,jdbcType=BIGINT}
         where id = #{id,jdbcType=BIGINT}
     </update>
 
