@@ -34,7 +34,11 @@ public class AccommodationApplyParam {
 
     private Byte lendStatus;//出借状态 K_CJZT
 
+    private String bankCard;
 
+    private String tel;
+
+    private List<Long> bridgeIdList = Lists.newArrayList();
     @Data
     public static class IDPair{
         Long orderId;

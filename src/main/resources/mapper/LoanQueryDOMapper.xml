@@ -388,7 +388,7 @@
     </select>
 
 
-    <select id="selectUniversalRoleCustomerOrder" resultType="com.yunche.loan.domain.vo.UniversalCustomerOrderVO">
+    <select id="selectUniversalRoleChangeOrder" resultType="com.yunche.loan.domain.vo.UniversalCustomerOrderVO">
         SELECT
         o.id AS order_id,
         c.id AS customer_id,

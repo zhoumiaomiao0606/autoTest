@@ -6,6 +6,7 @@ import com.yunche.loan.config.util.SessionUtils;
 import com.yunche.loan.domain.entity.EmployeeDO;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.UnavailableSecurityManagerException;
 import org.apache.shiro.subject.Subject;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -54,15 +55,21 @@ public class BizLogHandler {
         // 日志记录
         log(pjp);
 
-        Subject subject = SecurityUtils.getSubject();
-        if (null != subject) {
-            Object principal = subject.getPrincipal();
-            if (null != principal) {
-                EmployeeDO loginUser = new EmployeeDO();
-                BeanUtils.copyProperties(principal, loginUser);
-                LOGIN_USER.set(loginUser);
+        try {
+
+            Subject subject = SecurityUtils.getSubject();
+            if (null != subject) {
+                Object principal = subject.getPrincipal();
+                if (null != principal) {
+                    EmployeeDO loginUser = new EmployeeDO();
+                    BeanUtils.copyProperties(principal, loginUser);
+                    LOGIN_USER.set(loginUser);
+                }
             }
+        } catch (UnavailableSecurityManagerException ex) {
+            // websocket  --> 正常！   nothing
         }
+
 
         // exec
         Object result = pjp.proceed();

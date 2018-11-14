@@ -1129,10 +1129,12 @@
                       AND case when #{taskStatus} = 0 then deputy.material_manage != 0                   else deputy.material_manage   = #{taskStatus} end
                   </when>
                   <when test="taskDefinitionKey == 'usertask_bridge_handle'">
-                      AND case when #{lendStatus} = 1 then deputy_b.bridge_handle in (2,3)
-                                       and if((select count(*) from third_party_fund_business where bridge_procecss_id=deputy_b.id and lend_status=3)=1,false,true)
-                               when #{lendStatus} = 2 then deputy_b.bridge_handle = 1
-                               when #{lendStatus} = 3 then deputy_b.bridge_handle = 2 and third_party.lend_status = 3
+                      AND case when #{lendStatus} = 1 then deputy_b.bridge_handle in (2,3) and deputy_b.order_status = 1
+                                       and if((select count(*) from third_party_fund_business where bridge_procecss_id=deputy_b.id and deputy_b.order_status = 1 and lend_status in(3,4,5,6,7,8,9))=1,false,true)
+                               when #{lendStatus} = 2 then deputy_b.bridge_handle = 1 and deputy_b.order_status = 1
+                               when #{lendStatus} = 3 then deputy_b.bridge_handle = 2 and third_party.lend_status in(3,8) and deputy_b.order_status = 1
+                               when #{lendStatus} = 4 then deputy_b.bridge_handle = 2 and third_party.lend_status in(5,6,9) and deputy_b.order_status = 1
+                               when #{lendStatus} = 5 then deputy_b.bridge_handle = 2 and third_party.lend_status in(4,7) and deputy_b.order_status = 1
                       end
                       <if test="startLendDate !=null">
                           AND third_party.lend_date &gt;= #{startLendDate}
@@ -2631,6 +2633,88 @@
         <if test="endRemitGmtCreate != null">
             AND TO_DAYS(complex_log.usertask_remit_review_create_time) &lt;= TO_DAYS(#{endRemitGmtCreate})
         </if>
+
+    </select>
+
+    <!-- selectRoleChangeHisTaskList -->
+    <select id="selectRoleChangeHisTaskList" parameterType="com.yunche.loan.domain.query.TaskListQuery"
+            resultType="com.yunche.loan.domain.vo.TaskListVO">
+
+        SELECT
+
+        a.id               					AS  id,
+        c.name    				  			AS  customer,
+        c.id_card   						AS  idCard,
+        c.mobile   							AS  mobile,
+        b.bank								AS  bank,
+        b.salesman_id     				    AS  salesmanId,
+        e.name             					AS  salesman,
+        b.partner_id      					AS  partnerId,
+        p.name             					AS  partner,
+        d.name             					AS  departmentName,
+        r_c_his.id             			    AS  roleChangeHisId,
+        DATE_FORMAT(r_c_his.gmt_create,'%Y-%m-%d %H:%i:%S')
+                                            AS  roleChangeHisCreateTime,
+        r_c_his.user_id             		AS  roleChangeHisUserId,
+        r_c_his.user_name             		AS  roleChangeHisUserName
+
+
+        FROM        loan_cust_role_change_his	        AS r_c_his
+
+        LEFT JOIN   loan_order           				AS a     ON	  a.id = r_c_his.order_id
+        LEFT JOIN   loan_process         				AS pc    ON   a.id = pc.order_id
+        LEFT JOIN   loan_customer        				AS c     ON   c.id = a.loan_customer_id
+        LEFT JOIN   loan_base_info      				AS b     ON   b.id = a.loan_base_info_id
+        LEFT JOIN   employee             				AS e     ON   e.id = b.salesman_id
+        LEFT JOIN   department           				AS d     ON	  d.id = e.department_id
+        LEFT JOIN   partner             				AS p     ON   p.id = b.partner_id
+        LEFT JOIN   current_node_manager                AS complex_log on complex_log.order_id = a.id
+
+        <where>
+            <if test="orderId != null and orderId != '' ">
+                AND a.id = #{orderId}
+            </if>
+            <if test="customer != null and customer != '' ">
+                AND	c.name LIKE CONCAT('%', #{customer}, '%')
+            </if>
+            <if test="idCard != null and idCard != '' ">
+                AND c.id_card = #{idCard}
+            </if>
+            <if test="loanBank != null and loanBank != '' ">
+                AND b.bank = #{loanBank}
+            </if>
+            <if test="partnerId != null">
+                AND p.id = #{partnerId}
+            </if>
+            <if test="startPrintGmtCreate != null">
+                AND TO_DAYS(complex_log.usertask_remit_review_create_time) &gt;= TO_DAYS(#{startPrintGmtCreate})
+            </if>
+            <if test="endPrintGmtCreate != null">
+                AND TO_DAYS(complex_log.usertask_remit_review_create_time) &lt;= TO_DAYS(#{endPrintGmtCreate})
+            </if>
+            <if test="dataFlowTypeList != null and dataFlowTypeList.size() > 0">
+                AND  df.type IN
+                <foreach item="item" collection="dataFlowTypeList" open="(" close=")" separator=",">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="bizAreaIdList != null and bizAreaIdList.size() > 0">
+                AND
+                b.partner_id IN
+                <foreach item="item" index="index" collection="bizAreaIdList" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="bankList != null and bankList.size() > 0">
+                AND
+                b.bank IN
+                <foreach item="item" index="index" collection="bankList" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
+
+        ORDER BY r_c_his.gmt_create DESC
 
     </select>
 

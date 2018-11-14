@@ -164,6 +164,13 @@ public class TaskListVO {
 
 
     private String faceNum;
+
+
+    // 角色变更
+    private String roleChangeHisId;
+    private String roleChangeHisCreateTime;
+    private String roleChangeHisUserId;
+    private String roleChangeHisUserName;
 }
 
 
