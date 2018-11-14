@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yunche.loan.mapper.LoanCustRoleChangeHisDetailDOMapper">
+    <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.LoanCustRoleChangeHisDetailDO">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="role_change_his_id" property="roleChangeHisId" jdbcType="BIGINT"/>
+        <result column="type" property="type" jdbcType="TINYINT"/>
+        <result column="customer_id" property="customerId" jdbcType="BIGINT"/>
+        <result column="principal_cust_id" property="principalCustId" jdbcType="BIGINT"/>
+        <result column="cust_type" property="custType" jdbcType="TINYINT"/>
+        <result column="cust_relation" property="custRelation" jdbcType="TINYINT"/>
+        <result column="guarantee_type" property="guaranteeType" jdbcType="TINYINT"/>
+        <result column="guarantee_rela" property="guaranteeRela" jdbcType="VARCHAR"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+    id, role_change_his_id, type, customer_id, principal_cust_id, cust_type, cust_relation,
+    guarantee_type, guarantee_rela
+  </sql>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        select
+        <include refid="Base_Column_List"/>
+        from loan_cust_role_change_his_detail
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from loan_cust_role_change_his_detail
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+    <insert id="insert" parameterType="com.yunche.loan.domain.entity.LoanCustRoleChangeHisDetailDO"
+            useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+    insert into loan_cust_role_change_his_detail (id, role_change_his_id, type,
+    customer_id, principal_cust_id, cust_type,
+    cust_relation, guarantee_type, guarantee_rela
+    )
+    values (#{id,jdbcType=BIGINT}, #{roleChangeHisId,jdbcType=BIGINT}, #{type,jdbcType=TINYINT},
+    #{customerId,jdbcType=BIGINT}, #{principalCustId,jdbcType=BIGINT}, #{custType,jdbcType=TINYINT},
+    #{custRelation,jdbcType=TINYINT}, #{guaranteeType,jdbcType=TINYINT}, #{guaranteeRela,jdbcType=VARCHAR}
+    )
+  </insert>
+    <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.LoanCustRoleChangeHisDetailDO"
+            useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+        insert into loan_cust_role_change_his_detail
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="roleChangeHisId != null">
+                role_change_his_id,
+            </if>
+            <if test="type != null">
+                type,
+            </if>
+            <if test="customerId != null">
+                customer_id,
+            </if>
+            <if test="principalCustId != null">
+                principal_cust_id,
+            </if>
+            <if test="custType != null">
+                cust_type,
+            </if>
+            <if test="custRelation != null">
+                cust_relation,
+            </if>
+            <if test="guaranteeType != null">
+                guarantee_type,
+            </if>
+            <if test="guaranteeRela != null">
+                guarantee_rela,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=BIGINT},
+            </if>
+            <if test="roleChangeHisId != null">
+                #{roleChangeHisId,jdbcType=BIGINT},
+            </if>
+            <if test="type != null">
+                #{type,jdbcType=TINYINT},
+            </if>
+            <if test="customerId != null">
+                #{customerId,jdbcType=BIGINT},
+            </if>
+            <if test="principalCustId != null">
+                #{principalCustId,jdbcType=BIGINT},
+            </if>
+            <if test="custType != null">
+                #{custType,jdbcType=TINYINT},
+            </if>
+            <if test="custRelation != null">
+                #{custRelation,jdbcType=TINYINT},
+            </if>
+            <if test="guaranteeType != null">
+                #{guaranteeType,jdbcType=TINYINT},
+            </if>
+            <if test="guaranteeRela != null">
+                #{guaranteeRela,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective"
+            parameterType="com.yunche.loan.domain.entity.LoanCustRoleChangeHisDetailDO">
+        update loan_cust_role_change_his_detail
+        <set>
+            <if test="roleChangeHisId != null">
+                role_change_his_id = #{roleChangeHisId,jdbcType=BIGINT},
+            </if>
+            <if test="type != null">
+                type = #{type,jdbcType=TINYINT},
+            </if>
+            <if test="customerId != null">
+                customer_id = #{customerId,jdbcType=BIGINT},
+            </if>
+            <if test="principalCustId != null">
+                principal_cust_id = #{principalCustId,jdbcType=BIGINT},
+            </if>
+            <if test="custType != null">
+                cust_type = #{custType,jdbcType=TINYINT},
+            </if>
+            <if test="custRelation != null">
+                cust_relation = #{custRelation,jdbcType=TINYINT},
+            </if>
+            <if test="guaranteeType != null">
+                guarantee_type = #{guaranteeType,jdbcType=TINYINT},
+            </if>
+            <if test="guaranteeRela != null">
+                guarantee_rela = #{guaranteeRela,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.LoanCustRoleChangeHisDetailDO">
+    update loan_cust_role_change_his_detail
+    set role_change_his_id = #{roleChangeHisId,jdbcType=BIGINT},
+    type = #{type,jdbcType=TINYINT},
+    customer_id = #{customerId,jdbcType=BIGINT},
+    principal_cust_id = #{principalCustId,jdbcType=BIGINT},
+    cust_type = #{custType,jdbcType=TINYINT},
+    cust_relation = #{custRelation,jdbcType=TINYINT},
+    guarantee_type = #{guaranteeType,jdbcType=TINYINT},
+    guarantee_rela = #{guaranteeRela,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+    <select id="listByRoleChangeHisId" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        select
+        <include refid="Base_Column_List"/>
+        from loan_cust_role_change_his_detail
+        where role_change_his_id = #{roleChangeHisId,jdbcType=BIGINT}
+    </select>
+</mapper>

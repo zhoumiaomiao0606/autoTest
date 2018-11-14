@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 /**
  * @author liuzhe
@@ -127,22 +126,5 @@ public class LoanCustomerController {
     public ResultBean<Long> enable(@RequestParam String ids,
                                    @RequestParam Byte enableType) {
         return ResultBean.ofSuccess(loanCustomerService.enable(ids, enableType));
-    }
-
-
-    /**
-     * 搜索的数据范围为贷款申请提交前的订单
-     *
-     * @param name 主贷人姓名
-     * @return
-     */
-    @GetMapping(value = "/role/queryRoleCustomerOrder")
-    public ResultBean<List<UniversalCustomerOrderVO>> queryRoleCustomerOrder(@RequestParam String name) {
-        return ResultBean.ofSuccess(loanCustomerService.queryRoleCustomerOrder(name));
-    }
-
-    @GetMapping(value = "/role/detail")
-    public ResultBean<RecombinationVO> detail(@RequestParam Long orderId) {
-        return ResultBean.ofSuccess(loanCustomerService.detail(orderId));
     }
 }

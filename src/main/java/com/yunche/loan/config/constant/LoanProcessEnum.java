@@ -83,6 +83,8 @@ public enum LoanProcessEnum {
     COLLECTION_WORKBENCH("usertask_collection_workbench", "电催处理"),
     OVERDUE_COLLECTION_LIST("usertask_overdue_collection_list", "逾期催缴清单文件"),
     UN_MORTGAGE_FILE("usertask_un_mortgage_file", "未抵押明细文件"),
+
+    ROLE_CHANGE("usertask_role_change", "角色变更"),
     /////////////////////////////////////////// ↑↑↑↑↑--流程外的节点--↑↑↑↑↑ //////////////////////////////////////////////
 
 

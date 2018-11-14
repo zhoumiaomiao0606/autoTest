@@ -235,6 +235,36 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
     }
 
     @Override
+    public ResultBean<List<TaskListVO>> queryRoleChangeHisTaskList(TaskListQuery taskListQuery) {
+
+        // 节点校验
+        if (!LoanProcessEnum.havingCode(taskListQuery.getTaskDefinitionKey())) {
+            throw new BizException("错误的任务节点key");
+        }
+
+        // 节点权限校验
+        permissionService.checkTaskPermission(taskListQuery.getTaskDefinitionKey());
+
+        // loginUser 只能访问 自己及下级的数据
+        EmployeeDO loginUser = SessionUtils.getLoginUser();
+        Set<String> juniorIds = employeeService.getSelfAndCascadeChildIdList(loginUser.getId());
+        Long maxGroupLevel = taskSchedulingDOMapper.selectMaxGroupLevel(loginUser.getId());
+        taskListQuery.setMaxGroupLevel(maxGroupLevel);
+        taskListQuery.setJuniorIds(juniorIds);
+
+        //获取用户可见的区域内合伙人ID列表
+        taskListQuery.setBizAreaIdList(getUserHaveBizAreaPartnerId(loginUser.getId()));
+        //获取用户可见的银行
+        taskListQuery.setBankList(getUserHaveBank(loginUser.getId()));
+
+        PageHelper.startPage(taskListQuery.getPageIndex(), taskListQuery.getPageSize(), true);
+        List<TaskListVO> list = taskSchedulingDOMapper.selectRoleChangeHisTaskList(taskListQuery);
+        PageInfo<TaskListVO> pageInfo = new PageInfo<>(list);
+
+        return ResultBean.ofSuccess(list, new Long(pageInfo.getTotal()).intValue(), pageInfo.getPageNum(), pageInfo.getPageSize());
+    }
+
+    @Override
     public ResultBean<List<TaskListVO>> queryCancelTaskList(TaskListQuery taskListQuery) {
 
         // 节点校验
@@ -258,7 +288,7 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
 
         // 资料流转l
         if (DATA_FLOW.getCode().equals(taskListQuery.getTaskDefinitionKey())) {
-           return queryDataFlowTaskList(taskListQuery);
+            return queryDataFlowTaskList(taskListQuery);
         }
 
         // 节点校验

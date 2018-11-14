@@ -3,6 +3,8 @@ package com.yunche.loan.service.impl;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.yunche.loan.config.constant.BankConst;
+import com.yunche.loan.config.constant.BaseConst;
 import com.yunche.loan.config.constant.IDict;
 import com.yunche.loan.config.constant.LoanProcessEnum;
 import com.yunche.loan.config.exception.BizException;
@@ -3463,6 +3465,20 @@ public class LoanProcessServiceImpl implements LoanProcessService {
                 approvalParam.setCheckPermission(false);
 
                 approval(approvalParam);
+            }
+
+
+            // 3、[银卡开卡]    是否电审前开卡，根据银行做区分，台州工行默认值为是；其他行默认为否
+            LoanCustomerDO loanCustomerDO = getLoanCustomer(loanOrderDO.getLoanCustomerId());
+            //
+            String bank = loanBaseInfoDO.getBank();
+            // 台州工行默认值为是；其他行默认为否
+            if (BankConst.BANK_NAME_ICBC_TaiZhou_LuQiao_Branch.equals(bank)) {
+
+                loanCustomerDO.setOpenCardOrder(String.valueOf(BaseConst.K_YORN_YES));
+            } else {
+
+                loanCustomerDO.setOpenCardOrder(String.valueOf(BaseConst.K_YORN_NO));
             }
         }
     }

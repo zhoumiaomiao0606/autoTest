@@ -71,10 +71,10 @@ public interface LoanQueryDOMapper {
                                                                          @Param("maxGroupLevel") Long maxGroupLevel,
                                                                          @Param("juniorIds") Set<String> juniorIds);
 
-    List<UniversalCustomerOrderVO> selectUniversalRoleCustomerOrder(@Param("employeeId") Long employeeId,
-                                                                    @Param("name") String name,
-                                                                    @Param("maxGroupLevel") Long maxGroupLevel,
-                                                                    @Param("juniorIds") Set<String> juniorIds);
+    List<UniversalCustomerOrderVO> selectUniversalRoleChangeOrder(@Param("employeeId") Long employeeId,
+                                                                  @Param("name") String name,
+                                                                  @Param("maxGroupLevel") Long maxGroupLevel,
+                                                                  @Param("juniorIds") Set<String> juniorIds);
 
 
     /**

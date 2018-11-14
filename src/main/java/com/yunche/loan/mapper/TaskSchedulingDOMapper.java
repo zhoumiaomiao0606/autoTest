@@ -35,13 +35,6 @@ public interface TaskSchedulingDOMapper {
 
     List<SubimitVisitDoorVO> subimitVisitDoorList(SubimitVisitDoorParam param);
 
-    /**
-     * 资料流转 列表查询
-     *
-     * @param query
-     * @return
-     */
-    List<TaskListVO> selectDataFlowTaskList(@Validated TaskListQuery query);
 
     Long selectTelephoneVerifyLevel(Long employeeId);
 
@@ -58,10 +51,26 @@ public interface TaskSchedulingDOMapper {
     Long selectMaterialSupplementLevel(Long employeeId);
 
     /**
+     * 资料流转 列表查询
+     *
+     * @param query
+     * @return
+     */
+    List<TaskListVO> selectDataFlowTaskList(@Validated TaskListQuery query);
+
+    /**
      * 查询 弃单列表
      *
      * @param taskListQuery
      * @return
      */
     List<TaskListVO> selectCancelTaskList(TaskListQuery taskListQuery);
+
+    /**
+     * 查询 订单角色变更历史列表
+     *
+     * @param taskListQuery
+     * @return
+     */
+    List<TaskListVO> selectRoleChangeHisTaskList(TaskListQuery taskListQuery);
 }

@@ -3,6 +3,8 @@ package com.yunche.loan;
 import com.yunche.loan.config.util.FtpUtil;
 import org.junit.Test;
 
+import java.io.File;
+
 public class FtpTest {
     private static final String ServerIP = "122.225.203.102";
     private static final String UserName = "YCFTP";
@@ -13,8 +15,13 @@ public class FtpTest {
     private static final String fileName = "20180627085149135470.docx";
 
 //    private static final String  fileName="20180625173629979759.jpg";
-
     @Test
+    public void hdajhsak(){
+       String s = "云车-3123123";
+       System.out.println(s.substring(3));
+    }
+
+    //@Test
     public void func1() {
 //        FtpImpl ftp = new FtpImpl();
         try {

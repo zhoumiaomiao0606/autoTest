@@ -301,9 +301,12 @@
     </select>
 
     <select id="selectFullNameById" parameterType="java.lang.Long" resultType="java.lang.String">
-        select concat(brand.`name`,model.`name`) AS carName from car_detail detail
-        left join car_model model on model.id = detail.model_id
-        left join car_brand brand on brand.id = model.brand_id
-        where detail.id = #{loanCarId}
+        SELECT
+        concat( brand.`name`, model.`name` ) AS carName
+        FROM
+        loan_car_info car left join car_detail detail on detail.id = car.car_detail_id
+        LEFT JOIN car_model model ON model.id = detail.model_id
+        LEFT JOIN car_brand brand ON brand.id = model.brand_id
+        WHERE car.id = #{loanCarId}
     </select>
 </mapper>
