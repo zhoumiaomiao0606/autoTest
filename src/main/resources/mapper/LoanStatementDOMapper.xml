@@ -1420,7 +1420,7 @@
 
 
         from
-        (select * from loan_process_bridge where bridge_handle=2) process
+        (select * from loan_process_bridge where bridge_handle=2 and order_status = 1) process
         LEFT JOIN loan_order  loan ON process.order_id = loan.id
         LEFT JOIN conf_third_real_bridge_process  real_c ON real_c.bridge_process_id = process.id
         LEFT JOIN conf_third_party_money conf_third ON conf_third.id =real_c.conf_third_party_id

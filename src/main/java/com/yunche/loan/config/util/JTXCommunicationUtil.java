@@ -53,6 +53,7 @@ public class JTXCommunicationUtil {
         bodyMap.put("OrganizationCode", "");
         paramMap.put("MsgBody", bodyMap);
         String paramXml = MapXmlUtil.createXmlByMap(paramMap, "MsgText");
+        logger.info("ASSET_01请求信息:"+paramXml);
         try {
             byte[] param = JTXByteUtil.encrypt(paramXml.getBytes("GBK"), "netwxactive".getBytes("GBK"), "DES");
             String encode_req = new BASE64Encoder().encode(param);
@@ -207,6 +208,7 @@ public class JTXCommunicationUtil {
 
         paramMap.put("MsgBody", bodyMap);
         String paramXml = MapXmlUtil.createXmlByMap(paramMap, "MsgText");
+        logger.info("ASSET_04请求信息:"+paramXml);
         try {
             byte[] param = JTXByteUtil.encrypt(paramXml.getBytes("GBK"), "netwxactive".getBytes("GBK"), "DES");
             String encode_req = new BASE64Encoder().encode(param);
