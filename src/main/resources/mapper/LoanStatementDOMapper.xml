@@ -1414,10 +1414,13 @@
         conf_third.loan_time           AS loanTime,
         conf_third.year_rate           AS interestRate,
         loan.id                        AS loanForm,
-        base.bank                      AS bank
+        base.bank                      AS bank,
+        customer.mobile                AS tel,
+        visit.debit_card               AS bankCard
+
 
         from
-        (select * from loan_process_bridge where bridge_handle=2) process
+        (select * from loan_process_bridge where bridge_handle=2 and order_status = 1) process
         LEFT JOIN loan_order  loan ON process.order_id = loan.id
         LEFT JOIN conf_third_real_bridge_process  real_c ON real_c.bridge_process_id = process.id
         LEFT JOIN conf_third_party_money conf_third ON conf_third.id =real_c.conf_third_party_id
@@ -1427,7 +1430,33 @@
         LEFT JOIN remit_details remit  ON loan.remit_details_id =remit.id
         LEFT JOIN loan_car_info car ON loan.loan_car_info_id=car.id
         LEFT JOIN third_party_fund_business third_party ON third_party.bridge_procecss_id=process.id
-        where 	if((select count(*) from third_party_fund_business where bridge_procecss_id=process.id and lend_status=3)=1,false,true)
+        left join loan_home_visit visit on visit.id = loan.loan_home_visit_id
+        where 	if((select count(*) from third_party_fund_business where bridge_procecss_id=process.id and lend_status in (3,4,5,6,7,8,9))=1,false,true)
+    </select>
+
+
+    <select id="exportErrorOrder" parameterType="com.yunche.loan.domain.param.ExportApplyLoanPushParam"
+            resultType="com.yunche.loan.domain.vo.ExportErrorOrderVO">
+        select
+        customer.name     AS customerName,
+        customer.id_card  AS customerIdCard,
+        useGetCarName(car.car_detail_id)  AS carDetailName,
+        financial.car_price  AS carPrice,
+        financial.down_payment_money   AS downPaymentMoney,
+        remit.remit_amount             AS remitAmount,
+        financial.loan_time           AS loanTime,
+        base.bank                      AS bank
+
+        from
+        (select * from loan_process_bridge where bridge_handle=2 and order_status =1) process
+        LEFT JOIN loan_order  loan ON process.order_id = loan.id
+        LEFT JOIN loan_base_info base ON loan.loan_base_info_id=base.id
+        LEFT JOIN loan_customer customer ON loan.loan_customer_id = customer.id
+        LEFT JOIN loan_financial_plan financial ON financial.id = loan.loan_financial_plan_id
+        LEFT JOIN remit_details remit  ON loan.remit_details_id =remit.id
+        LEFT JOIN loan_car_info car ON loan.loan_car_info_id=car.id
+				LEFT JOIN third_party_fund_business third_party ON third_party.bridge_procecss_id=process.id
+        where third_party.lend_status in (5,6,8,9)
     </select>
 
     <select id="exportJinTouHangRepayInfo" parameterType="com.yunche.loan.domain.param.ExportApplyLoanPushParam"

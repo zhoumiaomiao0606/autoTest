@@ -25,4 +25,6 @@ public class LoanHomeVisitDO {
     private Date gmtModify;
 
     private String feature;
+
+    private String debitCard;
 }
