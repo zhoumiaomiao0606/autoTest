@@ -1414,7 +1414,10 @@
         conf_third.loan_time           AS loanTime,
         conf_third.year_rate           AS interestRate,
         loan.id                        AS loanForm,
-        base.bank                      AS bank
+        base.bank                      AS bank,
+        customer.mobile                AS tel,
+        visit.debit_card               AS bankCard
+
 
         from
         (select * from loan_process_bridge where bridge_handle=2) process
@@ -1427,6 +1430,7 @@
         LEFT JOIN remit_details remit  ON loan.remit_details_id =remit.id
         LEFT JOIN loan_car_info car ON loan.loan_car_info_id=car.id
         LEFT JOIN third_party_fund_business third_party ON third_party.bridge_procecss_id=process.id
+        left join loan_home_visit visit on visit.id = loan.loan_home_visit_id
         where 	if((select count(*) from third_party_fund_business where bridge_procecss_id=process.id and lend_status in (3,4,5,6,7,8,9))=1,false,true)
     </select>
 

@@ -189,6 +189,10 @@ public class JinTouHangAccommodationApplyServiceImpl implements JinTouHangAccomm
         Preconditions.checkArgument(count > 0, "保存失败");
 
         LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(param.getIdPair().getOrderId());
+        LoanHomeVisitDO loanHomeVisitDO = new LoanHomeVisitDO();
+        loanHomeVisitDO.setId(loanOrderDO.getLoanHomeVisitId());
+        loanHomeVisitDO.setDebitCard(param.getBankCard());
+        loanHomeVisitDOMapper.updateByPrimaryKeySelective(loanHomeVisitDO);
         LoanCustomerDO loanCustomerDO = loanCustomerDOMapper.selectByPrimaryKey(loanOrderDO.getLoanCustomerId(),new Byte("0"));
         LoanBaseInfoDO loanBaseInfoDO = loanBaseInfoDOMapper.selectByPrimaryKey(loanOrderDO.getLoanBaseInfoId());
         LoanFinancialPlanDO loanFinancialPlanDO = loanFinancialPlanDOMapper.selectByPrimaryKey(loanOrderDO.getLoanFinancialPlanId());
@@ -428,7 +432,7 @@ public class JinTouHangAccommodationApplyServiceImpl implements JinTouHangAccomm
 
         List<ExportApplyLoanPushVO> voList = loanStatementDOMapper.exportApplyLoanPush(param);
         List<String> header = Lists.newArrayList("流水号", "委托人（购车人、借款人）", "身份证号",
-                "车辆品牌型号", "车价", "首付款", "甲方垫款金额（导出）", "乙方借款金额（导入）", "借款期限", "利率", "借据号", "最终放款银行"
+                "车辆品牌型号", "车价", "首付款", "甲方垫款金额（导出）", "乙方借款金额（导入）", "借款期限", "利率", "借据号", "最终放款银行","手机号码","借记卡号"
         );
         //生成Excel文件
         String ossResultKey = POIUtil.createExcelFile("购车融资业务推送清单", voList, header, ExportApplyLoanPushVO.class, ossConfig);
