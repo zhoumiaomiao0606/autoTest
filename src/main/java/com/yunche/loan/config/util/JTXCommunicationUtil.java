@@ -167,7 +167,7 @@ public class JTXCommunicationUtil {
         bodyMap.put("Principal", principal);
         bodyMap.put("Rate", rate);
         bodyMap.put("Type", "车贷");
-        bodyMap.put("PayType", "EQUAL_CI");
+        bodyMap.put("PayType", "CAPITAL");
         bodyMap.put("InterestDate", interestDate);
 
 
