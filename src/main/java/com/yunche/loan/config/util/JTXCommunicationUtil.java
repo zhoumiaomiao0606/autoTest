@@ -118,8 +118,8 @@ public class JTXCommunicationUtil {
     //ASSET_03
     public String  buildResultInfo(String retCode, String retMsg, String repRef,String ref) {
         Date date = new Date();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        SimpleDateFormat sdf1 = new SimpleDateFormat("HH:mm:ss");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+        SimpleDateFormat sdf1 = new SimpleDateFormat("HHmmss");
         Map<String, Object> paramMap = new HashMap<>();
         Map headerMap = new HashMap();
         headerMap.put("Ver", "1.0");
@@ -137,7 +137,7 @@ public class JTXCommunicationUtil {
         bodyMap.put("RepRef", repRef);
         paramMap.put("MsgBody", bodyMap);
         String paramXml = MapXmlUtil.createXmlByMap(paramMap,"MsgText");
-
+        logger.info("ASSET_03返回信息:"+paramXml);
         try {
             byte[] param = JTXByteUtil.encrypt(paramXml.getBytes("GBK"), "netwxactive".getBytes("GBK"), "DES");
             String encode_req = new BASE64Encoder().encode(param);

@@ -33,7 +33,7 @@ import javax.annotation.Resource;
 import java.io.*;
 import java.util.*;
 
-public class CacheTest extends BaseTest{
+public class CacheTest {
     @Autowired
     private TokenCache tokenCache;
     @Autowired
@@ -114,16 +114,18 @@ public class CacheTest extends BaseTest{
             e.printStackTrace();
         }
     }//
-    //@Test
+    @Test
     public void asdasdas(){
-        String data ="+Ee3tYz3PT34o6F4LkLjjrkafwTx1IdP6C+ZVewEOUF/U77RXsHRn6v1eJ05ZXYp5Krxa4p+wNCC\n" +
-                "9Y30dtOwtQaoMaSRRtr3j8bQVdPFlRvR1Zekan4Pm/8QQZcqsCPHPegmHG7fn6iEphnglA9VH3ZJ\n" +
-                "lIewvFlyZZIaPBjNkXlbUYv1Vikq70+k8ddLE20VGesQadd2FqRQ61rZ1fUwIjiWHtOEJFrSbo7X\n" +
-                "dp4HsJ4wh/vQ8k6RPAeY32bx9wbczgvQdL8KJ/m/jBLLEWs6Q1elO79iYeJtrxw8gMSFsXet334h\n" +
-                "ibs7RePD9i+7c7b8d67xuC2lRBzpjz5mRnXu8Pm7twoMAhGKx1t1XebdItGAjJnjIhwZtbRW+52E\n" +
-                "kpymnGoL8VBITWD+ZVJ5NRM3nG/i5p/yUDyspbTXtEmuAaFCTWE6pg1KJ3GKIdou+sDO";
+        String data ="+Ee3tYz3PT34o6F4LkLjjrkafwTx1IdP6C+ZVewEOUEmmWaLDBmX1xFwpl9f/hfqNunPvLA7ZCok\n" +
+                "IYF1gInH8Ng+ha9gtgRqui91e9hFOYg1g+q/ZbDXEn6cSIWbA1j0vB4SqnnbUc5SHmDt1VhMrWqZ\n" +
+                "ohjy1NNQrNYhJK79geL3Q2YLFByJ3tDypYmjcQ0FTdrI2HAeGEgvT8RtuDa3hJ3DSxip81CZK6CV\n" +
+                "Kcg9seLb1pePDclW6A19AUEcZksslnTcNGuRnyOBhlPTTnfq/DaI+iYBfzp6AhyV2DjF2cM5Yv5s\n" +
+                "Dw/iK9WgOIn3jE8qxPSyHkM7K8rlM+AMQhFS/xJAipY5o62Qteb5q0L4Oywo6St/8uQvtplmjYfi\n" +
+                "AekkIH20WulII02PxtBV08WVG9HVl6Rqfg+b1+ZmvDyqAqpWdUpGFx72dClDRnE19vytIdoNncA8\n" +
+                "6kxTFAwgXfRn+5iKEoQGYjmw6uxN510xaQQhpYQHWsp2oGah4tkDKfZvq/V4nTlldin9Od/hoz80\n" +
+                "EQ==";
         try {
-            System.out.println(JTXByteUtil.decrypt(data,"netwxactive","GBK","des"));
+            System.out.println(JTXByteUtil.decrypt(data,"netwxactive","GBK","DES"));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -141,7 +143,7 @@ public class CacheTest extends BaseTest{
             e.printStackTrace();
         }
     }
-    @Test
+    //@Test
     public void knkjashkjadkd(){
         System.out.println(jinTouHangAccommodationApplyService.jtxResult("+Ee3tYz3PT34o6F4LkLjjrkafwTx1IdP6C+ZVewEOUF/U77RXsHRn6v1eJ05ZXYp5Krxa4p+wNCC\n" +
                 "9Y30dtOwtQaoMaSRRtr3j8bQVdPFlRvR1Zekan4Pm/8QQZcqsCPHPegmHG7fn6iEphnglA9VH3ZJ\n" +
