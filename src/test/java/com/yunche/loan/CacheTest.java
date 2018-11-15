@@ -28,6 +28,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.dom4j.DocumentException;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import sun.misc.BASE64Encoder;
 
 import javax.annotation.Resource;
 import java.io.*;
@@ -95,50 +96,78 @@ public class CacheTest {
         map.put("B",map2);
        System.out.println( MapXmlUtil.createXmlByMap(map,"MsgText"));
     }
-   // @Test
+   //@Test
     public void asdaksdjals(){
-        String xml ="<?xml version=\"1.0\" encoding=\"GB2312\"?>\n" +
+        String xml ="<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
+                "\n" +
                 "<MsgText>\n" +
-                " <A>\n" +
-                "  <A1>1</A1>\n" +
-                "  <A2>2</A2>\n" +
-                " </A>\n" +
-                " <B>\n" +
-                "  <B2>2</B2>\n" +
-                "  <B1>1</B1>\n" +
-                " </B>\n" +
-                "</MsgText>";
+                "  <MsgHdr>\n" +
+                "    <Ver>1.0</Ver>\n" +
+                "    <SysType>MGR</SysType>\n" +
+                "    <InstrCd>ASSET_03</InstrCd>\n" +
+                "    <TradSrc>YUNCHE</TradSrc>\n" +
+                "    <SvInst>ASSET_MANAGE_SYS</SvInst>\n" +
+                "    <Date>2018110</Date>\n" +
+                "    <Time>151121</Time>\n" +
+                "    <Ref>MGR15824823644011</Ref>\n" +
+                "  </MsgHdr>\n" +
+                "  <MsgBody>\n" +
+                "    <Type>AUDIT</Type>\n" +
+                "    <Code>0000</Code>\n" +
+                "    <Info/>\n" +
+                "    <FileName></FileName>\n" +
+                "    <FilePath>/root/yunche/resultFile/20181105/</FilePath>\n" +
+                "  </MsgBody>\n" +
+                "</MsgText>\n";
         try {
            System.out.println( MapXmlUtil.Xml2Map(xml).toString());
         } catch (Exception e) {
             e.printStackTrace();
         }
     }//
-    @Test
+    //@Test
     public void asdasdas(){
         String data ="+Ee3tYz3PT34o6F4LkLjjrkafwTx1IdP6C+ZVewEOUEmmWaLDBmX1xFwpl9f/hfqNunPvLA7ZCok\n" +
-                "IYF1gInH8Ng+ha9gtgRqui91e9hFOYg1g+q/ZbDXEn6cSIWbA1j0vB4SqnnbUc5SHmDt1VhMrWqZ\n" +
-                "ohjy1NNQrNYhJK79geL3Q2YLFByJ3tDypYmjcQ0FTdrI2HAeGEgvT8RtuDa3hJ3DSxip81CZK6CV\n" +
-                "Kcg9seLb1pePDclW6A19AUEcZksslnTcNGuRnyOBhlPTTnfq/DaI+iYBfzp6AhyV2DjF2cM5Yv5s\n" +
-                "Dw/iK9WgOIn3jE8qxPSyHkM7K8rlM+AMQhFS/xJAipY5o62Qteb5q0L4Oywo6St/8uQvtplmjYfi\n" +
-                "AekkIH20WulII02PxtBV08WVG9HVl6Rqfg+b1+ZmvDyqAqpWdUpGFx72dClDRnE19vytIdoNncA8\n" +
-                "6kxTFAwgXfRn+5iKEoQGYjmw6uxN510xaQQhpYQHWsp2oGah4tkDKfZvq/V4nTlldin9Od/hoz80\n" +
-                "EQ==";
+                "IYF1gInH8P7ZwWeCwJH0maj0+Xs/y/UX53pbsYgHGp711VDGNFcndWkZkyG7INUNAnh/0zcrkLsM\n" +
+                "Iq/DsbMhR1HjDxyhNNcq308mRNxuSaZb2qHa8KWkkO5/sxLripBthuW8Q8T3kBf5NaCnaPZHtTCE\n" +
+                "dCtdkKrfQ3ojpeXT7YL1jfR207C1GP/UeL4npgwLX0r4bNkeMSusjJUgI4sRAQvFykr3931J4BMx\n" +
+                "gY4EXDaI+iYBfzp6AhyV2DjF2cM5Yv5sDw/iK9WgOIn3jE8qxPSyHkM7K8rlM+AMQhFS/xJAipY5\n" +
+                "o62Qteb5q0L4OyylM5BQZs7vJPhGUf2Y/cV8IH20WulII02PxtBV08WVG9HVl6Rqfg+b1+ZmvDyq\n" +
+                "AqpWdUpGFx72dClDRnE19vytIdoNncA86kxTFAwgXfRn+5iKEoQGYjmw6uxN510xaQQhpYQHWsp2\n" +
+                "oGah4tkDKfZvq/V4nTlldin9Od/hoz80EQ==";
         try {
             System.out.println(JTXByteUtil.decrypt(data,"netwxactive","GBK","DES"));
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
-    //@Test
+    @Test
     public void bvjkashkj(){
         try {
-            byte[] param = JTXByteUtil.encrypt("123".getBytes("GBK"), "netwxactive".getBytes("GBK"),"DES");
-            String result = JTXHttpUtil.sendPost("http://121.41.20.151:7013/assetApi/service","");
-            String xml = JTXByteUtil.decrypt(result,"netwxactive","GBK","des");
-            Map map = MapXmlUtil.Xml2Map(xml);
-            Map map1 = (Map)map.get("MsgBody");
-            System.out.println(map1.get("RetCode"));
+            String s="<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
+                    "\n" +
+                    "<MsgText>\n" +
+                    "  <MsgHdr>\n" +
+                    "    <Ver>1.0</Ver>\n" +
+                    "    <SysType>MGR</SysType>\n" +
+                    "    <InstrCd>ASSET_03</InstrCd>\n" +
+                    "    <TradSrc>YUNCHE</TradSrc>\n" +
+                    "    <SvInst>ASSET_MANAGE_SYS</SvInst>\n" +
+                    "    <Date>2018110</Date>\n" +
+                    "    <Time>151121</Time>\n" +
+                    "    <Ref>MGR15824823644011</Ref>\n" +
+                    "  </MsgHdr>\n" +
+                    "  <MsgBody>\n" +
+                    "    <Type>AUDIT</Type>\n" +
+                    "    <Code>0000</Code>\n" +
+                    "    <Info/>\n" +
+                    "    <FileName>wqeqw</FileName>\n" +
+                    "    <FilePath>/root/yunche/resultFile/20181105/</FilePath>\n" +
+                    "  </MsgBody>\n" +
+                    "</MsgText>\n";
+            byte[] param = JTXByteUtil.encrypt(s.getBytes("GBK"), "netwxactive".getBytes("GBK"),"DES");
+            String encode_req = new BASE64Encoder().encode(param);
+            System.out.println(encode_req);
         } catch (Exception e) {
             e.printStackTrace();
         }

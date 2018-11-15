@@ -1,6 +1,7 @@
 package com.yunche.loan.mapper;
 
 import com.yunche.loan.domain.entity.JtxCommunicationDO;
+import org.apache.ibatis.annotations.Param;
 
 public interface JtxCommunicationDOMapper {
 
@@ -15,4 +16,6 @@ public interface JtxCommunicationDOMapper {
     int updateByPrimaryKeySelective(JtxCommunicationDO record);
 
     int updateByPrimaryKey(JtxCommunicationDO record);
+
+    JtxCommunicationDO selectByAssetId(@Param("assetId")String assetId);
 }

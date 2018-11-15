@@ -219,6 +219,11 @@ public class JTXCommunicationUtil {
             Map map1 = (Map) map.get("MsgBody");
             if ("0000".equals((String) map1.get("RetCode"))) {
                 falg = true;
+                JtxCommunicationDO jtxCommunicationDO1 = new JtxCommunicationDO();
+                jtxCommunicationDO1.setJtxId(ref);
+                jtxCommunicationDO1.setUpdateDate(new Date());
+                jtxCommunicationDO1.setAssetNumber((String)map1.get("AssetSn"));
+                jtxCommunicationDOMapper.updateByPrimaryKeySelective(jtxCommunicationDO1);
             }else{
                 JtxCommunicationDO jtxCommunicationDO1 = new JtxCommunicationDO();
                 jtxCommunicationDO1.setJtxId(ref);
