@@ -103,6 +103,12 @@ public class TaskListQuery {
 
     private String partnerId;//合伙人团队
 
+    //合伙人编码
+    private String partnerCode;
+
+    //合伙人组别
+    private String partnerGroup;
+
     private String loanTime;//贷款期限
 
     private String startOrderGmtCreate;//创建时间

@@ -9,5 +9,5 @@ import com.yunche.loan.domain.param.LoanTelephoneVerifyParam;
  * @date 2018/4/12
  */
 public interface LoanTelephoneVerifyService {
-    ResultBean<Void> save(LoanTelephoneVerifyDO loanTelephoneVerifyDO);
+    ResultBean<Void> save(LoanTelephoneVerifyParam loanTelephoneVerifyParam);
 }

@@ -44,4 +44,6 @@ public class LoanHomeVisitParam {
     private Date gmtCreate;
 
     private Date gmtModify;
+
+    private String debitCard;
 }

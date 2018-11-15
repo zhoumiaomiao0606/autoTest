@@ -25,6 +25,8 @@ public class TaskListVO {
     private String salesman;
     private String partnerId;
     private String partner;
+    private String partnerCode;
+    private String partnerGroup;
     private String customerId;
     private String customer;
     private String orderGmtCreate;

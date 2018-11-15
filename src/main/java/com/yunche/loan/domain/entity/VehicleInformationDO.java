@@ -65,4 +65,5 @@ public class VehicleInformationDO {
 
     //车辆类型
     private String car_category;
+
 }

@@ -600,6 +600,8 @@
             customer.ctelzone                                                                       AS customer_ctelzone,
             partner.id                                                                              AS partner_id,
             partner.name                                                                            AS partner_name,
+            partner.partner_code                                                                            AS partner_code,
+            partner.partner_group                                                                            AS partner_group,
             useGetAreaFullName(partner.area_id)                                                     AS partner_biz_area,
             partner.risk_bear_rate                                                                  AS partner_risk_bear_rate,
             partner.pay_month                                                                       AS partner_pay_month,
@@ -2604,6 +2606,8 @@
                 e.name                                     AS    salesman_name,
                 p.id                                       AS    partner_id,
                 p.name                                     AS    partner_name,
+                p.partner_code                                     AS    partner_code,
+                p.partner_group                                     AS    partner_group,
                 d.id                                       AS    department_id,
                 d.name                                     AS    department_name,
 

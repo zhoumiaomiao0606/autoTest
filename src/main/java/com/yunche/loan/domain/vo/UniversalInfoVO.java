@@ -47,6 +47,8 @@ public class UniversalInfoVO {
     private String customer_open_card_status;
     private String partner_id;
     private String partner_name;
+    private String partner_code;
+    private String partner_group;
     private String partner_biz_area;
     private String partner_risk_bear_rate;
     private String partner_pay_month;
@@ -122,4 +124,7 @@ public class UniversalInfoVO {
     private String remit_application_date;
     private String bridge_lend_date;
     private String bank_lend_date;
+
+
+    private BigDecimal riskBearRate;
 }

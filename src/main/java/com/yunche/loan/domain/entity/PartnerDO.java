@@ -54,4 +54,8 @@ public class PartnerDO {
     private String gpsCompany;
 
     private String gpsAccount;
+
+    private String partnerCode;
+
+    private Byte partnerGroup;
 }
