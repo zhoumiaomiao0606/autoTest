@@ -263,8 +263,8 @@ public class JTXCommunicationUtil {
 
     public void headBuild(Map<String, Object> map, String instrCd,String ref) {
         Date date = new Date();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        SimpleDateFormat sdf1 = new SimpleDateFormat("HH:mm:ss");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+        SimpleDateFormat sdf1 = new SimpleDateFormat("HHmmss");
         Map headerMap = new HashMap();
         headerMap.put("Ver", "1.0");
         headerMap.put("SysType", "MGR");
