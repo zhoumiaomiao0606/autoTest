@@ -23,4 +23,6 @@ public class JtxCommunicationDO {
 
     private String errorInfo;
 
+    private String assetNumber;
+
 }

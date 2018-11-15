@@ -1,133 +1,143 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.yunche.loan.mapper.JtxCommunicationDOMapper" >
-  <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.JtxCommunicationDO" >
-    <id column="jtx_id" property="jtxId" jdbcType="VARCHAR" />
-    <result column="bridge_procecss_id" property="bridgeProcecssId" jdbcType="BIGINT" />
-    <result column="order_id" property="orderId" jdbcType="BIGINT" />
-    <result column="name" property="name" jdbcType="VARCHAR" />
-    <result column="idcard" property="idcard" jdbcType="VARCHAR" />
-    <result column="create_date" property="createDate" jdbcType="TIMESTAMP" />
-    <result column="update_date" property="updateDate" jdbcType="TIMESTAMP" />
-    <result column="order_status" property="orderStatus" jdbcType="INTEGER" />
-    <result column="error_info" property="errorInfo" jdbcType="VARCHAR" />
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunche.loan.mapper.JtxCommunicationDOMapper">
+  <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.JtxCommunicationDO">
+    <id column="jtx_id" jdbcType="VARCHAR" property="jtxId" />
+    <result column="bridge_procecss_id" jdbcType="BIGINT" property="bridgeProcecssId" />
+    <result column="order_id" jdbcType="BIGINT" property="orderId" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="idcard" jdbcType="VARCHAR" property="idcard" />
+    <result column="create_date" jdbcType="TIMESTAMP" property="createDate" />
+    <result column="update_date" jdbcType="TIMESTAMP" property="updateDate" />
+    <result column="order_status" jdbcType="INTEGER" property="orderStatus" />
+    <result column="error_info" jdbcType="VARCHAR" property="errorInfo" />
+    <result column="asset_number" jdbcType="VARCHAR" property="assetNumber" />
   </resultMap>
-  <sql id="Base_Column_List" >
-    jtx_id, bridge_procecss_id, order_id, name, idcard, create_date, update_date, order_status, 
-    error_info
+  <sql id="Base_Column_List">
+    jtx_id, bridge_procecss_id, order_id, name, idcard, create_date, update_date, order_status,
+    error_info, asset_number
   </sql>
-  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
-    select 
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select
     <include refid="Base_Column_List" />
     from jtx_communication
     where jtx_id = #{jtxId,jdbcType=VARCHAR}
   </select>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
     delete from jtx_communication
     where jtx_id = #{jtxId,jdbcType=VARCHAR}
   </delete>
-  <insert id="insert" parameterType="com.yunche.loan.domain.entity.JtxCommunicationDO" >
-    insert into jtx_communication (jtx_id, bridge_procecss_id, order_id, 
-      name, idcard, create_date, 
-      update_date, order_status, error_info
-      )
-    values (#{jtxId,jdbcType=VARCHAR}, #{bridgeProcecssId,jdbcType=BIGINT}, #{orderId,jdbcType=BIGINT}, 
-      #{name,jdbcType=VARCHAR}, #{idcard,jdbcType=VARCHAR}, #{createDate,jdbcType=TIMESTAMP}, 
-      #{updateDate,jdbcType=TIMESTAMP}, #{orderStatus,jdbcType=INTEGER}, #{errorInfo,jdbcType=VARCHAR}
-      )
+  <insert id="insert" parameterType="com.yunche.loan.domain.entity.JtxCommunicationDO">
+    insert into jtx_communication (jtx_id, bridge_procecss_id, order_id,
+      name, idcard, create_date,
+      update_date, order_status, error_info,
+      asset_number)
+    values (#{jtxId,jdbcType=VARCHAR}, #{bridgeProcecssId,jdbcType=BIGINT}, #{orderId,jdbcType=BIGINT},
+      #{name,jdbcType=VARCHAR}, #{idcard,jdbcType=VARCHAR}, #{createDate,jdbcType=TIMESTAMP},
+      #{updateDate,jdbcType=TIMESTAMP}, #{orderStatus,jdbcType=INTEGER}, #{errorInfo,jdbcType=VARCHAR},
+      #{assetNumber,jdbcType=VARCHAR})
   </insert>
-  <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.JtxCommunicationDO" >
+  <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.JtxCommunicationDO">
     insert into jtx_communication
-    <trim prefix="(" suffix=")" suffixOverrides="," >
-      <if test="jtxId != null" >
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="jtxId != null">
         jtx_id,
       </if>
-      <if test="bridgeProcecssId != null" >
+      <if test="bridgeProcecssId != null">
         bridge_procecss_id,
       </if>
-      <if test="orderId != null" >
+      <if test="orderId != null">
         order_id,
       </if>
-      <if test="name != null" >
+      <if test="name != null">
         name,
       </if>
-      <if test="idcard != null" >
+      <if test="idcard != null">
         idcard,
       </if>
-      <if test="createDate != null" >
+      <if test="createDate != null">
         create_date,
       </if>
-      <if test="updateDate != null" >
+      <if test="updateDate != null">
         update_date,
       </if>
-      <if test="orderStatus != null" >
+      <if test="orderStatus != null">
         order_status,
       </if>
-      <if test="errorInfo != null" >
+      <if test="errorInfo != null">
         error_info,
       </if>
+      <if test="assetNumber != null">
+        asset_number,
+      </if>
     </trim>
-    <trim prefix="values (" suffix=")" suffixOverrides="," >
-      <if test="jtxId != null" >
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="jtxId != null">
         #{jtxId,jdbcType=VARCHAR},
       </if>
-      <if test="bridgeProcecssId != null" >
+      <if test="bridgeProcecssId != null">
         #{bridgeProcecssId,jdbcType=BIGINT},
       </if>
-      <if test="orderId != null" >
+      <if test="orderId != null">
         #{orderId,jdbcType=BIGINT},
       </if>
-      <if test="name != null" >
+      <if test="name != null">
         #{name,jdbcType=VARCHAR},
       </if>
-      <if test="idcard != null" >
+      <if test="idcard != null">
         #{idcard,jdbcType=VARCHAR},
       </if>
-      <if test="createDate != null" >
+      <if test="createDate != null">
         #{createDate,jdbcType=TIMESTAMP},
       </if>
-      <if test="updateDate != null" >
+      <if test="updateDate != null">
         #{updateDate,jdbcType=TIMESTAMP},
       </if>
-      <if test="orderStatus != null" >
+      <if test="orderStatus != null">
         #{orderStatus,jdbcType=INTEGER},
       </if>
-      <if test="errorInfo != null" >
+      <if test="errorInfo != null">
         #{errorInfo,jdbcType=VARCHAR},
+      </if>
+      <if test="assetNumber != null">
+        #{assetNumber,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.JtxCommunicationDO" >
+  <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.JtxCommunicationDO">
     update jtx_communication
-    <set >
-      <if test="bridgeProcecssId != null" >
+    <set>
+      <if test="bridgeProcecssId != null">
         bridge_procecss_id = #{bridgeProcecssId,jdbcType=BIGINT},
       </if>
-      <if test="orderId != null" >
+      <if test="orderId != null">
         order_id = #{orderId,jdbcType=BIGINT},
       </if>
-      <if test="name != null" >
+      <if test="name != null">
         name = #{name,jdbcType=VARCHAR},
       </if>
-      <if test="idcard != null" >
+      <if test="idcard != null">
         idcard = #{idcard,jdbcType=VARCHAR},
       </if>
-      <if test="createDate != null" >
+      <if test="createDate != null">
         create_date = #{createDate,jdbcType=TIMESTAMP},
       </if>
-      <if test="updateDate != null" >
+      <if test="updateDate != null">
         update_date = #{updateDate,jdbcType=TIMESTAMP},
       </if>
-      <if test="orderStatus != null" >
+      <if test="orderStatus != null">
         order_status = #{orderStatus,jdbcType=INTEGER},
       </if>
-      <if test="errorInfo != null" >
+      <if test="errorInfo != null">
         error_info = #{errorInfo,jdbcType=VARCHAR},
+      </if>
+      <if test="assetNumber != null">
+        asset_number = #{assetNumber,jdbcType=VARCHAR},
       </if>
     </set>
     where jtx_id = #{jtxId,jdbcType=VARCHAR}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.JtxCommunicationDO" >
+  <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.JtxCommunicationDO">
     update jtx_communication
     set bridge_procecss_id = #{bridgeProcecssId,jdbcType=BIGINT},
       order_id = #{orderId,jdbcType=BIGINT},
@@ -136,7 +146,163 @@
       create_date = #{createDate,jdbcType=TIMESTAMP},
       update_date = #{updateDate,jdbcType=TIMESTAMP},
       order_status = #{orderStatus,jdbcType=INTEGER},
-      error_info = #{errorInfo,jdbcType=VARCHAR}
+      error_info = #{errorInfo,jdbcType=VARCHAR},
+      asset_number = #{assetNumber,jdbcType=VARCHAR}
     where jtx_id = #{jtxId,jdbcType=VARCHAR}
   </update>
+  <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.JtxCommunicationDO">
+    <id column="jtx_id" jdbcType="VARCHAR" property="jtx_id" />
+    <result column="bridge_procecss_id" jdbcType="BIGINT" property="bridge_procecss_id" />
+    <result column="order_id" jdbcType="BIGINT" property="order_id" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="idcard" jdbcType="VARCHAR" property="idcard" />
+    <result column="create_date" jdbcType="TIMESTAMP" property="create_date" />
+    <result column="update_date" jdbcType="TIMESTAMP" property="update_date" />
+    <result column="order_status" jdbcType="INTEGER" property="order_status" />
+    <result column="error_info" jdbcType="VARCHAR" property="error_info" />
+    <result column="asset_number" jdbcType="VARCHAR" property="asset_number" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    jtx_id, bridge_procecss_id, order_id, name, idcard, create_date, update_date, order_status,
+    error_info, asset_number
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from jtx_communication
+    where jtx_id = #{jtx_id,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from jtx_communication
+    where jtx_id = #{jtx_id,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.yunche.loan.domain.entity.JtxCommunicationDO">
+    insert into jtx_communication (jtx_id, bridge_procecss_id, order_id,
+      name, idcard, create_date,
+      update_date, order_status, error_info,
+      asset_number)
+    values (#{jtx_id,jdbcType=VARCHAR}, #{bridge_procecss_id,jdbcType=BIGINT}, #{order_id,jdbcType=BIGINT},
+      #{name,jdbcType=VARCHAR}, #{idcard,jdbcType=VARCHAR}, #{create_date,jdbcType=TIMESTAMP},
+      #{update_date,jdbcType=TIMESTAMP}, #{order_status,jdbcType=INTEGER}, #{error_info,jdbcType=VARCHAR},
+      #{asset_number,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.JtxCommunicationDO">
+    insert into jtx_communication
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="jtx_id != null">
+        jtx_id,
+      </if>
+      <if test="bridge_procecss_id != null">
+        bridge_procecss_id,
+      </if>
+      <if test="order_id != null">
+        order_id,
+      </if>
+      <if test="name != null">
+        name,
+      </if>
+      <if test="idcard != null">
+        idcard,
+      </if>
+      <if test="create_date != null">
+        create_date,
+      </if>
+      <if test="update_date != null">
+        update_date,
+      </if>
+      <if test="order_status != null">
+        order_status,
+      </if>
+      <if test="error_info != null">
+        error_info,
+      </if>
+      <if test="asset_number != null">
+        asset_number,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="jtx_id != null">
+        #{jtx_id,jdbcType=VARCHAR},
+      </if>
+      <if test="bridge_procecss_id != null">
+        #{bridge_procecss_id,jdbcType=BIGINT},
+      </if>
+      <if test="order_id != null">
+        #{order_id,jdbcType=BIGINT},
+      </if>
+      <if test="name != null">
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="idcard != null">
+        #{idcard,jdbcType=VARCHAR},
+      </if>
+      <if test="create_date != null">
+        #{create_date,jdbcType=TIMESTAMP},
+      </if>
+      <if test="update_date != null">
+        #{update_date,jdbcType=TIMESTAMP},
+      </if>
+      <if test="order_status != null">
+        #{order_status,jdbcType=INTEGER},
+      </if>
+      <if test="error_info != null">
+        #{error_info,jdbcType=VARCHAR},
+      </if>
+      <if test="asset_number != null">
+        #{asset_number,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.JtxCommunicationDO">
+    update jtx_communication
+    <set>
+      <if test="bridge_procecss_id != null">
+        bridge_procecss_id = #{bridge_procecss_id,jdbcType=BIGINT},
+      </if>
+      <if test="order_id != null">
+        order_id = #{order_id,jdbcType=BIGINT},
+      </if>
+      <if test="name != null">
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="idcard != null">
+        idcard = #{idcard,jdbcType=VARCHAR},
+      </if>
+      <if test="create_date != null">
+        create_date = #{create_date,jdbcType=TIMESTAMP},
+      </if>
+      <if test="update_date != null">
+        update_date = #{update_date,jdbcType=TIMESTAMP},
+      </if>
+      <if test="order_status != null">
+        order_status = #{order_status,jdbcType=INTEGER},
+      </if>
+      <if test="error_info != null">
+        error_info = #{error_info,jdbcType=VARCHAR},
+      </if>
+      <if test="asset_number != null">
+        asset_number = #{asset_number,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where jtx_id = #{jtx_id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.JtxCommunicationDO">
+    update jtx_communication
+    set bridge_procecss_id = #{bridge_procecss_id,jdbcType=BIGINT},
+      order_id = #{order_id,jdbcType=BIGINT},
+      name = #{name,jdbcType=VARCHAR},
+      idcard = #{idcard,jdbcType=VARCHAR},
+      create_date = #{create_date,jdbcType=TIMESTAMP},
+      update_date = #{update_date,jdbcType=TIMESTAMP},
+      order_status = #{order_status,jdbcType=INTEGER},
+      error_info = #{error_info,jdbcType=VARCHAR},
+      asset_number = #{asset_number,jdbcType=VARCHAR}
+    where jtx_id = #{jtx_id,jdbcType=VARCHAR}
+  </update>
+  <select id="selectByAssetId" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from jtx_communication
+    where asset_number = #{assetId,jdbcType=VARCHAR}
+  </select>
 </mapper>
