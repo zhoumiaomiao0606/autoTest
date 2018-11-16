@@ -6,6 +6,7 @@ import org.springframework.util.CollectionUtils;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import java.math.BigDecimal;
 import java.util.List;
 
 @Data
@@ -28,6 +29,13 @@ public class LoanRefundApplyParam {
     private Long refund_apply_account_id;
 
     private List<String> path;
+
+
+    private BigDecimal advances_interest;//垫款利息收入
+
+    private BigDecimal other_interest;//其他利息收入
+
+    private BigDecimal penalty_interest;//罚息收入
 
     public String getPath() {
         if (CollectionUtils.isEmpty(path)) {

@@ -423,4 +423,28 @@ public class IDict {
         public static final Byte K_SUFFIX_JPG_NO = 1;
         public static final Byte K_SUFFIX_JPG_YES = 2;
     }
+
+
+    /**
+     * 财务系统凭证type
+     */
+    public static abstract interface K_VOUCHER{
+
+        /**
+         * 代客户垫款
+         */
+        public static final Byte K_VOUCHER_1 = 1;
+        /**
+         * 收到银行款项
+         */
+        public static final Byte K_VOUCHER_2 = 2;
+        /**
+         * 客户退款
+         */
+        public static final Byte K_VOUCHER_3 = 3;
+        /**
+         * 公司代客户偿款
+         */
+        public static final Byte K_VOUCHER_8 = 8;
+    }
 }

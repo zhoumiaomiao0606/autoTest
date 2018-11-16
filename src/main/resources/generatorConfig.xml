@@ -57,13 +57,6 @@
 
 
 
-        <table tableName="conf_loan_apply" domainObjectName="ConfLoanApplyDO"
-               enableCountByExample="false" enableUpdateByExample="false"
-               enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
-            <!--采用下划线字段-->
-            <property name="useActualColumnNames" value="true"/>
-        </table>
-
 
 
         <!--
@@ -384,9 +377,10 @@
 -->
 
 
-        <table tableName="remit_details" domainObjectName="RemitDetailsDO"
+        <table tableName="voucher_err_record" domainObjectName="VoucherErrRecordDO"
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+               <!--<property name="useActualColumnNames" value="true"/>-->
         </table>
 
         <!-- 忽略列，不生成bean 字段

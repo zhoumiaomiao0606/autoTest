@@ -12,6 +12,7 @@
         <result column="advances_number" property="advancesNumber" jdbcType="INTEGER"/>
         <result column="risk_taking_ratio" property="riskTakingRatio" jdbcType="DECIMAL"/>
         <result column="compensation_amount" property="compensationAmount" jdbcType="DECIMAL"/>
+        <result column="compensation_interest" property="compensationInterest" jdbcType="DECIMAL"/>
         <result column="compensation_cause" property="compensationCause" jdbcType="VARCHAR"/>
         <result column="apply_compensation_date" property="applyCompensationDate" jdbcType="TIMESTAMP"/>
         <result column="refund_apply_account_id" property="refundApplyAccountId" jdbcType="BIGINT"/>
@@ -32,7 +33,7 @@
     </resultMap>
     <sql id="Base_Column_List">
     id, order_id, curr_arrears, loan_banlance, advances_banlance, overdue_days, overdue_number,
-    advances_number, risk_taking_ratio, compensation_amount, compensation_cause, apply_compensation_date,
+    advances_number, risk_taking_ratio, compensation_amount, compensation_interest,compensation_cause, apply_compensation_date,
     refund_apply_account_id, receive_bank, receive_car_number, receive_account, review_date,
     review_operator, partner_compensation_operator, partner_operation_date, partner_compensation_amount,
     partner_dc_review_operator, partner_dc_review_date, status, remark, gmt_create, gmt_modify
@@ -52,7 +53,7 @@
     insert into loan_apply_compensation (id, order_id, curr_arrears,
     loan_banlance, advances_banlance, overdue_days,
     overdue_number, advances_number, risk_taking_ratio,
-    compensation_amount, compensation_cause,
+    compensation_amount, compensation_interest,compensation_cause,
     apply_compensation_date, refund_apply_account_id,
     receive_bank, receive_car_number, receive_account,
     review_date, review_operator, partner_compensation_operator,
@@ -63,7 +64,7 @@
     values (#{id,jdbcType=BIGINT}, #{orderId,jdbcType=BIGINT}, #{currArrears,jdbcType=DECIMAL},
     #{loanBanlance,jdbcType=DECIMAL}, #{advancesBanlance,jdbcType=DECIMAL}, #{overdueDays,jdbcType=INTEGER},
     #{overdueNumber,jdbcType=INTEGER}, #{advancesNumber,jdbcType=INTEGER}, #{riskTakingRatio,jdbcType=DECIMAL},
-    #{compensationAmount,jdbcType=DECIMAL}, #{compensationCause,jdbcType=VARCHAR},
+    #{compensationAmount,jdbcType=DECIMAL}, #{compensationInterest,jdbcType=DECIMAL},#{compensationCause,jdbcType=VARCHAR},
     #{applyCompensationDate,jdbcType=TIMESTAMP}, #{refundApplyAccountId,jdbcType=BIGINT},
     #{receiveBank,jdbcType=VARCHAR}, #{receiveCarNumber,jdbcType=VARCHAR}, #{receiveAccount,jdbcType=VARCHAR},
     #{reviewDate,jdbcType=TIMESTAMP}, #{reviewOperator,jdbcType=VARCHAR}, #{partnerCompensationOperator,jdbcType=VARCHAR},
@@ -106,6 +107,10 @@
             <if test="compensationAmount != null">
                 compensation_amount,
             </if>
+            <if test="compensationInterest != null">
+                compensation_interest,
+            </if>
+
             <if test="compensationCause != null">
                 compensation_cause,
             </if>
@@ -188,6 +193,9 @@
             </if>
             <if test="compensationAmount != null">
                 #{compensationAmount,jdbcType=DECIMAL},
+            </if>
+            <if test="compensationInterest != null">
+                #{compensationInterest,jdbcType=DECIMAL},
             </if>
             <if test="compensationCause != null">
                 #{compensationCause,jdbcType=VARCHAR},
@@ -272,6 +280,10 @@
             <if test="compensationAmount != null">
                 compensation_amount = #{compensationAmount,jdbcType=DECIMAL},
             </if>
+            <if test="compensationInterest != null">
+                compensation_interest = #{compensationInterest,jdbcType=DECIMAL},
+            </if>
+
             <if test="compensationCause != null">
                 compensation_cause = #{compensationCause,jdbcType=VARCHAR},
             </if>
@@ -337,6 +349,7 @@
     advances_number = #{advancesNumber,jdbcType=INTEGER},
     risk_taking_ratio = #{riskTakingRatio,jdbcType=DECIMAL},
     compensation_amount = #{compensationAmount,jdbcType=DECIMAL},
+    compensation_interest = #{compensationInterest,jdbcType=DECIMAL},
     compensation_cause = #{compensationCause,jdbcType=VARCHAR},
     apply_compensation_date = #{applyCompensationDate,jdbcType=TIMESTAMP},
     refund_apply_account_id = #{refundApplyAccountId,jdbcType=BIGINT},

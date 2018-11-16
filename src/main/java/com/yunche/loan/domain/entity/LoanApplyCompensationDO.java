@@ -27,7 +27,7 @@ public class LoanApplyCompensationDO {
     private Integer advancesNumber;
 
     private BigDecimal riskTakingRatio;
-
+    private BigDecimal compensationInterest;//代偿利息
     //财务代偿金额
     private BigDecimal compensationAmount;
 
