@@ -3337,7 +3337,9 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
         // 风险分担加成
         LoanTelephoneVerifyDO loanTelephoneVerifyDO = loanTelephoneVerifyDOMapper.selectByPrimaryKey(orderId);
+        Preconditions.checkNotNull(loanTelephoneVerifyDO, "风险分担加成记录丢失");
         BigDecimal riskSharingAddition = loanTelephoneVerifyDO.getRiskSharingAddition();
+        Preconditions.checkNotNull(riskSharingAddition, "风险分担加成记录丢失");
 
         // 总风险分担比例
         double total_risk_rate = riskBearRate.doubleValue() + riskSharingAddition.doubleValue();
@@ -3622,8 +3624,8 @@ public class LoanProcessServiceImpl implements LoanProcessService {
                 LoanProcessBridgeDO loanProcessBridgeDO = loanProcessBridgeDOMapper.selectByOrderId(loanOrderDO.getId());
                 if (loanProcessBridgeDO != null) {
                     if (loanProcessBridgeDO.getBridgeRepayRecord() == 2) {
-                        CalMoneyVO calMoneyVO = calBankLendRecord(loanProcessBridgeDO.getId(), loanProcessBridgeDO.getOrderId(),approval.getBankLendDate());
-                        if(calMoneyVO.getInterest()!=null&&!"".equals(calMoneyVO.getInterest())) {
+                        CalMoneyVO calMoneyVO = calBankLendRecord(loanProcessBridgeDO.getId(), loanProcessBridgeDO.getOrderId(), approval.getBankLendDate());
+                        if (calMoneyVO.getInterest() != null && !"".equals(calMoneyVO.getInterest())) {
                             thirdPartyFundBusinessDOMapper.updateInfo(loanOrderDO.getId(), DateUtil.getDate10(calMoneyVO.getBankDate()), new BigDecimal(calMoneyVO.getInterest()), new BigDecimal(calMoneyVO.getPoundage()));
                         }
                     }
@@ -3633,7 +3635,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
     }
 
-    public CalMoneyVO calBankLendRecord(Long bridgeProcessId, Long orderId,Date bankLendDate) {
+    public CalMoneyVO calBankLendRecord(Long bridgeProcessId, Long orderId, Date bankLendDate) {
         CalMoneyVO calMoneyVO = new CalMoneyVO();
         BigDecimal yearRate;
         BigDecimal singleRate;
@@ -3651,7 +3653,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             singleRate = confThirdPartyMoneyDO.getSingleRate();
             ThirdPartyFundBusinessDO thirdPartyFundBusinessDO = thirdPartyFundBusinessDOMapper.selectByPrimaryKey(bridgeProcessId);
             lendDate = thirdPartyFundBusinessDO.getLendDate();
-            if(lendDate != null && bankLendDate !=null) {
+            if (lendDate != null && bankLendDate != null) {
                 //BankLendRecordDO bankLendRecordDO = bankLendRecordDOMapper.selectByLoanOrder(orderId);
                 repayDate = bankLendDate;
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
