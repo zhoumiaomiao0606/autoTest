@@ -1,6 +1,7 @@
 package com.yunche.loan.service.impl;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
 import com.yunche.loan.config.constant.ProcessApprovalConst;
 import com.yunche.loan.config.constant.LoanProcessEnum;
 import com.yunche.loan.config.result.ResultBean;
@@ -27,6 +28,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -58,31 +60,54 @@ public class BankCardRecordServiceImpl implements BankCardRecordService {
         Preconditions.checkNotNull(key, "文件名不能为空（包含绝对路径）");
 
         List<String[]> returnList;
+        List<String> logList = Lists.newArrayList();
+
         try {
             //客户姓名、身份证号、账单日、首月账单日、还款日、首月还款日、还款卡号、接收日期、接收人
 //            returnList = POIUtil.readExcel(0,1,pathFileName);
             returnList = POIUtil.readExcelFromOSS(0, 1, key);
+
+
             BankCardRecordDO bankCardRecordDO = new BankCardRecordDO();
             SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
             for (String[] tmp : returnList) {
+                int line=1;
                 if (tmp.length != 9) {
+                    logList.add("文件第【"+line+"】行，列数异常,正确格式：{客户姓名、身份证号、账单日、首月账单日、还款日、首月还款日、还款卡号、接收日期、接收人}");
+                    line++;
                     continue;
                 }
+                line++;
                 Long orderId = loanQueryDOMapper.selectOrderIdByIDCard(tmp[1].trim());
                 if (null == orderId) {
+                    logList.add("文件第【"+line+"】行，"+tmp[1].trim()+":该客户订单不存在或存在多笔订单，请确认");
                     continue;
                 }
                 bankCardRecordDO.setOrderId(orderId);
                 bankCardRecordDO.setUserName(tmp[0].trim());//客户姓名
                 bankCardRecordDO.setIdCard(tmp[1].trim());//身份证号
                 bankCardRecordDO.setBillingDate(tmp[2].trim());//账单日
-                bankCardRecordDO.setFirstBillingDate(df.parse(tmp[3].trim()));//首月账单日
-                bankCardRecordDO.setRepayDate(tmp[4].trim());//还款日
-                bankCardRecordDO.setFirstRepaymentDate(df.parse(tmp[5].trim()));//首月还款日
-                bankCardRecordDO.setRepayCardId(tmp[6].trim());//还款卡号
-                if (StringUtils.isNotBlank(tmp[7].trim())) {
-                    bankCardRecordDO.setReceiveDate(df.parse(tmp[7].trim()));//接收日期
+                try{
+                    bankCardRecordDO.setFirstBillingDate(df.parse(tmp[3].trim()));//首月账单日
+                }catch (Exception e){
+                    logList.add("文件第【"+line+"】行，第4列{首月账单日}格式异常，正确格式（文本）：YYYY-MM-DD");
                 }
+
+                bankCardRecordDO.setRepayDate(tmp[4].trim());//还款日
+                try{
+                    bankCardRecordDO.setFirstRepaymentDate(df.parse(tmp[5].trim()));//首月还款日
+                }catch (Exception e){
+                    logList.add("文件第【"+line+"】行，第6列{首月还款日}格式异常，正确格式（文本）：YYYY-MM-DD");
+                }
+                bankCardRecordDO.setRepayCardId(tmp[6].trim());//还款卡号
+                try{
+                    if (StringUtils.isNotBlank(tmp[7].trim())) {
+                        bankCardRecordDO.setReceiveDate(df.parse(tmp[7].trim()));//接收日期
+                    }
+                }catch (Exception e){
+                    logList.add("文件第【"+line+"】行，第8列{接收日期}格式异常，正确格式（文本）：YYYY-MM-DD");
+                }
+
                 bankCardRecordDO.setSendee(tmp[8].trim());//接收人
                 bankCardRecordDO.setStatus(Byte.valueOf("0"));
 
@@ -119,10 +144,11 @@ public class BankCardRecordServiceImpl implements BankCardRecordService {
             }
 
         } catch (Exception e) {
+
             Preconditions.checkArgument(false, e.getMessage());
         }
 
-        return ResultBean.ofSuccess("导入成功");
+        return ResultBean.ofSuccess("导入成功，存在"+logList.size()+"笔记录处理异常，"+logList.toString());
     }
 
     @Override
