@@ -1,7 +1,6 @@
 package com.yunche.loan.service.impl;
 
 import com.google.common.base.Preconditions;
-import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.SessionUtils;
 import com.yunche.loan.domain.entity.*;
@@ -13,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.util.Date;
 
@@ -26,12 +24,6 @@ public class LoanTelephoneVerifyServiceImpl implements LoanTelephoneVerifyServic
 
     @Autowired
     private LoanTelephoneVerifyDOMapper loanTelephoneVerifyDOMapper;
-
-    @Resource
-    private EmployeeDOMapper employeeDOMapper;
-
-    @Autowired
-    private LoanCustomerDOMapper loanCustomerDOMapper;
 
     @Autowired
     private LoanOrderDOMapper loanOrderDOMapper;
@@ -61,7 +53,8 @@ public class LoanTelephoneVerifyServiceImpl implements LoanTelephoneVerifyServic
         }
         // 总风险分担比例
         BigDecimal total_risk_rate = loanTelephoneVerifyParam.getRiskSharingAddition().add(riskBearRate);
-        Preconditions.checkArgument(total_risk_rate.compareTo(new BigDecimal(100)) <= 0, "订单总风险分担比例不能大于100%，当前：%s%", total_risk_rate);
+        Preconditions.checkArgument(total_risk_rate.compareTo(new BigDecimal(100)) <= 0,
+                "订单总风险分担比例不能大于100%，当前：%s%", total_risk_rate);
 
 
         EmployeeDO employeeDO = SessionUtils.getLoginUser();
