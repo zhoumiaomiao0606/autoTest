@@ -958,6 +958,8 @@
     <select id="selectUniversalCarInfo" parameterType="java.lang.Long"
             resultType="com.yunche.loan.domain.vo.UniversalCarInfoVO">
         select
+        second_hand_car_evaluate.id                                                 as second_hand_car_evaluate_id,
+        second_hand_car_evaluate.vin                                                as vin,
             detail.price                                                            AS car_assess_price,
             brand.name                                                              AS car_brand_name,
             financial.car_price                                                     AS car_price,
@@ -1006,6 +1008,7 @@
         left join car_detail detail on car.car_detail_id = detail.id
         left join car_model model on detail.model_id = model.id
         left join car_brand brand on model.brand_id = brand.id
+        left join second_hand_car_evaluate on main_order.second_hand_car_evaluate_id = second_hand_car_evaluate.id
     </select>
 
     <!--贷后-贷款车辆信息-->

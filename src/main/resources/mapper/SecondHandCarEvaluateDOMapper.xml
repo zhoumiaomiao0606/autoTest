@@ -12,15 +12,23 @@
     <result column="register_date" jdbcType="TIMESTAMP" property="register_date" />
     <result column="make_name" jdbcType="VARCHAR" property="make_name" />
     <result column="model_name" jdbcType="VARCHAR" property="model_name" />
+    <result column="trimId" jdbcType="VARCHAR" property="trimId" />
     <result column="name" jdbcType="VARCHAR" property="name" />
     <result column="style_color" jdbcType="VARCHAR" property="style_color" />
     <result column="evaluate_price" jdbcType="DECIMAL" property="evaluate_price" />
     <result column="query_time" jdbcType="TIMESTAMP" property="query_time" />
     <result column="state" jdbcType="TINYINT" property="state" />
+    <result column="manufacturerGuidePrice" jdbcType="VARCHAR" property="manufacturerGuidePrice" />
+    <result column="dateOfProduction" jdbcType="VARCHAR" property="dateOfProduction" />
+    <result column="year" jdbcType="VARCHAR" property="year" />
+    <result column="manufacturerName" jdbcType="VARCHAR" property="manufacturerName" />
+    <result column="evaluate_json" jdbcType="VARCHAR" property="evaluate_json" />
+    <result column="mileage" jdbcType="VARCHAR" property="mileage" />
   </resultMap>
   <sql id="Base_Column_List">
-    id, vin, parnter_id,saleman_id, owner, plate_num, engine_num, register_date, make_name, model_name,
-    name, style_color, evaluate_price, query_time, state
+    id, vin, parnter_id, owner, plate_num, engine_num, register_date, make_name, model_name,
+    trimId, name, style_color, evaluate_price, query_time, state, saleman_id, manufacturerGuidePrice,
+    dateOfProduction, year, manufacturerName, evaluate_json, mileage
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
     select 
@@ -33,18 +41,32 @@
     where id = #{id,jdbcType=BIGINT}
   </delete>
   <insert id="insert" parameterType="com.yunche.loan.domain.entity.SecondHandCarEvaluateDO">
-    insert into second_hand_car_evaluate (id, vin, parnter_id, saleman_id,
-      owner, plate_num, engine_num, 
-      register_date, make_name, model_name, 
-      name, style_color, evaluate_price, 
-      query_time, state)
-    values (#{id,jdbcType=BIGINT}, #{vin,jdbcType=VARCHAR}, #{parnter_id,jdbcType=BIGINT}, #{saleman_id,jdbcType=BIGINT},
-      #{owner,jdbcType=VARCHAR}, #{plate_num,jdbcType=VARCHAR}, #{engine_num,jdbcType=VARCHAR}, 
-      #{register_date,jdbcType=TIMESTAMP}, #{make_name,jdbcType=VARCHAR}, #{model_name,jdbcType=VARCHAR}, 
-      #{name,jdbcType=VARCHAR}, #{style_color,jdbcType=VARCHAR}, #{evaluate_price,jdbcType=DECIMAL}, 
-      #{query_time,jdbcType=TIMESTAMP}, #{state,jdbcType=TINYINT})
+    <selectKey resultType="java.lang.Long" keyProperty="id"
+               order="AFTER">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into second_hand_car_evaluate (id, vin, parnter_id,
+    owner, plate_num, engine_num,
+    register_date, make_name, model_name,
+    trimId, name, style_color,
+    evaluate_price, query_time, state,
+    saleman_id, manufacturerGuidePrice, dateOfProduction,
+    year, manufacturerName, evaluate_json,
+    mileage)
+    values (#{id,jdbcType=BIGINT}, #{vin,jdbcType=VARCHAR}, #{parnter_id,jdbcType=BIGINT},
+    #{owner,jdbcType=VARCHAR}, #{plate_num,jdbcType=VARCHAR}, #{engine_num,jdbcType=VARCHAR},
+    #{register_date,jdbcType=TIMESTAMP}, #{make_name,jdbcType=VARCHAR}, #{model_name,jdbcType=VARCHAR},
+    #{trimId,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{style_color,jdbcType=VARCHAR},
+    #{evaluate_price,jdbcType=DECIMAL}, #{query_time,jdbcType=TIMESTAMP}, #{state,jdbcType=TINYINT},
+    #{saleman_id,jdbcType=BIGINT}, #{manufacturerGuidePrice,jdbcType=VARCHAR}, #{dateOfProduction,jdbcType=VARCHAR},
+    #{year,jdbcType=VARCHAR}, #{manufacturerName,jdbcType=VARCHAR}, #{evaluate_json,jdbcType=VARCHAR},
+    #{mileage,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.SecondHandCarEvaluateDO">
+    <selectKey resultType="java.lang.Long" keyProperty="id"
+               order="AFTER">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
     insert into second_hand_car_evaluate
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="id != null">
@@ -77,6 +99,9 @@
       <if test="model_name != null">
         model_name,
       </if>
+      <if test="trimId != null">
+        trimId,
+      </if>
       <if test="name != null">
         name,
       </if>
@@ -91,6 +116,24 @@
       </if>
       <if test="state != null">
         state,
+      </if>
+      <if test="manufacturerGuidePrice != null">
+        manufacturerGuidePrice,
+      </if>
+      <if test="dateOfProduction != null">
+        dateOfProduction,
+      </if>
+      <if test="year != null">
+        year,
+      </if>
+      <if test="manufacturerName != null">
+        manufacturerName,
+      </if>
+      <if test="evaluate_json != null">
+        evaluate_json,
+      </if>
+      <if test="mileage != null">
+        mileage,
       </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
@@ -124,6 +167,9 @@
       <if test="model_name != null">
         #{model_name,jdbcType=VARCHAR},
       </if>
+      <if test="trimId != null">
+        #{trimId,jdbcType=VARCHAR},
+      </if>
       <if test="name != null">
         #{name,jdbcType=VARCHAR},
       </if>
@@ -138,6 +184,24 @@
       </if>
       <if test="state != null">
         #{state,jdbcType=TINYINT},
+      </if>
+      <if test="manufacturerGuidePrice != null">
+        #{manufacturerGuidePrice,jdbcType=VARCHAR},
+      </if>
+      <if test="dateOfProduction != null">
+        #{dateOfProduction,jdbcType=VARCHAR},
+      </if>
+      <if test="year != null">
+        #{year,jdbcType=VARCHAR},
+      </if>
+      <if test="manufacturerName != null">
+        #{manufacturerName,jdbcType=VARCHAR},
+      </if>
+      <if test="evaluate_json != null">
+        #{evaluate_json,jdbcType=VARCHAR},
+      </if>
+      <if test="mileage != null">
+        #{mileage,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
@@ -171,6 +235,9 @@
       <if test="model_name != null">
         model_name = #{model_name,jdbcType=VARCHAR},
       </if>
+      <if test="trimId != null">
+        trimId = #{trimId,jdbcType=VARCHAR},
+      </if>
       <if test="name != null">
         name = #{name,jdbcType=VARCHAR},
       </if>
@@ -186,6 +253,24 @@
       <if test="state != null">
         state = #{state,jdbcType=TINYINT},
       </if>
+      <if test="manufacturerGuidePrice != null">
+        manufacturerGuidePrice = #{manufacturerGuidePrice,jdbcType=VARCHAR},
+      </if>
+      <if test="dateOfProduction != null">
+        dateOfProduction = #{dateOfProduction,jdbcType=VARCHAR},
+      </if>
+      <if test="year != null">
+        year = #{year,jdbcType=VARCHAR},
+      </if>
+      <if test="manufacturerName != null">
+        manufacturerName = #{manufacturerName,jdbcType=VARCHAR},
+      </if>
+      <if test="evaluate_json != null">
+        evaluate_json = #{evaluate_json,jdbcType=VARCHAR},
+      </if>
+      <if test="mileage != null">
+        mileage = #{mileage,jdbcType=VARCHAR},
+      </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
@@ -200,18 +285,36 @@
       register_date = #{register_date,jdbcType=TIMESTAMP},
       make_name = #{make_name,jdbcType=VARCHAR},
       model_name = #{model_name,jdbcType=VARCHAR},
+      trimId = #{trimId,jdbcType=VARCHAR},
       name = #{name,jdbcType=VARCHAR},
       style_color = #{style_color,jdbcType=VARCHAR},
       evaluate_price = #{evaluate_price,jdbcType=DECIMAL},
       query_time = #{query_time,jdbcType=TIMESTAMP},
       state = #{state,jdbcType=TINYINT}
+      manufacturerGuidePrice = #{manufacturerGuidePrice,jdbcType=VARCHAR},
+      dateOfProduction = #{dateOfProduction,jdbcType=VARCHAR},
+      year = #{year,jdbcType=VARCHAR},
+      manufacturerName = #{manufacturerName,jdbcType=VARCHAR},
+      evaluate_json = #{evaluate_json,jdbcType=VARCHAR},
+      mileage = #{mileage,jdbcType=VARCHAR}
     where id = #{id,jdbcType=BIGINT}
   </update>
   <select id="queryVIN" parameterType="com.yunche.loan.domain.param.QueryVINParam" resultMap="BaseResultMap">
     select
     <include refid="Base_Column_List" />
-    from second_hand_car_evaluate
-    where parnter_id = #{partnerId,jdbcType=BIGINT} and vin like concat('%',#{queryVIN},'%') and DATE_SUB(CURDATE(), INTERVAL 7 DAY) &lt;= date(query_time);
+    from second_hand_car_evaluate s
+    where
+    1=1
+    and
+    CASE WHEN  #{maxGroupLevel}  = 0 THEN false
+    when  #{maxGroupLevel} = 1 then
+    s.saleman_id in
+    <foreach item="item" index="index" collection="juniorIds" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+    else true end
+    and vin like concat('%',#{queryVIN},'%') and DATE_SUB(CURDATE(), INTERVAL 7 DAY) &lt;= date(query_time)
+    order by query_time desc
   </select>
 
   <select id="evaluateList" parameterType="com.yunche.loan.domain.param.EvaluateListParam" resultType="com.yunche.loan.domain.vo.SecondHandCarEvaluateList">

@@ -16,7 +16,7 @@ public class LoanCarInfoParam {
      */
     private Long orderId;
 
-    private Long second_hand_car_evuluate_id;
+    private Long second_hand_car_evaluate_id;
 
     private Long id;
 

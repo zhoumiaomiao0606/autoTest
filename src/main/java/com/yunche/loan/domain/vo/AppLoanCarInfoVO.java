@@ -59,7 +59,7 @@ public class AppLoanCarInfoVO {
 
     private String  vin;
 
-    private Long second_hand_car_evuluate_id;
+    private Long second_hand_car_evaluate_id;
 
     private List<LoanCarInfoVO.BaseArea> ableApplyLicensePlateAreaList = Collections.EMPTY_LIST;
 

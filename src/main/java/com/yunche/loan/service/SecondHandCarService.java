@@ -18,7 +18,7 @@ public interface SecondHandCarService
 
     ResultBean evaluateList(EvaluateListParam param);
 
-    ResultBean queryEvuluateByEvuluateid(Long evuluateId);
+    ResultBean queryEvaluateByEvaluateid(Long evaluateId);
 
     ResultBean firstCarSite(FirstCarSiteParam param);
 }

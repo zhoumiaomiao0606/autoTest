@@ -4,6 +4,8 @@ import cn.jiguang.common.utils.Preconditions;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.BeanPlasticityUtills;
 import com.yunche.loan.config.util.SessionUtils;
@@ -17,6 +19,9 @@ import com.yunche.loan.service.SecondHandCarService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
+import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Type;
+import java.math.BigDecimal;
 import java.util.*;
 
 @Service
@@ -44,6 +49,12 @@ public class SecondHandCarServiceImpl implements SecondHandCarService
     @Resource
     private VehicleInformationDOMapper vehicleInformationDOMapper;
 
+    @Resource
+    private PartnerRelaEmployeeDOMapper partnerRelaEmployeeDOMapper;
+
+    @Resource
+    private SecondHandCarVinDOMapper secondHandCarVinDOMapper;
+
     //2.orc行驶证识别
     @Override
     public ResultBean drivinglicense(DrivinglicensePara evaluationPara)
@@ -53,8 +64,9 @@ public class SecondHandCarServiceImpl implements SecondHandCarService
         CommonFinanceResult<SecondHandCarVinDO> financeResult1 = new CommonFinanceResult<SecondHandCarVinDO>();
         if (financeResult !=null && !"".equals(financeResult))
         {
+            Type type =new TypeToken<CommonFinanceResult<SecondHandCarVinDO>>(){}  .getType();
             Gson gson = new Gson();
-             financeResult1 = gson.fromJson(financeResult, financeResult1.getClass());
+             financeResult1 = gson.fromJson(financeResult, type);
         }
 
         //每次识别--若该合伙人下vin查询过则更新
@@ -64,9 +76,22 @@ public class SecondHandCarServiceImpl implements SecondHandCarService
 
             secondHandCarVinDOMapper.insertSelective(financeResult1.getDatas());
         }*/
+        //判断vin码是否有查询记录
 
         if (financeResult1.getDatas()!=null)
         {
+            financeResult1.getDatas().setQuery_time(new Date());
+
+            financeResult1.getDatas().setSaleman_id(SessionUtils.getLoginUser().getId());
+
+            secondHandCarVinDOMapper.insertSelective(financeResult1.getDatas());
+
+            SecondHandCarVinDO datas = financeResult1.getDatas();
+            if(datas.getRegister_date().length() !=8)
+            {
+                System.out.println("时间长度==="+ datas.getRegister_date().length());
+                financeResult1.getDatas().setRegister_date(null);
+            }
             return ResultBean.ofSuccess(financeResult1.getDatas());
         }else
             {
@@ -80,13 +105,16 @@ public class SecondHandCarServiceImpl implements SecondHandCarService
     @Override
     public ResultBean queryVIN(QueryVINParam vin)
     {
-        Preconditions.checkNotNull(vin.getOrderId(),"订单id不能为空");
 
-        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(vin.getOrderId());
+        //获取自身及管理的下属员工
+        Set<String> juniorIds = employeeService.getSelfAndCascadeChildIdList(SessionUtils.getLoginUser().getId());
 
-        LoanBaseInfoDO loanBaseInfoDO = loanBaseInfoDOMapper.selectByPrimaryKey(loanOrderDO.getLoanBaseInfoId());
+        Long maxGroupLevel = taskSchedulingDOMapper.selectMaxGroupLevel(SessionUtils.getLoginUser().getId());
 
-        vin.setPartnerId(loanBaseInfoDO.getPartnerId());
+        vin.setJuniorIds(juniorIds);
+
+        vin.setMaxGroupLevel(maxGroupLevel);
+
         List<SecondHandCarEvaluateDO> list = secondHandCarEvaluateDOMapper.queryVIN(vin);
 
         return ResultBean.ofSuccess(list);
@@ -183,8 +211,9 @@ public class SecondHandCarServiceImpl implements SecondHandCarService
         CommonFinanceResult<List<QueryCarTypeByVIN>> financeResult1 = new CommonFinanceResult<List<QueryCarTypeByVIN>>();
         if (financeResult !=null && !"".equals(financeResult))
         {
+            Type type =new TypeToken<CommonFinanceResult<List<QueryCarTypeByVIN>>>(){}  .getType();
             Gson gson = new Gson();
-            financeResult1 = gson.fromJson(financeResult, financeResult1.getClass());
+            financeResult1 = gson.fromJson(financeResult, type);
         }
 
         if (financeResult1.getDatas() !=null){
@@ -193,18 +222,26 @@ public class SecondHandCarServiceImpl implements SecondHandCarService
             return ResultBean.ofError("vin码查询车型失败--");
         }
 
-
     }
 
     //4.估价接口---并保存信息
     @Override
     public ResultBean evaluate(EvaluateWebParam evaluateWebParam)
     {
-        Preconditions.checkNotNull(evaluateWebParam.getOrderId(),"订单id不能为空");
+
         Preconditions.checkNotNull(evaluateWebParam.getPlate_num(),"车牌号不能为空");
+        Preconditions.checkNotNull(evaluateWebParam.getMileage(),"公里数不能为空");
+        Preconditions.checkNotNull(evaluateWebParam.getRegister_date(),"上牌时间不能为空");
+
+        //Preconditions.checkNotNull(evaluateWebParam.getOrderId(),"订单id不能为空");
+        //判断orc
+
+
 
         EvaluateParam param =new EvaluateParam();
-        param.setCarCard(evaluateWebParam.getPlate_num());
+
+         param.setCarCard(evaluateWebParam.getPlate_num());
+
         param.setBuyCarDate(evaluateWebParam.getRegister_date());
         param.setMileage(evaluateWebParam.getMileage());
         param.setTrimId(evaluateWebParam.getTrimId());
@@ -212,8 +249,9 @@ public class SecondHandCarServiceImpl implements SecondHandCarService
         CommonFinanceResult<EvaluateVO> financeResult1 = new CommonFinanceResult<EvaluateVO>();
         if (financeResult !=null && !"".equals(financeResult))
         {
+            Type type =new TypeToken<CommonFinanceResult<EvaluateVO>>(){}  .getType();
             Gson gson = new Gson();
-            financeResult1 = gson.fromJson(financeResult, financeResult1.getClass());
+            financeResult1 = gson.fromJson(financeResult, type);
         }
 
         //每次评估，查询到即保存
@@ -224,24 +262,43 @@ public class SecondHandCarServiceImpl implements SecondHandCarService
         }*/
         if (financeResult1.getDatas()!=null)
         {
-            //保存相关数据
-            LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(evaluateWebParam.getOrderId());
             SecondHandCarEvaluateDO secondHandCarEvaluateDO =  BeanPlasticityUtills.copy(SecondHandCarEvaluateDO.class,evaluateWebParam);
 
-            //保存订单相关合伙人团队----保存订单相关登陆业务员
-            LoanBaseInfoDO loanBaseInfoDO = loanBaseInfoDOMapper.selectByPrimaryKey(loanOrderDO.getLoanBaseInfoId());
-            secondHandCarEvaluateDO.setParnter_id(loanBaseInfoDO.getPartnerId());
+            //保存当前业务员
+            secondHandCarEvaluateDO.setSaleman_id(SessionUtils.getLoginUser().getId());
+
+            //业务员团队
+            Long partnerIdByEmployeeId = partnerRelaEmployeeDOMapper.getPartnerIdByEmployeeId(SessionUtils.getLoginUser().getId());
+
+            //设置合伙人团队
+            secondHandCarEvaluateDO.setParnter_id(partnerIdByEmployeeId);
+
+            //设置查询的评估价
+            secondHandCarEvaluateDO.setEvaluate_price(new BigDecimal(financeResult1.getDatas().getB2CPrices().getB().getMid()));
+
+            //设置当前查询时间
+            secondHandCarEvaluateDO.setQuery_time(new Date());
+
+            secondHandCarEvaluateDO.setEvaluate_json(financeResult);
 
             secondHandCarEvaluateDOMapper.insertSelective(secondHandCarEvaluateDO);
 
-            //更新绑定
-            loanOrderDO.setSecond_hand_car_evuluate_id(secondHandCarEvaluateDO.getId());
-            loanOrderDOMapper.updateByPrimaryKeySelective(loanOrderDO);
+            if (evaluateWebParam.getOrderId()!=null)
+            {
+                //绑定订单
 
-            Long id = SessionUtils.getLoginUser().getId();
-            secondHandCarEvaluateDO.setSaleman_id(id);
+                //保存相关数据
+                LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(evaluateWebParam.getOrderId());
 
-            return ResultBean.ofSuccess(financeResult1.getDatas());
+                //更新绑定
+                loanOrderDO.setSecond_hand_car_evaluate_id(secondHandCarEvaluateDO.getId());
+
+                loanOrderDOMapper.updateByPrimaryKeySelective(loanOrderDO);
+            }
+
+
+               return ResultBean.ofSuccess(secondHandCarEvaluateDO.getId());
+
         }else {
             return ResultBean.ofError("请求评估价信息出错");
         }
@@ -255,13 +312,29 @@ public class SecondHandCarServiceImpl implements SecondHandCarService
 
         LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
         Preconditions.checkNotNull(loanOrderDO,"订单不存在");
-        Long second_hand_car_evuluate_id = loanOrderDO.getSecond_hand_car_evuluate_id();
+        Long second_hand_car_evaluate_id = loanOrderDO.getSecond_hand_car_evaluate_id();
         //根据订单查询车辆信息
         //根据车辆信息里的估价信息id查询估价信息
 
-            if (second_hand_car_evuluate_id !=null)
+            if (second_hand_car_evaluate_id !=null)
             {
-                SecondHandCarEvaluateDO secondHandCarEvaluateDO = secondHandCarEvaluateDOMapper.selectByPrimaryKey(second_hand_car_evuluate_id);
+                SecondHandCarEvaluateDO secondHandCarEvaluateDO = secondHandCarEvaluateDOMapper.selectByPrimaryKey(second_hand_car_evaluate_id);
+                //解析估价信息
+                if (secondHandCarEvaluateDO!=null && secondHandCarEvaluateDO.getEvaluate_json()!=null && !"".equals(secondHandCarEvaluateDO.getEvaluate_json()))
+                {
+                    CommonFinanceResult<EvaluateVO> financeResult1 = new CommonFinanceResult<EvaluateVO>();
+
+                        Type type =new TypeToken<CommonFinanceResult<EvaluateVO>>(){}  .getType();
+                        Gson gson = new Gson();
+                        financeResult1 = gson.fromJson(secondHandCarEvaluateDO.getEvaluate_json(), type);
+
+                        if (financeResult1!=null && financeResult1.getDatas()!=null)
+                        {
+                            secondHandCarEvaluateDO.setB2CPrices(financeResult1.getDatas().getB2CPrices());
+                            secondHandCarEvaluateDO.setC2BPrices(financeResult1.getDatas().getC2BPrices());
+                        }
+
+                }
                 return ResultBean.ofSuccess(secondHandCarEvaluateDO);
             }
 
@@ -290,15 +363,34 @@ public class SecondHandCarServiceImpl implements SecondHandCarService
     }
 
     @Override
-    public ResultBean queryEvuluateByEvuluateid(Long evuluateId)
+    public ResultBean queryEvaluateByEvaluateid(Long evaluateId)
     {
-        SecondHandCarEvaluateDO secondHandCarEvaluateDO = secondHandCarEvaluateDOMapper.selectByPrimaryKey(evuluateId);
+        SecondHandCarEvaluateDO secondHandCarEvaluateDO = secondHandCarEvaluateDOMapper.selectByPrimaryKey(evaluateId);
         return ResultBean.ofSuccess(secondHandCarEvaluateDO);
     }
 
+    //是否每次查询最新的
     @Override
     public ResultBean firstCarSite(FirstCarSiteParam param)
     {
+        Preconditions.checkNotNull(param.getOrderId(),"订单id不能为空");
+        //根据订单id获取关联的vin码---获取地址
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(param.getOrderId());
+        if (loanOrderDO.getSecond_hand_car_evaluate_id()==null)
+        {
+            throw new BizException("该订单无关联二手车vin码信息");
+        }
+        SecondHandCarEvaluateDO secondHandCarEvaluateDO = secondHandCarEvaluateDOMapper.selectByPrimaryKey(loanOrderDO.getSecond_hand_car_evaluate_id());
+        if (secondHandCarEvaluateDO == null)
+        {
+            throw new BizException("该订单绑定的估价信息有误");
+        }
+
+        //设置请求参数vin码
+        param.setVin(secondHandCarEvaluateDO.getVin());
+
+        //上牌地待讨论
+
         String financeResult = businessReviewManager.financeUnisal2(param, "/api/car/iautos");
         CommonFinanceResult<FirstCarSiteVO> financeResult1 = new CommonFinanceResult<FirstCarSiteVO>();
         if (financeResult !=null && !"".equals(financeResult))
@@ -308,6 +400,6 @@ public class SecondHandCarServiceImpl implements SecondHandCarService
         }
 
         FirstCarSiteWebVO firstCarSiteWebVO =new FirstCarSiteWebVO();
-        return null;
+        return ResultBean.ofSuccess(firstCarSiteWebVO);
     }
 }

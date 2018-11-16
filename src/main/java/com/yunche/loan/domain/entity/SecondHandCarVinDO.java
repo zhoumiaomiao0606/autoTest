@@ -8,15 +8,15 @@ import java.util.Date;
 public class SecondHandCarVinDO {
     private Long id;
 
-    private Long parnter_id;
+    private Long saleman_id;
 
-    private String vin;//vin码
+    private String vin;
 
-    private String plate_num;//车牌号
+    private String plate_num;
 
     private String vehicle_type;
 
-    private String owner;//行驶证车主
+    private String owner;
 
     private String use_character;
 
@@ -24,9 +24,9 @@ public class SecondHandCarVinDO {
 
     private String model;
 
-    private String engine_num;//发动机号
+    private String engine_num;
 
-    private String register_date;//注册日期
+    private String register_date;
 
     private String issue_date;
 

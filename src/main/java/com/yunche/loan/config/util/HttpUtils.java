@@ -6,16 +6,14 @@ import org.apache.http.*;
 import org.apache.http.client.CookieStore;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpDelete;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpPut;
+import org.apache.http.client.methods.*;
 import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.conn.ClientConnectionManager;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeRegistry;
 import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.entity.ByteArrayEntity;
+import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -401,7 +399,7 @@ public class HttpUtils {
        /* request.setHeader(new BasicHeader("Cookie",cookie));*/
 
         if (StringUtils.isNotBlank(body)) {
-            StringEntity s = new StringEntity(body);
+            StringEntity s = new StringEntity(body,"UTF-8");
             s.setContentEncoding("UTF-8");
             //发送json数据需要设置contentType
             s.setContentType("application/json");
@@ -417,6 +415,37 @@ public class HttpUtils {
         }
 
         return  result;
+    }
+
+
+    //-----解决编码问题--------
+    public static String doPostJson(String host,String path, String json) {
+
+        // 创建Httpclient对象
+        CloseableHttpClient httpClient = HttpClients.createDefault();
+        CloseableHttpResponse response = null;
+        String resultString = "";
+        try {
+            // 创建Http Post请求
+            HttpPost httpPost = new HttpPost(buildUrl(host, path, null));
+            // 创建请求内容
+            StringEntity entity = new StringEntity(json, ContentType.APPLICATION_JSON);
+            httpPost.setEntity(entity);
+            // 执行http请求
+            response = httpClient.execute(httpPost);
+            resultString = EntityUtils.toString(response.getEntity(), "UTF-8");
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                response.close();
+            } catch (IOException e) {
+
+                e.printStackTrace();
+            }
+        }
+
+        return resultString;
     }
 
 
