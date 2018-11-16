@@ -2,6 +2,8 @@ package com.yunche.loan.domain.param;
 
 import lombok.Data;
 
+import java.util.Date;
+
 /**
  * @author liuzhe
  * @date 2018/2/28
@@ -124,7 +126,7 @@ public class ApprovalParam {
     private Long bankRepayImpRecordId;
     /////////////////////////////////////////////////////// 代偿 ////////////////////////////////////////////////////////
 
-
+    private Date bankLendDate;
     public String getOriginalTaskDefinitionKey() {
         if (null != originalTaskDefinitionKey) {
             return originalTaskDefinitionKey;

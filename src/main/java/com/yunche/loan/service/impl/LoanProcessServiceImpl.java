@@ -3523,7 +3523,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
                 LoanProcessBridgeDO loanProcessBridgeDO = loanProcessBridgeDOMapper.selectByOrderId(loanOrderDO.getId());
                 if (loanProcessBridgeDO != null) {
                     if (loanProcessBridgeDO.getBridgeRepayRecord() == 2) {
-                        CalMoneyVO calMoneyVO = calBankLendRecord(loanProcessBridgeDO.getId(), loanProcessBridgeDO.getOrderId());
+                        CalMoneyVO calMoneyVO = calBankLendRecord(loanProcessBridgeDO.getId(), loanProcessBridgeDO.getOrderId(),approval.getBankLendDate());
                         thirdPartyFundBusinessDOMapper.updateInfo(loanOrderDO.getId(), DateUtil.getDate10(calMoneyVO.getBankDate()), new BigDecimal(calMoneyVO.getInterest()), new BigDecimal(calMoneyVO.getPoundage()));
                     }
                 }
@@ -3532,7 +3532,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
     }
 
-    public CalMoneyVO calBankLendRecord(Long bridgeProcessId, Long orderId) {
+    public CalMoneyVO calBankLendRecord(Long bridgeProcessId, Long orderId,Date bankLendDate) {
         CalMoneyVO calMoneyVO = new CalMoneyVO();
         BigDecimal yearRate;
         BigDecimal singleRate;
@@ -3550,17 +3550,14 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             singleRate = confThirdPartyMoneyDO.getSingleRate();
             ThirdPartyFundBusinessDO thirdPartyFundBusinessDO = thirdPartyFundBusinessDOMapper.selectByPrimaryKey(bridgeProcessId);
             lendDate = thirdPartyFundBusinessDO.getLendDate();
-            BankLendRecordDO bankLendRecordDO = bankLendRecordDOMapper.selectByLoanOrder(orderId);
-            repayDate = bankLendRecordDO.getLendDate();
+            //BankLendRecordDO bankLendRecordDO = bankLendRecordDOMapper.selectByLoanOrder(orderId);
+            repayDate = bankLendDate;
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-            if (bankLendRecordDO != null) {
-                if (repayDate != null) {
-
+            if (repayDate != null) {
                     Calendar c = Calendar.getInstance();
-                    c.setTime(bankLendRecordDO.getLendDate());
+                    c.setTime(repayDate);
                     c.add(Calendar.DAY_OF_MONTH, 1);
                     repayDate = c.getTime();
-                }
             }
             timeNum = (int) ((repayDate.getTime() - lendDate.getTime()) / (1000 * 3600 * 24));
             lend_amount = thirdPartyFundBusinessDO.getLendAmount();
