@@ -317,6 +317,23 @@
     order by query_time desc
   </select>
 
+  <select id="selectVinHistory" parameterType="com.yunche.loan.domain.param.QueryVINParam" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from second_hand_car_evaluate s
+    where
+    1=1
+    and
+    CASE WHEN  #{maxGroupLevel}  = 0 THEN false
+    when  #{maxGroupLevel} = 1 then
+    s.saleman_id in
+    <foreach item="item" index="index" collection="juniorIds" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+    else true end
+    and vin = #{queryVIN}  and DATE_SUB(CURDATE(), INTERVAL 7 DAY) &lt;= date(query_time)
+  </select>
+
   <select id="evaluateList" parameterType="com.yunche.loan.domain.param.EvaluateListParam" resultType="com.yunche.loan.domain.vo.SecondHandCarEvaluateList">
     select
     s.id as id,

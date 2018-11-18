@@ -76,10 +76,33 @@ public class SecondHandCarServiceImpl implements SecondHandCarService
 
             secondHandCarVinDOMapper.insertSelective(financeResult1.getDatas());
         }*/
-        //判断vin码是否有查询记录
+
 
         if (financeResult1.getDatas()!=null)
         {
+            //判断vin码是否有查询记录
+            if(financeResult1.getDatas().getVin()!=null &&!"".equals(financeResult1.getDatas().getVin()))
+            {
+                QueryVINParam vin =new QueryVINParam();
+                vin.setQueryVIN(financeResult1.getDatas().getVin());
+                //获取自身及管理的下属员工
+                Set<String> juniorIds = employeeService.getSelfAndCascadeChildIdList(SessionUtils.getLoginUser().getId());
+
+                Long maxGroupLevel = taskSchedulingDOMapper.selectMaxGroupLevel(SessionUtils.getLoginUser().getId());
+
+                vin.setJuniorIds(juniorIds);
+
+                vin.setMaxGroupLevel(maxGroupLevel);
+
+                List<SecondHandCarEvaluateList> secondHandCarEvaluateLists = secondHandCarEvaluateDOMapper.selectVinHistory(vin);
+                if (secondHandCarEvaluateLists !=null)
+                {
+                    throw  new BizException("该vin码七天内有查过估价信息");
+                }
+
+            }
+
+
             financeResult1.getDatas().setQuery_time(new Date());
 
             financeResult1.getDatas().setSaleman_id(SessionUtils.getLoginUser().getId());
@@ -395,8 +418,14 @@ public class SecondHandCarServiceImpl implements SecondHandCarService
         CommonFinanceResult<FirstCarSiteVO> financeResult1 = new CommonFinanceResult<FirstCarSiteVO>();
         if (financeResult !=null && !"".equals(financeResult))
         {
+            Type type =new TypeToken<CommonFinanceResult<FirstCarSiteVO>>(){}  .getType();
             Gson gson = new Gson();
-            financeResult1 = gson.fromJson(financeResult, financeResult1.getClass());
+            financeResult1 = gson.fromJson(financeResult, type);
+        }
+
+        if (financeResult1.getDatas()!=null)
+        {
+            //设置返回值
         }
 
         FirstCarSiteWebVO firstCarSiteWebVO =new FirstCarSiteWebVO();
