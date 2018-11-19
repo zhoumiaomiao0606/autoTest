@@ -9,11 +9,18 @@ import com.yunche.loan.domain.param.ParternerRuleSharpTuningeParam;
 import com.yunche.loan.domain.vo.FinanceResult;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
 import java.util.Map;
 
 import static com.yunche.loan.config.constant.BaseExceptionEnum.EL00000003;
@@ -75,7 +82,7 @@ public class BusinessReviewManager {
     {
         String result = null;
         try {
-            result = HttpUtils.doPost(HOST2, PATH, null, param.toString());
+            result = HttpUtils.doPost(HOST2, PATH,null, param.toString());
             System.out.println("请求参数"+param.toString());
             System.out.println("请求结果"+result);
 

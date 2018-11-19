@@ -1,0 +1,284 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunche.loan.mapper.SecondHandCarVinDOMapper">
+  <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.SecondHandCarVinDO">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="saleman_id" jdbcType="BIGINT" property="saleman_id" />
+    <result column="vin" jdbcType="VARCHAR" property="vin" />
+    <result column="plate_num" jdbcType="VARCHAR" property="plate_num" />
+    <result column="vehicle_type" jdbcType="VARCHAR" property="vehicle_type" />
+    <result column="owner" jdbcType="VARCHAR" property="owner" />
+    <result column="use_character" jdbcType="VARCHAR" property="use_character" />
+    <result column="addr" jdbcType="VARCHAR" property="addr" />
+    <result column="model" jdbcType="VARCHAR" property="model" />
+    <result column="engine_num" jdbcType="VARCHAR" property="engine_num" />
+    <result column="register_date" jdbcType="VARCHAR" property="register_date" />
+    <result column="issue_date" jdbcType="VARCHAR" property="issue_date" />
+    <result column="appproved_passenger_capacity" jdbcType="VARCHAR" property="appproved_passenger_capacity" />
+    <result column="approved_load" jdbcType="VARCHAR" property="approved_load" />
+    <result column="file_no" jdbcType="VARCHAR" property="file_no" />
+    <result column="gross_mass" jdbcType="VARCHAR" property="gross_mass" />
+    <result column="inspection_record" jdbcType="VARCHAR" property="inspection_record" />
+    <result column="overall_dimension" jdbcType="VARCHAR" property="overall_dimension" />
+    <result column="traction_mass" jdbcType="VARCHAR" property="traction_mass" />
+    <result column="unladen_mass" jdbcType="VARCHAR" property="unladen_mass" />
+    <result column="query_time" jdbcType="TIMESTAMP" property="query_time" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, saleman_id, vin, plate_num, vehicle_type, owner, use_character, addr, model, 
+    engine_num, register_date, issue_date, appproved_passenger_capacity, approved_load, 
+    file_no, gross_mass, inspection_record, overall_dimension, traction_mass, unladen_mass, 
+    query_time
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from second_hand_car_vin
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from second_hand_car_vin
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.yunche.loan.domain.entity.SecondHandCarVinDO">
+    insert into second_hand_car_vin (id, saleman_id, vin, 
+      plate_num, vehicle_type, owner, 
+      use_character, addr, model, 
+      engine_num, register_date, issue_date, 
+      appproved_passenger_capacity, approved_load, 
+      file_no, gross_mass, inspection_record, 
+      overall_dimension, traction_mass, unladen_mass, 
+      query_time)
+    values (#{id,jdbcType=BIGINT}, #{saleman_id,jdbcType=BIGINT}, #{vin,jdbcType=VARCHAR}, 
+      #{plate_num,jdbcType=VARCHAR}, #{vehicle_type,jdbcType=VARCHAR}, #{owner,jdbcType=VARCHAR}, 
+      #{use_character,jdbcType=VARCHAR}, #{addr,jdbcType=VARCHAR}, #{model,jdbcType=VARCHAR}, 
+      #{engine_num,jdbcType=VARCHAR}, #{register_date,jdbcType=VARCHAR}, #{issue_date,jdbcType=VARCHAR}, 
+      #{appproved_passenger_capacity,jdbcType=VARCHAR}, #{approved_load,jdbcType=VARCHAR}, 
+      #{file_no,jdbcType=VARCHAR}, #{gross_mass,jdbcType=VARCHAR}, #{inspection_record,jdbcType=VARCHAR}, 
+      #{overall_dimension,jdbcType=VARCHAR}, #{traction_mass,jdbcType=VARCHAR}, #{unladen_mass,jdbcType=VARCHAR}, 
+      #{query_time,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.SecondHandCarVinDO">
+    insert into second_hand_car_vin
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="saleman_id != null">
+        saleman_id,
+      </if>
+      <if test="vin != null">
+        vin,
+      </if>
+      <if test="plate_num != null">
+        plate_num,
+      </if>
+      <if test="vehicle_type != null">
+        vehicle_type,
+      </if>
+      <if test="owner != null">
+        owner,
+      </if>
+      <if test="use_character != null">
+        use_character,
+      </if>
+      <if test="addr != null">
+        addr,
+      </if>
+      <if test="model != null">
+        model,
+      </if>
+      <if test="engine_num != null">
+        engine_num,
+      </if>
+      <if test="register_date != null">
+        register_date,
+      </if>
+      <if test="issue_date != null">
+        issue_date,
+      </if>
+      <if test="appproved_passenger_capacity != null">
+        appproved_passenger_capacity,
+      </if>
+      <if test="approved_load != null">
+        approved_load,
+      </if>
+      <if test="file_no != null">
+        file_no,
+      </if>
+      <if test="gross_mass != null">
+        gross_mass,
+      </if>
+      <if test="inspection_record != null">
+        inspection_record,
+      </if>
+      <if test="overall_dimension != null">
+        overall_dimension,
+      </if>
+      <if test="traction_mass != null">
+        traction_mass,
+      </if>
+      <if test="unladen_mass != null">
+        unladen_mass,
+      </if>
+      <if test="query_time != null">
+        query_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="saleman_id != null">
+        #{saleman_id,jdbcType=BIGINT},
+      </if>
+      <if test="vin != null">
+        #{vin,jdbcType=VARCHAR},
+      </if>
+      <if test="plate_num != null">
+        #{plate_num,jdbcType=VARCHAR},
+      </if>
+      <if test="vehicle_type != null">
+        #{vehicle_type,jdbcType=VARCHAR},
+      </if>
+      <if test="owner != null">
+        #{owner,jdbcType=VARCHAR},
+      </if>
+      <if test="use_character != null">
+        #{use_character,jdbcType=VARCHAR},
+      </if>
+      <if test="addr != null">
+        #{addr,jdbcType=VARCHAR},
+      </if>
+      <if test="model != null">
+        #{model,jdbcType=VARCHAR},
+      </if>
+      <if test="engine_num != null">
+        #{engine_num,jdbcType=VARCHAR},
+      </if>
+      <if test="register_date != null">
+        #{register_date,jdbcType=VARCHAR},
+      </if>
+      <if test="issue_date != null">
+        #{issue_date,jdbcType=VARCHAR},
+      </if>
+      <if test="appproved_passenger_capacity != null">
+        #{appproved_passenger_capacity,jdbcType=VARCHAR},
+      </if>
+      <if test="approved_load != null">
+        #{approved_load,jdbcType=VARCHAR},
+      </if>
+      <if test="file_no != null">
+        #{file_no,jdbcType=VARCHAR},
+      </if>
+      <if test="gross_mass != null">
+        #{gross_mass,jdbcType=VARCHAR},
+      </if>
+      <if test="inspection_record != null">
+        #{inspection_record,jdbcType=VARCHAR},
+      </if>
+      <if test="overall_dimension != null">
+        #{overall_dimension,jdbcType=VARCHAR},
+      </if>
+      <if test="traction_mass != null">
+        #{traction_mass,jdbcType=VARCHAR},
+      </if>
+      <if test="unladen_mass != null">
+        #{unladen_mass,jdbcType=VARCHAR},
+      </if>
+      <if test="query_time != null">
+        #{query_time,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.SecondHandCarVinDO">
+    update second_hand_car_vin
+    <set>
+      <if test="saleman_id != null">
+        saleman_id = #{saleman_id,jdbcType=BIGINT},
+      </if>
+      <if test="vin != null">
+        vin = #{vin,jdbcType=VARCHAR},
+      </if>
+      <if test="plate_num != null">
+        plate_num = #{plate_num,jdbcType=VARCHAR},
+      </if>
+      <if test="vehicle_type != null">
+        vehicle_type = #{vehicle_type,jdbcType=VARCHAR},
+      </if>
+      <if test="owner != null">
+        owner = #{owner,jdbcType=VARCHAR},
+      </if>
+      <if test="use_character != null">
+        use_character = #{use_character,jdbcType=VARCHAR},
+      </if>
+      <if test="addr != null">
+        addr = #{addr,jdbcType=VARCHAR},
+      </if>
+      <if test="model != null">
+        model = #{model,jdbcType=VARCHAR},
+      </if>
+      <if test="engine_num != null">
+        engine_num = #{engine_num,jdbcType=VARCHAR},
+      </if>
+      <if test="register_date != null">
+        register_date = #{register_date,jdbcType=VARCHAR},
+      </if>
+      <if test="issue_date != null">
+        issue_date = #{issue_date,jdbcType=VARCHAR},
+      </if>
+      <if test="appproved_passenger_capacity != null">
+        appproved_passenger_capacity = #{appproved_passenger_capacity,jdbcType=VARCHAR},
+      </if>
+      <if test="approved_load != null">
+        approved_load = #{approved_load,jdbcType=VARCHAR},
+      </if>
+      <if test="file_no != null">
+        file_no = #{file_no,jdbcType=VARCHAR},
+      </if>
+      <if test="gross_mass != null">
+        gross_mass = #{gross_mass,jdbcType=VARCHAR},
+      </if>
+      <if test="inspection_record != null">
+        inspection_record = #{inspection_record,jdbcType=VARCHAR},
+      </if>
+      <if test="overall_dimension != null">
+        overall_dimension = #{overall_dimension,jdbcType=VARCHAR},
+      </if>
+      <if test="traction_mass != null">
+        traction_mass = #{traction_mass,jdbcType=VARCHAR},
+      </if>
+      <if test="unladen_mass != null">
+        unladen_mass = #{unladen_mass,jdbcType=VARCHAR},
+      </if>
+      <if test="query_time != null">
+        query_time = #{query_time,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.SecondHandCarVinDO">
+    update second_hand_car_vin
+    set saleman_id = #{saleman_id,jdbcType=BIGINT},
+      vin = #{vin,jdbcType=VARCHAR},
+      plate_num = #{plate_num,jdbcType=VARCHAR},
+      vehicle_type = #{vehicle_type,jdbcType=VARCHAR},
+      owner = #{owner,jdbcType=VARCHAR},
+      use_character = #{use_character,jdbcType=VARCHAR},
+      addr = #{addr,jdbcType=VARCHAR},
+      model = #{model,jdbcType=VARCHAR},
+      engine_num = #{engine_num,jdbcType=VARCHAR},
+      register_date = #{register_date,jdbcType=VARCHAR},
+      issue_date = #{issue_date,jdbcType=VARCHAR},
+      appproved_passenger_capacity = #{appproved_passenger_capacity,jdbcType=VARCHAR},
+      approved_load = #{approved_load,jdbcType=VARCHAR},
+      file_no = #{file_no,jdbcType=VARCHAR},
+      gross_mass = #{gross_mass,jdbcType=VARCHAR},
+      inspection_record = #{inspection_record,jdbcType=VARCHAR},
+      overall_dimension = #{overall_dimension,jdbcType=VARCHAR},
+      traction_mass = #{traction_mass,jdbcType=VARCHAR},
+      unladen_mass = #{unladen_mass,jdbcType=VARCHAR},
+      query_time = #{query_time,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

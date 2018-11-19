@@ -19,6 +19,7 @@ import sun.misc.BASE64Encoder;
 
 import java.io.*;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -31,7 +32,7 @@ public class Vediotest
 {
     @Test
     public void osstest(){
-        //根据路径从oss上获取文件输入流---进行base64编码
+        /*//根据路径从oss上获取文件输入流---进行base64编码
         OSSObject ossObject = OSSUnit.getObject(OSSUnit.getOSSClient(), "img/2018/201808/20180824/YNiiRpcyhf.jpg");
         StringBuilder objectContent = null;
         try {
@@ -49,7 +50,11 @@ public class Vediotest
             System.out.println("====读取到的内容为"+objectContent.toString());
         }catch (Exception e){
             throw new BizException("读取oss文件失败");
-        }
+        }*/
+
+        Date date =new Date("2001");
+        System.out.println("===="+date.toString());
+
     }
 
     @Test

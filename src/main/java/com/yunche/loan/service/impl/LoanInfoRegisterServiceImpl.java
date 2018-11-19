@@ -55,6 +55,7 @@ public class LoanInfoRegisterServiceImpl implements LoanInfoRegisterService {
         UniversalInfoVO universalInfoVO = loanQueryDOMapper.selectUniversalInfo(orderId);
         //车辆详情
         UniversalCarInfoVO universalCarInfoVO = loanQueryDOMapper.selectUniversalCarInfo(orderId);
+
         //金融方案信息
         FinancialSchemeVO financialSchemeVO = loanQueryDOMapper.selectFinancialScheme(orderId);
 
@@ -81,6 +82,17 @@ public class LoanInfoRegisterServiceImpl implements LoanInfoRegisterService {
         LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(loanInfoRegisterParam.getOrderId());
         Preconditions.checkNotNull(loanOrderDO, "订单信息不存在");
 
+        //更新vin码绑定
+            if (loanInfoRegisterParam.getCarType() ==0 || (loanInfoRegisterParam.getSecond_hand_car_evaluate_id()==null && "".equals(loanInfoRegisterParam.getSecond_hand_car_evaluate_id())))
+            {
+                loanOrderDO.setSecond_hand_car_evaluate_id(null);
+                loanOrderDOMapper.updateByPrimaryKeySelective(loanOrderDO);
+            }else {
+                loanOrderDO.setSecond_hand_car_evaluate_id(loanInfoRegisterParam.getSecond_hand_car_evaluate_id());
+            }
+
+            //更新
+        loanOrderDOMapper.updateByPrimaryKeySelective(loanOrderDO);
 
         // loanCarInfo
         Long loanCarInfoId = loanOrderDO.getLoanCarInfoId();

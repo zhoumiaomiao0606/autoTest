@@ -1,20 +1,26 @@
 package com.yunche.loan.domain.param;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.annotation.JSONField;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import lombok.Data;
+import org.codehaus.jackson.annotate.JsonIgnore;
+import org.codehaus.jackson.annotate.JsonProperty;
+
 
 @Data
 public class EvaluateParam
 {
-    private String TrimId;//车型 ID
+    @JSONField(name="TrimId")
+    private String trimId;//车型 ID
 
-    private String Mileage;//里程
+    @JSONField(name="Mileage")
+    private String mileage;//里程
 
-    private String BuyCarDate;//上牌时间
+    @JSONField(name="BuyCarDate")
+    private String buyCarDate;//上牌时间
 
     private String carCard;//车牌号
-
 
     @Override
     public String toString() {

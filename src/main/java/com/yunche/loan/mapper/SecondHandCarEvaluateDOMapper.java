@@ -23,4 +23,6 @@ public interface SecondHandCarEvaluateDOMapper {
     List<SecondHandCarEvaluateDO> queryVIN(QueryVINParam vin);
 
     List<SecondHandCarEvaluateList> evaluateList(EvaluateListParam param);
+
+    List<SecondHandCarEvaluateList> selectVinHistory(QueryVINParam vin);
 }

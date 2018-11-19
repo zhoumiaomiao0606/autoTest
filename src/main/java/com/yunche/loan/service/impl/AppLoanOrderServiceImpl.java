@@ -1221,6 +1221,12 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
         LoanOrderDO loanOrderDO = new LoanOrderDO();
         loanOrderDO.setId(loanCarInfoParam.getOrderId());
         loanOrderDO.setLoanCarInfoId(createResultBean.getData());
+        //如果是二手车需要更新绑定
+        if (loanCarInfoParam.getCarType() ==1 )
+        {
+            loanOrderDO.setSecond_hand_car_evaluate_id(loanCarInfoParam.getSecond_hand_car_evaluate_id());
+        }
+
         ResultBean<Void> updateRelaResultBean = loanProcessOrderService.update(loanOrderDO);
         Preconditions.checkArgument(updateRelaResultBean.getSuccess(), updateRelaResultBean.getMsg());
 
@@ -1251,12 +1257,12 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
 
         //更新绑定
         LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(loanCarInfoParam.getOrderId());
-        if (loanCarInfoParam.getSecond_hand_car_evuluate_id()==null && "".equals(loanCarInfoParam.getSecond_hand_car_evuluate_id()))
+        if (loanCarInfoParam.getCarType() ==0 || (loanCarInfoParam.getSecond_hand_car_evaluate_id()==null && "".equals(loanCarInfoParam.getSecond_hand_car_evaluate_id())))
         {
-            loanOrderDO.setSecond_hand_car_evuluate_id(null);
+            loanOrderDO.setSecond_hand_car_evaluate_id(null);
             loanOrderDOMapper.updateByPrimaryKeySelective(loanOrderDO);
         }else {
-            loanOrderDO.setSecond_hand_car_evuluate_id(loanCarInfoParam.getSecond_hand_car_evuluate_id());
+            loanOrderDO.setSecond_hand_car_evaluate_id(loanCarInfoParam.getSecond_hand_car_evaluate_id());
             loanOrderDOMapper.updateByPrimaryKeySelective(loanOrderDO);
         }
         // convert
@@ -1312,11 +1318,11 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
         LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
         VehicleInformationDO vehicleInformationDO = vehicleInformationDOMapper.selectByPrimaryKey(vid);
 
-        if (loanOrderDO.getSecond_hand_car_evuluate_id()!=null && !"".equals(loanOrderDO.getSecond_hand_car_evuluate_id()))
+        if (loanOrderDO.getSecond_hand_car_evaluate_id()!=null && !"".equals(loanOrderDO.getSecond_hand_car_evaluate_id()))
         {
-            SecondHandCarEvaluateDO secondHandCarEvaluateDO = secondHandCarEvaluateDOMapper.selectByPrimaryKey(loanOrderDO.getSecond_hand_car_evuluate_id());
+            SecondHandCarEvaluateDO secondHandCarEvaluateDO = secondHandCarEvaluateDOMapper.selectByPrimaryKey(loanOrderDO.getSecond_hand_car_evaluate_id());
             loanCarInfoVO.setVin(secondHandCarEvaluateDO.getVin());
-            loanCarInfoVO.setSecond_hand_car_evuluate_id(loanOrderDO.getSecond_hand_car_evuluate_id());
+            loanCarInfoVO.setSecond_hand_car_evaluate_id(loanOrderDO.getSecond_hand_car_evaluate_id());
         }
         if (vehicleInformationDO != null) {
             loanCarInfoVO.setNowDrivingLicenseOwner(vehicleInformationDO.getNow_driving_license_owner());
