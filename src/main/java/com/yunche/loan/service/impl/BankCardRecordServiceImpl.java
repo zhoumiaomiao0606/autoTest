@@ -68,10 +68,11 @@ public class BankCardRecordServiceImpl implements BankCardRecordService {
             returnList = POIUtil.readExcelFromOSS(0, 1, key);
 
 
-            BankCardRecordDO bankCardRecordDO = new BankCardRecordDO();
             SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
             int line=1;
             for (String[] tmp : returnList) {
+                BankCardRecordDO bankCardRecordDO = new BankCardRecordDO();
+
 
                 if (tmp.length != 9) {
                     logList.add("文件第【"+line+"】行，列数异常,正确格式：{客户姓名、身份证号、账单日、首月账单日、还款日、首月还款日、还款卡号、接收日期、接收人}");
