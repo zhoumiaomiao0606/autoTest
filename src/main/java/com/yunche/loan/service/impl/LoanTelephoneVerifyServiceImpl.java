@@ -6,6 +6,7 @@ import com.yunche.loan.config.util.SessionUtils;
 import com.yunche.loan.domain.entity.*;
 import com.yunche.loan.domain.param.LoanTelephoneVerifyParam;
 import com.yunche.loan.mapper.*;
+import com.yunche.loan.service.LoanFileService;
 import com.yunche.loan.service.LoanTelephoneVerifyService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.Date;
+
+import static com.yunche.loan.config.constant.LoanFileConst.UPLOAD_TYPE_NORMAL;
 
 /**
  * @author liuzhe
@@ -33,6 +36,9 @@ public class LoanTelephoneVerifyServiceImpl implements LoanTelephoneVerifyServic
 
     @Autowired
     private PartnerDOMapper partnerDOMapper;
+
+    @Autowired
+    private LoanFileService loanFileService;
 
     @Transactional
     public ResultBean<Void> save(LoanTelephoneVerifyParam loanTelephoneVerifyParam) {
@@ -55,6 +61,10 @@ public class LoanTelephoneVerifyServiceImpl implements LoanTelephoneVerifyServic
         BigDecimal total_risk_rate = loanTelephoneVerifyParam.getRiskSharingAddition().add(riskBearRate);
         Preconditions.checkArgument(total_risk_rate.compareTo(new BigDecimal(100)) <= 0,
                 "订单总风险分担比例不能大于100%，当前：%s%", total_risk_rate);
+
+        //保存图片
+        ResultBean<Void> resultBean = loanFileService.updateOrInsertByCustomerIdAndUploadType(loanOrderDO.getLoanCustomerId(), loanTelephoneVerifyParam.getFiles(), UPLOAD_TYPE_NORMAL);
+        Preconditions.checkArgument(resultBean.getSuccess(), "合伙人签字承诺函");
 
 
         EmployeeDO employeeDO = SessionUtils.getLoginUser();

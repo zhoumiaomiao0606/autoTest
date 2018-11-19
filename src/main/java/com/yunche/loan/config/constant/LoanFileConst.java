@@ -66,5 +66,6 @@ public class LoanFileConst {
 
 
         TYPE_NAME_MAP.put((byte) 87, "代偿打款凭证");
+        TYPE_NAME_MAP.put((byte) 98, "合伙人签字承诺函");
     }
 }

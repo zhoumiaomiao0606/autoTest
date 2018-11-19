@@ -71,8 +71,8 @@ public class SecondHandCarController
     }
 
     //根据订单id查询绑定的估价信息
-    @GetMapping(value = "/queryEvuluate")
-    public ResultBean queryEvuluate(@RequestParam(value="orderId",required=true) Long orderId)
+    @GetMapping(value = "/queryEvaluate")
+    public ResultBean queryEvaluate(@RequestParam(value="orderId",required=true) Long orderId)
     {
         return secondHandCarService.queryEvuluate(orderId);
 
@@ -137,8 +137,8 @@ public class SecondHandCarController
     }
 
     //根据订单id查询绑定的估价信息
-    @GetMapping(value = "/queryEvaluateByEvuluateId")
-    public ResultBean queryEvaluateByEvuluateid(@RequestParam(value="evaluateId",required=true) Long evaluateId)
+    @GetMapping(value = "/queryEvaluateByEvaluateId")
+    public ResultBean queryEvaluateByEvaluateid(@RequestParam(value="evaluateId",required=true) Long evaluateId)
     {
         return secondHandCarService.queryEvaluateByEvaluateid(evaluateId);
 

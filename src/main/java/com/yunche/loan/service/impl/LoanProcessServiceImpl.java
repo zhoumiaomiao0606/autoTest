@@ -3339,7 +3339,10 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         LoanTelephoneVerifyDO loanTelephoneVerifyDO = loanTelephoneVerifyDOMapper.selectByPrimaryKey(orderId);
         Preconditions.checkNotNull(loanTelephoneVerifyDO, "风险分担加成记录丢失");
         BigDecimal riskSharingAddition = loanTelephoneVerifyDO.getRiskSharingAddition();
-        Preconditions.checkNotNull(riskSharingAddition, "风险分担加成记录丢失");
+       if (riskSharingAddition ==null)
+       {
+           riskSharingAddition = new BigDecimal("0");
+       }
 
         // 总风险分担比例
         double total_risk_rate = riskBearRate.doubleValue() + riskSharingAddition.doubleValue();
