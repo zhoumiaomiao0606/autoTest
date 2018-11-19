@@ -3637,6 +3637,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
     }
 
     public CalMoneyVO calBankLendRecord(Long bridgeProcessId, Long orderId, Date bankLendDate) {
+
         CalMoneyVO calMoneyVO = new CalMoneyVO();
         BigDecimal yearRate;
         BigDecimal singleRate;
@@ -3654,6 +3655,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             singleRate = confThirdPartyMoneyDO.getSingleRate();
             ThirdPartyFundBusinessDO thirdPartyFundBusinessDO = thirdPartyFundBusinessDOMapper.selectByPrimaryKey(bridgeProcessId);
             lendDate = thirdPartyFundBusinessDO.getLendDate();
+
             if (lendDate != null && bankLendDate != null) {
                 //BankLendRecordDO bankLendRecordDO = bankLendRecordDOMapper.selectByLoanOrder(orderId);
                 repayDate = bankLendDate;
