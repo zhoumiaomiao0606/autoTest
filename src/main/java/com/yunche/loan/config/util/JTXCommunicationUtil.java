@@ -118,8 +118,8 @@ public class JTXCommunicationUtil {
     //ASSET_03
     public String  buildResultInfo(String retCode, String retMsg, String repRef,String ref) {
         Date date = new Date();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        SimpleDateFormat sdf1 = new SimpleDateFormat("HH:mm:ss");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+        SimpleDateFormat sdf1 = new SimpleDateFormat("HHmmss");
         Map<String, Object> paramMap = new HashMap<>();
         Map headerMap = new HashMap();
         headerMap.put("Ver", "1.0");
@@ -137,7 +137,7 @@ public class JTXCommunicationUtil {
         bodyMap.put("RepRef", repRef);
         paramMap.put("MsgBody", bodyMap);
         String paramXml = MapXmlUtil.createXmlByMap(paramMap,"MsgText");
-
+        logger.info("ASSET_03返回信息:"+paramXml);
         try {
             byte[] param = JTXByteUtil.encrypt(paramXml.getBytes("GBK"), "netwxactive".getBytes("GBK"), "DES");
             String encode_req = new BASE64Encoder().encode(param);
@@ -167,7 +167,7 @@ public class JTXCommunicationUtil {
         bodyMap.put("Principal", principal);
         bodyMap.put("Rate", rate);
         bodyMap.put("Type", "车贷");
-        bodyMap.put("PayType", "EQUAL_CI");
+        bodyMap.put("PayType", "CAPITAL");
         bodyMap.put("InterestDate", interestDate);
 
 
@@ -219,6 +219,11 @@ public class JTXCommunicationUtil {
             Map map1 = (Map) map.get("MsgBody");
             if ("0000".equals((String) map1.get("RetCode"))) {
                 falg = true;
+                JtxCommunicationDO jtxCommunicationDO1 = new JtxCommunicationDO();
+                jtxCommunicationDO1.setJtxId(ref);
+                jtxCommunicationDO1.setUpdateDate(new Date());
+                jtxCommunicationDO1.setAssetNumber((String)map1.get("AssetSn"));
+                jtxCommunicationDOMapper.updateByPrimaryKeySelective(jtxCommunicationDO1);
             }else{
                 JtxCommunicationDO jtxCommunicationDO1 = new JtxCommunicationDO();
                 jtxCommunicationDO1.setJtxId(ref);
@@ -263,8 +268,8 @@ public class JTXCommunicationUtil {
 
     public void headBuild(Map<String, Object> map, String instrCd,String ref) {
         Date date = new Date();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        SimpleDateFormat sdf1 = new SimpleDateFormat("HH:mm:ss");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+        SimpleDateFormat sdf1 = new SimpleDateFormat("HHmmss");
         Map headerMap = new HashMap();
         headerMap.put("Ver", "1.0");
         headerMap.put("SysType", "MGR");

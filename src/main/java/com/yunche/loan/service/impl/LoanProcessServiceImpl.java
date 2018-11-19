@@ -3337,7 +3337,9 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
         // 风险分担加成
         LoanTelephoneVerifyDO loanTelephoneVerifyDO = loanTelephoneVerifyDOMapper.selectByPrimaryKey(orderId);
+        Preconditions.checkNotNull(loanTelephoneVerifyDO, "风险分担加成记录丢失");
         BigDecimal riskSharingAddition = loanTelephoneVerifyDO.getRiskSharingAddition();
+        Preconditions.checkNotNull(riskSharingAddition, "风险分担加成记录丢失");
 
         // 总风险分担比例
         double total_risk_rate = riskBearRate.doubleValue() + riskSharingAddition.doubleValue();
@@ -3622,8 +3624,10 @@ public class LoanProcessServiceImpl implements LoanProcessService {
                 LoanProcessBridgeDO loanProcessBridgeDO = loanProcessBridgeDOMapper.selectByOrderId(loanOrderDO.getId());
                 if (loanProcessBridgeDO != null) {
                     if (loanProcessBridgeDO.getBridgeRepayRecord() == 2) {
-                        CalMoneyVO calMoneyVO = calBankLendRecord(loanProcessBridgeDO.getId(), loanProcessBridgeDO.getOrderId());
-                        thirdPartyFundBusinessDOMapper.updateInfo(loanOrderDO.getId(), DateUtil.getDate10(calMoneyVO.getBankDate()), new BigDecimal(calMoneyVO.getInterest()), new BigDecimal(calMoneyVO.getPoundage()));
+                        CalMoneyVO calMoneyVO = calBankLendRecord(loanProcessBridgeDO.getId(), loanProcessBridgeDO.getOrderId(), approval.getBankLendDate());
+                        if (calMoneyVO.getInterest() != null && !"".equals(calMoneyVO.getInterest())) {
+                            thirdPartyFundBusinessDOMapper.updateInfo(loanOrderDO.getId(), DateUtil.getDate10(calMoneyVO.getBankDate()), new BigDecimal(calMoneyVO.getInterest()), new BigDecimal(calMoneyVO.getPoundage()));
+                        }
                     }
                 }
             }
@@ -3631,7 +3635,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
     }
 
-    public CalMoneyVO calBankLendRecord(Long bridgeProcessId, Long orderId) {
+    public CalMoneyVO calBankLendRecord(Long bridgeProcessId, Long orderId, Date bankLendDate) {
         CalMoneyVO calMoneyVO = new CalMoneyVO();
         BigDecimal yearRate;
         BigDecimal singleRate;
@@ -3649,26 +3653,25 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             singleRate = confThirdPartyMoneyDO.getSingleRate();
             ThirdPartyFundBusinessDO thirdPartyFundBusinessDO = thirdPartyFundBusinessDOMapper.selectByPrimaryKey(bridgeProcessId);
             lendDate = thirdPartyFundBusinessDO.getLendDate();
-            BankLendRecordDO bankLendRecordDO = bankLendRecordDOMapper.selectByLoanOrder(orderId);
-            repayDate = bankLendRecordDO.getLendDate();
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-            if (bankLendRecordDO != null) {
+            if (lendDate != null && bankLendDate != null) {
+                //BankLendRecordDO bankLendRecordDO = bankLendRecordDOMapper.selectByLoanOrder(orderId);
+                repayDate = bankLendDate;
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
                 if (repayDate != null) {
-
                     Calendar c = Calendar.getInstance();
-                    c.setTime(bankLendRecordDO.getLendDate());
+                    c.setTime(repayDate);
                     c.add(Calendar.DAY_OF_MONTH, 1);
                     repayDate = c.getTime();
                 }
+                timeNum = (int) ((repayDate.getTime() - lendDate.getTime()) / (1000 * 3600 * 24));
+                lend_amount = thirdPartyFundBusinessDO.getLendAmount();
+                if (lend_amount == null) {
+                    lend_amount = new BigDecimal("0.00");
+                }
+                calMoneyVO.setInterest(String.valueOf(yearRate.divide(BigDecimal.valueOf(100)).multiply(lend_amount).multiply(BigDecimal.valueOf(timeNum)).divide(BigDecimal.valueOf(365), 2, BigDecimal.ROUND_HALF_UP)));
+                calMoneyVO.setPoundage(String.valueOf(singleRate.divide(BigDecimal.valueOf(100)).multiply(lend_amount).multiply(BigDecimal.valueOf(timeNum)).divide(BigDecimal.valueOf(365), 2, BigDecimal.ROUND_HALF_UP)));
+                calMoneyVO.setBankDate(sdf.format(repayDate));
             }
-            timeNum = (int) ((repayDate.getTime() - lendDate.getTime()) / (1000 * 3600 * 24));
-            lend_amount = thirdPartyFundBusinessDO.getLendAmount();
-            if (lend_amount != null) {
-                lend_amount = new BigDecimal("0.00");
-            }
-            calMoneyVO.setInterest(String.valueOf(yearRate.divide(BigDecimal.valueOf(100)).multiply(lend_amount).multiply(BigDecimal.valueOf(timeNum)).divide(BigDecimal.valueOf(365), 2, BigDecimal.ROUND_HALF_UP)));
-            calMoneyVO.setPoundage(String.valueOf(singleRate.divide(BigDecimal.valueOf(100)).multiply(lend_amount).multiply(BigDecimal.valueOf(timeNum)).divide(BigDecimal.valueOf(365), 2, BigDecimal.ROUND_HALF_UP)));
-            calMoneyVO.setBankDate(sdf.format(repayDate));
         }
         return calMoneyVO;
     }

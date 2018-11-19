@@ -670,9 +670,9 @@ public class JinTouHangAccommodationApplyServiceImpl implements JinTouHangAccomm
                                     String temp = null;
                                     while ((temp = reader.readLine()) != null){
                                         String[] result = temp.split("\\|");
-                                        if(result[1]!=null&&result[3]!=null){
-                                            String jtxId = result[1].substring(3);
-                                            JtxCommunicationDO jtxCommunicationDO =jtxCommunicationDOMapper.selectByPrimaryKey(jtxId);
+                                        if(result[2]!=null&&result[3]!=null){
+                                            String assetId = result[2];
+                                            JtxCommunicationDO jtxCommunicationDO =jtxCommunicationDOMapper.selectByAssetId(assetId);
                                             if(jtxCommunicationDO !=null){
                                                 if("0000".equals(result[3])){
                                                         //提交任务
@@ -703,7 +703,7 @@ public class JinTouHangAccommodationApplyServiceImpl implements JinTouHangAccomm
                                                     thirdPartyFundBusinessDOMapper.updateByPrimaryKeySelective(thirdPartyFundBusinessDO);
                                                 }
                                             }else{
-                                                asyErrorInfo = "jtxId:"+jtxId+"该任务不存在";
+                                                asyErrorInfo = "assetId:"+assetId+"该任务不存在";
                                             }
                                         }else{
                                             asyErrorInfo ="金投行数据内容异常";
