@@ -94,11 +94,11 @@ public class SecondHandCarServiceImpl implements SecondHandCarService
 
                 vin.setMaxGroupLevel(maxGroupLevel);
 
-                List<SecondHandCarEvaluateList> secondHandCarEvaluateLists = secondHandCarEvaluateDOMapper.selectVinHistory(vin);
-                if (secondHandCarEvaluateLists !=null)
+                /*List<SecondHandCarEvaluateList> secondHandCarEvaluateLists = secondHandCarEvaluateDOMapper.selectVinHistory(vin);
+                if (secondHandCarEvaluateLists !=null || secondHandCarEvaluateLists.size()!=0)
                 {
                     throw  new BizException("该vin码七天内有查过估价信息");
-                }
+                }*/
 
             }
 
