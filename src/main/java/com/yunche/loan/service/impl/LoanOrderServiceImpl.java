@@ -731,7 +731,8 @@ public class LoanOrderServiceImpl implements LoanOrderService {
         Long loanCarInfoId = loanOrderDOMapper.getLoanCarInfoIdById(orderId);
 
         LoanCarInfoDO loanCarInfoDO = loanCarInfoDOMapper.selectByPrimaryKey(loanCarInfoId);
-        if (null != loanCarInfoDO) {
+        if (null != loanCarInfoDO)
+        {
             BeanUtils.copyProperties(loanCarInfoDO, loanCarInfoVO);
 
             // 车型回填
@@ -748,12 +749,6 @@ public class LoanOrderServiceImpl implements LoanOrderService {
         VehicleInformationDO vehicleInformationDO = vehicleInformationDOMapper.selectByPrimaryKey(vid);
 
         LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
-        if (loanOrderDO.getSecond_hand_car_evaluate_id()!=null && !"".equals(loanOrderDO.getSecond_hand_car_evaluate_id()))
-        {
-            SecondHandCarEvaluateDO secondHandCarEvaluateDO = secondHandCarEvaluateDOMapper.selectByPrimaryKey(loanOrderDO.getSecond_hand_car_evaluate_id());
-            loanCarInfoVO.setVin(secondHandCarEvaluateDO.getVin());
-            loanCarInfoVO.setSecond_hand_car_evaluate_id(loanOrderDO.getSecond_hand_car_evaluate_id());
-        }
         if (vehicleInformationDO != null) {
             loanCarInfoVO.setNowDrivingLicenseOwner(vehicleInformationDO.getNow_driving_license_owner());
             loanCarInfoVO.setLicensePlateType(vehicleInformationDO.getLicense_plate_type() == null ? null : vehicleInformationDO.getLicense_plate_type().toString());
@@ -761,10 +756,12 @@ public class LoanOrderServiceImpl implements LoanOrderService {
             loanCarInfoVO.setVehicleCarCategory(vehicleInformationDO.getCar_category());
         }
         String tmpApplyLicensePlateArea = null;
-        if (loanBaseInfoDO.getAreaId() != null) {
+        if (loanBaseInfoDO.getAreaId() != null)
+        {
             BaseAreaDO baseAreaDO = baseAreaDOMapper.selectByPrimaryKey(loanBaseInfoDO.getAreaId(), VALID_STATUS);
             //（个性化）如果上牌地是区县一级，则返回形式为 省+区
-            if ("3".equals(String.valueOf(baseAreaDO.getLevel()))) {
+            if ("3".equals(String.valueOf(baseAreaDO.getLevel())))
+            {
                 Long parentAreaId = baseAreaDO.getParentAreaId();
                 BaseAreaDO cityDO = baseAreaDOMapper.selectByPrimaryKey(parentAreaId, null);
                 baseAreaDO.setParentAreaId(cityDO.getParentAreaId());
@@ -773,7 +770,8 @@ public class LoanOrderServiceImpl implements LoanOrderService {
             loanCarInfoVO.setHasApplyLicensePlateArea(baseAreaDO);
 
             if (baseAreaDO != null) {
-                if (baseAreaDO.getParentAreaName() != null) {
+                if (baseAreaDO.getParentAreaName() != null)
+                {
                     tmpApplyLicensePlateArea = baseAreaDO.getParentAreaName() + baseAreaDO.getAreaName();
                 } else {
                     tmpApplyLicensePlateArea = baseAreaDO.getAreaName();
@@ -783,7 +781,18 @@ public class LoanOrderServiceImpl implements LoanOrderService {
         loanCarInfoVO.setApplyLicensePlateArea(tmpApplyLicensePlateArea);
         //增加业务员
         UniversalInfoVO universalInfoVO = loanQueryDOMapper.selectUniversalInfo(orderId);
-        if (universalInfoVO != null) {
+        if (loanOrderDO.getSecond_hand_car_evaluate_id()!=null && !"".equals(loanOrderDO.getSecond_hand_car_evaluate_id()))
+        {
+            SecondHandCarEvaluateDO secondHandCarEvaluateDO = secondHandCarEvaluateDOMapper.selectByPrimaryKey(loanOrderDO.getSecond_hand_car_evaluate_id());
+            loanCarInfoVO.setVin(secondHandCarEvaluateDO.getVin());
+            loanCarInfoVO.setSecond_hand_car_evaluate_id(loanOrderDO.getSecond_hand_car_evaluate_id());
+            /*if(universalInfoVO != null)
+            {
+                universalInfoVO.setCar_name(secondHandCarEvaluateDO.getName());
+            }*/
+        }
+        if (universalInfoVO != null)
+        {
             loanCarInfoVO.setSalesManName(universalInfoVO.getSalesman_name());
             loanCarInfoVO.setPartnerName(universalInfoVO.getPartner_name());
         }

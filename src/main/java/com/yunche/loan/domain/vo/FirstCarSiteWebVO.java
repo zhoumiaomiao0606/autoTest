@@ -5,11 +5,11 @@ import lombok.Data;
 @Data
 public class FirstCarSiteWebVO
 {
-    private String BrandType;//品牌类型
+    private String Brand;//品牌类型
 
     private String Model_Name;//车系：欧力威
 
-    private String Brand;//厂商：长安   --？？？
+    private String Manufacturer;//厂商：长安   --？？？
 
     private String VersionYear;//车辆年款：201304  --- model
 

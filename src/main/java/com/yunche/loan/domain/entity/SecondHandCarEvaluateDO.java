@@ -41,13 +41,13 @@ public class SecondHandCarEvaluateDO
 
     private Long saleman_id;
 
-    private String manufacturerGuidePrice;
+    private String manufacturerGuidePrice;//新车指导价
 
-    private String dateOfProduction;
+    private String dateOfProduction;//出厂日期
 
-    private String year;
+    private String year;//年份
 
-    private String manufacturerName;
+    private String manufacturerName;//精真估厂商名称
 
     private String evaluate_json;
 
