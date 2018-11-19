@@ -3482,6 +3482,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
                 loanCustomerDO.setOpenCardOrder(String.valueOf(BaseConst.K_YORN_NO));
             }
+            loanCustomerService.update(loanCustomerDO);
         }
     }
 
