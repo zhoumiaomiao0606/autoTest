@@ -211,11 +211,11 @@
       <if test="mileage != null">
         #{mileage,jdbcType=VARCHAR},
       </if>
-      <if test="vehicle_type != null">
-        #{vehicle_type,jdbcType=VARCHAR},
-      </if>
       <if test="ocr_id != null">
         #{ocr_id,jdbcType=BIGINT},
+      </if>
+      <if test="vehicle_type != null">
+        #{vehicle_type,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>

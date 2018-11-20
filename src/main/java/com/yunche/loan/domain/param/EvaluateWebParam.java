@@ -49,7 +49,7 @@ public class EvaluateWebParam
 
     private String vehicle_type;//车辆类型
 
-    private Long ocr_id;//识别id
+    private String ocr_id;//识别id
 
 
 

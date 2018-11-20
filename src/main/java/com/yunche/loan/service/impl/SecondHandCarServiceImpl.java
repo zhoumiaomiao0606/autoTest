@@ -16,10 +16,12 @@ import com.yunche.loan.manager.finance.BusinessReviewManager;
 import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.EmployeeService;
 import com.yunche.loan.service.SecondHandCarService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.util.*;
@@ -288,7 +290,12 @@ public class SecondHandCarServiceImpl implements SecondHandCarService
         }*/
         if (financeResult1.getDatas()!=null)
         {
-            SecondHandCarEvaluateDO secondHandCarEvaluateDO =  BeanPlasticityUtills.copy(SecondHandCarEvaluateDO.class,evaluateWebParam);
+            /*SecondHandCarEvaluateDO secondHandCarEvaluateDO =new SecondHandCarEvaluateDO();*/
+                /*BeanUtils.copyProperties(evaluateWebParam,secondHandCarEvaluateDO);
+                //时间格式
+            secondHandCarEvaluateDO.setRegister_date(new Date(evaluateWebParam.getRegister_date()));*/
+            SecondHandCarEvaluateDO secondHandCarEvaluateDO = BeanPlasticityUtills.copy(SecondHandCarEvaluateDO.class, evaluateWebParam);
+
 
             //保存当前业务员
             secondHandCarEvaluateDO.setSaleman_id(SessionUtils.getLoginUser().getId());
