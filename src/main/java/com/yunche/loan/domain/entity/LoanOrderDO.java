@@ -47,6 +47,8 @@ public class LoanOrderDO {
 
     private Long second_hand_car_evaluate_id;
 
+    private Long second_hand_car_first_site_id;
+
     /**
      * 暂无意义
      */

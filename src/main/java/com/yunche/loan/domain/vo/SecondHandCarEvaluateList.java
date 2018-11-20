@@ -22,6 +22,10 @@ public class SecondHandCarEvaluateList
 
     private String owner;
 
+    private String trimId;
+
+    private String style_color;
+
     private String make_name;//品牌
 
     private String model_name;//车系

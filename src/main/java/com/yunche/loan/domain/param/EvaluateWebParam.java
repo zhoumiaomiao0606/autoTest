@@ -47,6 +47,10 @@ public class EvaluateWebParam
 
     private String manufacturerName;//精真估厂商名称。
 
+    private String vehicle_type;//车辆类型
+
+    private Long ocr_id;//识别id
+
 
 
     //后端处理

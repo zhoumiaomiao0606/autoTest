@@ -46,6 +46,9 @@ public class LoanInfoRegisterServiceImpl implements LoanInfoRegisterService {
     @Autowired
     private LoanCustomerDOMapper loanCustomerDOMapper;
 
+    @Autowired
+    private SecondHandCarEvaluateDOMapper secondHandCarEvaluateDOMapper;
+
 
     @Override
     public ResultBean detail(Long orderId) {
@@ -81,13 +84,23 @@ public class LoanInfoRegisterServiceImpl implements LoanInfoRegisterService {
 
         LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(loanInfoRegisterParam.getOrderId());
         Preconditions.checkNotNull(loanOrderDO, "订单信息不存在");
-
+        VehicleInformationDO vehicleInformationDO = new VehicleInformationDO();
         //更新vin码绑定
             if (loanInfoRegisterParam.getCarType() ==0 || (loanInfoRegisterParam.getSecond_hand_car_evaluate_id()==null && "".equals(loanInfoRegisterParam.getSecond_hand_car_evaluate_id())))
             {
                 loanOrderDO.setSecond_hand_car_evaluate_id(null);
                 loanOrderDOMapper.updateByPrimaryKeySelective(loanOrderDO);
             }else {
+                SecondHandCarEvaluateDO secondHandCarEvaluateDO = secondHandCarEvaluateDOMapper.selectByPrimaryKey(loanInfoRegisterParam.getSecond_hand_car_evaluate_id());
+
+                // #车牌号码 #车辆类型（小型轿车）  #所有人名称  #发动机号码  #注册日期   #车型颜色
+                vehicleInformationDO.setLicense_plate_number(secondHandCarEvaluateDO.getPlate_num());
+                vehicleInformationDO.setCar_category(secondHandCarEvaluateDO.getVehicle_type());
+                vehicleInformationDO.setNow_driving_license_owner(secondHandCarEvaluateDO.getOwner());
+                vehicleInformationDO.setEngine_number(secondHandCarEvaluateDO.getEngine_num());
+                vehicleInformationDO.setRegister_date(secondHandCarEvaluateDO.getRegister_date());
+                vehicleInformationDO.setColor(secondHandCarEvaluateDO.getStyle_color());
+                vehicleInformationDO.setVehicle_identification_number(secondHandCarEvaluateDO.getVin());
                 loanOrderDO.setSecond_hand_car_evaluate_id(loanInfoRegisterParam.getSecond_hand_car_evaluate_id());
             }
 
@@ -134,7 +147,6 @@ public class LoanInfoRegisterServiceImpl implements LoanInfoRegisterService {
         // vehicleInformation
         Long vehicleInformationId = loanOrderDO.getVehicleInformationId();
 
-        VehicleInformationDO vehicleInformationDO = new VehicleInformationDO();
         vehicleInformationDO.setId(vehicleInformationId);
         vehicleInformationDO.setColor(loanInfoRegisterParam.getColor());
 

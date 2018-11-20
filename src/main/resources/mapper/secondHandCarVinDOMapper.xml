@@ -41,6 +41,10 @@
     where id = #{id,jdbcType=BIGINT}
   </delete>
   <insert id="insert" parameterType="com.yunche.loan.domain.entity.SecondHandCarVinDO">
+    <selectKey resultType="java.lang.Long" keyProperty="id"
+               order="AFTER">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
     insert into second_hand_car_vin (id, saleman_id, vin, 
       plate_num, vehicle_type, owner, 
       use_character, addr, model, 
@@ -59,6 +63,10 @@
       #{query_time,jdbcType=TIMESTAMP})
   </insert>
   <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.SecondHandCarVinDO">
+    <selectKey resultType="java.lang.Long" keyProperty="id"
+               order="AFTER">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
     insert into second_hand_car_vin
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="id != null">

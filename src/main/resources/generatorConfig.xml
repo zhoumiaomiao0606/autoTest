@@ -384,7 +384,7 @@
 -->
 
 
-        <table tableName="second_hand_car_vin" domainObjectName="SecondHandCarVinDO"
+        <table tableName="second_hand_car_first_site" domainObjectName="SecondHandCarFirstSite"
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
             <!--采用下划线字段-->

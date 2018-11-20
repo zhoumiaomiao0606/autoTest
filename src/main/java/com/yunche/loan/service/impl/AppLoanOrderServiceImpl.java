@@ -1221,21 +1221,33 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
         LoanOrderDO loanOrderDO = new LoanOrderDO();
         loanOrderDO.setId(loanCarInfoParam.getOrderId());
         loanOrderDO.setLoanCarInfoId(createResultBean.getData());
+        VehicleInformationUpdateParam vehicleInformationUpdateParam = new VehicleInformationUpdateParam();
         //如果是二手车需要更新绑定
         if (loanCarInfoParam.getCarType() ==1 )
         {
             loanOrderDO.setSecond_hand_car_evaluate_id(loanCarInfoParam.getSecond_hand_car_evaluate_id());
-        }
+            SecondHandCarEvaluateDO secondHandCarEvaluateDO = secondHandCarEvaluateDOMapper.selectByPrimaryKey(loanCarInfoParam.getSecond_hand_car_evaluate_id());
+
+            // #车牌号码 #车辆类型（小型轿车）  #所有人名称  #发动机号码  #注册日期   #车型颜色
+            vehicleInformationUpdateParam.setLicense_plate_number(secondHandCarEvaluateDO.getPlate_num());
+            vehicleInformationUpdateParam.setCar_category(secondHandCarEvaluateDO.getVehicle_type());
+            vehicleInformationUpdateParam.setNow_driving_license_owner(secondHandCarEvaluateDO.getOwner());
+            vehicleInformationUpdateParam.setEngine_number(secondHandCarEvaluateDO.getEngine_num());
+            vehicleInformationUpdateParam.setRegister_date(secondHandCarEvaluateDO.getRegister_date().toString());
+            vehicleInformationUpdateParam.setColor(secondHandCarEvaluateDO.getStyle_color());
+            vehicleInformationUpdateParam.setVehicle_identification_number(secondHandCarEvaluateDO.getVin());
+        }else
+            {
+                vehicleInformationUpdateParam.setNow_driving_license_owner(loanCarInfoParam.getNowDrivingLicenseOwner());
+                vehicleInformationUpdateParam.setColor(loanCarInfoParam.getColor());
+            }
 
         ResultBean<Void> updateRelaResultBean = loanProcessOrderService.update(loanOrderDO);
         Preconditions.checkArgument(updateRelaResultBean.getSuccess(), updateRelaResultBean.getMsg());
 
-        VehicleInformationUpdateParam vehicleInformationUpdateParam = new VehicleInformationUpdateParam();
         vehicleInformationUpdateParam.setOrder_id(loanCarInfoParam.getOrderId().toString());
         vehicleInformationUpdateParam.setApply_license_plate_area(loanCarInfoParam.getApplyLicensePlateAreaId());
         vehicleInformationUpdateParam.setLicense_plate_type(loanCarInfoParam.getLicensePlateType());
-        vehicleInformationUpdateParam.setNow_driving_license_owner(loanCarInfoParam.getNowDrivingLicenseOwner());
-        vehicleInformationUpdateParam.setColor(loanCarInfoParam.getColor());
 
         vehicleInformationService.update(vehicleInformationUpdateParam);
 
@@ -1255,14 +1267,30 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
         Preconditions.checkArgument(null != loanCarInfoParam && null != loanCarInfoParam.getId(), "车辆信息ID不能为空");
         Preconditions.checkNotNull(loanCarInfoParam.getOrderId(), "订单号不能为空");
 
+        VehicleInformationUpdateParam vehicleInformationUpdateParam = new VehicleInformationUpdateParam();
         //更新绑定
         LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(loanCarInfoParam.getOrderId());
         if (loanCarInfoParam.getCarType() ==0 || (loanCarInfoParam.getSecond_hand_car_evaluate_id()==null && "".equals(loanCarInfoParam.getSecond_hand_car_evaluate_id())))
         {
+            vehicleInformationUpdateParam.setNow_driving_license_owner(loanCarInfoParam.getNowDrivingLicenseOwner());
+            vehicleInformationUpdateParam.setColor(loanCarInfoParam.getColor());
             loanOrderDO.setSecond_hand_car_evaluate_id(null);
             loanOrderDOMapper.updateByPrimaryKeySelective(loanOrderDO);
         }else {
             loanOrderDO.setSecond_hand_car_evaluate_id(loanCarInfoParam.getSecond_hand_car_evaluate_id());
+            //更新车辆信息其他信息
+            SecondHandCarEvaluateDO secondHandCarEvaluateDO = secondHandCarEvaluateDOMapper.selectByPrimaryKey(loanCarInfoParam.getSecond_hand_car_evaluate_id());
+
+            // #车牌号码 #车辆类型（小型轿车）  #所有人名称  #发动机号码  #注册日期   #车型颜色
+            vehicleInformationUpdateParam.setLicense_plate_number(secondHandCarEvaluateDO.getPlate_num());
+            vehicleInformationUpdateParam.setCar_category(secondHandCarEvaluateDO.getVehicle_type());
+            vehicleInformationUpdateParam.setNow_driving_license_owner(secondHandCarEvaluateDO.getOwner());
+            vehicleInformationUpdateParam.setEngine_number(secondHandCarEvaluateDO.getEngine_num());
+            vehicleInformationUpdateParam.setRegister_date(secondHandCarEvaluateDO.getRegister_date().toString());
+            vehicleInformationUpdateParam.setColor(secondHandCarEvaluateDO.getStyle_color());
+            vehicleInformationUpdateParam.setVehicle_identification_number(secondHandCarEvaluateDO.getVin());
+
+
             loanOrderDOMapper.updateByPrimaryKeySelective(loanOrderDO);
         }
         // convert
@@ -1271,12 +1299,9 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
 
         ResultBean<Void> resultBean = loanCarInfoService.update(loanCarInfoDO);
 
-        VehicleInformationUpdateParam vehicleInformationUpdateParam = new VehicleInformationUpdateParam();
         vehicleInformationUpdateParam.setOrder_id(loanCarInfoParam.getOrderId().toString());
         vehicleInformationUpdateParam.setApply_license_plate_area(loanCarInfoParam.getApplyLicensePlateAreaId());
         vehicleInformationUpdateParam.setLicense_plate_type(loanCarInfoParam.getLicensePlateType());
-        vehicleInformationUpdateParam.setNow_driving_license_owner(loanCarInfoParam.getNowDrivingLicenseOwner());
-        vehicleInformationUpdateParam.setColor(loanCarInfoParam.getColor());
         vehicleInformationService.update(vehicleInformationUpdateParam);
 
         String s = loanCarInfoParam.getApplyLicensePlateAreaId();

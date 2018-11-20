@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunche.loan.mapper.SecondHandCarFirstSiteMapper">
+  <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.SecondHandCarFirstSite">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="first_site_json" jdbcType="VARCHAR" property="first_site_json" />
+    <result column="query_time" jdbcType="TIMESTAMP" property="query_time" />
+    <result column="saleman_id" jdbcType="BIGINT" property="saleman_id" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, first_site_json, query_time, saleman_id
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from second_hand_car_first_site
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from second_hand_car_first_site
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.yunche.loan.domain.entity.SecondHandCarFirstSite">
+    <selectKey resultType="java.lang.Long" keyProperty="id"
+               order="AFTER">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into second_hand_car_first_site (id, first_site_json, query_time, 
+      saleman_id)
+    values (#{id,jdbcType=BIGINT}, #{first_site_json,jdbcType=VARCHAR}, #{query_time,jdbcType=TIMESTAMP}, 
+      #{saleman_id,jdbcType=BIGINT})
+  </insert>
+  <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.SecondHandCarFirstSite">
+    <selectKey resultType="java.lang.Long" keyProperty="id"
+               order="AFTER">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into second_hand_car_first_site
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="first_site_json != null">
+        first_site_json,
+      </if>
+      <if test="query_time != null">
+        query_time,
+      </if>
+      <if test="saleman_id != null">
+        saleman_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="first_site_json != null">
+        #{first_site_json,jdbcType=VARCHAR},
+      </if>
+      <if test="query_time != null">
+        #{query_time,jdbcType=TIMESTAMP},
+      </if>
+      <if test="saleman_id != null">
+        #{saleman_id,jdbcType=BIGINT},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.SecondHandCarFirstSite">
+    update second_hand_car_first_site
+    <set>
+      <if test="first_site_json != null">
+        first_site_json = #{first_site_json,jdbcType=VARCHAR},
+      </if>
+      <if test="query_time != null">
+        query_time = #{query_time,jdbcType=TIMESTAMP},
+      </if>
+      <if test="saleman_id != null">
+        saleman_id = #{saleman_id,jdbcType=BIGINT},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.SecondHandCarFirstSite">
+    update second_hand_car_first_site
+    set first_site_json = #{first_site_json,jdbcType=VARCHAR},
+      query_time = #{query_time,jdbcType=TIMESTAMP},
+      saleman_id = #{saleman_id,jdbcType=BIGINT}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

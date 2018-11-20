@@ -53,6 +53,10 @@ public class SecondHandCarEvaluateDO
 
     private String mileage;
 
+    private String vehicle_type;//车辆属性
+
+    private Long ocr_id;//识别id
+
     //展示
     private EvaluatePrice b2CPrices;//商家销售价 B2C 价格 包含 abc 三个车况
 

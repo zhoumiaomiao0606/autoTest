@@ -7,7 +7,7 @@ public class FirstCarSiteWebVO
 {
     private String Brand;//品牌类型
 
-    private String Model_Name;//车系：欧力威  model---?
+    private String Model_Name;//车系：欧力威  model
 
     private String Manufacturer;//厂商：长安   --？？？
 
