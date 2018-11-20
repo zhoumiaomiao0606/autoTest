@@ -573,24 +573,24 @@ public class SecondHandCarServiceImpl implements SecondHandCarService
             FirstCarSiteVO firstCarSiteVO = financeResult1.getDatas().get(0);
 
             //设置值
-            /*firstCarSiteWebVO.setBrand();
-            firstCarSiteWebVO.setBrandType();
-            firstCarSiteWebVO.setCarBodyForm();
-            firstCarSiteWebVO.setColor();
-            firstCarSiteWebVO.setDisplacement();
-            firstCarSiteWebVO.setDoors();
-            firstCarSiteWebVO.setDrivingMethod();
-            firstCarSiteWebVO.setEmission();
-            firstCarSiteWebVO.setEngineModel();
-            firstCarSiteWebVO.setEngineNo();
-            firstCarSiteWebVO.setFuelType();
-            firstCarSiteWebVO.setModel_Name();
-            firstCarSiteWebVO.setName();
-            firstCarSiteWebVO.setProductionDate();
-            firstCarSiteWebVO.setSeating();
-            firstCarSiteWebVO.setTransmissionType();
-            firstCarSiteWebVO.setVersionYear();
-            firstCarSiteWebVO.setWeight();*/
+            firstCarSiteWebVO.setBrand(firstCarSiteVO.getBrand());
+
+            firstCarSiteWebVO.setCarBodyForm(firstCarSiteVO.getDetail().getBody().getCarBodyForm());
+            firstCarSiteWebVO.setColor(firstCarSiteVO.getColor());
+            firstCarSiteWebVO.setDisplacement(firstCarSiteVO.getModel().getDisplacement());
+            firstCarSiteWebVO.setDoors(firstCarSiteVO.getDetail().getBody().getDoors());
+            firstCarSiteWebVO.setDrivingMethod(firstCarSiteVO.getDetail().getChassis().getDrivingMethod());
+            firstCarSiteWebVO.setEmission(firstCarSiteVO.getDetail().getBasic().getEmission());
+            firstCarSiteWebVO.setEngineModel(firstCarSiteVO.getDetail().getEngine().getEngineModel());
+            firstCarSiteWebVO.setEngineNo(firstCarSiteVO.getEngineNo());
+            firstCarSiteWebVO.setFuelType(firstCarSiteVO.getDetail().getEngine().getFuelType());
+            firstCarSiteWebVO.setModel_Name(firstCarSiteVO.getModel().getName());
+            /*firstCarSiteWebVO.setName(firstCarSiteVO.getModel().getName());*/
+            firstCarSiteWebVO.setProductionDate(firstCarSiteVO.getModel().getProductionYear());
+            firstCarSiteWebVO.setSeating(firstCarSiteVO.getDetail().getBody().getSeating());
+            firstCarSiteWebVO.setTransmissionType(firstCarSiteVO.getModel().getTransmissionType());
+            firstCarSiteWebVO.setVersionYear(firstCarSiteVO.getModel().getVersionYear());
+            firstCarSiteWebVO.setWeight(firstCarSiteVO.getDetail().getBody().getWeight());
 
 
             //设置返回值

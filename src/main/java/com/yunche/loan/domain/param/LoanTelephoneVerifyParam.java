@@ -19,4 +19,5 @@ public class LoanTelephoneVerifyParam extends LoanTelephoneVerifyDO {
 
     //保存电审风险分担加成图片
     private List<FileVO> files = Collections.EMPTY_LIST;
+
 }

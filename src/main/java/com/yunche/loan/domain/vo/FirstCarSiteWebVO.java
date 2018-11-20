@@ -7,7 +7,7 @@ public class FirstCarSiteWebVO
 {
     private String Brand;//品牌类型
 
-    private String Model_Name;//车系：欧力威
+    private String Model_Name;//车系：欧力威  model---?
 
     private String Manufacturer;//厂商：长安   --？？？
 
@@ -21,7 +21,7 @@ public class FirstCarSiteWebVO
 
     private String Name;//车辆型号：SC6388AV4     --- model -款式名称 --？
 
-   /* private String BrandType;//外型尺寸：3800/1700/1680*/
+   /* private String BrandType;//外型尺寸：3800/1700/1680*/   //---?
 
     private String Weight;//整备质量（kg）：1095   --- body
 
