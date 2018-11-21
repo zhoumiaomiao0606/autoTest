@@ -244,7 +244,7 @@ public class SecondHandCarServiceImpl implements SecondHandCarService
             financeResult1 = gson.fromJson(financeResult, type);
         }
 
-        if (financeResult1.getDatas() !=null ||financeResult1.getDatas().size()!=0)
+        if (financeResult1.getDatas().size()!=0)
         {
             //将车型code  重新赋值车型id
 
