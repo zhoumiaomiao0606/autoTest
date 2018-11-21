@@ -244,10 +244,13 @@ public class SecondHandCarServiceImpl implements SecondHandCarService
             financeResult1 = gson.fromJson(financeResult, type);
         }
 
-        if (financeResult1.getDatas() !=null){
+        if (financeResult1.getDatas() !=null ||financeResult1.getDatas().size()!=0)
+        {
+            //将车型code  重新赋值车型id
+
             return ResultBean.ofSuccess(financeResult1.getDatas());
         }else {
-            return ResultBean.ofError("vin码查询车型失败--");
+            return ResultBean.ofError("vin码查询车型失败-或该vin码无对应车型-");
         }
 
     }
