@@ -156,7 +156,7 @@ public class SecondHandCarServiceImpl implements SecondHandCarService
         Map querys = new HashMap<>();
         querys.put("vin",vin);
         System.out.println("========");
-        String financeResult = businessReviewManager.getFinanceUnisal2("/api/car/vin",querys);
+        String financeResult = businessReviewManager.getFinanceUnisal2("/api/car",querys);
 
        /* String financeResult = "{\n" +
                 "    \"datas\": [\n" +
