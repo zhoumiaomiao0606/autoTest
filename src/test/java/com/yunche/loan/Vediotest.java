@@ -52,8 +52,10 @@ public class Vediotest
             throw new BizException("读取oss文件失败");
         }*/
 
-        Date date =new Date("2001");
-        System.out.println("===="+date.toString());
+        String a = "上饶市";
+        int i = a.indexOf("牛");
+        String substring = a.substring(0, 2);
+        System.out.println("====="+i+substring);
 
     }
 
