@@ -25,4 +25,6 @@ public interface SecondHandCarEvaluateDOMapper {
     List<SecondHandCarEvaluateList> evaluateList(EvaluateListParam param);
 
     List<SecondHandCarEvaluateList> selectVinHistory(QueryVINParam vin);
+
+    String selectPlateAreaByOrderId(Long orderId);
 }

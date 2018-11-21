@@ -83,8 +83,8 @@ public class BusinessReviewManager {
         String result = null;
         try {
             result = HttpUtils.doPost(HOST2, PATH,null, param.toString());
-            System.out.println("请求参数"+param.toString());
-            System.out.println("请求结果"+result);
+            LOG.info("请求参数"+param.toString());
+            LOG.info("请求结果"+result);
 
             if (result == null)
             {
@@ -120,6 +120,8 @@ public class BusinessReviewManager {
                 throw new BizException("请求到财务数据为空");
             }
 
+            LOG.info("请求结果"+result);
+
         } catch (Exception e) {
             LOG.error("请求财务系统出错---！！",e);
             throw new BizException("请求财务系统出错");
@@ -143,11 +145,13 @@ public class BusinessReviewManager {
             }
 
 
+
             if (result == null)
             {
                 throw new BizException("请求到财务数据为空");
             }
 
+            LOG.info("请求结果"+result);
         } catch (Exception e) {
             LOG.error("请求财务系统出错---！！",e);
             throw new BizException("请求财务系统出错");

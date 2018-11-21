@@ -1561,7 +1561,7 @@
                     </otherwise>
                 </choose>
             </if>
-            <if test="taskDefinitionKey != 'usertask_telephone_verify'">
+            <if test="taskDefinitionKey != 'usertask_telephone_verify' and taskDefinitionKey != 'usertask_bank_credit_record' ">
             <choose>
                 <when test="taskDefinitionKey == 'usertask_collection_workbench'">
                     order by complex.urgeGmtCreate ASC
@@ -1582,6 +1582,10 @@
                     order by complex.orderGmtCreate DESC
                 </otherwise>
             </choose>
+            </if>
+            <if test="taskDefinitionKey == 'usertask_bank_credit_record'">
+                order by complex.creditApplySubmitTime ASC
+
             </if>
         </select>
 

@@ -16,10 +16,12 @@ import com.yunche.loan.manager.finance.BusinessReviewManager;
 import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.EmployeeService;
 import com.yunche.loan.service.SecondHandCarService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.util.*;
@@ -154,9 +156,9 @@ public class SecondHandCarServiceImpl implements SecondHandCarService
         Map querys = new HashMap<>();
         querys.put("vin",vin);
         System.out.println("========");
-       /* String financeResult = businessReviewManager.getFinanceUnisal2("/api/car/vin",querys);*/
+        String financeResult = businessReviewManager.getFinanceUnisal2("/api/car/vin",querys);
 
-        String financeResult = "{\n" +
+       /* String financeResult = "{\n" +
                 "    \"datas\": [\n" +
                 "        {\n" +
                 "            \"makeId\": 28,\n" +
@@ -232,7 +234,7 @@ public class SecondHandCarServiceImpl implements SecondHandCarService
                 "        }\n" +
                 "    ],\n" +
                 "    \"resultCode\": 200\n" +
-                "}";
+                "}";*/
 
         CommonFinanceResult<List<QueryCarTypeByVIN>> financeResult1 = new CommonFinanceResult<List<QueryCarTypeByVIN>>();
         if (financeResult !=null && !"".equals(financeResult))
@@ -288,7 +290,12 @@ public class SecondHandCarServiceImpl implements SecondHandCarService
         }*/
         if (financeResult1.getDatas()!=null)
         {
-            SecondHandCarEvaluateDO secondHandCarEvaluateDO =  BeanPlasticityUtills.copy(SecondHandCarEvaluateDO.class,evaluateWebParam);
+            /*SecondHandCarEvaluateDO secondHandCarEvaluateDO =new SecondHandCarEvaluateDO();*/
+                /*BeanUtils.copyProperties(evaluateWebParam,secondHandCarEvaluateDO);
+                //时间格式
+            secondHandCarEvaluateDO.setRegister_date(new Date(evaluateWebParam.getRegister_date()));*/
+            SecondHandCarEvaluateDO secondHandCarEvaluateDO = BeanPlasticityUtills.copy(SecondHandCarEvaluateDO.class, evaluateWebParam);
+
 
             //保存当前业务员
             secondHandCarEvaluateDO.setSaleman_id(SessionUtils.getLoginUser().getId());
@@ -422,9 +429,21 @@ public class SecondHandCarServiceImpl implements SecondHandCarService
             param.setVin(secondHandCarEvaluateDO.getVin());
 
             //上牌地待讨论
+            //根据订单号取出上牌地
+            String plateArea =  secondHandCarEvaluateDOMapper.selectPlateAreaByOrderId(param.getOrderId());
+            if (plateArea ==null && "".equals(plateArea))
+            {
+                throw new BizException("该订单上牌地无填写");
+            }
+            int i = plateArea.lastIndexOf("市");
 
-            /*String financeResult = businessReviewManager.financeUnisal2(param, "/api/car/iautos");*/
-            String financeResult = "{\n" +
+            if (i!=-1)
+            {
+                param.setCityName(plateArea.substring(0,i));
+            }
+
+            String financeResult = businessReviewManager.financeUnisal2(param, "/api/car/iautos");
+           /* String financeResult = "{\n" +
                     "    \"datas\": [\n" +
                     "        {\n" +
                     "            \"Brand\": \"起亚\",\n" +
@@ -567,7 +586,7 @@ public class SecondHandCarServiceImpl implements SecondHandCarService
                     "        }\n" +
                     "    ],\n" +
                     "    \"resultCode\": 0\n" +
-                    "}";
+                    "}";*/
             CommonFinanceResult<List<FirstCarSiteVO>> financeResult1 = new CommonFinanceResult<List<FirstCarSiteVO>>();
             if (financeResult != null && !"".equals(financeResult)) {
                 Type type = new TypeToken<CommonFinanceResult<List<FirstCarSiteVO>>>() {

@@ -29,6 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -1233,7 +1234,8 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
             vehicleInformationUpdateParam.setCar_category(secondHandCarEvaluateDO.getVehicle_type());
             vehicleInformationUpdateParam.setNow_driving_license_owner(secondHandCarEvaluateDO.getOwner());
             vehicleInformationUpdateParam.setEngine_number(secondHandCarEvaluateDO.getEngine_num());
-            vehicleInformationUpdateParam.setRegister_date(secondHandCarEvaluateDO.getRegister_date().toString());
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            vehicleInformationUpdateParam.setRegister_date(sdf.format(secondHandCarEvaluateDO.getRegister_date()));
             vehicleInformationUpdateParam.setColor(secondHandCarEvaluateDO.getStyle_color());
             vehicleInformationUpdateParam.setVehicle_identification_number(secondHandCarEvaluateDO.getVin());
         }else
@@ -1286,10 +1288,10 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
             vehicleInformationUpdateParam.setCar_category(secondHandCarEvaluateDO.getVehicle_type());
             vehicleInformationUpdateParam.setNow_driving_license_owner(secondHandCarEvaluateDO.getOwner());
             vehicleInformationUpdateParam.setEngine_number(secondHandCarEvaluateDO.getEngine_num());
-            vehicleInformationUpdateParam.setRegister_date(secondHandCarEvaluateDO.getRegister_date().toString());
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            vehicleInformationUpdateParam.setRegister_date(sdf.format(secondHandCarEvaluateDO.getRegister_date()));
             vehicleInformationUpdateParam.setColor(secondHandCarEvaluateDO.getStyle_color());
             vehicleInformationUpdateParam.setVehicle_identification_number(secondHandCarEvaluateDO.getVin());
-
 
             loanOrderDOMapper.updateByPrimaryKeySelective(loanOrderDO);
         }
@@ -1323,7 +1325,8 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
         Long loanCarInfoId = loanOrderDOMapper.getLoanCarInfoIdById(orderId);
 
         LoanCarInfoDO loanCarInfoDO = loanCarInfoDOMapper.selectByPrimaryKey(loanCarInfoId);
-        if (null != loanCarInfoDO) {
+        if (null != loanCarInfoDO)
+        {
             BeanUtils.copyProperties(loanCarInfoDO, loanCarInfoVO);
 
             // 车型
@@ -1349,7 +1352,8 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
             loanCarInfoVO.setVin(secondHandCarEvaluateDO.getVin());
             loanCarInfoVO.setSecond_hand_car_evaluate_id(loanOrderDO.getSecond_hand_car_evaluate_id());
         }
-        if (vehicleInformationDO != null) {
+        if (vehicleInformationDO != null)
+        {
             loanCarInfoVO.setNowDrivingLicenseOwner(vehicleInformationDO.getNow_driving_license_owner());
             loanCarInfoVO.setLicensePlateType(vehicleInformationDO.getLicense_plate_type() == null ? null : vehicleInformationDO.getLicense_plate_type().toString());
             loanCarInfoVO.setColor(vehicleInformationDO.getColor());
