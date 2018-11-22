@@ -784,8 +784,12 @@ public class LoanOrderServiceImpl implements LoanOrderService {
         if (loanOrderDO.getSecond_hand_car_evaluate_id()!=null && !"".equals(loanOrderDO.getSecond_hand_car_evaluate_id()))
         {
             SecondHandCarEvaluateDO secondHandCarEvaluateDO = secondHandCarEvaluateDOMapper.selectByPrimaryKey(loanOrderDO.getSecond_hand_car_evaluate_id());
-            loanCarInfoVO.setVin(secondHandCarEvaluateDO.getVin());
-            loanCarInfoVO.setSecond_hand_car_evaluate_id(loanOrderDO.getSecond_hand_car_evaluate_id());
+            if (secondHandCarEvaluateDO!=null)
+            {
+                loanCarInfoVO.setVin(secondHandCarEvaluateDO.getVin());
+                loanCarInfoVO.setSecond_hand_car_evaluate_id(loanOrderDO.getSecond_hand_car_evaluate_id());
+            }
+
             /*if(universalInfoVO != null)
             {
                 universalInfoVO.setCar_name(secondHandCarEvaluateDO.getName());

@@ -56,7 +56,7 @@ public class EvaluateWebParam
     //后端处理
     private BigDecimal evaluate_price;//评估价
 
-    private Date query_time;//查询时间
+    private String query_time;//查询时间
 
     //需要更新原表记录的
     /*private String vehicle_type;//车辆类型*/
