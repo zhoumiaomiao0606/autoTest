@@ -110,7 +110,7 @@ public class SecondHandCarController
 
             String encode = encoder.encode(data);// 返回Base64编码过的字节数组字符串
 
-            System.out.println("转化后大小"+encode.length()+"====读取到的内容为"+encode);
+           /* System.out.println("转化后大小"+encode.length()+"====读取到的内容为"+encode);*/
 
             return encode;
         }catch (Exception e){

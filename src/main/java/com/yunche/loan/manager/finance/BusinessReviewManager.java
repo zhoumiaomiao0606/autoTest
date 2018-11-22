@@ -83,7 +83,7 @@ public class BusinessReviewManager {
         String result = null;
         try {
             result = HttpUtils.doPost(HOST2, PATH,null, param.toString());
-            LOG.info("请求参数"+param.toString());
+            /*LOG.info("请求参数"+param.toString());*/
             LOG.info("请求结果"+result);
 
             if (result == null)
