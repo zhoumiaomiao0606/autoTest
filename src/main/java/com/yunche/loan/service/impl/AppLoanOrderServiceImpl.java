@@ -1236,7 +1236,7 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
             vehicleInformationUpdateParam.setEngine_number(secondHandCarEvaluateDO.getEngine_num());
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             vehicleInformationUpdateParam.setRegister_date(sdf.format(secondHandCarEvaluateDO.getRegister_date()));
-            vehicleInformationUpdateParam.setColor(secondHandCarEvaluateDO.getStyle_color());
+            /*vehicleInformationUpdateParam.setColor(secondHandCarEvaluateDO.getStyle_color());*/
             vehicleInformationUpdateParam.setVehicle_identification_number(secondHandCarEvaluateDO.getVin());
         }else
             {
@@ -1290,7 +1290,7 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
             vehicleInformationUpdateParam.setEngine_number(secondHandCarEvaluateDO.getEngine_num());
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             vehicleInformationUpdateParam.setRegister_date(sdf.format(secondHandCarEvaluateDO.getRegister_date()));
-            vehicleInformationUpdateParam.setColor(secondHandCarEvaluateDO.getStyle_color());
+            /*vehicleInformationUpdateParam.setColor(secondHandCarEvaluateDO.getStyle_color());*/
             vehicleInformationUpdateParam.setVehicle_identification_number(secondHandCarEvaluateDO.getVin());
 
             loanOrderDOMapper.updateByPrimaryKeySelective(loanOrderDO);
