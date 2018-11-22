@@ -79,6 +79,7 @@ public class FinancialRebateTask {
             }
             tmpPartnerId=f.getPartnerId();
         }
+
         logger.info("返利记录录入结束-"+ DateUtil.getDate());
 
 

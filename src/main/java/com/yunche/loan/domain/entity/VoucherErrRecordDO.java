@@ -20,4 +20,7 @@ public class VoucherErrRecordDO {
 
     private Date createTime;
 
+    private Byte status;
+
+
 }

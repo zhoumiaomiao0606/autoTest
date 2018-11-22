@@ -9,9 +9,11 @@
     <result column="ret_status" jdbcType="VARCHAR" property="retStatus" />
     <result column="ret_message" jdbcType="VARCHAR" property="retMessage" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="status" jdbcType="TINYINT" property="status" />
   </resultMap>
   <sql id="Base_Column_List">
-    serial_no, order_id, process_id, task_definition_key, ret_status, ret_message, create_time
+    serial_no, order_id, process_id, task_definition_key, ret_status, ret_message, create_time, 
+    status
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
     select 
@@ -24,12 +26,12 @@
     where serial_no = #{serialNo,jdbcType=VARCHAR}
   </delete>
   <insert id="insert" parameterType="com.yunche.loan.domain.entity.VoucherErrRecordDO">
-    insert into voucher_err_record (serial_no, order_id, process_id, task_definition_key,
-      ret_status, ret_message, create_time
-      )
-    values (#{serialNo,jdbcType=VARCHAR}, #{orderId,jdbcType=BIGINT}, #{processId,jdbcType=BIGINT}, #{taskDefinitionKey,jdbcType=VARCHAR},
-      #{retStatus,jdbcType=VARCHAR}, #{retMessage,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}
-      )
+    insert into voucher_err_record (serial_no, order_id, process_id, 
+      task_definition_key, ret_status, ret_message, 
+      create_time, status)
+    values (#{serialNo,jdbcType=VARCHAR}, #{orderId,jdbcType=BIGINT}, #{processId,jdbcType=BIGINT}, 
+      #{taskDefinitionKey,jdbcType=VARCHAR}, #{retStatus,jdbcType=VARCHAR}, #{retMessage,jdbcType=VARCHAR}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{status,jdbcType=TINYINT})
   </insert>
   <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.VoucherErrRecordDO">
     insert into voucher_err_record
@@ -43,7 +45,6 @@
       <if test="processId != null">
         process_id,
       </if>
-
       <if test="taskDefinitionKey != null">
         task_definition_key,
       </if>
@@ -55,6 +56,9 @@
       </if>
       <if test="createTime != null">
         create_time,
+      </if>
+      <if test="status != null">
+        status,
       </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
@@ -79,6 +83,9 @@
       <if test="createTime != null">
         #{createTime,jdbcType=TIMESTAMP},
       </if>
+      <if test="status != null">
+        #{status,jdbcType=TINYINT},
+      </if>
     </trim>
   </insert>
   <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.VoucherErrRecordDO">
@@ -90,7 +97,6 @@
       <if test="processId != null">
         process_id = #{processId,jdbcType=BIGINT},
       </if>
-
       <if test="taskDefinitionKey != null">
         task_definition_key = #{taskDefinitionKey,jdbcType=VARCHAR},
       </if>
@@ -103,17 +109,79 @@
       <if test="createTime != null">
         create_time = #{createTime,jdbcType=TIMESTAMP},
       </if>
+      <if test="status != null">
+        status = #{status,jdbcType=TINYINT},
+      </if>
     </set>
     where serial_no = #{serialNo,jdbcType=VARCHAR}
   </update>
   <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.VoucherErrRecordDO">
     update voucher_err_record
     set order_id = #{orderId,jdbcType=BIGINT},
-    process_id = #{processId,jdbcType=BIGINT},
+      process_id = #{processId,jdbcType=BIGINT},
       task_definition_key = #{taskDefinitionKey,jdbcType=VARCHAR},
       ret_status = #{retStatus,jdbcType=VARCHAR},
       ret_message = #{retMessage,jdbcType=VARCHAR},
-      create_time = #{createTime,jdbcType=TIMESTAMP}
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      status = #{status,jdbcType=TINYINT}
     where serial_no = #{serialNo,jdbcType=VARCHAR}
   </update>
+
+
+  <select id="listErr" parameterType="com.yunche.loan.domain.query.FinanceErrQuery" resultType="com.yunche.loan.domain.vo.FinanceErrVO">
+    SELECT
+        err.order_id AS orderId,
+        DATE_FORMAT(err.create_time,'%Y-%m-%d %H:%i:%S') AS businessDate,
+        customer.NAME AS userName,
+        customer.id_card AS idCard,
+        base.bank AS bankName,
+        car.car_type AS carType,
+        partner.`name` AS partnerName,
+        err.`status` AS `status`,
+        err.ret_message AS reason,
+        err.process_id AS processId,
+        err.task_definition_key AS taskDefinitionKey
+    FROM
+    (
+      SELECT DISTINCT
+         z.*
+      FROM
+        voucher_err_record z
+      INNER JOIN ( SELECT SUBSTRING_INDEX( GROUP_CONCAT( serial_no ORDER BY create_time DESC SEPARATOR ',' ), ',', 1 ) AS id FROM voucher_err_record GROUP BY order_id, process_id ) g ON g.id = z.serial_no
+    ) err
+    LEFT JOIN loan_order loan ON err.order_id = loan.id
+    LEFT JOIN loan_customer customer ON loan.loan_customer_id = customer.id
+    LEFT JOIN loan_base_info base ON loan.loan_base_info_id = base.id
+    LEFT JOIN loan_car_info car ON loan.loan_car_info_id = car.id
+    LEFT JOIN partner partner ON partner.id = base.partner_id
+    where 1=1
+    <if test="status">
+      AND err.status=#{status}
+    </if>
+    <if test="orderId!=null">
+      AND err.order_id=#{orderId}
+    </if>
+    <if test="userName!=null">
+      AND customer.`name` LIKE CONCAT('%', #{userName} ,'%')
+    </if>
+    <if test="idCard!=null">
+      AND  customer.id_card =#{idCard}
+    </if>
+    <if test="partnerId!=null">
+      AND  partner.id=#{partnerId}
+    </if>
+    <if test="carType!=null">
+      AND  car.car_type=#{carType}
+    </if>
+    <if test="bank!=null">
+      AND  base.bank=#{bank}
+    </if>
+    <if test="businessDateStart!=null">
+      AND err.create_time  &gt;= #{businessDateStart}
+    </if>
+    <if test="businessDateEnd!=null">
+      AND err.create_time  &lt;= #{businessDateEnd}
+    </if>
+
+  </select>
 </mapper>

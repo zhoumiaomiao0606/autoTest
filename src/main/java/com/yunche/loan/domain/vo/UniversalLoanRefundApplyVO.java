@@ -18,6 +18,10 @@ public class UniversalLoanRefundApplyVO {
     private String refund_apply_account_id;
     private String path;
 
+    private String advances_interest;
+    private String other_interest;
+    private String penalty_interest;
+
     public List<String> getPath() {
         if (StringUtils.isBlank(path)) {
             return new ArrayList<>();

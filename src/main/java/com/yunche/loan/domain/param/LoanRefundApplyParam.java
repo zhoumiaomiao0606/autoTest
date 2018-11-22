@@ -4,8 +4,6 @@ import com.alibaba.fastjson.JSON;
 import lombok.Data;
 import org.springframework.util.CollectionUtils;
 
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -14,18 +12,21 @@ public class LoanRefundApplyParam {
 
     private Long refund_id;
 
-    @NotNull
+
+
+
+
     private Long order_id;
-    @NotEmpty
+
     private String refund_amount;
-    @NotEmpty
+
     private String refund_date;
-    @NotEmpty
+
     private String refund_reason;
     /**
      * 退款账号ID
      */
-    @NotNull
+
     private Long refund_apply_account_id;
 
     private List<String> path;
