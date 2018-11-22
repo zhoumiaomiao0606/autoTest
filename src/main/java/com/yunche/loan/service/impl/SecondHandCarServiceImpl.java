@@ -82,6 +82,10 @@ public class SecondHandCarServiceImpl implements SecondHandCarService
             secondHandCarVinDOMapper.insertSelective(financeResult1.getDatas());
         }*/
 
+        if (financeResult1!=null && !financeResult1.getResultCode().trim().equals("200"))
+        {
+            return ResultBean.ofError(financeResult1.getMessage());
+        }
 
         if (financeResult1.getDatas()!=null)
         {
@@ -115,7 +119,7 @@ public class SecondHandCarServiceImpl implements SecondHandCarService
             secondHandCarVinDOMapper.insertSelective(financeResult1.getDatas());
 
             SecondHandCarVinDO datas = financeResult1.getDatas();
-            if(datas.getRegister_date().length() !=8)
+            if(datas!=null && datas.getRegister_date()!=null && !"".equals(datas.getRegister_date()) && datas.getRegister_date().length() !=8)
             {
                 System.out.println("时间长度==="+ datas.getRegister_date().length());
                 financeResult1.getDatas().setRegister_date(null);
@@ -156,7 +160,7 @@ public class SecondHandCarServiceImpl implements SecondHandCarService
         Map querys = new HashMap<>();
         querys.put("vin",vin);
         System.out.println("========");
-        String financeResult = businessReviewManager.getFinanceUnisal2("/api/car/vin",querys);
+        String financeResult = businessReviewManager.getFinanceUnisal2("/api/car",querys);
 
        /* String financeResult = "{\n" +
                 "    \"datas\": [\n" +
@@ -244,10 +248,18 @@ public class SecondHandCarServiceImpl implements SecondHandCarService
             financeResult1 = gson.fromJson(financeResult, type);
         }
 
-        if (financeResult1.getDatas() !=null){
+        if (financeResult1!=null && !financeResult1.getResultCode().equals("200"))
+        {
+            return ResultBean.ofError(financeResult1.getMessage());
+        }
+
+        if (financeResult1.getDatas().size()!=0)
+        {
+            //将车型code  重新赋值车型id
+
             return ResultBean.ofSuccess(financeResult1.getDatas());
         }else {
-            return ResultBean.ofError("vin码查询车型失败--");
+            return ResultBean.ofError("vin码查询车型失败-或该vin码无对应车型-");
         }
 
     }
@@ -280,6 +292,11 @@ public class SecondHandCarServiceImpl implements SecondHandCarService
             Type type =new TypeToken<CommonFinanceResult<EvaluateVO>>(){}  .getType();
             Gson gson = new Gson();
             financeResult1 = gson.fromJson(financeResult, type);
+        }
+
+        if (!financeResult1.getResultCode().equals("200"))
+        {
+            return ResultBean.ofError(financeResult1.getMessage());
         }
 
         //每次评估，查询到即保存
@@ -593,6 +610,11 @@ public class SecondHandCarServiceImpl implements SecondHandCarService
                 }.getType();
                 Gson gson = new Gson();
                 financeResult1 = gson.fromJson(financeResult, type);
+            }
+
+            if (financeResult1!=null && !financeResult1.getResultCode().equals("200"))
+            {
+                return ResultBean.ofError(financeResult1.getMessage());
             }
 
             FirstCarSiteWebVO firstCarSiteWebVO = new FirstCarSiteWebVO();
