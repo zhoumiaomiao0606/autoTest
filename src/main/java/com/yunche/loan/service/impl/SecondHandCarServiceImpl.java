@@ -82,7 +82,7 @@ public class SecondHandCarServiceImpl implements SecondHandCarService
             secondHandCarVinDOMapper.insertSelective(financeResult1.getDatas());
         }*/
 
-        if (financeResult1!=null && !financeResult1.getResultCode().equals("200"))
+        if (financeResult1!=null && !financeResult1.getResultCode().trim().equals("200"))
         {
             return ResultBean.ofError(financeResult1.getMessage());
         }
@@ -119,7 +119,7 @@ public class SecondHandCarServiceImpl implements SecondHandCarService
             secondHandCarVinDOMapper.insertSelective(financeResult1.getDatas());
 
             SecondHandCarVinDO datas = financeResult1.getDatas();
-            if(datas.getRegister_date().length() !=8)
+            if(datas!=null && datas.getRegister_date()!=null && !"".equals(datas.getRegister_date()) && datas.getRegister_date().length() !=8)
             {
                 System.out.println("时间长度==="+ datas.getRegister_date().length());
                 financeResult1.getDatas().setRegister_date(null);
