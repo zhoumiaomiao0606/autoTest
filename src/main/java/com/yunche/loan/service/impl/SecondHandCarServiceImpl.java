@@ -82,6 +82,10 @@ public class SecondHandCarServiceImpl implements SecondHandCarService
             secondHandCarVinDOMapper.insertSelective(financeResult1.getDatas());
         }*/
 
+        if (financeResult1!=null && !financeResult1.getResultCode().equals("200"))
+        {
+            return ResultBean.ofError(financeResult1.getMessage());
+        }
 
         if (financeResult1.getDatas()!=null)
         {
@@ -244,6 +248,11 @@ public class SecondHandCarServiceImpl implements SecondHandCarService
             financeResult1 = gson.fromJson(financeResult, type);
         }
 
+        if (financeResult1!=null && !financeResult1.getResultCode().equals("200"))
+        {
+            return ResultBean.ofError(financeResult1.getMessage());
+        }
+
         if (financeResult1.getDatas().size()!=0)
         {
             //将车型code  重新赋值车型id
@@ -283,6 +292,11 @@ public class SecondHandCarServiceImpl implements SecondHandCarService
             Type type =new TypeToken<CommonFinanceResult<EvaluateVO>>(){}  .getType();
             Gson gson = new Gson();
             financeResult1 = gson.fromJson(financeResult, type);
+        }
+
+        if (!financeResult1.getResultCode().equals("200"))
+        {
+            return ResultBean.ofError(financeResult1.getMessage());
         }
 
         //每次评估，查询到即保存
@@ -596,6 +610,11 @@ public class SecondHandCarServiceImpl implements SecondHandCarService
                 }.getType();
                 Gson gson = new Gson();
                 financeResult1 = gson.fromJson(financeResult, type);
+            }
+
+            if (financeResult1!=null && !financeResult1.getResultCode().equals("200"))
+            {
+                return ResultBean.ofError(financeResult1.getMessage());
             }
 
             FirstCarSiteWebVO firstCarSiteWebVO = new FirstCarSiteWebVO();
