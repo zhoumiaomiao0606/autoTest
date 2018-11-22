@@ -1,4 +1,4 @@
-package com.yunche.loan.web.controller.ext;
+package com.yunche.loan.web.controller.ext.financial;
 
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.param.CustomerInfoByCustomerNameParam;
@@ -22,11 +22,6 @@ public class FinancialSystemExtController {
     @Autowired
     private CustomersLoanFinanceInfoByPartnerService customersLoanFinanceInfoByPartnerservice;
 
-    @GetMapping("/list")
-    public ResultBean list() {
-
-        return ResultBean.ofSuccess(null);
-    }
 
     //获取财务信息
     @PostMapping("/customersLoanFinanceInfoByPartner")
