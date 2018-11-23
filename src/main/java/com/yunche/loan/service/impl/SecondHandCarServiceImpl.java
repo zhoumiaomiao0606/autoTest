@@ -467,7 +467,10 @@ public class SecondHandCarServiceImpl implements SecondHandCarService
             if (i!=-1)
             {
                 param.setCityName(plateArea.substring(0,i));
-            }
+            }else
+                {
+                    param.setCityName(plateArea);
+                }
 
             LOG.info(param.toString());
 
