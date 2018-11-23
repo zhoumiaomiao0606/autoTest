@@ -4,6 +4,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.yunche.loan.config.cache.DepartmentCache;
+import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.MD5Utils;
 import com.yunche.loan.domain.entity.*;
@@ -258,6 +259,19 @@ public class PartnerServiceImpl implements PartnerService {
         BeanUtils.copyProperties(partnerParam, partnerDO);
 
         partnerParam.setGmtModify(new Date());
+
+        //判断partner——code不能重复
+        if (partnerParam.getPartnerCode()!=null && !partnerParam.getPartnerCode().equals(""))
+        {
+            PartnerDO partnerCode = partnerDOMapper.selectByPartnerCode(partnerParam.getPartnerCode());
+
+            if (partnerCode!=null)
+            {
+                throw  new BizException("合伙人编码不能重复");
+            }
+        }
+
+
         int count = partnerDOMapper.updateByPrimaryKeySelective(partnerDO);
         Preconditions.checkArgument(count > 0, "编辑失败");
 

@@ -477,4 +477,11 @@
             where a.id = #{orderId,jdbcType=BIGINT}
     </select>
 
+    <select id="selectByPartnerCode" parameterType="String" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from partner
+        where partner_code = #{partnerCode,jdbcType=VARCHAR}
+    </select>
+
 </mapper>

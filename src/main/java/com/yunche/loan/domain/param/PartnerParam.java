@@ -41,5 +41,5 @@ public class PartnerParam extends PartnerDO {
 
     private String partnerCode;
 
-    private String partnerGroup;
+    /*private String partnerGroup;*/
 }
