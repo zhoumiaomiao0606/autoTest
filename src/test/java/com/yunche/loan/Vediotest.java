@@ -18,6 +18,7 @@ import org.junit.Test;
 import sun.misc.BASE64Encoder;
 
 import java.io.*;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
@@ -55,7 +56,9 @@ public class Vediotest
         String a = "上饶市";
         int i = a.indexOf("牛");
         String substring = a.substring(0, 2);
-        System.out.println("====="+i+substring);
+        String string = "2016-10-24 21:59:06";
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        System.out.println("====="+i+substring+sdf.parse(string));
 
     }
 
