@@ -766,8 +766,6 @@
         WHEN partner.partner_group is null THEN
         partner.partner_group ELSE CONCAT(partner.partner_group ,'组')
         END AS partner_group,
-        department.NAME AS saleman_department_name,
-        plan.loan_amount AS loan_amount,
 
         customer.NAME AS customer_name,
         customer.id_card,
