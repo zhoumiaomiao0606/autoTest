@@ -2,6 +2,10 @@ package com.yunche.loan.domain.vo;
 
 import lombok.Data;
 
+import static com.yunche.loan.config.constant.LoanAmountConst.EXPECT_LOAN_AMOUNT_EQT_13W_LT_20W;
+import static com.yunche.loan.config.constant.LoanAmountConst.EXPECT_LOAN_AMOUNT_EQT_20W;
+import static com.yunche.loan.config.constant.LoanAmountConst.EXPECT_LOAN_AMOUNT_LT_13W;
+
 /**
  * @author liuzhe
  * @date 2018/9/13
@@ -11,6 +15,9 @@ public class UniversalBaseInfoVO {
 
     private String order_id;
     private String order_gmt_create;
+
+    private Byte financial_expect_loan_amount_val;
+    private String financial_expect_loan_amount;
 
     private String customer_id;
     private String customer_name;
@@ -41,4 +48,28 @@ public class UniversalBaseInfoVO {
     private String car_detail_name;
 
 //    private String remit_application_date;
+
+
+    /**
+     * 预计贷款额转换
+     *
+     * @return
+     */
+    public String getFinancial_expect_loan_amount() {
+
+        if (EXPECT_LOAN_AMOUNT_LT_13W.equals(financial_expect_loan_amount_val)) {
+
+            financial_expect_loan_amount = "13万以下";
+
+        } else if (EXPECT_LOAN_AMOUNT_EQT_13W_LT_20W.equals(financial_expect_loan_amount_val)) {
+
+            financial_expect_loan_amount = "13~20万";
+
+        } else if (EXPECT_LOAN_AMOUNT_EQT_20W.equals(financial_expect_loan_amount_val)) {
+
+            financial_expect_loan_amount = "20万以上";
+        }
+
+        return financial_expect_loan_amount;
+    }
 }

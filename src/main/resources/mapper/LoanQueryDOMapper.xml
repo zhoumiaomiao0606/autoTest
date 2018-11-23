@@ -2603,6 +2603,8 @@
                 DATE_FORMAT(o.gmt_create  ,'%Y-%m-%d %H:%i:%S')
                                                            AS    order_gmt_create,
 
+                b.loan_amount                              AS    financial_expect_loan_amount_val,
+
                 c.id                                       AS    customer_id,
                 c.name                                     AS    customer_name,
                 c.id_card                                  AS    customer_id_card,
@@ -2611,8 +2613,8 @@
                 e.name                                     AS    salesman_name,
                 p.id                                       AS    partner_id,
                 p.name                                     AS    partner_name,
-                p.partner_code                                     AS    partner_code,
-                p.partner_group                                     AS    partner_group,
+                p.partner_code                             AS    partner_code,
+                p.partner_group                            AS    partner_group,
                 d.id                                       AS    department_id,
                 d.name                                     AS    department_name,
 
