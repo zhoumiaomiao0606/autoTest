@@ -1584,8 +1584,23 @@
             </choose>
             </if>
             <if test="taskDefinitionKey == 'usertask_bank_credit_record'">
-                order by complex.creditApplySubmitTime ASC
-
+                <choose>
+                <when test="taskStatus == 0">
+                    order by complex.creditApplySubmitTime DESC ,complex.taskStatus ASC
+                </when>
+                <when test="taskStatus == 1">
+                    order by complex.creditApplySubmitTime DESC
+                </when>
+                <when test="taskStatus == 2">
+                    order by complex.creditApplySubmitTime ASC
+                </when>
+                <when test="taskStatus == 3">
+                    order by complex.creditApplySubmitTime ASC
+                </when>
+                <otherwise>
+                    order by complex.creditApplySubmitTime DESC
+                </otherwise>
+                </choose>
             </if>
         </select>
 
