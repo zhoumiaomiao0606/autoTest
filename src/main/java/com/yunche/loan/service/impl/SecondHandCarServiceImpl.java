@@ -24,6 +24,8 @@ import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Service
@@ -421,7 +423,7 @@ public class SecondHandCarServiceImpl implements SecondHandCarService
 
     //是否每次查询最新的
     @Override
-    public ResultBean firstCarSite(FirstCarSiteParam param) {
+    public ResultBean firstCarSite(FirstCarSiteParam param){
         Preconditions.checkNotNull(param.getOrderId(), "订单id不能为空");
         //根据订单id获取关联的vin码---获取地址
         LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(param.getOrderId());
@@ -434,9 +436,15 @@ public class SecondHandCarServiceImpl implements SecondHandCarService
         }
 
         //判断注册日期
-        if (secondHandCarEvaluateDO.getRegister_date().after(new Date("2014-01-01")))
-        {
-            throw  new BizException("注册日期<2014-01-01才能查询第一车网估价");
+        String date = "2014-01-01 00:00:00";
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        try {
+            if (secondHandCarEvaluateDO.getRegister_date()!=null && secondHandCarEvaluateDO.getRegister_date().after(sdf.parse(date)))
+            {
+                throw  new BizException("注册日期<2014-01-01才能查询第一车网估价");
+            }
+        } catch (ParseException e) {
+            throw  new BizException("时间转换异常");
         }
 
         //如果订单已经有绑定信息则取出来解析

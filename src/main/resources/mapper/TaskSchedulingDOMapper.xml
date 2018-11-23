@@ -455,7 +455,7 @@
                         </otherwise>
                     </choose>
                   main.id                                      AS id,
-            loan_credit_info_bank_his.credit_apply_time        as creditApplySubmitTime,
+            loan_credit_info_bank_his.bank_credit_record_time        as creditApplySubmitTime,
                   join_e.id                                    AS salesmanId,
                   join_p.id                                    AS partnerId,
                   join_b.area_id                               AS bizAreaId,
@@ -1584,8 +1584,23 @@
             </choose>
             </if>
             <if test="taskDefinitionKey == 'usertask_bank_credit_record'">
-                order by complex.creditApplySubmitTime ASC
-
+                <choose>
+                <when test="taskStatus == 0">
+                    order by complex.creditApplySubmitTime DESC ,complex.taskStatus ASC
+                </when>
+                <when test="taskStatus == 1">
+                    order by complex.creditApplySubmitTime DESC
+                </when>
+                <when test="taskStatus == 2">
+                    order by complex.creditApplySubmitTime ASC
+                </when>
+                <when test="taskStatus == 3">
+                    order by complex.creditApplySubmitTime ASC
+                </when>
+                <otherwise>
+                    order by complex.creditApplySubmitTime DESC
+                </otherwise>
+                </choose>
             </if>
         </select>
 

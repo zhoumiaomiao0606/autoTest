@@ -141,6 +141,17 @@ public class PartnerServiceImpl implements PartnerService {
     private Long createPartnerLeaderAccount(PartnerParam partnerParam) {
         EmployeeDO employeeDO = new EmployeeDO();
 
+        //判断partner——code不能重复
+        if (partnerParam.getPartnerCode()!=null && !partnerParam.getPartnerCode().equals(""))
+        {
+            PartnerDO partnerCode = partnerDOMapper.selectByPartnerCode(partnerParam.getPartnerCode());
+
+            if (partnerCode!=null)
+            {
+                throw  new BizException("合伙人编码不能重复");
+            }
+        }
+
         employeeDO.setName(partnerParam.getLeaderName());
         employeeDO.setIdCard(partnerParam.getLeaderIdCard());
         employeeDO.setEmail(partnerParam.getLeaderEmail());
