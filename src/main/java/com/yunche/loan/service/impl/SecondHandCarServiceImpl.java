@@ -88,7 +88,7 @@ public class SecondHandCarServiceImpl implements SecondHandCarService
 
         if (!financeResult1.getResultCode().trim().equals("200"))
         {
-            return ResultBean.ofError(financeResult1.getMessage());
+            return ResultBean.ofError("ocr识别失败");
         }
 
         if (financeResult1.getDatas()!=null)
@@ -254,7 +254,7 @@ public class SecondHandCarServiceImpl implements SecondHandCarService
 
         if (!financeResult1.getResultCode().equals("200"))
         {
-            return ResultBean.ofError(financeResult1.getMessage());
+            return ResultBean.ofError("vin码查询车型失败");
         }
 
         if (financeResult1.getDatas().size()!=0)
@@ -300,7 +300,7 @@ public class SecondHandCarServiceImpl implements SecondHandCarService
 
         if (!financeResult1.getResultCode().equals("200"))
         {
-            return ResultBean.ofError(financeResult1.getMessage());
+            return ResultBean.ofError("估价失败");
         }
 
         //每次评估，查询到即保存
@@ -354,7 +354,7 @@ public class SecondHandCarServiceImpl implements SecondHandCarService
                return ResultBean.ofSuccess(secondHandCarEvaluateDO.getId());
 
         }else {
-            return ResultBean.ofError("请求评估价信息出错");
+            return ResultBean.ofError("请求评估价信息失败或无该车辆估价信息");
         }
 
     }
@@ -642,7 +642,7 @@ public class SecondHandCarServiceImpl implements SecondHandCarService
 
             if (financeResult1.getDatas()==null || financeResult1.getDatas().size()==0 || !financeResult1.getResultCode().equals("200"))
             {
-                return ResultBean.ofError("请求数据为空");
+                return ResultBean.ofError("暂无该车辆第一车网估价信息");
             }
 
             FirstCarSiteWebVO firstCarSiteWebVO = new FirstCarSiteWebVO();
