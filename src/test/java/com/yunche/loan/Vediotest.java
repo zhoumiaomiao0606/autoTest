@@ -58,7 +58,7 @@ public class Vediotest
         String substring = a.substring(0, 2);
         String string = "2016-10-24 21:59:06";
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        System.out.println("====="+i+substring+sdf.parse(string));
+        /*System.out.println("====="+i+substring+sdf.parse(string));*/
 
     }
 

@@ -5,6 +5,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.oracle.tools.packager.Log;
 import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.BeanPlasticityUtills;
@@ -16,6 +17,8 @@ import com.yunche.loan.manager.finance.BusinessReviewManager;
 import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.EmployeeService;
 import com.yunche.loan.service.SecondHandCarService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -31,7 +34,7 @@ import java.util.*;
 @Service
 public class SecondHandCarServiceImpl implements SecondHandCarService
 {
-
+    private static final Logger LOG = LoggerFactory.getLogger(SecondHandCarServiceImpl.class);
     @Resource
     private BusinessReviewManager businessReviewManager;
 
@@ -466,6 +469,8 @@ public class SecondHandCarServiceImpl implements SecondHandCarService
             {
                 param.setCityName(plateArea.substring(0,i));
             }
+
+            Log.info(param.toString());
 
             String financeResult = businessReviewManager.financeUnisal2(param, "/api/car/iautos");
            /* String financeResult = "{\n" +
