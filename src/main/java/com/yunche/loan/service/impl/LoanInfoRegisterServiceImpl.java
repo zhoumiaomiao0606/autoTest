@@ -90,6 +90,7 @@ public class LoanInfoRegisterServiceImpl implements LoanInfoRegisterService {
             {
                 loanOrderDO.setSecond_hand_car_evaluate_id(null);
                 loanOrderDOMapper.updateByPrimaryKeySelective(loanOrderDO);
+                vehicleInformationDO.setColor(loanInfoRegisterParam.getColor());
             }else {
                 SecondHandCarEvaluateDO secondHandCarEvaluateDO = secondHandCarEvaluateDOMapper.selectByPrimaryKey(loanInfoRegisterParam.getSecond_hand_car_evaluate_id());
 
@@ -99,7 +100,8 @@ public class LoanInfoRegisterServiceImpl implements LoanInfoRegisterService {
                 vehicleInformationDO.setNow_driving_license_owner(secondHandCarEvaluateDO.getOwner());
                 vehicleInformationDO.setEngine_number(secondHandCarEvaluateDO.getEngine_num());
                 vehicleInformationDO.setRegister_date(secondHandCarEvaluateDO.getRegister_date());
-                vehicleInformationDO.setColor(secondHandCarEvaluateDO.getStyle_color());
+                /*vehicleInformationDO.setColor(secondHandCarEvaluateDO.getStyle_color());*/
+                vehicleInformationDO.setColor(loanInfoRegisterParam.getColor());
                 vehicleInformationDO.setVehicle_identification_number(secondHandCarEvaluateDO.getVin());
                 loanOrderDO.setSecond_hand_car_evaluate_id(loanInfoRegisterParam.getSecond_hand_car_evaluate_id());
             }
@@ -148,7 +150,7 @@ public class LoanInfoRegisterServiceImpl implements LoanInfoRegisterService {
         Long vehicleInformationId = loanOrderDO.getVehicleInformationId();
 
         vehicleInformationDO.setId(vehicleInformationId);
-        vehicleInformationDO.setColor(loanInfoRegisterParam.getColor());
+
 
         if (null != vehicleInformationId) {
 

@@ -26,7 +26,7 @@
         <result column="gps_company" property="gpsCompany" jdbcType="VARCHAR"/>
         <result column="gps_account" property="gpsAccount" jdbcType="VARCHAR"/>
         <result column="partner_code" property="partnerCode" jdbcType="VARCHAR"/>
-        <result column="partner_group" property="partnerGroup" jdbcType="TINYINT"/>
+        <result column="partner_group" property="partnerGroup" jdbcType="BIGINT"/>
     </resultMap>
 
     <sql id="Base_Column_List">
@@ -201,7 +201,7 @@
         #{sign,jdbcType=TINYINT}, #{cooperationScale,jdbcType=VARCHAR}, #{execRate,jdbcType=DECIMAL},
         #{cooperationInsuranceCompany,jdbcType=VARCHAR}, #{payMonth,jdbcType=TINYINT},
         #{riskBearRate,jdbcType=DECIMAL}, #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModify,jdbcType=TIMESTAMP},
-        #{status,jdbcType=TINYINT}, #{feature,jdbcType=VARCHAR}, #{disableBankList,jdbcType=VARCHAR},#{gpsCompany,jdbcType=VARCHAR}, #{gpsAccount,jdbcType=VARCHAR}, #{partnerCode,jdbcType=VARCHAR}, #{partnerGroup,jdbcType=TINYINT}
+        #{status,jdbcType=TINYINT}, #{feature,jdbcType=VARCHAR}, #{disableBankList,jdbcType=VARCHAR},#{gpsCompany,jdbcType=VARCHAR}, #{gpsAccount,jdbcType=VARCHAR}, #{partnerCode,jdbcType=VARCHAR}, #{partnerGroup,jdbcType=BIGINT}
         )
     </insert>
 
@@ -362,7 +362,7 @@
                 #{partnerCode,jdbcType=VARCHAR},
             </if>
             <if test="partnerGroup != null">
-                #{partnerGroup,jdbcType=TINYINT},
+                #{partnerGroup,jdbcType=BIGINT},
             </if>
         </trim>
     </insert>
@@ -440,7 +440,7 @@
                 partner_code = #{partnerCode,jdbcType=VARCHAR},
             </if>
             <if test="partnerGroup != null">
-                partner_group = #{partnerGroup,jdbcType=TINYINT},
+                partner_group = #{partnerGroup,jdbcType=BIGINT},
             </if>
         </set>
         where id = #{id,jdbcType=BIGINT}
@@ -467,7 +467,7 @@
       gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
       status = #{status,jdbcType=TINYINT},
       feature = #{feature,jdbcType=VARCHAR},
-      disable_bank_list = #{disableBankList,jdbcType=VARCHAR},gps_company = #{gpsCompany,jdbcType=VARCHAR},gps_account = #{gpsAccount,jdbcType=VARCHAR},partner_code = #{partnerCode,jdbcType=VARCHAR},partner_group = #{partnerGroup,jdbcType=TINYINT}
+      disable_bank_list = #{disableBankList,jdbcType=VARCHAR},gps_company = #{gpsCompany,jdbcType=VARCHAR},gps_account = #{gpsAccount,jdbcType=VARCHAR},partner_code = #{partnerCode,jdbcType=VARCHAR},partner_group = #{partnerGroup,jdbcType=BIGINT}
     where id = #{id,jdbcType=BIGINT}
   </update>
     <select id="queryPartnerInfoByOrderId" parameterType="java.lang.Long" resultMap="BaseResultMap">
@@ -475,6 +475,13 @@
             left join loan_base_info b on a.loan_base_info_id = b.id
             left join partner c on b.partner_id = c.id
             where a.id = #{orderId,jdbcType=BIGINT}
+    </select>
+
+    <select id="selectByPartnerCode" parameterType="String" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from partner
+        where partner_code = #{partnerCode,jdbcType=VARCHAR}
     </select>
 
 </mapper>

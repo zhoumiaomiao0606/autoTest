@@ -18,7 +18,7 @@ public class PartnerQuery extends BaseQuery {
 
     private String partnerCode;
 
-    private Byte partnerGroup;
+    private String partnerGroup;
 
     private String leaderName;
 

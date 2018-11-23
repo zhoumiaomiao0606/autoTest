@@ -34,7 +34,7 @@ public class PartnerVO {
 
     private String partnerCode;
 
-    private Byte partnerGroup;
+    private String partnerGroup;
 
     private String tel;
 

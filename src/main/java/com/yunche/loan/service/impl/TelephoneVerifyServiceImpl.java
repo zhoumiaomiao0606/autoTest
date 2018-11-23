@@ -247,34 +247,40 @@ public class TelephoneVerifyServiceImpl implements TelephoneVerifyService {
                 cell.setCellValue(telephoneVerifyNodeOrdersVO.getPartner_name());
 
                 cell = row.createCell(6);
-                cell.setCellValue(telephoneVerifyNodeOrdersVO.getBank());
+                cell.setCellValue(telephoneVerifyNodeOrdersVO.getPartner_code());
 
                 cell = row.createCell(7);
-                cell.setCellValue(telephoneVerifyNodeOrdersVO.getLoan_amount());
+                cell.setCellValue(telephoneVerifyNodeOrdersVO.getPartner_group());
 
                 cell = row.createCell(8);
-                cell.setCellValue(telephoneVerifyNodeOrdersVO.getBank_period_principal());
+                cell.setCellValue(telephoneVerifyNodeOrdersVO.getBank());
 
                 cell = row.createCell(9);
-                cell.setCellValue(telephoneVerifyNodeOrdersVO.getGps_number());
+                cell.setCellValue(telephoneVerifyNodeOrdersVO.getLoan_amount());
 
                 cell = row.createCell(10);
-                cell.setCellValue(telephoneVerifyNodeOrdersVO.getAction());
+                cell.setCellValue(telephoneVerifyNodeOrdersVO.getBank_period_principal());
 
                 cell = row.createCell(11);
-                cell.setCellValue(telephoneVerifyNodeOrdersVO.getCommit_status());
+                cell.setCellValue(telephoneVerifyNodeOrdersVO.getGps_number());
 
                 cell = row.createCell(12);
+                cell.setCellValue(telephoneVerifyNodeOrdersVO.getAction());
+
+                cell = row.createCell(13);
+                cell.setCellValue(telephoneVerifyNodeOrdersVO.getCommit_status());
+
+                cell = row.createCell(14);
                 cell.setCellValue(telephoneVerifyNodeOrdersVO.getOp_user_name());
 
 
-                cell = row.createCell(13);
+                cell = row.createCell(15);
                 cell.setCellValue(telephoneVerifyNodeOrdersVO.getOp_time());
 
-                cell = row.createCell(14);
+                cell = row.createCell(16);
                 cell.setCellValue(telephoneVerifyNodeOrdersVO.getOp_info());
 
-                cell = row.createCell(15);
+                cell = row.createCell(17);
                 cell.setCellValue(CarTypeEnum.getValueByKey(telephoneVerifyNodeOrdersVO.getCar_type()));
             }
             //文件宽度自适应

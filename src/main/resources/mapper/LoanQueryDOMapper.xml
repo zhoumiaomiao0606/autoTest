@@ -841,6 +841,7 @@
             parameterType="java.lang.Long">
         select
         main_order.id                                                                           AS order_id,
+        lmm.material_num                                                                           AS material_num,
         customer.id_card                                                                        AS customer_id_card,
         customer.name                                                                           AS customer_name,
         customer.hprovince                                                                      AS customer_hprovince,
@@ -866,6 +867,7 @@
         left join loan_car_info car on main_order.loan_car_info_id = car.id
         left join employee salesman on loan.salesman_id = salesman.id
         left join partner partner on loan.partner_id = partner.id
+        left join loan_material_manage lmm on main_order.id = lmm.order_id
 
 
     </select>
