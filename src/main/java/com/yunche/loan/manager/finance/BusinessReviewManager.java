@@ -88,7 +88,7 @@ public class BusinessReviewManager {
 
             if (result == null)
             {
-                throw new BizException("请求到财务数据为空");
+                throw new BizException("请求到数据为空");
             }
 
         } catch (Exception e) {

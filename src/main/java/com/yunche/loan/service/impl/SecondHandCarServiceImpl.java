@@ -423,6 +423,20 @@ public class SecondHandCarServiceImpl implements SecondHandCarService
         return ResultBean.ofSuccess(secondHandCarEvaluateDO);
     }
 
+    public  String getCityName(String plateArea)
+    {
+
+        int i = plateArea.lastIndexOf("市");
+
+        if (i==plateArea.length()-1)
+        {
+            return plateArea.substring(0,i);
+        }else
+        {
+          return plateArea;
+        }
+    }
+
     //是否每次查询最新的
     @Override
     public ResultBean firstCarSite(FirstCarSiteParam param){
@@ -458,19 +472,18 @@ public class SecondHandCarServiceImpl implements SecondHandCarService
             //上牌地待讨论
             //根据订单号取出上牌地
             String plateArea =  secondHandCarEvaluateDOMapper.selectPlateAreaByOrderId(param.getOrderId());
-            if (plateArea ==null && "".equals(plateArea))
+            if ("市辖区".equals(plateArea))
+            {
+                plateArea =  secondHandCarEvaluateDOMapper.selectPlateAreaParentByOrderId(param.getOrderId());
+            }
+            System.out.println("====="+plateArea);
+            if (plateArea ==null || "".equals(plateArea))
             {
                 throw new BizException("该订单上牌地无填写");
             }
-            int i = plateArea.lastIndexOf("市");
 
-            if (i!=-1)
-            {
-                param.setCityName(plateArea.substring(0,i));
-            }else
-                {
-                    param.setCityName(plateArea);
-                }
+            param.setCityName(getCityName(plateArea));
+
 
             LOG.info(param.toString());
 

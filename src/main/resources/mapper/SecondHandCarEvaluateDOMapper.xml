@@ -398,4 +398,12 @@
     LEFT JOIN  `base_area`  ON vehicle_information.`apply_license_plate_area`  = base_area.`area_id`
      where order_id = #{orderId}
   </select>
+
+  <select id="selectPlateAreaParentByOrderId" parameterType="Long" resultType="String">
+        SELECT  base_area.`parent_area_name`   FROM
+    `loan_order`
+    LEFT JOIN  `vehicle_information`   ON `loan_order` .`vehicle_information_id`   = vehicle_information.`id`
+    LEFT JOIN  `base_area`  ON vehicle_information.`apply_license_plate_area`  = base_area.`area_id`
+     where order_id = #{orderId}
+  </select>
 </mapper>

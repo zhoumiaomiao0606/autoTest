@@ -27,4 +27,6 @@ public interface SecondHandCarEvaluateDOMapper {
     List<SecondHandCarEvaluateList> selectVinHistory(QueryVINParam vin);
 
     String selectPlateAreaByOrderId(Long orderId);
+
+    String selectPlateAreaParentByOrderId(Long orderId);
 }
