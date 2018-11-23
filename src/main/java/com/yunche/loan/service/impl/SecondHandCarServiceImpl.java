@@ -5,7 +5,6 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.sun.javafx.tools.packager.Log;
 import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.BeanPlasticityUtills;
@@ -470,7 +469,7 @@ public class SecondHandCarServiceImpl implements SecondHandCarService
                 param.setCityName(plateArea.substring(0,i));
             }
 
-            Log.info(param.toString());
+            LOG.info(param.toString());
 
             String financeResult = businessReviewManager.financeUnisal2(param, "/api/car/iautos");
            /* String financeResult = "{\n" +
