@@ -86,7 +86,7 @@ public class SecondHandCarServiceImpl implements SecondHandCarService
             secondHandCarVinDOMapper.insertSelective(financeResult1.getDatas());
         }*/
 
-        if (financeResult1!=null && !financeResult1.getResultCode().trim().equals("200"))
+        if (!financeResult1.getResultCode().trim().equals("200"))
         {
             return ResultBean.ofError(financeResult1.getMessage());
         }
@@ -252,7 +252,7 @@ public class SecondHandCarServiceImpl implements SecondHandCarService
             financeResult1 = gson.fromJson(financeResult, type);
         }
 
-        if (financeResult1!=null && !financeResult1.getResultCode().equals("200"))
+        if (!financeResult1.getResultCode().equals("200"))
         {
             return ResultBean.ofError(financeResult1.getMessage());
         }
@@ -640,13 +640,14 @@ public class SecondHandCarServiceImpl implements SecondHandCarService
                 financeResult1 = gson.fromJson(financeResult, type);
             }
 
-            if (financeResult1!=null && !financeResult1.getResultCode().equals("200"))
+            if (financeResult1.getDatas()==null || financeResult1.getDatas().size()==0 || !financeResult1.getResultCode().equals("200"))
             {
-                return ResultBean.ofError(financeResult1.getMessage());
+                return ResultBean.ofError("请求数据为空");
             }
 
             FirstCarSiteWebVO firstCarSiteWebVO = new FirstCarSiteWebVO();
-            if (financeResult1.getDatas() != null) {
+            if (financeResult1.getDatas() != null)
+            {
                 FirstCarSiteVO firstCarSiteVO = financeResult1.getDatas().get(0);
 
                 //设置值
