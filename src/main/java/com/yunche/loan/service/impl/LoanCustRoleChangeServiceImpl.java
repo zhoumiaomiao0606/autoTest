@@ -7,6 +7,7 @@ import com.yunche.loan.config.util.SessionUtils;
 import com.yunche.loan.domain.entity.LoanCustRoleChangeHisDO;
 import com.yunche.loan.domain.entity.LoanCustRoleChangeHisDetailDO;
 import com.yunche.loan.domain.entity.LoanCustomerDO;
+import com.yunche.loan.domain.entity.LoanOrderDO;
 import com.yunche.loan.domain.param.CustomerParam;
 import com.yunche.loan.domain.query.TaskListQuery;
 import com.yunche.loan.domain.vo.*;
@@ -23,6 +24,7 @@ import java.util.*;
 
 import static com.yunche.loan.config.constant.LoanCustRoleChangeHisConst.TYPE_AFTER;
 import static com.yunche.loan.config.constant.LoanCustRoleChangeHisConst.TYPE_BEFORE;
+import static com.yunche.loan.config.constant.LoanCustomerConst.CUST_TYPE_PRINCIPAL;
 
 /**
  * @author liuzhe
@@ -42,6 +44,9 @@ public class LoanCustRoleChangeServiceImpl implements LoanCustRoleChangeService 
 
     @Autowired
     private TaskSchedulingService taskSchedulingService;
+
+    @Autowired
+    private LoanOrderDOMapper loanOrderDOMapper;
 
     @Autowired
     private LoanCustomerDOMapper loanCustomerDOMapper;
@@ -114,6 +119,12 @@ public class LoanCustRoleChangeServiceImpl implements LoanCustRoleChangeService 
 
                     // update
                     updateCustomer(e);
+
+                    // 编辑业务单主贷人
+                    if (CUST_TYPE_PRINCIPAL.equals(e.getCustType())) {
+                        updateOrderPrincipal(orderId, e.getId());
+                    }
+
                 });
 
         return null;
@@ -272,5 +283,21 @@ public class LoanCustRoleChangeServiceImpl implements LoanCustRoleChangeService 
         loanCustRoleChangeHisDetailDO.setId(null);
 
         loanCustRoleChangeHisDetailDOMapper.insertSelective(loanCustRoleChangeHisDetailDO);
+    }
+
+    /**
+     * 编辑业务单主贷人
+     *
+     * @param orderId
+     * @param principalId
+     */
+    private void updateOrderPrincipal(Long orderId, Long principalId) {
+
+        LoanOrderDO loanOrderDO = new LoanOrderDO();
+        loanOrderDO.setId(orderId);
+        loanOrderDO.setLoanCustomerId(principalId);
+
+        loanOrderDO.setGmtModify(new Date());
+        loanOrderDOMapper.updateByPrimaryKeySelective(loanOrderDO);
     }
 }
