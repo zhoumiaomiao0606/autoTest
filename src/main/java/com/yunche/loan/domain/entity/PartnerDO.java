@@ -57,5 +57,5 @@ public class PartnerDO {
 
     private String partnerCode;
 
-    private Byte partnerGroup;
+    private Long partnerGroup;
 }
