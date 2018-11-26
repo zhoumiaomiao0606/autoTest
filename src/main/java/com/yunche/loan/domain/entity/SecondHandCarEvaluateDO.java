@@ -23,6 +23,8 @@ public class SecondHandCarEvaluateDO
 
     private Date register_date;
 
+    private String issue_date;
+
     private String make_name;
 
     private String model_name;

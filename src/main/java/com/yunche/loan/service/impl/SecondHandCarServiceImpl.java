@@ -396,6 +396,15 @@ public class SecondHandCarServiceImpl implements SecondHandCarService
                         secondHandCarEvaluateDO.setSecondCarUserdTime(stringBuilder.toString());
                     }
 
+                    if (secondHandCarEvaluateDO.getOcr_id()!=null)
+                    {
+                        SecondHandCarVinDO secondHandCarVinDO = secondHandCarVinDOMapper.selectByPrimaryKey(secondHandCarEvaluateDO.getOcr_id());
+                        if (secondHandCarVinDO!=null)
+                        {
+                            secondHandCarEvaluateDO.setIssue_date(secondHandCarVinDO.getIssue_date());
+                        }
+                    }
+
                     CommonFinanceResult<EvaluateVO> financeResult1 = new CommonFinanceResult<EvaluateVO>();
 
                         Type type =new TypeToken<CommonFinanceResult<EvaluateVO>>(){}  .getType();
