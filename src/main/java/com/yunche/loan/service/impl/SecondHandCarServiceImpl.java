@@ -28,10 +28,7 @@ import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
+import java.time.*;
 import java.util.*;
 
 @Service
@@ -380,18 +377,24 @@ public class SecondHandCarServiceImpl implements SecondHandCarService
                 //解析估价信息
                 if (secondHandCarEvaluateDO!=null && secondHandCarEvaluateDO.getEvaluate_json()!=null && !"".equals(secondHandCarEvaluateDO.getEvaluate_json()))
                 {
+                    if (secondHandCarEvaluateDO.getRegister_date()!=null && secondHandCarEvaluateDO.getQuery_time()!=null)
+                    {
+                        ZoneId zone = ZoneId.systemDefault();
 
-                    ZoneId zone = ZoneId.systemDefault();
+                        Instant instant1 = secondHandCarEvaluateDO.getRegister_date().toInstant();
+                        LocalDateTime localDateTime = LocalDateTime.ofInstant(instant1, zone);
+                        LocalDate localDate1 = localDateTime.toLocalDate();
 
-                    Instant instant1 = secondHandCarEvaluateDO.getRegister_date().toInstant();
-                    LocalDateTime localDateTime = LocalDateTime.ofInstant(instant1, zone);
-                    LocalDate localDate1 = localDateTime.toLocalDate();
+                        Instant instant2 = secondHandCarEvaluateDO.getQuery_time().toInstant();
+                        LocalDateTime localDateTime2 = LocalDateTime.ofInstant(instant2, zone);
+                        LocalDate localDate2 = localDateTime.toLocalDate();
 
-                    Instant instant2 = secondHandCarEvaluateDO.getQuery_time().toInstant();
-                    LocalDateTime localDateTime2 = LocalDateTime.ofInstant(instant2, zone);
-                    LocalDate localDate2 = localDateTime.toLocalDate();
+                        Period period =Period.between(localDate1,localDate2);
 
-
+                        StringBuilder stringBuilder =new StringBuilder();
+                        stringBuilder.append(period.getYears()).append("年 ").append(period.getMonths()).append("月 ").append(period.getDays()).append("日");
+                        secondHandCarEvaluateDO.setSecondCarUserdTime(stringBuilder.toString());
+                    }
 
                     CommonFinanceResult<EvaluateVO> financeResult1 = new CommonFinanceResult<EvaluateVO>();
 
