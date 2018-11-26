@@ -387,7 +387,7 @@ public class SecondHandCarServiceImpl implements SecondHandCarService
 
                         Instant instant2 = secondHandCarEvaluateDO.getQuery_time().toInstant();
                         LocalDateTime localDateTime2 = LocalDateTime.ofInstant(instant2, zone);
-                        LocalDate localDate2 = localDateTime.toLocalDate();
+                        LocalDate localDate2 = localDateTime2.toLocalDate();
 
                         Period period =Period.between(localDate1,localDate2);
 
