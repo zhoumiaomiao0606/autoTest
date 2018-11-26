@@ -2,10 +2,12 @@ package com.yunche.loan.service.impl;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.yunche.loan.config.cache.BankCache;
 import com.yunche.loan.config.common.JtxConfig;
 import com.yunche.loan.config.common.OSSConfig;
 import com.yunche.loan.config.constant.IDict;
+import com.yunche.loan.config.constant.LoanFileEnum;
 import com.yunche.loan.config.constant.ProcessApprovalConst;
 import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.result.ResultBean;
@@ -20,6 +22,7 @@ import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.JinTouHangAccommodationApplyService;
 import com.yunche.loan.service.LoanProcessBridgeService;
 import com.yunche.loan.service.LoanQueryService;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,6 +38,8 @@ import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import static com.yunche.loan.config.constant.LoanProcessEnum.BRIDGE_HANDLE;
 import static com.yunche.loan.config.constant.ProcessApprovalConst.ACTION_ROLL_BACK;
@@ -94,6 +99,9 @@ public class JinTouHangAccommodationApplyServiceImpl implements JinTouHangAccomm
 
     @Autowired
     private LoanFinancialPlanDOMapper loanFinancialPlanDOMapper;
+
+    @Autowired
+    private LoanFileDOMapper loanFileDOMapper;
 
     @Autowired
     private JTXCommunicationUtil jtxCommunicationUtil;
@@ -196,32 +204,73 @@ public class JinTouHangAccommodationApplyServiceImpl implements JinTouHangAccomm
         LoanCustomerDO loanCustomerDO = loanCustomerDOMapper.selectByPrimaryKey(loanOrderDO.getLoanCustomerId(),new Byte("0"));
         LoanBaseInfoDO loanBaseInfoDO = loanBaseInfoDOMapper.selectByPrimaryKey(loanOrderDO.getLoanBaseInfoId());
         LoanFinancialPlanDO loanFinancialPlanDO = loanFinancialPlanDOMapper.selectByPrimaryKey(loanOrderDO.getLoanFinancialPlanId());
-
+        Set types = Sets.newHashSet();
+        types.add(LoanFileEnum.ID_CARD_FRONT.getType());
+        types.add(LoanFileEnum.ID_CARD_BACK.getType());
+        types.add(LoanFileEnum.VISIT_DOOR_CARD.getType());
+        types.add(LoanFileEnum.LOAN_VOUCHER.getType());
+        types.add(LoanFileEnum.DRIVER_LICENSE.getType());
+        types.add(LoanFileEnum.DRIVING_LICENSE.getType());
+        List<UniversalMaterialRecordVO> list = loanQueryDOMapper.selectUniversalCustomerFiles(loanOrderDO.getLoanCustomerId(), types);
+        List<String> urls = Lists.newLinkedList();
+        for (UniversalMaterialRecordVO V : list) {
+            urls.addAll(V.getUrls());
+        }
         asyncUpload.execute(new Process() {
             @Override
             public void process() {
-                String interest = param.getLendAmount().multiply(new BigDecimal("0.8").multiply(new BigDecimal("60").divide(new BigDecimal("365"),2,BigDecimal.ROUND_HALF_UP))).multiply(new BigDecimal("100")).setScale(0,BigDecimal.ROUND_HALF_UP)+"";
-                Map resultMap = jtxCommunicationUtil.borrowerInfoAuth(loanCustomerDO.getName(),loanCustomerDO.getIdCard(),param.getTel(),
-                        loanBaseInfoDO.getBank(),param.getBankCard(),param.getIdPair());
-                if((Boolean) resultMap.get("FLAG")){
-                    Boolean flag1 = jtxCommunicationUtil.assetRelease((String) resultMap.get("REF"),"云车-"+(String) resultMap.get("REF"),param.getLendAmount().multiply(new BigDecimal("100"))+"",
-                            "800", lenDate,"60", interest,"BYMONTH",
-                            "YC","车",loanFinancialPlanDO.getAppraisal().multiply(new BigDecimal("100")).stripTrailingZeros().toPlainString(),"0",loanCustomerDO.getIdCard());
-                    if(flag1){
-                        ThirdPartyFundBusinessDO thirdPartyFundBusinessDO = new ThirdPartyFundBusinessDO();
-                        thirdPartyFundBusinessDO.setBridgeProcecssId(param.getIdPair().getBridgeProcessId());
-                        thirdPartyFundBusinessDO.setLendStatus(IDict.K_CJZT.K_CJZT_SUCCESS);
-                        thirdPartyFundBusinessDOMapper.updateByPrimaryKeySelective(thirdPartyFundBusinessDO);
+                try{
+                    String interest = param.getLendAmount().multiply(new BigDecimal("0.8").multiply(new BigDecimal("60").divide(new BigDecimal("365"),2,BigDecimal.ROUND_HALF_UP))).multiply(new BigDecimal("100")).setScale(0,BigDecimal.ROUND_HALF_UP)+"";
+                    Map resultMap = jtxCommunicationUtil.borrowerInfoAuth(loanCustomerDO.getName(),loanCustomerDO.getIdCard(),param.getTel(),
+                            loanBaseInfoDO.getBank(),param.getBankCard(),param.getIdPair());
+                    if((Boolean) resultMap.get("FLAG")){
+                        Map resultMap1 = jtxCommunicationUtil.assetRelease((String) resultMap.get("REF"),"云车-"+(String) resultMap.get("REF"),param.getLendAmount().multiply(new BigDecimal("100"))+"",
+                                "800", lenDate,"60", interest,"BYMONTH",
+                                "YC","车",loanFinancialPlanDO.getAppraisal().multiply(new BigDecimal("100")).stripTrailingZeros().toPlainString(),"0",loanCustomerDO.getIdCard());
+                        if((Boolean) resultMap1.get("FLAG")){
+                            String path ="";
+                            String jtxFtpPath = "/root/yunche/reqFile/";
+                            path = zipFile(urls);
+                            if(!"".equals(path)){
+                                File file = new File(path);
+                                InputStream is = null;
+                                JTXFileUtil sftp = new JTXFileUtil(jtxConfig.getJtxUserName(), jtxConfig.getJtxPassword(), jtxConfig.getJtxServierIP(), jtxConfig.getJtxPort());
+                                is = new FileInputStream(file);
+                                sftp.login();
+                                sftp.upload(jtxFtpPath, file.getName(), is);
+                                sftp.logout();
+                                file.delete();
+                                boolean flag = jtxCommunicationUtil.enclosureUpdate(file.getName(),jtxFtpPath+DateUtil.getDateTo8(new Date()),(String)resultMap1.get("AssetSn"));
+                                if(flag){
+                                    ThirdPartyFundBusinessDO thirdPartyFundBusinessDO = new ThirdPartyFundBusinessDO();
+                                    thirdPartyFundBusinessDO.setBridgeProcecssId(param.getIdPair().getBridgeProcessId());
+                                    thirdPartyFundBusinessDO.setLendStatus(IDict.K_CJZT.K_CJZT_SUCCESS);
+                                    thirdPartyFundBusinessDOMapper.updateByPrimaryKeySelective(thirdPartyFundBusinessDO);
+                                }else{
+                                    ThirdPartyFundBusinessDO thirdPartyFundBusinessDO = new ThirdPartyFundBusinessDO();
+                                    thirdPartyFundBusinessDO.setBridgeProcecssId(param.getIdPair().getBridgeProcessId());
+                                    thirdPartyFundBusinessDO.setLendStatus(IDict.K_CJZT.K_CJZT_ASSETRELEASE_ERROR);
+                                    thirdPartyFundBusinessDOMapper.updateByPrimaryKeySelective(thirdPartyFundBusinessDO);
+                                }
+                            }
+                        }else{
+                            ThirdPartyFundBusinessDO thirdPartyFundBusinessDO = new ThirdPartyFundBusinessDO();
+                            thirdPartyFundBusinessDO.setBridgeProcecssId(param.getIdPair().getBridgeProcessId());
+                            thirdPartyFundBusinessDO.setLendStatus(IDict.K_CJZT.K_CJZT_ASSETRELEASE_ERROR);
+                            thirdPartyFundBusinessDOMapper.updateByPrimaryKeySelective(thirdPartyFundBusinessDO);
+                        }
                     }else{
                         ThirdPartyFundBusinessDO thirdPartyFundBusinessDO = new ThirdPartyFundBusinessDO();
                         thirdPartyFundBusinessDO.setBridgeProcecssId(param.getIdPair().getBridgeProcessId());
-                        thirdPartyFundBusinessDO.setLendStatus(IDict.K_CJZT.K_CJZT_ASSETRELEASE_ERROR);
+                        thirdPartyFundBusinessDO.setLendStatus(IDict.K_CJZT.K_CJZT_AUTHINFIO_ERROR);
                         thirdPartyFundBusinessDOMapper.updateByPrimaryKeySelective(thirdPartyFundBusinessDO);
                     }
-                }else{
+
+                }catch(Exception e){
+                    logger.error("与金投行通讯异常",e);
                     ThirdPartyFundBusinessDO thirdPartyFundBusinessDO = new ThirdPartyFundBusinessDO();
                     thirdPartyFundBusinessDO.setBridgeProcecssId(param.getIdPair().getBridgeProcessId());
-                    thirdPartyFundBusinessDO.setLendStatus(IDict.K_CJZT.K_CJZT_AUTHINFIO_ERROR);
+                    thirdPartyFundBusinessDO.setLendStatus(IDict.K_CJZT.K_CJZT_ASSETRELEASE_ERROR);
                     thirdPartyFundBusinessDOMapper.updateByPrimaryKeySelective(thirdPartyFundBusinessDO);
                 }
             }
@@ -229,6 +278,64 @@ public class JinTouHangAccommodationApplyServiceImpl implements JinTouHangAccomm
 
 
         return ResultBean.ofSuccess("借款申请发起成功");
+    }
+
+    private String zipFile(List<String> urls){
+        String resultZipPath="";
+        List<File> fileList= Lists.newLinkedList();
+        String localPath = jtxConfig.getJtxTempDirSend();
+        fileList = urls.stream().map(pic -> {
+            File file=null;
+            try {
+                file = new File(localPath +"JTX"+GeneratorIDUtil.execute() + IDict.K_SUFFIX.K_SUFFIX_JPG);
+                InputStream oss2InputStream = OSSUnit.getOSS2InputStream(pic);
+                FileUtils.copyInputStreamToFile(oss2InputStream, file);
+
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            return file;
+        }).collect(Collectors.toList());
+        File zipFile = new File(localPath + "/" + "JTX"+GeneratorIDUtil.execute() +".zip");
+        FileOutputStream fos = null;
+        ZipOutputStream zos = null;
+        FileInputStream fis = null;
+        BufferedInputStream bis = null;
+        try{
+            fos = new FileOutputStream(zipFile);
+            zos = new ZipOutputStream(new BufferedOutputStream(fos));
+            byte[] bufs = new byte[1024*10];
+            for(int i=0;i<fileList.size();i++){
+
+                ZipEntry zipEntry = new ZipEntry(fileList.get(i).getName());
+                zos.putNextEntry(zipEntry);
+                //读取待压缩的文件并写进压缩包里
+                fis = new FileInputStream(fileList.get(i));
+                bis = new BufferedInputStream(fis, 1024*10);
+                int read = 0;
+                while((read=bis.read(bufs, 0, 1024*10)) != -1){
+                    zos.write(bufs,0,read);
+                }
+            }
+            resultZipPath = zipFile.getPath();
+        }catch(Exception e){
+            throw new RuntimeException(e);
+        }finally{
+            //关闭流
+            try {
+                if(null != bis) bis.close();
+                if(null != zos) zos.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+                throw new RuntimeException(e);
+            }
+            for(File file:fileList){
+                file.delete();
+            }
+            return resultZipPath;
+        }
+
+
     }
 
 

@@ -110,7 +110,9 @@ public class JTXFileUtil {
             sftp.mkdir(directory);
             sftp.cd(directory);
         }
-        sftp.mkdir(DateUtil.getDate());
+        if(sftp.stat(DateUtil.getDate()) == null){
+            sftp.mkdir(DateUtil.getDate());
+        }
         sftp.cd(DateUtil.getDate());
         sftp.put(input, sftpFileName);
         log.info("file:{} is upload successful" , sftpFileName);
