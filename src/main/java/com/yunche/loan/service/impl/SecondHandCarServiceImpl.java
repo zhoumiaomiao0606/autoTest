@@ -28,6 +28,10 @@ import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.*;
 
 @Service
@@ -376,6 +380,19 @@ public class SecondHandCarServiceImpl implements SecondHandCarService
                 //解析估价信息
                 if (secondHandCarEvaluateDO!=null && secondHandCarEvaluateDO.getEvaluate_json()!=null && !"".equals(secondHandCarEvaluateDO.getEvaluate_json()))
                 {
+
+                    ZoneId zone = ZoneId.systemDefault();
+
+                    Instant instant1 = secondHandCarEvaluateDO.getRegister_date().toInstant();
+                    LocalDateTime localDateTime = LocalDateTime.ofInstant(instant1, zone);
+                    LocalDate localDate1 = localDateTime.toLocalDate();
+
+                    Instant instant2 = secondHandCarEvaluateDO.getQuery_time().toInstant();
+                    LocalDateTime localDateTime2 = LocalDateTime.ofInstant(instant2, zone);
+                    LocalDate localDate2 = localDateTime.toLocalDate();
+
+
+
                     CommonFinanceResult<EvaluateVO> financeResult1 = new CommonFinanceResult<EvaluateVO>();
 
                         Type type =new TypeToken<CommonFinanceResult<EvaluateVO>>(){}  .getType();

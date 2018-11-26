@@ -62,4 +62,6 @@ public class SecondHandCarEvaluateDO
 
     private EvaluatePrice c2BPrices;//收购价 C2B 价格 包含 abc 三个车况
 
+    private String secondCarUserdTime;
+
 }
