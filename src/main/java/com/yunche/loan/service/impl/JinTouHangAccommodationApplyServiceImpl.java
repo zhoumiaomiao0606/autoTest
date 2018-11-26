@@ -234,7 +234,7 @@ public class JinTouHangAccommodationApplyServiceImpl implements JinTouHangAccomm
                             if(!"".equals(path)){
                                 File file = new File(path);
                                 InputStream is = null;
-                                JTXFileUtil sftp = new JTXFileUtil("root", "jtx@1722", "183.136.187.207", 22);
+                                JTXFileUtil sftp = new JTXFileUtil(jtxConfig.getJtxUserName(), jtxConfig.getJtxPassword(), jtxConfig.getJtxServierIP(), jtxConfig.getJtxPort());
                                 is = new FileInputStream(file);
                                 sftp.login();
                                 sftp.upload(jtxFtpPath, file.getName(), is);
