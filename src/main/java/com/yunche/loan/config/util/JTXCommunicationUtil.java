@@ -151,15 +151,15 @@ public class JTXCommunicationUtil {
 
 
     //ASSET_04  （EQUAL_CI("等额本息") ）
-    public boolean assetRelease(String ref, String name, String principal, String rate, String interestDate,
+    public Map assetRelease(String ref, String name, String principal, String rate, String interestDate,
                                 String timeLimit, String interest, String payInterestType, String source,
                                 String pledge, String value, String borrowType, String identityNum) {
+        Map resMap = new HashMap();
         JtxCommunicationDO jtxCommunicationDO = new JtxCommunicationDO();
         jtxCommunicationDO.setJtxId(ref);
         jtxCommunicationDO.setOrderStatus(2);
         jtxCommunicationDO.setUpdateDate(new Date());
         jtxCommunicationDOMapper.updateByPrimaryKeySelective(jtxCommunicationDO);
-        boolean falg = false;
         Map<String, Object> paramMap = new HashMap<>();
         headBuild(paramMap, "ASSET_04",ref);
         Map bodyMap = new HashMap();
@@ -218,13 +218,15 @@ public class JTXCommunicationUtil {
             Map map = MapXmlUtil.Xml2Map(xml);
             Map map1 = (Map) map.get("MsgBody");
             if ("0000".equals((String) map1.get("RetCode"))) {
-                falg = true;
+                resMap.put("FLAG",true);
+                resMap.put("AssetSn",(String)map1.get("AssetSn"));
                 JtxCommunicationDO jtxCommunicationDO1 = new JtxCommunicationDO();
                 jtxCommunicationDO1.setJtxId(ref);
                 jtxCommunicationDO1.setUpdateDate(new Date());
                 jtxCommunicationDO1.setAssetNumber((String)map1.get("AssetSn"));
                 jtxCommunicationDOMapper.updateByPrimaryKeySelective(jtxCommunicationDO1);
             }else{
+                resMap.put("FLAG",false);
                 JtxCommunicationDO jtxCommunicationDO1 = new JtxCommunicationDO();
                 jtxCommunicationDO1.setJtxId(ref);
                 jtxCommunicationDO1.setUpdateDate(new Date());
@@ -232,9 +234,10 @@ public class JTXCommunicationUtil {
                 jtxCommunicationDOMapper.updateByPrimaryKeySelective(jtxCommunicationDO1);
             }
         } catch (Exception e) {
+            resMap.put("FLAG",false);
             logger.error("ASSET_04接口通讯异常", e);
         } finally {
-            return falg;
+            return resMap;
         }
     }
 
@@ -247,7 +250,9 @@ public class JTXCommunicationUtil {
         bodyMap.put("FileName", name);
         bodyMap.put("FilePath", path);
         bodyMap.put("AssetSn", assetSn);
+        paramMap.put("MsgBody", bodyMap);
         String paramXml = MapXmlUtil.createXmlByMap(paramMap, "MsgText");
+        logger.info("ASSET_05请求信息:"+paramXml);
         try {
             byte[] param = JTXByteUtil.encrypt(paramXml.getBytes("GBK"), "netwxactive".getBytes("GBK"), "DES");
             String encode_req = new BASE64Encoder().encode(param);
