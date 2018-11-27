@@ -9,7 +9,7 @@ public class FirstCarSiteWebVO
 
     private String Model_Name;//车系：欧力威  model
 
-    private String Manufacturer;//厂商：长安   --？？？
+    /*private String Manufacturer;*///厂商：长安   --？？？
 
     private String VersionYear;//车辆年款：201304  --- model
 
@@ -19,7 +19,7 @@ public class FirstCarSiteWebVO
 
     private String EngineModel;//发动机型号：JL473qa  --engine
 
-    private String Name;//车辆型号：SC6388AV4     --- model -款式名称 --？
+  /*  private String Name;*///车辆型号：SC6388AV4     --- model -款式名称 --？
 
    /* private String BrandType;//外型尺寸：3800/1700/1680*/   //---?
 
