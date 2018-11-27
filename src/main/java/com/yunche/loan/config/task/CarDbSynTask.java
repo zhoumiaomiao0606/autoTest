@@ -43,7 +43,7 @@ public class CarDbSynTask
     @DistributedLock(200)
     public void synCarDb()
     {
-
+        changeDb();
     }
 
 
