@@ -4,8 +4,12 @@ import com.yunche.loan.config.anno.DistributedLock;
 import com.yunche.loan.domain.entity.CarBrandDO;
 import com.yunche.loan.domain.entity.CarDetailDO;
 import com.yunche.loan.domain.entity.CarModelDO;
+import com.yunche.loan.mapper.CarBrandDOMapper;
+import com.yunche.loan.mapper.CarDetailDOMapper;
+import com.yunche.loan.mapper.CarModelDOMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -14,6 +18,16 @@ import java.util.List;
 @Component
 public class CarDbSynTask
 {
+
+    @Autowired
+    private CarBrandDOMapper carBrandDOMapper;
+
+    @Autowired
+    private CarModelDOMapper carModelDOMapper;
+
+    @Autowired
+    private CarDetailDOMapper carDetailDOMapper;
+
     private static final Logger LOG = LoggerFactory.getLogger(CarDbSynTask.class);
 
     @Scheduled(cron = "0 0 2 ? * SAT")
