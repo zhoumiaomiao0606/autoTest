@@ -1450,6 +1450,10 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
             LoanBaseInfoDO loanBaseInfoDO = loanBaseInfoDOMapper.selectByPrimaryKey(loanOrderDO.getLoanBaseInfoId());
             String bankName = loanBaseInfoDO.getBank();
             LoanCarInfoDO loanCarInfoDO = loanCarInfoDOMapper.selectByPrimaryKey(loanOrderDO.getLoanCarInfoId());
+            if (loanCarInfoDO ==null)
+            {
+                throw new BizException("车辆信息未保存！！");
+            }
             int carType = loanCarInfoDO.getCarType();
             ConfLoanApplyDOKey confLoanApplyDOKey = new ConfLoanApplyDOKey();
             confLoanApplyDOKey.setBank(bankName);

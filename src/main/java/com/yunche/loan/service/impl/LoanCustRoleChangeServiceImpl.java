@@ -244,7 +244,7 @@ public class LoanCustRoleChangeServiceImpl implements LoanCustRoleChangeService 
     private void insertRoleChangeHisDetail_before(Long roleChangeHisId, Long orderId) {
 
         // 获取变更前customers
-        List<LoanCustomerDO> beforeCustomers = loanCustomerDOMapper.selectCusByOrderId(orderId);
+        List<LoanCustomerDO> beforeCustomers = loanCustomerDOMapper.selectCusByOrderIdAll(orderId);
         Preconditions.checkArgument(!CollectionUtils.isEmpty(beforeCustomers), "当前订单客户信息不存在");
 
         beforeCustomers.stream()
