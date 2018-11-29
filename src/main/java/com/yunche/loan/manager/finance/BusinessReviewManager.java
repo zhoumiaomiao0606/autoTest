@@ -111,7 +111,7 @@ public class BusinessReviewManager {
 
             if(httpResponse!=null && httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK){
                 result = EntityUtils.toString(httpResponse.getEntity());// 返回json格式：
-                LOG.error("数据读取！！！！"+result);
+                LOG.info("数据读取！！！！"+result);
             }
 
 
