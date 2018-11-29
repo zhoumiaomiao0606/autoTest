@@ -17,6 +17,8 @@ public class AppLoanCarInfoVO {
 
     private Byte carType;
 
+    private Byte evaluationType;
+
     private Integer gpsNum;
 
     private Byte carKey;

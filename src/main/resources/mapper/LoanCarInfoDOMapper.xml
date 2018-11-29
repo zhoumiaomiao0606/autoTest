@@ -5,6 +5,7 @@
         <id column="id" property="id" jdbcType="BIGINT"/>
         <result column="car_detail_id" property="carDetailId" jdbcType="BIGINT"/>
         <result column="car_detail_name" property="carDetailName" jdbcType="VARCHAR"/>
+        <result column="evaluation_type" property="evaluationType" jdbcType="TINYINT"/>
         <result column="car_type" property="carType" jdbcType="TINYINT"/>
         <result column="gps_num" property="gpsNum" jdbcType="INTEGER"/>
         <result column="car_key" property="carKey" jdbcType="TINYINT"/>
@@ -26,7 +27,7 @@
         <result column="car_category" property="carCategory" jdbcType="VARCHAR"/>
     </resultMap>
     <sql id="Base_Column_List">
-    id, car_detail_id, car_detail_name, car_type, gps_num, car_key, partner_id, partner_name,
+    id, car_detail_id, car_detail_name, evaluation_type,car_type, gps_num, car_key, partner_id, partner_name,
     open_bank, account_name, bank_account, pay_month, info, status, gmt_create, gmt_modify,
     feature, first_register_date, business_source, cooperation_dealer, vehicle_property,car_category
   </sql>
@@ -42,7 +43,7 @@
     </delete>
     <insert id="insert" useGeneratedKeys="true" keyProperty="id" keyColumn="id"
             parameterType="com.yunche.loan.domain.entity.LoanCarInfoDO">
-    insert into loan_car_info (id, car_detail_id, car_detail_name,
+    insert into loan_car_info (id, car_detail_id, car_detail_name,evaluation_type,
       car_type, gps_num, car_key,
       partner_id, partner_name, open_bank,
       account_name, bank_account, pay_month,
@@ -50,7 +51,7 @@
       gmt_modify, feature, first_register_date,
       business_source, cooperation_dealer, vehicle_property
       )
-    values (#{id,jdbcType=BIGINT}, #{carDetailId,jdbcType=BIGINT}, #{carDetailName,jdbcType=VARCHAR},
+    values (#{id,jdbcType=BIGINT}, #{carDetailId,jdbcType=BIGINT}, #{carDetailName,jdbcType=VARCHAR},#{evaluationType,jdbcType=TINYINT},
       #{carType,jdbcType=TINYINT}, #{gpsNum,jdbcType=INTEGER}, #{carKey,jdbcType=TINYINT},
       #{partnerId,jdbcType=BIGINT}, #{partnerName,jdbcType=VARCHAR}, #{openBank,jdbcType=VARCHAR},
       #{accountName,jdbcType=VARCHAR}, #{bankAccount,jdbcType=VARCHAR}, #{payMonth,jdbcType=TINYINT},
@@ -71,6 +72,9 @@
             </if>
             <if test="carDetailName != null">
                 car_detail_name,
+            </if>
+            <if test="evaluationType != null">
+                evaluation_type,
             </if>
             <if test="carType != null">
                 car_type,
@@ -140,6 +144,9 @@
             <if test="carDetailName != null">
                 #{carDetailName,jdbcType=VARCHAR},
             </if>
+            <if test="evaluationType != null">
+                #{evaluationType,jdbcType=TINYINT},
+            </if>
             <if test="carType != null">
                 #{carType,jdbcType=TINYINT},
             </if>
@@ -208,6 +215,9 @@
             <if test="carDetailName != null">
                 car_detail_name = #{carDetailName,jdbcType=VARCHAR},
             </if>
+            <if test="evaluationType != null">
+                evaluation_type = #{evaluationType,jdbcType=TINYINT},
+            </if>
             <if test="carType != null">
                 car_type = #{carType,jdbcType=TINYINT},
             </if>
@@ -272,6 +282,7 @@
     update loan_car_info
     set car_detail_id = #{carDetailId,jdbcType=BIGINT},
       car_detail_name = #{carDetailName,jdbcType=VARCHAR},
+      evaluation_type = #{evaluationType,jdbcType=TINYINT},
       car_type = #{carType,jdbcType=TINYINT},
       gps_num = #{gpsNum,jdbcType=INTEGER},
       car_key = #{carKey,jdbcType=TINYINT},

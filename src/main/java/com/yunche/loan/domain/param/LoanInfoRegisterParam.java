@@ -12,6 +12,10 @@ public class LoanInfoRegisterParam {
     private Long orderId;
 
     private Long second_hand_car_evaluate_id;
+
+    private String vin;
+
+    private Byte evaluationType;
     /**
      * 车型信息
      */

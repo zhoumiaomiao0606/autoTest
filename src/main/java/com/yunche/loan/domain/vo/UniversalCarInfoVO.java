@@ -16,6 +16,7 @@ public class UniversalCarInfoVO {
     private String car_detail_id;//车型ID
     private String car_vehicle_property;//车辆属性
     private String car_type;//车辆类别--------车辆类型：0-新车; 1-二手车; 2-不限;
+    private Byte evaluation_type;
     private String car_key;//是否留备钥匙
     private String needCollectKey;//待收钥匙
     private String vehicle_vehicle_identification_number;
