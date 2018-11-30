@@ -505,7 +505,7 @@ public class SecondHandCarServiceImpl implements SecondHandCarService
         try {
             if (secondHandCarEvaluateDO.getRegister_date()!=null && secondHandCarEvaluateDO.getRegister_date().before(sdf.parse(date)))
             {
-                throw  new BizException("注册日期>2014-01-01才能查询第一车网估价");
+                throw  new BizException("注册日期大于等于2014-01-01才能查询第一车网估价");
             }
         } catch (ParseException e)
         {
