@@ -61,7 +61,7 @@ public class LoanInfoRegisterServiceImpl implements LoanInfoRegisterService {
         UniversalCarInfoVO universalCarInfoVO = loanQueryDOMapper.selectUniversalCarInfo(orderId);
 
         //判断估价类型
-        if (universalCarInfoVO.getCar_type()!=null && !"".equals(universalCarInfoVO.getCar_type()) && Byte.valueOf(universalCarInfoVO.getCar_type())==1)
+        if (universalCarInfoVO!=null && universalCarInfoVO.getCar_type()!=null && !"".equals(universalCarInfoVO.getCar_type()) && Byte.valueOf(universalCarInfoVO.getCar_type())==1)
         {
             if (universalCarInfoVO.getEvaluation_type() ==2)
             {
