@@ -87,11 +87,11 @@ spring:
             required: true
 
   jtx:
-      jtxServierIP: 120.26.205.193
-      jtxUserName: asset
-      jtxPassword: asset001
-      jtxUrl: http://114.215.191.155:7013/assetApi/service
-      jtxPort: 22
+    jtxServierIP: 120.26.205.193
+    jtxUserName: asset
+    jtxPassword: asset001
+    jtxUrl: http://114.215.191.155:7013/assetApi/service
+    jtxPort: 22
 
 ---
 
@@ -135,9 +135,9 @@ spring:
             required: true
 
   jtx:
-      jtxServierIP: 120.26.205.193
-      jtxUserName: asset
-      jtxPassword: asset001
-      jtxUrl: http://114.215.191.155:7013/assetApi/service
-      jtxPort: 22
+    jtxServierIP: 120.26.205.193
+    jtxUserName: asset
+    jtxPassword: asset001
+    jtxUrl: http://114.215.191.155:7013/assetApi/service
+    jtxPort: 22
 
