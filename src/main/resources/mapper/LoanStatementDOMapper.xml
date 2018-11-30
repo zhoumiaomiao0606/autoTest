@@ -1508,7 +1508,7 @@
             AND fund.repay_date &gt;= #{startRepayDate}
         </if>
         <if test="endRepayDate !=null">
-            AND fund.repay_date &gt;= #{endRepayDate}
+            AND fund.repay_date &lt;= #{endRepayDate}
         </if>
     </select>
 

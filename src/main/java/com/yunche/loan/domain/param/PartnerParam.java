@@ -4,6 +4,7 @@ import com.yunche.loan.domain.entity.PartnerBankAccountDO;
 import com.yunche.loan.domain.entity.PartnerDO;
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -27,7 +28,7 @@ public class PartnerParam extends PartnerDO {
     /**
      * 关联银行卡账号列表
      */
-    private List<PartnerBankAccountDO> bankAccountList;
+    private List<PartnerBankAccountDO> bankAccountList = new ArrayList<>();
 
     /**
      * 上牌地列表

@@ -59,6 +59,15 @@ public class SecondHandCarEvaluateDO
 
     private Long ocr_id;//识别id
 
+
+    private String b2C_a_low;
+
+    private String b2C_a_mid;
+
+    private String b2C_a_up;
+
+
+
     //展示
     private EvaluatePrice b2CPrices;//商家销售价 B2C 价格 包含 abc 三个车况
 

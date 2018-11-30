@@ -449,6 +449,25 @@ public class SecondHandCarServiceImpl implements SecondHandCarService
     public ResultBean queryEvaluateByEvaluateid(Long evaluateId)
     {
         SecondHandCarEvaluateDO secondHandCarEvaluateDO = secondHandCarEvaluateDOMapper.selectByPrimaryKey(evaluateId);
+        CommonFinanceResult<EvaluateVO> financeResult1 = new CommonFinanceResult<EvaluateVO>();
+
+        Type type =new TypeToken<CommonFinanceResult<EvaluateVO>>(){}  .getType();
+        Gson gson = new Gson();
+        financeResult1 = gson.fromJson(secondHandCarEvaluateDO.getEvaluate_json(), type);
+
+        if (financeResult1!=null && financeResult1.getDatas()!=null)
+        {
+            if (financeResult1.getDatas().getB2CPrices()!=null)
+            {
+                if (financeResult1.getDatas().getB2CPrices().getA()!=null)
+                {
+                    secondHandCarEvaluateDO.setB2C_a_low(financeResult1.getDatas().getB2CPrices().getA().getLow());
+                    secondHandCarEvaluateDO.setB2C_a_mid(financeResult1.getDatas().getB2CPrices().getA().getMid());
+                    secondHandCarEvaluateDO.setB2C_a_up(financeResult1.getDatas().getB2CPrices().getA().getUp());
+
+                }
+            }
+        }
         return ResultBean.ofSuccess(secondHandCarEvaluateDO);
     }
 
@@ -484,11 +503,12 @@ public class SecondHandCarServiceImpl implements SecondHandCarService
         String date = "2014-01-01 00:00:00";
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         try {
-            if (secondHandCarEvaluateDO.getRegister_date()!=null && secondHandCarEvaluateDO.getRegister_date().after(sdf.parse(date)))
+            if (secondHandCarEvaluateDO.getRegister_date()!=null && secondHandCarEvaluateDO.getRegister_date().before(sdf.parse(date)))
             {
-                throw  new BizException("注册日期<2014-01-01才能查询第一车网估价");
+                throw  new BizException("注册日期>2014-01-01才能查询第一车网估价");
             }
-        } catch (ParseException e) {
+        } catch (ParseException e)
+        {
             throw  new BizException("时间转换异常");
         }
 

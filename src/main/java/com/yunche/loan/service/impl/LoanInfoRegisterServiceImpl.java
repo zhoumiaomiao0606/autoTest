@@ -1,6 +1,7 @@
 package com.yunche.loan.service.impl;
 
 import com.google.common.base.Preconditions;
+import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.entity.*;
 import com.yunche.loan.domain.param.LoanInfoRegisterParam;
@@ -59,6 +60,16 @@ public class LoanInfoRegisterServiceImpl implements LoanInfoRegisterService {
         //车辆详情
         UniversalCarInfoVO universalCarInfoVO = loanQueryDOMapper.selectUniversalCarInfo(orderId);
 
+        //判断估价类型
+        if (universalCarInfoVO.getCar_type()!=null && !"".equals(universalCarInfoVO.getCar_type()) && Byte.valueOf(universalCarInfoVO.getCar_type())==1)
+        {
+            if (universalCarInfoVO.getEvaluation_type() ==2)
+            {
+                universalCarInfoVO.setVin(universalCarInfoVO.getVehicle_vehicle_identification_number());
+            }
+
+        }
+
         //金融方案信息
         FinancialSchemeVO financialSchemeVO = loanQueryDOMapper.selectFinancialScheme(orderId);
 
@@ -92,18 +103,35 @@ public class LoanInfoRegisterServiceImpl implements LoanInfoRegisterService {
                 loanOrderDOMapper.updateByPrimaryKeySelective(loanOrderDO);
                 vehicleInformationDO.setColor(loanInfoRegisterParam.getColor());
             }else {
-                SecondHandCarEvaluateDO secondHandCarEvaluateDO = secondHandCarEvaluateDOMapper.selectByPrimaryKey(loanInfoRegisterParam.getSecond_hand_car_evaluate_id());
 
-                // #车牌号码 #车辆类型（小型轿车）  #所有人名称  #发动机号码  #注册日期   #车型颜色
-                vehicleInformationDO.setLicense_plate_number(secondHandCarEvaluateDO.getPlate_num());
-                vehicleInformationDO.setCar_category(secondHandCarEvaluateDO.getVehicle_type());
-                vehicleInformationDO.setNow_driving_license_owner(secondHandCarEvaluateDO.getOwner());
-                vehicleInformationDO.setEngine_number(secondHandCarEvaluateDO.getEngine_num());
-                vehicleInformationDO.setRegister_date(secondHandCarEvaluateDO.getRegister_date());
-                /*vehicleInformationDO.setColor(secondHandCarEvaluateDO.getStyle_color());*/
-                vehicleInformationDO.setColor(loanInfoRegisterParam.getColor());
-                vehicleInformationDO.setVehicle_identification_number(secondHandCarEvaluateDO.getVin());
-                loanOrderDO.setSecond_hand_car_evaluate_id(loanInfoRegisterParam.getSecond_hand_car_evaluate_id());
+                if (loanInfoRegisterParam.getEvaluationType()==2)//手工评估
+                {
+                    vehicleInformationDO.setColor(loanInfoRegisterParam.getColor());
+
+                    //更新vin码---车辆行驶证号码
+                    vehicleInformationDO.setVehicle_identification_number(loanInfoRegisterParam.getVin());
+
+                    loanOrderDO.setSecond_hand_car_evaluate_id(null);
+                    loanOrderDOMapper.updateByPrimaryKeySelective(loanOrderDO);
+
+                }else if(loanInfoRegisterParam.getEvaluationType()==1)//在线评估
+                {
+                    SecondHandCarEvaluateDO secondHandCarEvaluateDO = secondHandCarEvaluateDOMapper.selectByPrimaryKey(loanInfoRegisterParam.getSecond_hand_car_evaluate_id());
+
+                    // #车牌号码 #车辆类型（小型轿车）  #所有人名称  #发动机号码  #注册日期   #车型颜色
+                    vehicleInformationDO.setLicense_plate_number(secondHandCarEvaluateDO.getPlate_num());
+                    vehicleInformationDO.setCar_category(secondHandCarEvaluateDO.getVehicle_type());
+                    vehicleInformationDO.setNow_driving_license_owner(secondHandCarEvaluateDO.getOwner());
+                    vehicleInformationDO.setEngine_number(secondHandCarEvaluateDO.getEngine_num());
+                    vehicleInformationDO.setRegister_date(secondHandCarEvaluateDO.getRegister_date());
+                    /*vehicleInformationDO.setColor(secondHandCarEvaluateDO.getStyle_color());*/
+                    vehicleInformationDO.setColor(loanInfoRegisterParam.getColor());
+                    vehicleInformationDO.setVehicle_identification_number(secondHandCarEvaluateDO.getVin());
+                    loanOrderDO.setSecond_hand_car_evaluate_id(loanInfoRegisterParam.getSecond_hand_car_evaluate_id());
+                }else{
+                    throw new BizException("估价类型有误");
+                }
+
             }
 
             //更新

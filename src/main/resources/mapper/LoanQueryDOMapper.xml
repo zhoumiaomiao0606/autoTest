@@ -973,6 +973,7 @@
             detail.id                                                               AS car_detail_id,
             car.vehicle_property                                                    AS car_vehicle_property,
             car.car_type                                                            AS car_type,
+            car.evaluation_type                                                            AS evaluation_type,
             car.car_key                                                            AS car_key,
             CASE
         WHEN car.car_key  = 0 THEN
