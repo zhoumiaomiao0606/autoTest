@@ -1394,7 +1394,7 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
         }
         if (vehicleInformationDO != null)
         {
-            if (loanCarInfoDO.getEvaluationType()==2)
+            if (null != loanCarInfoDO && loanCarInfoDO.getEvaluationType()==2)
             {
                 loanCarInfoVO.setVin(vehicleInformationDO.getVehicle_identification_number());
             }

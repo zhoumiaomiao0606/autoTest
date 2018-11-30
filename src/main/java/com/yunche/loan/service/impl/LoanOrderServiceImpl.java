@@ -870,7 +870,7 @@ public class LoanOrderServiceImpl implements LoanOrderService {
                 universalInfoVO.setCar_name(secondHandCarEvaluateDO.getName());
             }*/
         }
-        if (loanCarInfoDO.getCarType()==1 && loanCarInfoDO.getEvaluationType()==2 && vehicleInformationDO != null)
+        if (null != loanCarInfoDO && loanCarInfoDO.getCarType()==1 && loanCarInfoDO.getEvaluationType()==2 && vehicleInformationDO != null)
         {
             loanCarInfoVO.setVin(vehicleInformationDO.getVehicle_identification_number());
         }
