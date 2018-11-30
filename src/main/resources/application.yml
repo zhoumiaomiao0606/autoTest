@@ -38,6 +38,13 @@ spring:
             enable: true
             required: true
 
+  jtx:
+    jtxServierIP: 183.136.187.207
+    jtxUserName: root
+    jtxPassword: jtx@1722
+    jtxUrl: http://121.41.20.151:7013/assetApi/service
+    jtxPort: 22
+
 ---
 
 spring:
@@ -79,6 +86,13 @@ spring:
             enable: true
             required: true
 
+  jtx:
+      jtxServierIP: 120.26.205.193
+      jtxUserName: asset
+      jtxPassword: asset001
+      jtxUrl: http://114.215.191.155:7013/assetApi/service
+      jtxPort: 22
+
 ---
 
 spring:
@@ -119,4 +133,11 @@ spring:
           starttls:
             enable: true
             required: true
+
+  jtx:
+      jtxServierIP: 120.26.205.193
+      jtxUserName: asset
+      jtxPassword: asset001
+      jtxUrl: http://114.215.191.155:7013/assetApi/service
+      jtxPort: 22
 
