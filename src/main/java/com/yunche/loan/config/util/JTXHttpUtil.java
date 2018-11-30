@@ -10,7 +10,6 @@ import java.net.URLConnection;
 public class JTXHttpUtil {
     private static Logger logger = LoggerFactory.getLogger(JTXHttpUtil.class);
     public static String sendPost(String url, String param) {
-        url = "http://121.41.20.151:7013/assetApi/service";
         PrintWriter out = null;
         BufferedReader in = null;
         String result = "";
