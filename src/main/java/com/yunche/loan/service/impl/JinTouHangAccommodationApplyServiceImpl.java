@@ -229,7 +229,8 @@ public class JinTouHangAccommodationApplyServiceImpl implements JinTouHangAccomm
                                 "YC","车",loanFinancialPlanDO.getAppraisal().multiply(new BigDecimal("100")).stripTrailingZeros().toPlainString(),"0",loanCustomerDO.getIdCard());
                         if((Boolean) resultMap1.get("FLAG")){
                             String path ="";
-                            String jtxFtpPath = "/root/yunche/reqFile/";
+                            //String jtxFtpPath = "/root/yunche/reqFile/";
+                            String jtxFtpPath = "/home/reqFile/";
                             path = zipFile(urls);
                             if(!"".equals(path)){
                                 File file = new File(path);
