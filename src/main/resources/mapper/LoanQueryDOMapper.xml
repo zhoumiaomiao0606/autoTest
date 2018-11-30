@@ -970,7 +970,7 @@
             financial.actual_car_price                                              AS actual_car_price,
             useGetCarName(car.car_detail_id)                                        AS car_name,
             detail.name                                                             AS car_detail_name,
-            detail.id                                                               AS car_detail_id,
+            car.car_detail_id                                                               AS car_detail_id,
             car.vehicle_property                                                    AS car_vehicle_property,
             car.car_type                                                            AS car_type,
             car.evaluation_type                                                            AS evaluation_type,

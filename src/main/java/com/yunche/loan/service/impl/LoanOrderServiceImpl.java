@@ -377,7 +377,7 @@ public class LoanOrderServiceImpl implements LoanOrderService {
         VehicleInformationUpdateParam vehicleInformationUpdateParam = new VehicleInformationUpdateParam();
         //更新绑定
         LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(loanCarInfoParam.getOrderId());
-        if (loanCarInfoParam.getCarType() ==0 || (loanCarInfoParam.getSecond_hand_car_evaluate_id()==null || "".equals(loanCarInfoParam.getSecond_hand_car_evaluate_id())))
+        if (loanCarInfoParam.getCarType() ==0 )
         {
             vehicleInformationUpdateParam.setNow_driving_license_owner(loanCarInfoParam.getNowDrivingLicenseOwner());
             vehicleInformationUpdateParam.setColor(loanCarInfoParam.getColor());
@@ -443,7 +443,7 @@ public class LoanOrderServiceImpl implements LoanOrderService {
         VehicleInformationUpdateParam vehicleInformationUpdateParam = new VehicleInformationUpdateParam();
         //更新绑定
         LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(loanCarInfoParam.getOrderId());
-        if (loanCarInfoParam.getCarType() ==0 || (loanCarInfoParam.getSecond_hand_car_evaluate_id()==null || "".equals(loanCarInfoParam.getSecond_hand_car_evaluate_id())))
+        if (loanCarInfoParam.getCarType() ==0 )
         {
             vehicleInformationUpdateParam.setNow_driving_license_owner(loanCarInfoParam.getNowDrivingLicenseOwner());
             vehicleInformationUpdateParam.setColor(loanCarInfoParam.getColor());

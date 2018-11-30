@@ -97,7 +97,7 @@ public class LoanInfoRegisterServiceImpl implements LoanInfoRegisterService {
         Preconditions.checkNotNull(loanOrderDO, "订单信息不存在");
         VehicleInformationDO vehicleInformationDO = new VehicleInformationDO();
         //更新vin码绑定
-            if (loanInfoRegisterParam.getCarType() ==0 || (loanInfoRegisterParam.getSecond_hand_car_evaluate_id()==null || "".equals(loanInfoRegisterParam.getSecond_hand_car_evaluate_id())))
+            if (loanInfoRegisterParam.getCarType() ==0 )
             {
                 loanOrderDO.setSecond_hand_car_evaluate_id(null);
                 loanOrderDOMapper.updateByPrimaryKeySelective(loanOrderDO);
