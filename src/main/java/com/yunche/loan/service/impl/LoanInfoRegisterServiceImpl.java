@@ -143,6 +143,7 @@ public class LoanInfoRegisterServiceImpl implements LoanInfoRegisterService {
         LoanCarInfoDO carInfoDO = new LoanCarInfoDO();
         carInfoDO.setVehicleProperty(loanInfoRegisterParam.getVehicleProperty());
         carInfoDO.setCarType(loanInfoRegisterParam.getCarType());
+        carInfoDO.setEvaluationType(loanInfoRegisterParam.getEvaluationType());
         carInfoDO.setCarDetailId(loanInfoRegisterParam.getCarDetail().getId());
         carInfoDO.setCarDetailName(loanInfoRegisterParam.getCarDetail().getName());
 
