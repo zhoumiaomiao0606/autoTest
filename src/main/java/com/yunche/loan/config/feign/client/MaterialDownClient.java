@@ -11,6 +11,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 public interface MaterialDownClient {
 
     @RequestMapping(value = "/api/v1/loanorder/material/down2oss", method = RequestMethod.GET)
-    ResultBean down2OSS(@RequestParam(value = "orderId") Long orderId);
+    ResultBean down2OSS(@RequestParam(value = "orderId") Long orderId,@RequestParam(value = "reGenerateZip") Boolean reGenerateZip);
 
 }
