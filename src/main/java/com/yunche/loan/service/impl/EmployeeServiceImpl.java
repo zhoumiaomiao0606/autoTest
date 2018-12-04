@@ -678,6 +678,14 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
     }
 
+    @Override
+    public Long getPartnerIdByEmployeeId(Long employeeId) {
+
+        Long partnerId = partnerRelaEmployeeDOMapper.getPartnerIdByEmployeeId(employeeId);
+
+        return partnerId;
+    }
+
     /**
      * 校验唯一属性 (身份证号、手机号、邮箱、钉钉)
      *
