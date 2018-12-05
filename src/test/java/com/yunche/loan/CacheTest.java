@@ -52,17 +52,17 @@ public class CacheTest {
     MaterialService materialService;
     @Autowired
     JinTouHangAccommodationApplyService jinTouHangAccommodationApplyService;
-    //@Test
+    @Test
     public void SDFSDF(){
-        JTXFileUtil sftp = new JTXFileUtil("root", "jtx@1722", "183.136.187.207", 22);
+        JTXFileUtil sftp = new JTXFileUtil("asset", "asset001", "120.26.205.193", 22);
         sftp.login();
         //byte[] buff = sftp.download("/opt", "start.sh");
         //System.out.println(Arrays.toString(buff));
-        File file = new File("/Users/admin/Desktop/jjqTest.txt");
+        File file = new File("/Users/admin/bbb.txt");
         InputStream is = null;
         try {
             is = new FileInputStream(file);
-            sftp.upload("/root/yunche/reqFile", "jjqTest.txt", is);
+            sftp.upload("/home/reqFile", "jjqTest2.txt", is);
             sftp.logout();
         } catch (Exception e) {
             e.printStackTrace();

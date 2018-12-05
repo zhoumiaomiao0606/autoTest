@@ -110,9 +110,14 @@ public class JTXFileUtil {
             sftp.mkdir(directory);
             sftp.cd(directory);
         }
-        if(sftp.stat(DateUtil.getDate()) == null){
+
+        try{
             sftp.mkdir(DateUtil.getDate());
+        }catch (Exception e){
+            System.out.println("cun zai");
         }
+
+
         sftp.cd(DateUtil.getDate());
         sftp.put(input, sftpFileName);
         log.info("file:{} is upload successful" , sftpFileName);
