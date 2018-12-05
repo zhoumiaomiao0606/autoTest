@@ -31,12 +31,15 @@ public class YuncheCloudExtServiceImpl implements YuncheCloudExtService {
         LoginUserExtInfo loginUserExtInfo = new LoginUserExtInfo();
 
         EmployeeDO employeeDO = employeeDOMapper.selectByPrimaryKey(loginUserId, null);
+        Assert.notNull(employeeDO, "用户不存在");
         loginUserExtInfo.setLoginUserId(employeeDO.getId());
         loginUserExtInfo.setLoginUserName(employeeDO.getName());
 
         PartnerDO partnerDO = partnerRelaEmployeeDOMapper.getPartnerByEmployeeId(loginUserId);
-        loginUserExtInfo.setPartnerId(partnerDO.getId());
-        loginUserExtInfo.setPartnerName(partnerDO.getName());
+        if (null != partnerDO) {
+            loginUserExtInfo.setPartnerId(partnerDO.getId());
+            loginUserExtInfo.setPartnerName(partnerDO.getName());
+        }
 
         return loginUserExtInfo;
     }
