@@ -47,7 +47,7 @@ public class CarDbSynTask
 
     private static final Logger LOG = LoggerFactory.getLogger(CarDbSynTask.class);
 
-    @Scheduled(cron = "0 22 23 ? * WED")
+    @Scheduled(cron = "0 0 4 ? * MON")
     @DistributedLock(200)
     public void synCarDb()
     {
@@ -139,6 +139,7 @@ public class CarDbSynTask
                                                                                             carModelDO.setBrandId(Long.valueOf(f.getBrand()));
                                                                                             carModelDO.setLogo(f.getImg_url());
                                                                                             carModelDO.setName(f.getName());
+                                                                                            carModelDO.setFullName(f.getName());
                                                                                             carModelDO.setGmtCreate(new Date());
 
                                                                                             carModelDOMapper.insertSelective(carModelDO);
@@ -182,7 +183,7 @@ public class CarDbSynTask
                                                                                                             carDetailDOMapper.insertSelective(carDetailDO);
                                                                                                         }
 
-                                                                                                        System.out.println("====车型库插入了一条记录");
+                                                                                                        LOG.info("====车型库插入了一条记录");
 
 
                                                                                                     });
