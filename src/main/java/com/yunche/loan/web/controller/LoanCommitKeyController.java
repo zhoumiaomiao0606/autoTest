@@ -20,13 +20,13 @@ public class LoanCommitKeyController {
 
 
     /**
-     * 待收钥匙新增按钮“未收，风险100%”，点击后，视同待办完成，但订单的风险承担比例改为100%
+     * TODO 待收钥匙新增按钮“未收，风险100%”，点击后，视同待办完成，但订单的风险承担比例改为100%
      *
      * @param orderId
      * @return
      */
-    @GetMapping("/riskUncollected")
-    public ResultBean<Void> riskUncollected(@RequestParam Long orderId) {
-        return loanCommitKeyService.riskUncollected(orderId);
-    }
+//    @GetMapping("/riskUncollected")
+//    public ResultBean<Void> riskUncollected(@RequestParam Long orderId) {
+//        return loanCommitKeyService.riskUncollected(orderId);
+//    }
 }
