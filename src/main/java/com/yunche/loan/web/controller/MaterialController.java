@@ -71,8 +71,8 @@ public class MaterialController {
      * @return
      */
     @GetMapping(value = "/down2oss")
-    public ResultBean<String> down2OSS(@RequestParam Long orderId) {
-        return materialService.downloadFiles2OSS(orderId, false);
+    public ResultBean<String> down2OSS(@RequestParam Long orderId,@RequestParam(value = "reGenerateZip",required = false) Boolean reGenerateZip) {
+        return materialService.downloadFiles2OSS(orderId, reGenerateZip);
     }
 
     @GetMapping(value = "/downcar2oss")

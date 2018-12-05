@@ -184,6 +184,11 @@
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
+            <artifactId>commons-collections4</artifactId>
+            <version>4.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
             <artifactId>commons-math3</artifactId>
             <version>${commons-math3.version}</version>
         </dependency>
@@ -287,18 +292,18 @@
         </dependency>
         <!-- jpush -->
 
-        <!-- google-core-javase -->
+        <!-- zxing -->
         <dependency>
             <groupId>com.google.zxing</groupId>
             <artifactId>core</artifactId>
-            <version>3.2.0</version>
+            <version>3.3.3</version>
         </dependency>
         <dependency>
             <groupId>com.google.zxing</groupId>
             <artifactId>javase</artifactId>
-            <version>3.2.0</version>
+            <version>3.3.3</version>
         </dependency>
-        <!-- google-core-javase -->
+        <!-- zxing -->
 
         <!-- thymeleaf -->
         <dependency>

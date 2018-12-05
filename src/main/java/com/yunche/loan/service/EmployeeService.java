@@ -57,5 +57,7 @@ public interface EmployeeService {
 
     List<List<Long>> listBizArea(Long id);
 
-    void bindBizArea(Long id,List<Long> bizAreaIds);
+    void bindBizArea(Long id, List<Long> bizAreaIds);
+
+    Long getPartnerIdByEmployeeId(Long employeeId);
 }

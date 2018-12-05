@@ -1,4 +1,4 @@
-package com.yunche.loan.web.controller.ext.financial;
+package com.yunche.loan.web.controller.ext;
 
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.param.CustomerInfoByCustomerNameParam;
