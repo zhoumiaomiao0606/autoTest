@@ -225,7 +225,7 @@ public class JinTouHangAccommodationApplyServiceImpl implements JinTouHangAccomm
                             loanBaseInfoDO.getBank(),param.getBankCard(),param.getIdPair());
                     if((Boolean) resultMap.get("FLAG")){
                         Map resultMap1 = jtxCommunicationUtil.assetRelease((String) resultMap.get("REF"),"云车-"+(String) resultMap.get("REF"),param.getLendAmount().multiply(new BigDecimal("100"))+"",
-                                "800", lenDate,"60", interest,"BYMONTH",
+                                "800", lenDate,"60", interest,"ONCE",
                                 "YC","车",loanFinancialPlanDO.getAppraisal().multiply(new BigDecimal("100")).stripTrailingZeros().toPlainString(),"0",loanCustomerDO.getIdCard());
                         if((Boolean) resultMap1.get("FLAG")){
                             String path ="";
