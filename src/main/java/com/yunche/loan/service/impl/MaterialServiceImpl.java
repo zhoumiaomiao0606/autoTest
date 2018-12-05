@@ -12,6 +12,7 @@ import com.yunche.loan.config.constant.BaseConst;
 import com.yunche.loan.config.constant.LoanCustomerEnum;
 import com.yunche.loan.config.constant.LoanFileEnum;
 import com.yunche.loan.config.exception.BizException;
+import com.yunche.loan.config.feign.client.MaterialDownClient;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.BeanPlasticityUtills;
 import com.yunche.loan.config.util.GeneratorIDUtil;
@@ -56,7 +57,6 @@ import static com.yunche.loan.config.constant.LoanFileConst.UPLOAD_TYPE_NORMAL;
 import static com.yunche.loan.config.constant.LoanFileConst.UPLOAD_TYPE_SUPPLEMENT;
 import static com.yunche.loan.config.constant.LoanFileEnum.*;
 import static com.yunche.loan.config.constant.LoanProcessEnum.*;
-import static com.yunche.loan.config.constant.LoanProcessEnum.TELEPHONE_VERIFY;
 
 @Service
 public class MaterialServiceImpl implements MaterialService {
@@ -103,6 +103,8 @@ public class MaterialServiceImpl implements MaterialService {
     private LoanTelephoneVerifyDOMapper loanTelephoneVerifyDOMapper;
 
 
+    @Autowired
+    private MaterialDownClient materialDownClient;
     @Override
     public RecombinationVO detail(Long orderId) {
         List<UniversalCustomerVO> customers = loanQueryDOMapper.selectUniversalCustomer(orderId);
@@ -215,32 +217,38 @@ public class MaterialServiceImpl implements MaterialService {
      */
     @Override
     public ResultBean<String> downloadFiles2OSS(Long orderId, Boolean reGenerateZip) {
-        Preconditions.checkNotNull(orderId, "订单编号不能为空");
+        return materialDownClient.down2OSS(orderId,reGenerateZip==null?false:reGenerateZip);
+//        try{
+//            Preconditions.checkNotNull(orderId, "订单编号不能为空");
+//
+//            Long customerId = null;
+//
+//            LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
+//            Preconditions.checkNotNull(loanOrderDO, "订单不存在");
+//
+//            customerId = loanOrderDO.getLoanCustomerId();
+//            Preconditions.checkNotNull(customerId, "主贷人不存在");
+//
+//            if (!reGenerateZip) {
+//                // 是否已经存在文件了        26-zip包
+//                List<LoanFileDO> loanFileDOS = loanFileDOMapper.listByCustomerIdAndType(customerId, new Byte("26"), UPLOAD_TYPE_NORMAL);
+//                if (!CollectionUtils.isEmpty(loanFileDOS)) {
+//                    LoanFileDO loanFileDO = loanFileDOS.get(0);
+//                    if (null != loanFileDO) {
+//                        String path = loanFileDO.getPath();
+//                        List<String> url = JSON.parseArray(path, String.class);
+//                        if (!CollectionUtils.isEmpty(url)) {
+//                            return ResultBean.ofSuccess(url.get(0));
+//                        }
+//                    }
+//                }
+//            }
+//
+//            return packZipFile2OSS(orderId, customerId);
+//        }catch (Exception e){
+//            return ResultBean.ofError(e.getMessage());
+//        }
 
-        Long customerId = null;
-
-        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
-        Preconditions.checkNotNull(loanOrderDO, "订单不存在");
-
-        customerId = loanOrderDO.getLoanCustomerId();
-        Preconditions.checkNotNull(customerId, "主贷人不存在");
-
-        if (!reGenerateZip) {
-            // 是否已经存在文件了        26-zip包
-            List<LoanFileDO> loanFileDOS = loanFileDOMapper.listByCustomerIdAndType(customerId, new Byte("26"), UPLOAD_TYPE_NORMAL);
-            if (!CollectionUtils.isEmpty(loanFileDOS)) {
-                LoanFileDO loanFileDO = loanFileDOS.get(0);
-                if (null != loanFileDO) {
-                    String path = loanFileDO.getPath();
-                    List<String> url = JSON.parseArray(path, String.class);
-                    if (!CollectionUtils.isEmpty(url)) {
-                        return ResultBean.ofSuccess(url.get(0));
-                    }
-                }
-            }
-        }
-
-        return packZipFile2OSS(orderId, customerId);
     }
 
 

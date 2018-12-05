@@ -1343,11 +1343,11 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         }
 
         // [002-合同资料合伙人至公司-确认接收]
-        else if (DATA_FLOW_CONTRACT_P2C_REVIEW.getCode().equals(taskDefinitionKey)) {
-            // 如果有待收钥匙的待办，未完成，则不能提交“资料流转002”，点击后弹出报错提示：该订单尚未完成待办：待收钥匙
-            Byte commitKeyStatus = loanProcessDO.getCommitKey();
-            Preconditions.checkArgument(TASK_PROCESS_DONE.equals(commitKeyStatus), "当前订单[待收钥匙]未提交");
-        }
+//        else if (DATA_FLOW_CONTRACT_P2C_REVIEW.getCode().equals(taskDefinitionKey)) {
+//            // TODO 如果有待收钥匙的待办，未完成，则不能提交“资料流转002”，点击后弹出报错提示：该订单尚未完成待办：待收钥匙
+//            Byte commitKeyStatus = loanProcessDO.getCommitKey();
+//            Preconditions.checkArgument(TASK_PROCESS_DONE.equals(commitKeyStatus), "当前订单[待收钥匙]未提交");
+//        }
     }
 
     /**
@@ -3298,24 +3298,24 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
         if (TELEPHONE_VERIFY.getCode().equals(approval.getTaskDefinitionKey()) && ACTION_PASS.equals(approval.getAction())) {
 
-            // 例外：如果该订单被电审设置为 风险分担比例100%，则强制不会生成代收钥匙待办（电审选择不重要）
+            // TODO 例外：如果该订单被电审设置为 风险分担比例100%，则强制不会生成代收钥匙待办（电审选择不重要）
 
             // 订单总风险分担比例
-            double total_risk_rate = getOrderTotalRiskRate(loanOrderDO.getId());
-
-            if (total_risk_rate == 100) {
-
-                Byte commitKeyStatus = loanProcessDO.getCommitKey();
-                if (TASK_PROCESS_TODO.equals(commitKeyStatus) || TASK_PROCESS_REJECT.equals(commitKeyStatus)) {
-
-                    // 直接完成任务
-                    autoCompleteTask(loanOrderDO.getProcessInstId(), loanOrderDO.getId(), COMMIT_KEY.getCode());
-
-                    // 将状态更新为：0 -> init
-                    loanProcessDO.setCommitKey(TASK_PROCESS_INIT);
-                    loanProcessApprovalCommonService.updateLoanProcess(loanProcessDO);
-                }
-            }
+//            double total_risk_rate = getOrderTotalRiskRate(loanOrderDO.getId());
+//
+//            if (total_risk_rate == 100) {
+//
+//                Byte commitKeyStatus = loanProcessDO.getCommitKey();
+//                if (TASK_PROCESS_TODO.equals(commitKeyStatus) || TASK_PROCESS_REJECT.equals(commitKeyStatus)) {
+//
+//                    // 直接完成任务
+//                    autoCompleteTask(loanOrderDO.getProcessInstId(), loanOrderDO.getId(), COMMIT_KEY.getCode());
+//
+//                    // 将状态更新为：0 -> init
+//                    loanProcessDO.setCommitKey(TASK_PROCESS_INIT);
+//                    loanProcessApprovalCommonService.updateLoanProcess(loanProcessDO);
+//                }
+//            }
         }
     }
 
