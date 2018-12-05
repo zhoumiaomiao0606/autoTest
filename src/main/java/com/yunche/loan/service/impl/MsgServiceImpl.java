@@ -381,6 +381,7 @@ public class MsgServiceImpl implements MsgService {
 
     @Override
     public String getPinYin(String chinese) {
+        chinese = chinese.replaceAll("·","");
         int length = chinese.length();
         char[] value = new char[length << 1];
         for (int i=0, j=0; i<length; ++i, j = i << 1) {
@@ -408,5 +409,10 @@ public class MsgServiceImpl implements MsgService {
             }
         }
         return pybf.toString();
+    }
+
+    public static void  main(String[] args){
+        MsgServiceImpl m =  new MsgServiceImpl();
+        System.out.println(m.getPinYin("加尔肯·赛依提"));
     }
 }
