@@ -31,7 +31,7 @@ public class BusinessReviewManager {
 
     private static final String HOST = "http://118.31.74.254:8012";
 
-    private static final String HOST2 = "http://47.96.78.20:8888";
+    private static final String HOST2 = "http://47.97.122.31:8888";
 
    /* private static final String HOST2 = "http://192.168.0.140:8888";*/
 
