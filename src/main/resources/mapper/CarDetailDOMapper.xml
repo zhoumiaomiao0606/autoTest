@@ -79,6 +79,7 @@
         from car_detail
         <where>
             <include refid="Base_Query_List"/>
+            and is_old_cardata = 1
         </where>
     </select>
 
@@ -90,6 +91,7 @@
         from car_detail
         <where>
             <include refid="Base_Query_List"/>
+            and is_old_cardata = 1
         </where>
         ORDER BY id ASC
         limit #{startRow}, #{pageSize}
