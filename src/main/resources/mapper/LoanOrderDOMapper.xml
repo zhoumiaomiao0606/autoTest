@@ -321,8 +321,8 @@
         status = #{status,jdbcType=TINYINT},
         gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
         gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
-        feature = #{feature,jdbcType=VARCHAR}
-        second_hand_car_evaluate_id = #{second_hand_car_evaluate_id,jdbcType=BIGINT}
+        feature = #{feature,jdbcType=VARCHAR},
+        second_hand_car_evaluate_id = #{second_hand_car_evaluate_id,jdbcType=BIGINT},
         second_hand_car_first_site_id = #{second_hand_car_first_site_id,jdbcType=BIGINT}
         where id = #{id,jdbcType=BIGINT}
     </update>
