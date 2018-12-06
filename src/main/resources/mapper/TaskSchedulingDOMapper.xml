@@ -462,7 +462,7 @@
             * FROM
             (select customer_id,max(id) as credithisId ,credit_apply_time FROM loan_credit_info_bank_his GROUP BY customer_id) allhis
             WHERE
-            allhis.customer_id IN (SELECT id FROM loan_customer WHERE principal_cust_id = main.loan_customer_id)))        as creditApplySubmitTime,
+            allhis.customer_id IN (SELECT id FROM loan_customer WHERE principal_cust_id = main.loan_customer_id)) qnmd )        as creditApplySubmitTime,
                   join_e.id                                    AS salesmanId,
                   join_p.id                                    AS partnerId,
                   join_b.area_id                               AS bizAreaId,
