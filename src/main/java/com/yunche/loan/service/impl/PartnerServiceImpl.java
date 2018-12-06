@@ -802,6 +802,11 @@ public class PartnerServiceImpl implements PartnerService {
     private void fillMsg(PartnerDO partnerDO, PartnerVO partnerVO) {
         fillDepartment(partnerDO.getDepartmentId(), partnerVO);
         fillArea(partnerDO.getAreaId(), partnerVO);
+        if (partnerDO.getPartnerGroup()!=null)
+        {
+            partnerVO.setPartnerGroup(String.valueOf(partnerDO.getPartnerGroup()));
+        }
+
         fillEmployeeNum(partnerVO);
         // 财务合作信息
         fillBankAccount(partnerDO.getId(), partnerVO);
