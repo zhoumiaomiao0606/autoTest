@@ -455,7 +455,7 @@
                         </otherwise>
                     </choose>
                   main.id                                      AS id,
-            loan_credit_info_bank_his.bank_credit_record_time        as creditApplySubmitTime,
+            loan_credit_info_bank_his.credit_apply_time        as creditApplySubmitTime,
                   join_e.id                                    AS salesmanId,
                   join_p.id                                    AS partnerId,
                   join_b.area_id                               AS bizAreaId,
