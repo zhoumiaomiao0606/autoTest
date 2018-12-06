@@ -121,7 +121,7 @@ public class LoanInfoRegisterServiceImpl implements LoanInfoRegisterService {
                     // #车牌号码 #车辆类型（小型轿车）  #所有人名称  #发动机号码  #注册日期   #车型颜色
                     vehicleInformationDO.setLicense_plate_number(secondHandCarEvaluateDO.getPlate_num());
                     vehicleInformationDO.setCar_category(secondHandCarEvaluateDO.getVehicle_type());
-                    vehicleInformationDO.setNow_driving_license_owner(secondHandCarEvaluateDO.getOwner());
+                    //vehicleInformationDO.setNow_driving_license_owner(secondHandCarEvaluateDO.getOwner());
                     vehicleInformationDO.setEngine_number(secondHandCarEvaluateDO.getEngine_num());
                     vehicleInformationDO.setRegister_date(secondHandCarEvaluateDO.getRegister_date());
                     /*vehicleInformationDO.setColor(secondHandCarEvaluateDO.getStyle_color());*/
