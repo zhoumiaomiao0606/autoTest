@@ -276,7 +276,10 @@ public class PartnerServiceImpl implements PartnerService {
         {
             PartnerDO partnerCode = partnerDOMapper.selectByPartnerCode(partnerParam.getPartnerCode());
 
-            if (partnerCode!=null)
+            PartnerDO oldP = partnerDOMapper.selectByPrimaryKey(partnerParam.getId(), null);
+
+
+            if ((partnerCode!=null && oldP.getPartnerCode()!=null && !partnerCode.equals(oldP.getPartnerCode()))||(partnerCode!=null && oldP.getPartnerCode()==null))
             {
                 throw  new BizException("合伙人编码不能重复");
             }
