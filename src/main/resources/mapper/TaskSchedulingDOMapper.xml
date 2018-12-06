@@ -455,14 +455,7 @@
                         </otherwise>
                     </choose>
                   main.id                                      AS id,
-            (SELECT
-            MAX(credit_apply_time)
-            FROM(
-            SELECT
-            * FROM
-            (select customer_id,max(id) as credithisId ,credit_apply_time FROM loan_credit_info_bank_his GROUP BY customer_id) allhis
-            WHERE
-            allhis.customer_id IN (SELECT id FROM loan_customer WHERE principal_cust_id = main.loan_customer_id)) qnmd )        as creditApplySubmitTime,
+                  jbds.cat        as creditApplySubmitTime,
                   join_e.id                                    AS salesmanId,
                   join_p.id                                    AS partnerId,
                   join_b.area_id                               AS bizAreaId,
@@ -822,6 +815,13 @@
                       </otherwise>
                   </choose>
               from loan_order main
+            LEFT JOIN
+            (SELECT principal_cust_id, MAX(credit_apply_time) cat
+            FROM
+            (SELECT  allhis.customer_id,allhis.credit_apply_time,loan_customer.principal_cust_id FROM
+            (select customer_id,max(credit_apply_time) AS credit_apply_time FROM loan_credit_info_bank_his GROUP BY customer_id) allhis
+            LEFT JOIN loan_customer ON allhis.customer_id = loan_customer.id) qnmd GROUP BY principal_cust_id) jbds
+            ON jbds.principal_cust_id= main.loan_customer_id
               inner join loan_process deputy               on main.id               = deputy.order_id
               left  join loan_customer join_c              on join_c.id             = main.loan_customer_id
               left  join loan_base_info join_b             on join_b.id             = main.loan_base_info_id
