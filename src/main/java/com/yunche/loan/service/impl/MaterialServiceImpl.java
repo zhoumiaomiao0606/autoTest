@@ -643,10 +643,12 @@ public class MaterialServiceImpl implements MaterialService {
                 loanFileDO.setUploadType(UPLOAD_TYPE_NORMAL);
                 loanFileDO.setType(ZIP_PACK.getType());
                 loanFileDO.setCustomerId(customerId);
+                loanFileDO.setGmtCreate(new Date());
                 loanFileDOMapper.insertSelective(loanFileDO);
             } else {
                 loanFileDOS.parallelStream().forEach(e -> {
                     e.setStatus(DOING_STATUS);
+                    e.setGmtCreate(new Date());
                     loanFileDOMapper.updateByPrimaryKeySelective(e);
                 });
             }
@@ -1149,7 +1151,7 @@ public class MaterialServiceImpl implements MaterialService {
             e.setPath("[" + s + "]");
             e.setType(ZIP_PACK.getType());
             e.setStatus(VALID_STATUS);
-            e.setGmtCreate(new Date());
+            e.setGmtModify(new Date());
             loanFileDOMapper.updateByPrimaryKeySelective(e);
         });
     }
