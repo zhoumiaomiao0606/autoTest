@@ -31,6 +31,8 @@ public class UniversalCompensationVO {
 
     private String compensationCause;
 
+    private BigDecimal compensationInterest;//代偿利息
+
     /**
      * （公司）打款账户详情关联ID
      */

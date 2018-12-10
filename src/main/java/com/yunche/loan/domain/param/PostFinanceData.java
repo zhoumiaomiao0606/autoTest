@@ -9,18 +9,38 @@ import java.math.BigDecimal;
 @Data
 public class PostFinanceData
 {
-    private long partner;
+    private long partnerId;//合伙人ID
+
+    private Long bankId;//银行编号
 
     private Byte type;//1代客户垫款 2收到银行款项 3客户退款 4公司代客户偿款
 
-    private BigDecimal clientDepositReturn;
+    private BigDecimal clientDepositReturn;//客户退款
 
-    private BigDecimal clientAdvance;
+    private BigDecimal clientAdvance;//代客户垫款
 
-    private BigDecimal companyCompensatory;
+    private BigDecimal companyCompensatory;//公司代客户偿款
 
     private String companyId;//公司银行账户id
 
+
+    //--001
+    //private String amountMoney ;//打款金额
+
+    //--003
+    private String amountMoney ;//打款金额
+    private String advancesInterest ;//垫款利息收入
+    private String otherInterest ;//其他利息收入
+    private String penaltyInterest ;//罚息收入
+
+
+
+
+    //--008
+    private String companySubrogationFund ;//应收公司代位追偿款
+    private String partnerSubrogationFund ;//应收合伙人代位追偿款
+    private String subrogationFundInterest ;//应收代位追偿款利息
+    private String subrogationFundIncome ;//应收代位追偿款费用
 
     @Override
     public String toString() {

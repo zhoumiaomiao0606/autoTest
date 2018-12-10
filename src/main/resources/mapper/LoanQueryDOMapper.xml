@@ -1524,7 +1524,10 @@
                     DATE_FORMAT(refund_date,'%Y-%m-%d %H:%i:%S') AS refund_date,
                     refund_reason 					            AS refund_reason,
                     refund_apply_account_id  	                AS refund_apply_account_id,
-                    path 										AS path
+                    path 										AS path,
+                    advances_interest                           AS advances_interest,
+                    other_interest                              AS other_interest,
+                    penalty_interest                            AS penalty_interest
 
         FROM    loan_refund_apply
 

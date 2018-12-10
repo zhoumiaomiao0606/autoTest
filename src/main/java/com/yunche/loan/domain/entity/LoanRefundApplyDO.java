@@ -39,4 +39,10 @@ public class LoanRefundApplyDO {
     private Byte status;
 
     private String path;
+
+    private BigDecimal advances_interest;
+
+    private BigDecimal other_interest;
+
+    private BigDecimal penalty_interest;
 }

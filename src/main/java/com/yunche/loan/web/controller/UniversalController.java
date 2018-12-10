@@ -13,6 +13,7 @@ import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.*;
 import com.yunche.loan.domain.entity.LoanCustomerDO;
 import com.yunche.loan.domain.entity.PartnerDO;
+import com.yunche.loan.domain.param.ApprovalParam;
 import com.yunche.loan.domain.query.LoanCreditExportQuery;
 import com.yunche.loan.domain.vo.CreditPicExportVO;
 import com.yunche.loan.domain.vo.UniversalMaterialRecordVO;
@@ -111,6 +112,11 @@ public class UniversalController {
     @GetMapping("/jjq")
     public ResultBean test1() {
         return materialService.downSupplementFiles2OSS(Long.valueOf("1809051406599576357"), true, Long.valueOf("193"));
+    }
+    @PostMapping("/t_vouchet")
+    public ResultBean voucher(@RequestBody  ApprovalParam param){
+        EventBusCenter.eventBus.post(param);
+        return ResultBean.ofSuccess("987989880980980909");
     }
 
 

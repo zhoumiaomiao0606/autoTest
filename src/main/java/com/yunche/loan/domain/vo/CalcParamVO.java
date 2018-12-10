@@ -20,7 +20,7 @@ public class CalcParamVO {
     private BigDecimal bankFee;
     //月还款
     private BigDecimal eachMonthRepay;
-    //贷款利息
+    //贷款利息(金融服务费)
     private BigDecimal  loanInterest;
     //贷款成数
     private BigDecimal  loanToValueRatio;
