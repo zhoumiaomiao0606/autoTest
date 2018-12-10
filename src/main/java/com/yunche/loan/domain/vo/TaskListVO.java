@@ -21,6 +21,8 @@ public class TaskListVO {
     private String partnerCompensationAmount;
     private String visitGmtCreate;
 
+    private String bankOpenCardTime;
+
     private String salesmanId;
     private String salesman;
     private String partnerId;

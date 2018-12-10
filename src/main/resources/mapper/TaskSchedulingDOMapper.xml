@@ -457,6 +457,20 @@
                   main.id                                      AS id,
                   jbds.cat        as creditApplySubmitTime,
                   join_e.id                                    AS salesmanId,
+            DATE_FORMAT((
+            SELECT
+            loan_process_log.create_time
+            FROM
+            loan_process_log
+            WHERE
+            order_id = principal_orders.id
+            AND task_definition_key = 'usertask_bank_open_card'
+            and action = 1
+            ORDER BY
+            id DESC
+            LIMIT 1
+            ), '%Y-%m-%d %H:%i:%S' )
+            as bankOpenCardTime,
                   join_p.id                                    AS partnerId,
                   join_b.area_id                               AS bizAreaId,
                   join_c.id                                    AS customerId,
