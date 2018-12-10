@@ -273,7 +273,7 @@ public class ExportQueryServiceImpl implements ExportQueryService
         List<ExportMaterialReviewDetailQueryVO> list = loanStatementDOMapper.exportMaterialReviewQuerys(exportMaterialReviewQueryVerifyParam);
 
         ArrayList<String> header = Lists.newArrayList("业务区域", "业务团队","合伙人编码","合伙人组别", "客户姓名", "身份证号",
-                 "贷款银行", "银行分期本金", "垫款日期", "资料接收日期", "资料齐全日期", "资料审核提交日期", "资料审核状态", "资料增补次数", "资料增补内容",
+                 "贷款银行", "银行分期本金", "垫款日期", "资料接收日期", "资料齐全日期", "资料审核提交日期","套打时间", "资料审核状态", "资料增补次数", "资料增补内容",
                 "提车资料提交时间","资料增补时间","合同上交银行日期","垫款超期天数","纸审超期天数","备注"
         );
 

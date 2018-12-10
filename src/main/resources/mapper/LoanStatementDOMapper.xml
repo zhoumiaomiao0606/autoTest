@@ -779,6 +779,19 @@
         ( SELECT create_time FROM loan_process_log WHERE orders.id = loan_process_log.order_id AND
         loan_process_log.task_definition_key = 'usertask_material_review' ORDER BY id DESC LIMIT 1 ) AS
         materialReviewSubmit,
+        DATE_FORMAT((
+        SELECT
+        loan_process_log.create_time
+        FROM
+        loan_process_log
+        WHERE
+        order_id = principal_orders.id
+        AND task_definition_key = 'usertask_material_print_review'
+        ORDER BY
+        id DESC
+        LIMIT 1
+        ), '%Y-%m-%d %H:%i:%S' )
+        as materialPrintTime,
         CASE
 
         WHEN loan_process.material_review = 1 THEN

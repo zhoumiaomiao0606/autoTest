@@ -46,6 +46,9 @@ public class ExportMaterialReviewDetailQueryVO
     //资料审核提交日期
     private String materialReviewSubmit;
 
+    //套打时间
+    private String materialPrintTime;
+
     //资料审核状态
     private String material_review;
 
