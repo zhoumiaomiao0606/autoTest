@@ -119,7 +119,7 @@
   <select id="list" parameterType="com.yunche.loan.domain.param.FinancialExceptionOperationParam" resultType="com.yunche.loan.domain.vo.FinancialExceptionOperationVO">
    SELECT
 foe.order_id AS orderId,
-foe.operation_exception_time AS operationExceptionTime,
+DATE_FORMAT(foe.operation_exception_time, '%Y-%m-%d %H:%i:%S' ) AS operationExceptionTime,
 loan_customer.`name` AS customerName,
 loan_customer.id_card AS idCard,
 loan_base_info.bank AS bank,
