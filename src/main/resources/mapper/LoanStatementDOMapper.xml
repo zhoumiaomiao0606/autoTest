@@ -1760,6 +1760,31 @@
         vehicle_information.license_plate_number AS licensePlateNumber,
         vehicle_information.vehicle_identification_number AS vehicleIdentificationNumber,
         vehicle_information.engine_number AS engineNumber,
+        DATE_FORMAT((
+        SELECT
+        loan_process_log.create_time
+        FROM
+        loan_process_log
+        WHERE
+        order_id = principal_orders.id
+        AND task_definition_key = 'usertask_material_print_review'
+        ORDER BY
+        id DESC
+        LIMIT 1
+        ), '%Y-%m-%d %H:%i:%S' )
+         as materialPrintTime,
+        (
+        SELECT
+        loan_process_log.user_name
+        FROM
+        loan_process_log
+        WHERE
+        order_id = principal_orders.id
+        AND task_definition_key = 'usertask_material_print_review'
+        ORDER BY
+        id DESC
+        LIMIT 1
+        ) as materialPrintSubmitUser,
         CASE
         WHEN parea.parent_area_id = '' OR parea.parent_area_id = NULL THEN
         CONCAT(area.parent_area_name,area.area_name)
@@ -1818,6 +1843,29 @@
             </if>
             <if test="startTime !=null and endTime !=null and startTime !='' and endTime !=''">
                 having express_receive_date between #{startTime} and #{endTime}
+                <if test="materialPrintStartTime !=null and materialPrintEndTime !=null and materialPrintStartTime !='' and materialPrintEndTime !=''">
+                    and materialPrintTime between #{materialPrintStartTime} and #{materialPrintEndTime}
+                </if>
+                <if test="materialPrintSubmitUser !=null and materialPrintSubmitUser != ''">
+                    and materialPrintSubmitUser = #{materialPrintSubmitUser}
+                </if>
+            </if>
+
+            <if test="startTime ==null or endTime ==null or startTime =='' or endTime ==''">
+                <if test="materialPrintStartTime !=null and materialPrintEndTime !=null and materialPrintStartTime !='' and materialPrintEndTime !=''">
+                    having materialPrintTime between #{materialPrintStartTime} and #{materialPrintEndTime}
+                    <if test="materialPrintSubmitUser !=null and materialPrintSubmitUser != ''">
+                        and materialPrintSubmitUser = #{materialPrintSubmitUser}
+                    </if>
+                </if>
+            </if>
+
+            <if test="startTime ==null or endTime ==null or startTime =='' or endTime ==''">
+                <if test="materialPrintStartTime ==null or materialPrintEndTime ==null or materialPrintStartTime =='' or materialPrintEndTime ==''">
+                    <if test="materialPrintSubmitUser !=null and materialPrintSubmitUser != ''">
+                        having materialPrintSubmitUser = #{materialPrintSubmitUser}
+                    </if>
+                </if>
             </if>
 
         </where>

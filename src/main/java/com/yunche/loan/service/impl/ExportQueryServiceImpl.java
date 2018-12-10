@@ -710,6 +710,8 @@ public class ExportQueryServiceImpl implements ExportQueryService
                 "汽车办理抵押地区",
                 "汽车权属人姓名",
                 "申请人与抵押物权属人关系",
+                "合同套打时间",
+                "合同套打提交人",
 
                 "亲属联系人1姓名",
                 "关系",

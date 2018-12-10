@@ -103,6 +103,12 @@ public class ExportCustomerInfoVO extends ExportCustomerIdVO
     //申请人与抵押物权属人关系
     private String applyPersonReMortgage="系统无该字段";
 
+    //合同套打时间
+    private String materialPrintTime;
+
+    //合同套打提交人
+    private String materialPrintSubmitUser;
+
 //父类
     //关联人证件号码
     //客户姓名
