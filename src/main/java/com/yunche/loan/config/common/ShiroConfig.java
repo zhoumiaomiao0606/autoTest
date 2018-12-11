@@ -106,6 +106,8 @@ public class ShiroConfig {
             filterChainDefinitionMap.put("/api/v1/loanorder/icbc/multimediaupload", "anon");
             filterChainDefinitionMap.put("/api/v1/loanorder/material/down2oss", "anon");
             filterChainDefinitionMap.put("/api/v1/loanorder/universal/oss", "anon");
+            filterChainDefinitionMap.put("/api/v1/car/list", "anon");
+            filterChainDefinitionMap.put("/api/v1/car/detail/query", "anon");
             filterChainDefinitionMap.put("/**", "authc");
 //            filterChainDefinitionMap.put("/**", "authc,perms");
         }
