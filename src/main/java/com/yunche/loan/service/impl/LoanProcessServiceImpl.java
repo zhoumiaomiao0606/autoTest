@@ -1227,7 +1227,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
     {
         //如果是退单且退单理由为退款不做and节点为合同归档===正常走流程
         //LoanRefundApplyDO loanRefundApplyDO = loanRefundApplyDOMapper.lastByOrderId(orderId);
-        Preconditions.checkArgument(ORDER_STATUS_DOING.equals(loanProcessDO.getOrderStatus()), "当前订单" + getOrderStatusText(loanProcessDO));
+        Preconditions.checkArgument(ORDER_STATUS_DOING.equals(loanProcessDO.getOrderStatus())||(ORDER_STATUS_CANCEL.equals(loanProcessDO.getOrderStatus())), "当前订单" + getOrderStatusText(loanProcessDO));
 
         // 【征信申请】时，若身份证有效期<=（today+7），不允许提交，提示“身份证已过期，不允许申请贷款”
         if (CREDIT_APPLY.getCode().equals(taskDefinitionKey) && ACTION_PASS.equals(action)) {
