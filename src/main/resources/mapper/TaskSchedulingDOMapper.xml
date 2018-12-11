@@ -955,6 +955,9 @@
                       <when test="taskDefinitionKey == 'usertask_settle_order'">
                           and deputy.order_status = 2
                       </when>
+                      <when test="taskDefinitionKey == 'usertask_material_manage'">
+                          and (deputy.order_status = 1 or deputy.order_status = 3)
+                      </when>
                       <otherwise>
                           and deputy.order_status = 1
                       </otherwise>
