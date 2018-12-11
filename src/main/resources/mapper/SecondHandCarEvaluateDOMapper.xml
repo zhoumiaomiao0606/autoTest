@@ -401,6 +401,7 @@
       </if>
 
     </where>
+    order  by query_time desc
   </select>
   <select id="selectPlateAreaByOrderId" parameterType="Long" resultType="String">
         SELECT  base_area.`area_name`   FROM
