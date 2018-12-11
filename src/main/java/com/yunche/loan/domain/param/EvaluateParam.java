@@ -22,6 +22,8 @@ public class EvaluateParam
 
     private String carCard;//车牌号
 
+    private String cityId;//城市
+
     @Override
     public String toString() {
         return JSON.toJSONString(this, new SerializerFeature[]{SerializerFeature.WriteMapNullValue, SerializerFeature.WriteNullListAsEmpty,
