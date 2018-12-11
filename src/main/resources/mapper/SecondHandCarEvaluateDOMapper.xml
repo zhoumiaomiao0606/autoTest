@@ -26,11 +26,12 @@
     <result column="mileage" jdbcType="VARCHAR" property="mileage" />
     <result column="ocr_id" jdbcType="BIGINT" property="ocr_id" />
     <result column="vehicle_type" jdbcType="VARCHAR" property="vehicle_type" />
+    <result column="city_id" jdbcType="VARCHAR" property="city_id" />
   </resultMap>
   <sql id="Base_Column_List">
     id, vin, parnter_id, owner, plate_num, engine_num, register_date, make_name, model_name,
     trimId, name, style_color, evaluate_price, query_time, state, saleman_id, manufacturerGuidePrice,
-    dateOfProduction, year, manufacturerName, evaluate_json, mileage,ocr_id,vehicle_type
+    dateOfProduction, year, manufacturerName, evaluate_json, mileage,ocr_id,vehicle_type,city_id
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
     select 
@@ -54,7 +55,7 @@
     evaluate_price, query_time, state,
     saleman_id, manufacturerGuidePrice, dateOfProduction,
     year, manufacturerName, evaluate_json,
-    mileage,ocr_id,vehicle_type)
+    mileage,ocr_id,vehicle_type,city_id)
     values (#{id,jdbcType=BIGINT}, #{vin,jdbcType=VARCHAR}, #{parnter_id,jdbcType=BIGINT},
     #{owner,jdbcType=VARCHAR}, #{plate_num,jdbcType=VARCHAR}, #{engine_num,jdbcType=VARCHAR},
     #{register_date,jdbcType=TIMESTAMP}, #{make_name,jdbcType=VARCHAR}, #{model_name,jdbcType=VARCHAR},
@@ -62,7 +63,7 @@
     #{evaluate_price,jdbcType=DECIMAL}, #{query_time,jdbcType=TIMESTAMP}, #{state,jdbcType=TINYINT},
     #{saleman_id,jdbcType=BIGINT}, #{manufacturerGuidePrice,jdbcType=VARCHAR}, #{dateOfProduction,jdbcType=VARCHAR},
     #{year,jdbcType=VARCHAR}, #{manufacturerName,jdbcType=VARCHAR}, #{evaluate_json,jdbcType=VARCHAR},
-    #{mileage,jdbcType=VARCHAR}, #{ocr_id,jdbcType=BIGINT}, #{vehicle_type,jdbcType=VARCHAR})
+    #{mileage,jdbcType=VARCHAR}, #{ocr_id,jdbcType=BIGINT}, #{vehicle_type,jdbcType=VARCHAR}, #{city_id,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.SecondHandCarEvaluateDO">
     <selectKey resultType="java.lang.Long" keyProperty="id"
@@ -143,6 +144,9 @@
       <if test="vehicle_type != null">
         vehicle_type,
       </if>
+      <if test="city_id != null">
+        city_id,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="id != null">
@@ -217,6 +221,9 @@
       <if test="vehicle_type != null">
         #{vehicle_type,jdbcType=VARCHAR},
       </if>
+      <if test="city_id != null">
+        #{city_id,jdbcType=VARCHAR},
+      </if>
     </trim>
   </insert>
   <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.SecondHandCarEvaluateDO">
@@ -288,6 +295,9 @@
       <if test="vehicle_type != null">
         vehicle_type = #{vehicle_type,jdbcType=VARCHAR},
       </if>
+      <if test="city_id != null">
+        city_id = #{city_id,jdbcType=VARCHAR},
+      </if>
       <if test="ocr_id != null">
         ocr_id = #{ocr_id,jdbcType=BIGINT},
       </if>
@@ -318,6 +328,7 @@
       evaluate_json = #{evaluate_json,jdbcType=VARCHAR},
       mileage = #{mileage,jdbcType=VARCHAR},
       vehicle_type = #{vehicle_type,jdbcType=VARCHAR},
+      city_id = #{city_id,jdbcType=VARCHAR},
       ocr_id = #{ocr_id,jdbcType=BIGINT}
     where id = #{id,jdbcType=BIGINT}
   </update>

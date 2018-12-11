@@ -57,6 +57,8 @@ public class SecondHandCarEvaluateDO
 
     private String vehicle_type;//车辆属性
 
+    private String city_id;//所在地城市
+
     private Long ocr_id;//识别id
 
 

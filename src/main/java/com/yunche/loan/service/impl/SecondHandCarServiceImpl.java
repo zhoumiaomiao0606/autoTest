@@ -331,6 +331,9 @@ public class SecondHandCarServiceImpl implements SecondHandCarService
             //设置合伙人团队
             secondHandCarEvaluateDO.setParnter_id(partnerIdByEmployeeId);
 
+            //设置城市
+            secondHandCarEvaluateDO.setCity_id(evaluateWebParam.getCity_id());
+
             //设置查询的评估价
             secondHandCarEvaluateDO.setEvaluate_price(new BigDecimal(financeResult1.getDatas().getB2CPrices().getB().getMid()));
 
