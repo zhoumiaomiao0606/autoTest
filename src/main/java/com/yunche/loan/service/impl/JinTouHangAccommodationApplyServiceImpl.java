@@ -220,11 +220,11 @@ public class JinTouHangAccommodationApplyServiceImpl implements JinTouHangAccomm
             @Override
             public void process() {
                 try{
-                    String interest = param.getLendAmount().multiply(new BigDecimal("0.08").multiply(new BigDecimal("60").divide(new BigDecimal("365"),2,BigDecimal.ROUND_HALF_UP))).multiply(new BigDecimal("100")).setScale(0,BigDecimal.ROUND_HALF_UP)+"";
+                    String interest = param.getLendAmount().multiply(new BigDecimal("0.08")).multiply(new BigDecimal("60")).divide(new BigDecimal("365"),2,BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal("100")).setScale(0,BigDecimal.ROUND_HALF_UP)+"";
                     Map resultMap = jtxCommunicationUtil.borrowerInfoAuth(loanCustomerDO.getName(),loanCustomerDO.getIdCard(),param.getTel(),
                             loanBaseInfoDO.getBank(),param.getBankCard(),param.getIdPair());
                     if((Boolean) resultMap.get("FLAG")){
-                        Map resultMap1 = jtxCommunicationUtil.assetRelease((String) resultMap.get("REF"),"云车-"+(String) resultMap.get("REF"),param.getLendAmount().multiply(new BigDecimal("100"))+"",
+                        Map resultMap1 = jtxCommunicationUtil.assetRelease((String) resultMap.get("REF"),"云车-"+(String) resultMap.get("REF"),param.getLendAmount().multiply(new BigDecimal("100")).setScale(0,BigDecimal.ROUND_HALF_UP)+"",
                                 "800", lenDate,"60", interest,"ONCE",
                                 "YC","车",loanFinancialPlanDO.getAppraisal().multiply(new BigDecimal("100")).stripTrailingZeros().toPlainString(),"0",loanCustomerDO.getIdCard());
                         if((Boolean) resultMap1.get("FLAG")){
