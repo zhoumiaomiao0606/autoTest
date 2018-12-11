@@ -463,7 +463,7 @@
             FROM
             loan_process_log
             WHERE
-            order_id = principal_orders.id
+            order_id = main.id
             AND task_definition_key = 'usertask_bank_open_card'
             and action = 1
             ORDER BY

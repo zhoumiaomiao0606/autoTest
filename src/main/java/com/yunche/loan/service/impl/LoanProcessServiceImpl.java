@@ -49,6 +49,7 @@ import static com.yunche.loan.config.constant.LoanOrderProcessConst.*;
 import static com.yunche.loan.config.constant.LoanProcessConst.APPROVAL_NOT_NEED_ORDER_ID_PROCESS_KEYS;
 import static com.yunche.loan.config.constant.LoanProcessEnum.*;
 import static com.yunche.loan.config.constant.LoanProcessVariableConst.*;
+import static com.yunche.loan.config.constant.LoanRefundApplyConst.REFUND_REASON_2;
 import static com.yunche.loan.config.constant.LoanRefundApplyConst.REFUND_REASON_3;
 import static com.yunche.loan.config.constant.LoanUserGroupConst.*;
 import static com.yunche.loan.config.constant.ProcessApprovalConst.*;
@@ -910,14 +911,22 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
                 // 退款原因(类型)：3-业务审批重审     ===>   自动打回 ->【业务付款】
                 LoanRefundApplyDO loanRefundApplyDO = getLoanRefundApply(approval.getOrderId());
-                if (REFUND_REASON_3.equals(loanRefundApplyDO.getRefund_reason())) {
+                if (REFUND_REASON_3.equals(loanRefundApplyDO.getRefund_reason()))
+                {
 
                     // 自动打回   [退款申请-已提交] ->【业务付款】 （重走【业务付款】）
-                    if (TASK_PROCESS_DONE.equals(loanProcessDO.getRemitReview())) {
+                    if (TASK_PROCESS_DONE.equals(loanProcessDO.getRemitReview()))
+                    {
 
                         // 能发起[退款申请]的节点：[打款确认]-已提交
                         autoReject2BusinessPay(loanProcessDO.getOrderId(), REMIT_REVIEW_FILTER.getCode(), loanProcessDO);
                     }
+                }
+
+                if (REFUND_REASON_2.equals(loanRefundApplyDO.getRefund_reason()))
+                {
+                    loanProcessDO.setOrderStatus(ORDER_STATUS_CANCEL);
+
                 }
 
                 // 更新申请单状态
@@ -1214,7 +1223,10 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      * @param loanOrderDO
      * @param loanProcessDO
      */
-    private void checkPreCondition(String taskDefinitionKey, Byte action, LoanOrderDO loanOrderDO, LoanProcessDO loanProcessDO) {
+    private void checkPreCondition(String taskDefinitionKey, Byte action, LoanOrderDO loanOrderDO, LoanProcessDO loanProcessDO)
+    {
+        //如果是退单且退单理由为退款不做and节点为合同归档===正常走流程
+        //LoanRefundApplyDO loanRefundApplyDO = loanRefundApplyDOMapper.lastByOrderId(orderId);
         Preconditions.checkArgument(ORDER_STATUS_DOING.equals(loanProcessDO.getOrderStatus()), "当前订单" + getOrderStatusText(loanProcessDO));
 
         // 【征信申请】时，若身份证有效期<=（today+7），不允许提交，提示“身份证已过期，不允许申请贷款”
