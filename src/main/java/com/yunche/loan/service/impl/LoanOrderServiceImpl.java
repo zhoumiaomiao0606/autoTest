@@ -1133,6 +1133,7 @@ public class LoanOrderServiceImpl implements LoanOrderService {
         List<CustomerParam> commonLenderList = param.getCommonLenderList();
         List<CustomerParam> guarantorList = param.getGuarantorList();
         List<CustomerParam> emergencyContactList = param.getEmergencyContactList();
+        List<CustomerParam> specialContactList = param.getSpecialContactList();
 
         createLoanCustomerList(principalLenderId, commonLenderList);
 
@@ -1143,6 +1144,8 @@ public class LoanOrderServiceImpl implements LoanOrderService {
             Preconditions.checkArgument(false, "您选择的担保人与主担保人关系有误，请核查");
         }
 
+
+        createLoanCustomerList(principalLenderId, specialContactList);
         createLoanCustomerList(principalLenderId, emergencyContactList);
 
         return principalLenderId;

@@ -474,6 +474,7 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
         List<CustomerVO> commonLenderList = Lists.newArrayList();
         List<CustomerVO> guarantorList = Lists.newArrayList();
         List<CustomerVO> emergencyContactList = Lists.newArrayList();
+        List<CustomerVO> specialContactList = Lists.newArrayList();
 
         loanCustomerDOList.stream()
                 .filter(Objects::nonNull)
@@ -537,15 +538,31 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
 
                         emergencyContactList.add(emergencyContact);
                     }
+                    //特殊联系人
+                    else if (CUST_TYPE_SPECIAL_CONTACT.equals(e.getCustType())) {
+
+                        CustomerVO emergencyContact = new CustomerVO();
+                        BeanUtils.copyProperties(e, emergencyContact);
+
+                        // fillFiles
+                        //fillFiles(emergencyContact, fileUploadType);
+
+                        // fillCredit
+                        //fillCredit(emergencyContact, e.getId());
+
+                        specialContactList.add(emergencyContact);
+                    }
                 });
 
         List<CustomerVO> sortedCommonLenderList = commonLenderList.parallelStream().sorted(Comparator.comparing(CustomerVO::getId)).collect(Collectors.toList());
         List<CustomerVO> sortedGuarantorList = guarantorList.parallelStream().sorted(Comparator.comparing(CustomerVO::getId)).collect(Collectors.toList());
         List<CustomerVO> sortedEmergencyContactList = emergencyContactList.parallelStream().sorted(Comparator.comparing(CustomerVO::getId)).collect(Collectors.toList());
+        List<CustomerVO> sortedSpecialContactList = emergencyContactList.parallelStream().sorted(Comparator.comparing(CustomerVO::getId)).collect(Collectors.toList());
 
         custDetailVO.setCommonLenderList(sortedCommonLenderList);
         custDetailVO.setGuarantorList(sortedGuarantorList);
         custDetailVO.setEmergencyContactList(sortedEmergencyContactList);
+        custDetailVO.setSpecialContactList(sortedSpecialContactList);
     }
 
     /**
@@ -612,6 +629,17 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
         if (!CollectionUtils.isEmpty(emergencyContactList)) {
 
             emergencyContactList.parallelStream()
+                    .filter(Objects::nonNull)
+                    .forEach(e -> {
+                        updateOrInsertCustomer(e);
+                    });
+        }
+
+        // 特殊联系人列表
+        List<CustomerParam> specialContactList = allCustDetailParam.getSpecialContactList();
+        if (!CollectionUtils.isEmpty(specialContactList)) {
+
+            specialContactList.parallelStream()
                     .filter(Objects::nonNull)
                     .forEach(e -> {
                         updateOrInsertCustomer(e);
@@ -731,6 +759,22 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
         if (!CollectionUtils.isEmpty(emergencyContactList)) {
 
             emergencyContactList.stream()
+                    .filter(Objects::nonNull)
+                    .forEach(e -> {
+
+                        String idCard = e.getIdCard();
+                        if (StringUtils.isNotBlank(idCard)) {
+
+                            idCard = idCard.trim();
+                            Preconditions.checkArgument(!idCardList.contains(idCard), "有身份证号码重复，请先检查再提交");
+                            idCardList.add(idCard);
+                        }
+                    });
+        }
+        List<CustomerParam> specialContactList = allCustDetailParam.getSpecialContactList();
+        if (!CollectionUtils.isEmpty(specialContactList)) {
+
+            specialContactList.stream()
                     .filter(Objects::nonNull)
                     .forEach(e -> {
 
