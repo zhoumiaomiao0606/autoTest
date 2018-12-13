@@ -18,6 +18,8 @@ public class EvaluateWebParam
 
     private String mileage;//里程
 
+    private String city_id;//城市
+
 
 
     //需要保存的

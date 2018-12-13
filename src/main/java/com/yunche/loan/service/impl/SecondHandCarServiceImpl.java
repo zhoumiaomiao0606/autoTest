@@ -277,6 +277,7 @@ public class SecondHandCarServiceImpl implements SecondHandCarService
         Preconditions.checkNotNull(evaluateWebParam.getPlate_num(),"车牌号不能为空");
         Preconditions.checkNotNull(evaluateWebParam.getMileage(),"公里数不能为空");
         Preconditions.checkNotNull(evaluateWebParam.getRegister_date(),"上牌时间不能为空");
+        Preconditions.checkNotNull(evaluateWebParam.getCity_id(),"城市不能为空");
 
         //Preconditions.checkNotNull(evaluateWebParam.getOrderId(),"订单id不能为空");
         //判断orc
@@ -290,6 +291,8 @@ public class SecondHandCarServiceImpl implements SecondHandCarService
         param.setBuyCarDate(evaluateWebParam.getRegister_date());
         param.setMileage(evaluateWebParam.getMileage());
         param.setTrimId(evaluateWebParam.getTrimId());
+        param.setCityId(evaluateWebParam.getCity_id());
+        LOG.info("请求参数"+param.toString());
         String financeResult = businessReviewManager.financeUnisal2(param, "/api/car/evaluate");
         CommonFinanceResult<EvaluateVO> financeResult1 = new CommonFinanceResult<EvaluateVO>();
         if (financeResult !=null && !"".equals(financeResult))
@@ -301,7 +304,7 @@ public class SecondHandCarServiceImpl implements SecondHandCarService
 
         if (!financeResult1.getResultCode().equals("200"))
         {
-            return ResultBean.ofError("估价失败");
+            return ResultBean.ofError(financeResult1.getMessage());
         }
 
         //每次评估，查询到即保存
@@ -327,6 +330,9 @@ public class SecondHandCarServiceImpl implements SecondHandCarService
 
             //设置合伙人团队
             secondHandCarEvaluateDO.setParnter_id(partnerIdByEmployeeId);
+
+            //设置城市
+            secondHandCarEvaluateDO.setCity_id(evaluateWebParam.getCity_id());
 
             //设置查询的评估价
             secondHandCarEvaluateDO.setEvaluate_price(new BigDecimal(financeResult1.getDatas().getB2CPrices().getB().getMid()));
