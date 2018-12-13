@@ -39,4 +39,13 @@ public class ContractOverDueController
     {
         return ResultBean.ofSuccess(contractOverDueService.exportContractOverDue(param));
     }
+    /**
+     * 详情页
+     */
+    @GetMapping(value = "/detail")
+    public ResultBean detail(@RequestParam Long orderId)
+    {
+        return ResultBean.ofSuccess(contractOverDueService.detail(orderId));
+    }
+
 }

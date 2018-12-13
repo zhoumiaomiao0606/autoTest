@@ -360,4 +360,6 @@ public interface LoanQueryDOMapper {
     List<Long> selectOrderIdByIdCard(@Param("idCard") String idCard);
 
     List<ContractOverDueVO> contractOverDueList(ContractOverDueParam param);
+
+    ContractOverDueCustomerInfoVO selectContractOverDueCustomerInfoInfo(Long orderId);
 }

@@ -2730,4 +2730,46 @@
 
     </select>
 
+    <!--贷后通用客户主要信息info-->
+    <select id="selectContractOverDueCustomerInfoInfo" resultType="com.yunche.loan.domain.vo.ContractOverDueCustomerInfoVO"
+            parameterType="java.lang.Long">
+SELECT
+           t.*,
+           floor(
+                   ( UNIX_TIMESTAMP( DATE_FORMAT( now( ), '%Y-%m-%d' )) - UNIX_TIMESTAMP( DATE_FORMAT( t.remitDate, '%Y-%m-%d' ) ) ) / ( 24 * 60 * 60 )
+                   )  AS overDueDays
+           FROM
+           (
+        select
+        main_order.id                                                                           AS orderId,
+        customer.id_card                                                                        AS customerIdCard,
+        customer.name                                                                           AS customerName,
+
+        customer.mobile                                                                         AS customerMobile,
+
+        partner.name                                                                            AS partnerName,
+
+        salesman.name                                                                           AS salesmanName,
+        f.loan_amount                                                                           AS loanAmount,
+        remit_details.remit_amount                                                              AS remitAmount,
+        ( SELECT create_time FROM
+           loan_process_log
+           WHERE main_order.id = loan_process_log.order_id AND loan_process_log.task_definition_key = 'usertask_remit_review'
+           ORDER BY id DESC LIMIT 1 ) AS remitDate,
+
+        loan.bank                                                                               AS bank
+
+        from (select * from loan_order where id = #{orderId,jdbcType=BIGINT}) main_order
+        left join loan_process process on main_order.id = process.order_id
+        left join loan_customer customer on main_order.loan_customer_id = customer.id
+        left join loan_base_info loan on main_order.loan_base_info_id = loan.id
+        left join employee salesman on loan.salesman_id = salesman.id
+        left join partner partner on loan.partner_id = partner.id
+        LEFT JOIN loan_financial_plan f on main_order.loan_financial_plan_id = f.id
+        LEFT JOIN remit_details ON main_order.remit_details_id = remit_details.id
+        ) t
+
+
+    </select>
+
 </mapper>
