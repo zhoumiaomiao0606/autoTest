@@ -2692,7 +2692,7 @@
            remit_details.remit_amount AS remitAmount,
            ( SELECT create_time FROM
            loan_process_log
-           WHERE main.id = loan_process_log.order_id AND loan_process_log.task_definition_key = 'usertask_remit_review'
+           WHERE main.id = loan_process_log.order_id AND loan_process_log.task_definition_key = 'usertask_remit_review' and loan_process_log.action =1
            ORDER BY id DESC LIMIT 1 ) AS remitDate
 
            FROM
@@ -2754,7 +2754,7 @@ SELECT
         remit_details.remit_amount                                                              AS remitAmount,
         ( SELECT create_time FROM
            loan_process_log
-           WHERE main_order.id = loan_process_log.order_id AND loan_process_log.task_definition_key = 'usertask_remit_review'
+           WHERE main_order.id = loan_process_log.order_id AND loan_process_log.task_definition_key = 'usertask_remit_review' and loan_process_log.action =1
            ORDER BY id DESC LIMIT 1 ) AS remitDate,
 
         loan.bank                                                                               AS bank

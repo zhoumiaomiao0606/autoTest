@@ -2,6 +2,8 @@ package com.yunche.loan.domain.vo;
 
 import lombok.Data;
 
+import java.util.Date;
+
 /**
  * @author: ZhongMingxiao
  * @create: 2018-08-28 18:27
@@ -52,6 +54,7 @@ public class ExportRemitDetailQueryForRemitOrderVO
     //打款金额
     private String remit_amount;
 
+
       //公司收益
       private String service_fee;
       //履约金
@@ -80,10 +83,22 @@ public class ExportRemitDetailQueryForRemitOrderVO
     //创建时间
     private String gmt_create;
 
-    //提交时间
+    //业务审批时间
+    private Date businessReviewTime;
+
+    //业务审批人
+    private String businessReviewUsername;
+
+    //放款审批时间
+    private Date loanReviewTime;
+
+    //放款审批人
+    private String loanReviewUsername;
+
+    //提交时间--垫款时间
     private String submitTime;
 
-    //
+    //退款时间
     private String refundTime;
 
     //提交人

@@ -1336,7 +1336,7 @@
         loan_process_log
         WHERE
         order_id = orders.id
-        AND task_definition_key = 'usertask_remit_review'
+        AND task_definition_key = 'usertask_remit_review' and loan_process_log.action =1
         ORDER BY
         create_time DESC
         LIMIT 1
@@ -1348,7 +1348,55 @@
         loan_process_log
         WHERE
         order_id = orders.id
-        AND task_definition_key = 'usertask_refund_apply_review'
+        AND task_definition_key = 'usertask_business_review' and loan_process_log.action =1
+        ORDER BY
+        create_time DESC
+        LIMIT 1
+        ) as businessReviewTime,
+        (
+        SELECT
+        loan_process_log.user_name
+        FROM
+        loan_process_log
+        WHERE
+        order_id = orders.id
+        AND task_definition_key = 'usertask_business_review' and loan_process_log.action =1
+        ORDER BY
+        create_time DESC
+        LIMIT 1
+        ) as businessReviewUsername,
+        (
+        SELECT
+        loan_process_log.create_time
+        FROM
+        loan_process_log
+        WHERE
+        order_id = orders.id
+        AND task_definition_key = 'usertask_loan_review' and loan_process_log.action =1
+        ORDER BY
+        create_time DESC
+        LIMIT 1
+        ) as loanReviewTime,
+        (
+        SELECT
+        loan_process_log.user_name
+        FROM
+        loan_process_log
+        WHERE
+        order_id = orders.id
+        AND task_definition_key = 'usertask_loan_review' and loan_process_log.action =1
+        ORDER BY
+        create_time DESC
+        LIMIT 1
+        ) as loanReviewUsername,
+        (
+        SELECT
+        loan_process_log.create_time
+        FROM
+        loan_process_log
+        WHERE
+        order_id = orders.id
+        AND task_definition_key = 'usertask_refund_apply_review' and loan_process_log.action =1
         ORDER BY
         create_time DESC
         LIMIT 1
@@ -1360,7 +1408,7 @@
         loan_process_log
         WHERE
         order_id = orders.id
-        AND task_definition_key = 'usertask_remit_review'
+        AND task_definition_key = 'usertask_remit_review' and loan_process_log.action =1
         ORDER BY
         create_time DESC
         LIMIT 1
