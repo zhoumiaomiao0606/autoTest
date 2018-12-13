@@ -30,4 +30,13 @@ public class ContractOverDueController
 
         return contractOverDueService.list(param);
     }
+
+    /**
+     * 导出
+     */
+    @PostMapping(value = "/exportContractOverDue")
+    public ResultBean exportContractOverDue(@RequestBody ContractOverDueParam param)
+    {
+        return ResultBean.ofSuccess(contractOverDueService.exportContractOverDue(param));
+    }
 }

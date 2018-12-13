@@ -2,6 +2,8 @@ package com.yunche.loan.domain.vo;
 
 import lombok.Data;
 
+import java.util.Date;
+
 @Data
 public class ContractOverDueVO
 {
@@ -19,7 +21,13 @@ public class ContractOverDueVO
 
     private String remitAmount;
 
-    private String remitDate;
+    //银行分期本金
+    private String bankPeriodPrincipal;
+
+    //执行利率
+    private String signRate;
+
+    private Date remitDate;
 
     private String overDueDays;
 }

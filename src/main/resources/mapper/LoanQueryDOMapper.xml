@@ -2685,8 +2685,10 @@
            loan_customer.`name` AS customerName,
            loan_customer.id_card AS idCard,
            partner.name AS partnerName,
-           loan_base_info.bank,
-           loan_base_info.loan_amount AS loanAmount,
+           b.bank,
+           f.loan_amount AS loanAmount,
+           f.bank_period_principal AS bankPeriodPrincipal,
+           f.sign_rate AS signRate,
            remit_details.remit_amount AS remitAmount,
            ( SELECT create_time FROM
            loan_process_log
@@ -2697,9 +2699,10 @@
            loan_order main
            LEFT JOIN loan_process ON main.id = loan_process.order_id
            LEFT JOIN loan_customer ON main.loan_customer_id = loan_customer.id
-           LEFT JOIN loan_base_info ON main.loan_base_info_id = loan_base_info.id
+           LEFT JOIN loan_base_info b ON main.loan_base_info_id = b.id
            LEFT JOIN partner ON loan_base_info.partner_id = partner.id
            LEFT JOIN remit_details ON main.remit_details_id = remit_details.id
+           LEFT JOIN loan_financial_plan f on main.loan_financial_plan_id = f.id
            WHERE loan_process.remit_review = 1 AND loan_process.data_flow_contract_p2c_review !=1
         <if test="customerName != null and customerName!= '' ">
             AND loan_customer.`name` LIKE CONCAT('%',#{customerName},'%')
@@ -2708,11 +2711,12 @@
             AND loan_customer.id_card = #{idCard}
         </if>
         <if test="loanBank != null and loanBank != '' ">
-            AND loan_base_info.bank = #{loanBank}
+            AND b.bank = #{loanBank}
         </if>
         <if test="orderId != null and orderId != '' ">
             AND main.id = #{orderId}
         </if>
+        <include refid="commonSql_customerOrder_getSelfAndChild"/>
            ) t
         <where>
             <if test="remitTimeStart != null and remitTimeStart != '' and remitTimeEnd != null and remitTimeEnd != ''">

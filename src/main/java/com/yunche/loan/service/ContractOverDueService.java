@@ -7,4 +7,5 @@ public interface ContractOverDueService
 {
     ResultBean list(ContractOverDueParam param);
 
+    String exportContractOverDue(ContractOverDueParam param);
 }
