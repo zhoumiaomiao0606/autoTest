@@ -2672,37 +2672,39 @@
 
     <select id="contractOverDueList" parameterType="com.yunche.loan.domain.param.ContractOverDueParam" resultType="com.yunche.loan.domain.vo.ContractOverDueVO">
 
-      SELECT
-      t.*,
-      floor(
-        ( UNIX_TIMESTAMP( DATE_FORMAT( now( ), '%Y-%m-%d' )) - UNIX_TIMESTAMP( DATE_FORMAT( t.remitdate, '%Y-%m-%d' ) ) ) / ( 24 * 60 * 60 )
-        )  AS overDueDays
-         FROM
-         (
-         SELECT
-         main.id AS orderId,
-         loan_customer.`name` AS customerName,
-         loan_customer.id_card,
-         partner.name AS partnerName,
-         loan_base_info.bank,
-         loan_base_info.loan_amount,
-         remit_details.remit_amount,
-         ( SELECT create_time FROM
-         loan_process_log
-         WHERE main.id = loan_process_log.order_id AND loan_process_log.task_definition_key = 'usertask_remit_review'
-         ORDER BY id DESC LIMIT 1 ) AS remitdate
 
-         FROM
-         loan_order main
-         LEFT JOIN loan_process ON main.id = loan_process.order_id
-         LEFT JOIN loan_customer ON main.loan_customer_id = loan_customer.id
-         LEFT JOIN loan_base_info ON main.loan_base_info_id = loan_base_info.id
-         LEFT JOIN partner ON loan_base_info.partner_id = partner.id
-         LEFT JOIN remit_details ON main.remit_details_id = remit_details.id
-         WHERE loan_process.remit_review = 1 AND loan_process.data_flow_contract_p2c_review !=1
-         ) t
-         HAVING overDueDays >=5
-         ORDER BY t.remitdate ASC
+           SELECT
+           t.*,
+           floor(
+                   ( UNIX_TIMESTAMP( DATE_FORMAT( now( ), '%Y-%m-%d' )) - UNIX_TIMESTAMP( DATE_FORMAT( t.remitDate, '%Y-%m-%d' ) ) ) / ( 24 * 60 * 60 )
+                   )  AS overDueDays
+           FROM
+           (
+           SELECT
+           main.id AS orderId,
+           loan_customer.`name` AS customerName,
+           loan_customer.id_card AS idCard,
+           partner.name AS partnerName,
+           loan_base_info.bank,
+           loan_base_info.loan_amount AS loanAmount,
+           remit_details.remit_amount AS remitAmount,
+           ( SELECT create_time FROM
+           loan_process_log
+           WHERE main.id = loan_process_log.order_id AND loan_process_log.task_definition_key = 'usertask_remit_review'
+           ORDER BY id DESC LIMIT 1 ) AS remitDate
+
+           FROM
+           loan_order main
+           LEFT JOIN loan_process ON main.id = loan_process.order_id
+           LEFT JOIN loan_customer ON main.loan_customer_id = loan_customer.id
+           LEFT JOIN loan_base_info ON main.loan_base_info_id = loan_base_info.id
+           LEFT JOIN partner ON loan_base_info.partner_id = partner.id
+           LEFT JOIN remit_details ON main.remit_details_id = remit_details.id
+           WHERE loan_process.remit_review = 1 AND loan_process.data_flow_contract_p2c_review !=1
+           ) t
+           HAVING overDueDays >=5
+           ORDER BY t.remitdate ASC
+
 
 
     </select>
