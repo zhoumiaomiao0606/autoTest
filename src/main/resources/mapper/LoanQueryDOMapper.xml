@@ -2701,8 +2701,25 @@
            LEFT JOIN partner ON loan_base_info.partner_id = partner.id
            LEFT JOIN remit_details ON main.remit_details_id = remit_details.id
            WHERE loan_process.remit_review = 1 AND loan_process.data_flow_contract_p2c_review !=1
+        <if test="customerName != null and customerName!= '' ">
+            AND loan_customer.`name` LIKE CONCAT('%',#{customerName},'%')
+        </if>
+        <if test="idCard != null">
+            AND loan_customer.id_card = #{idCard}
+        </if>
+        <if test="loanBank != null and loanBank != '' ">
+            AND loan_base_info.bank = #{loanBank}
+        </if>
+        <if test="orderId != null and orderId != '' ">
+            AND main.id = #{orderId}
+        </if>
            ) t
-           HAVING overDueDays >=5
+        <where>
+            <if test="remitTimeStart != null and remitTimeStart != '' and remitTimeEnd != null and remitTimeEnd != ''">
+                t.remitDate between #{remitTimeStart} and #{remitTimeEnd}
+            </if>
+        </where>
+           HAVING overDueDays &gt;=5
            ORDER BY t.remitdate ASC
 
 
