@@ -37,6 +37,10 @@ public class AppCustomerInfoVO {
      * 紧急联系人列表
      */
     private List<EmergencyContact> emergencyContactList = Collections.EMPTY_LIST;
+    /**
+     * 特殊关联人列表
+     */
+    private List<CustomerInfo> specialList = Collections.EMPTY_LIST;
 
 
     @Data

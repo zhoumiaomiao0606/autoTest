@@ -10,6 +10,7 @@ import com.yunche.loan.config.util.ImageUtil;
 import com.yunche.loan.config.util.OSSUnit;
 import com.yunche.loan.domain.entity.*;
 import com.yunche.loan.domain.param.AllCustDetailParam;
+import com.yunche.loan.domain.param.CustomerListQuery;
 import com.yunche.loan.domain.param.CustomerParam;
 import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.mapper.*;
@@ -808,5 +809,11 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
                     });
         }
 
+    }
+
+    @Override
+    public ResultBean<List<CustomerListVO>> queryCustomerList(CustomerListQuery customerListQuery)
+    {
+        return null;
     }
 }

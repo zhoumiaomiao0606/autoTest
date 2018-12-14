@@ -592,23 +592,43 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
             }
 
             // 紧急联系人
-            List<CustomerVO> emergencyContactVOList = custDetailVO.getEmergencyContactList();
-            if (!CollectionUtils.isEmpty(emergencyContactVOList)) {
+                List<CustomerVO> emergencyContactVOList = custDetailVO.getEmergencyContactList();
+                if (!CollectionUtils.isEmpty(emergencyContactVOList)) {
 
-                List<AppCustomerInfoVO.EmergencyContact> emergencyContactList = Lists.newArrayList();
+                    List<AppCustomerInfoVO.EmergencyContact> emergencyContactList = Lists.newArrayList();
 
-                emergencyContactVOList.parallelStream()
+                    emergencyContactVOList.parallelStream()
+                            .filter(Objects::nonNull)
+                            .forEach(e -> {
+                                AppCustomerInfoVO.EmergencyContact emergencyContact = new AppCustomerInfoVO.EmergencyContact();
+                                //fillCustomerInfo(e, (AppCustomerInfoVO.CustomerInfo) emergencyContact);
+                                if (e != null) {
+                                    BeanUtils.copyProperties(e, emergencyContact);
+                                }
+                                emergencyContactList.add(emergencyContact);
+                            });
+
+                    customerInfoVO.setEmergencyContactList(emergencyContactList);
+
+            }
+            // 特殊联系人
+            List<CustomerVO> specialContactVOList = custDetailVO.getSpecialContactList();
+            if (!CollectionUtils.isEmpty(specialContactVOList)) {
+
+                List<AppCustomerInfoVO.CustomerInfo> specialContactList = Lists.newArrayList();
+
+                specialContactVOList.parallelStream()
                         .filter(Objects::nonNull)
                         .forEach(e -> {
-                            AppCustomerInfoVO.EmergencyContact emergencyContact = new AppCustomerInfoVO.EmergencyContact();
+                            AppCustomerInfoVO.CustomerInfo customerInfo = new AppCustomerInfoVO.CustomerInfo();
                             //fillCustomerInfo(e, (AppCustomerInfoVO.CustomerInfo) emergencyContact);
                             if (e != null) {
-                                BeanUtils.copyProperties(e, emergencyContact);
+                                BeanUtils.copyProperties(e, customerInfo);
                             }
-                            emergencyContactList.add(emergencyContact);
+                            specialContactList.add(customerInfo);
                         });
 
-                customerInfoVO.setEmergencyContactList(emergencyContactList);
+                customerInfoVO.setSpecialList(specialContactList);
             }
         }
         VideoFaceLogDO videoFaceLogDO = videoFaceLogDOMapper.lastVideoFaceLogByOrderId(orderId);
