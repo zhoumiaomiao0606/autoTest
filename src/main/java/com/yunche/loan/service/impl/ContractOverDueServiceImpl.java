@@ -12,20 +12,20 @@ import com.yunche.loan.domain.entity.BaseAreaDO;
 import com.yunche.loan.domain.entity.LoanBaseInfoDO;
 import com.yunche.loan.domain.param.ContractOverDueParam;
 import com.yunche.loan.domain.vo.*;
-import com.yunche.loan.mapper.BaseAreaDOMapper;
-import com.yunche.loan.mapper.LoanBaseInfoDOMapper;
-import com.yunche.loan.mapper.LoanQueryDOMapper;
-import com.yunche.loan.mapper.TaskSchedulingDOMapper;
+import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.ContractOverDueService;
 import com.yunche.loan.service.EmployeeService;
 import com.yunche.loan.service.LoanQueryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
 
@@ -51,6 +51,12 @@ public class ContractOverDueServiceImpl implements ContractOverDueService
     @Autowired
     private LoanQueryService loanQueryService;
 
+    @Autowired
+    private UserGroupRelaBankDOMapper userGroupRelaBankDOMapper;
+
+    @Autowired
+    private EmployeeRelaUserGroupDOMapper employeeRelaUserGroupDOMapper;
+
 
     @Autowired
     private OSSConfig ossConfig;
@@ -63,6 +69,11 @@ public class ContractOverDueServiceImpl implements ContractOverDueService
 
         param.setJuniorIds(employeeService.getSelfAndCascadeChildIdList(loginUserId));
         param.setMaxGroupLevel(taskSchedulingDOMapper.selectMaxGroupLevel(loginUserId));
+
+        //获取用户可见的区域
+        param.setBizAreaIdList(getUserHaveBizAreaPartnerId(loginUserId));
+        //获取用户可见的银行
+        param.setBankList(getUserHaveBank(loginUserId));
 
 
 
@@ -143,5 +154,40 @@ public class ContractOverDueServiceImpl implements ContractOverDueService
 
 
         return contractOverDueDetailVO;
+    }
+
+
+
+
+    /**
+     * 获取 用户可见区域内的 所有合伙人ID列表
+     *
+     * @param userId
+     */
+    private List<Long> getUserHaveBizAreaPartnerId(Long userId) {
+        List<Long> empBizAreaPartnerIds = loanQueryDOMapper.selectEmpBizAreaPartnerIds(userId);
+        if (CollectionUtils.isEmpty(empBizAreaPartnerIds)) {
+            return null;
+        }
+        if (empBizAreaPartnerIds.get(0) == null) {
+            return null;
+        }
+        return empBizAreaPartnerIds;
+    }
+
+    /**
+     * 获取用户可见的银行 名称
+     *
+     * @param userId
+     */
+    private List<String> getUserHaveBank(Long userId) {
+        List<Long> groupIdList = employeeRelaUserGroupDOMapper.getUserGroupIdListByEmployeeId(userId);
+        List<String> userBankIdList = Lists.newArrayList();
+        groupIdList.parallelStream().filter(Objects::nonNull).forEach(groupId -> {
+            List<String> tmpBankidList = userGroupRelaBankDOMapper.getBankNameListByUserGroupId(groupId);
+            userBankIdList.addAll(tmpBankidList);
+        });
+        return userBankIdList.parallelStream().distinct().collect(Collectors.toList());
+
     }
 }

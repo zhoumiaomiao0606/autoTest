@@ -2704,6 +2704,20 @@
            LEFT JOIN remit_details ON main.remit_details_id = remit_details.id
            LEFT JOIN loan_financial_plan f on main.loan_financial_plan_id = f.id
            WHERE loan_process.remit_review = 1 AND loan_process.data_flow_contract_p2c_review !=1
+        <if test="bizAreaIdList != null and bizAreaIdList.size() > 0">
+            and
+            partner.id in
+            <foreach item="item" index="index" collection="bizAreaIdList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="bankList != null and bankList.size() > 0">
+            and
+            b.bank in
+            <foreach item="item" index="index" collection="bankList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
         <if test="customerName != null and customerName!= '' ">
             AND loan_customer.`name` LIKE CONCAT('%',#{customerName},'%')
         </if>
