@@ -403,7 +403,7 @@ public class LoanOrderServiceImpl implements LoanOrderService {
                 SecondHandCarEvaluateDO secondHandCarEvaluateDO = secondHandCarEvaluateDOMapper.selectByPrimaryKey(loanCarInfoParam.getSecond_hand_car_evaluate_id());
 
                 // #车牌号码 #车辆类型（小型轿车）  #所有人名称  #发动机号码  #注册日期   #车型颜色
-                vehicleInformationUpdateParam.setLicense_plate_number(secondHandCarEvaluateDO.getPlate_num());
+                //vehicleInformationUpdateParam.setLicense_plate_number(secondHandCarEvaluateDO.getPlate_num());
                 vehicleInformationUpdateParam.setCar_category(secondHandCarEvaluateDO.getVehicle_type());
                 //vehicleInformationUpdateParam.setNow_driving_license_owner(secondHandCarEvaluateDO.getOwner());
                 vehicleInformationUpdateParam.setEngine_number(secondHandCarEvaluateDO.getEngine_num());
@@ -471,7 +471,7 @@ public class LoanOrderServiceImpl implements LoanOrderService {
                 SecondHandCarEvaluateDO secondHandCarEvaluateDO = secondHandCarEvaluateDOMapper.selectByPrimaryKey(loanCarInfoParam.getSecond_hand_car_evaluate_id());
 
                 // #车牌号码 #车辆类型（小型轿车）  #所有人名称  #发动机号码  #注册日期   #车型颜色
-                vehicleInformationUpdateParam.setLicense_plate_number(secondHandCarEvaluateDO.getPlate_num());
+                //vehicleInformationUpdateParam.setLicense_plate_number(secondHandCarEvaluateDO.getPlate_num());
                 vehicleInformationUpdateParam.setCar_category(secondHandCarEvaluateDO.getVehicle_type());
                 //vehicleInformationUpdateParam.setNow_driving_license_owner(secondHandCarEvaluateDO.getOwner());
                 vehicleInformationUpdateParam.setEngine_number(secondHandCarEvaluateDO.getEngine_num());

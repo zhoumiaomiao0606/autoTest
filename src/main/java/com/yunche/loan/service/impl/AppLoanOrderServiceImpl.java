@@ -1263,13 +1263,11 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
                 SecondHandCarEvaluateDO secondHandCarEvaluateDO = secondHandCarEvaluateDOMapper.selectByPrimaryKey(loanCarInfoParam.getSecond_hand_car_evaluate_id());
 
                 // #车牌号码 #车辆类型（小型轿车）  #所有人名称  #发动机号码  #注册日期   #车型颜色
-                vehicleInformationUpdateParam.setLicense_plate_number(secondHandCarEvaluateDO.getPlate_num());
+               // vehicleInformationUpdateParam.setLicense_plate_number(secondHandCarEvaluateDO.getPlate_num());
                 vehicleInformationUpdateParam.setCar_category(secondHandCarEvaluateDO.getVehicle_type());
-                //vehicleInformationUpdateParam.setNow_driving_license_owner(secondHandCarEvaluateDO.getOwner());
                 vehicleInformationUpdateParam.setEngine_number(secondHandCarEvaluateDO.getEngine_num());
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 vehicleInformationUpdateParam.setRegister_date(sdf.format(secondHandCarEvaluateDO.getRegister_date()));
-                /*vehicleInformationUpdateParam.setColor(secondHandCarEvaluateDO.getStyle_color());*/
                 vehicleInformationUpdateParam.setNow_driving_license_owner(loanCarInfoParam.getNowDrivingLicenseOwner());
                 vehicleInformationUpdateParam.setColor(loanCarInfoParam.getColor());
                 vehicleInformationUpdateParam.setVehicle_identification_number(secondHandCarEvaluateDO.getVin());
@@ -1336,7 +1334,7 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
                 SecondHandCarEvaluateDO secondHandCarEvaluateDO = secondHandCarEvaluateDOMapper.selectByPrimaryKey(loanCarInfoParam.getSecond_hand_car_evaluate_id());
 
                 // #车牌号码 #车辆类型（小型轿车）  #所有人名称  #发动机号码  #注册日期   #车型颜色
-                vehicleInformationUpdateParam.setLicense_plate_number(secondHandCarEvaluateDO.getPlate_num());
+                //vehicleInformationUpdateParam.setLicense_plate_number(secondHandCarEvaluateDO.getPlate_num());
                 vehicleInformationUpdateParam.setCar_category(secondHandCarEvaluateDO.getVehicle_type());
                 //vehicleInformationUpdateParam.setNow_driving_license_owner(secondHandCarEvaluateDO.getOwner());
                 vehicleInformationUpdateParam.setEngine_number(secondHandCarEvaluateDO.getEngine_num());
