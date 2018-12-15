@@ -1,19 +1,26 @@
 package com.yunche.loan.service.impl;
 
 import com.google.common.base.Preconditions;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.entity.*;
+import com.yunche.loan.domain.param.PaymentParam;
 import com.yunche.loan.domain.param.RemitDetailsParam;
 import com.yunche.loan.domain.vo.*;
+import com.yunche.loan.manager.finance.BusinessReviewManager;
 import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.FinanceService;
 import com.yunche.loan.service.LoanProcessLogService;
 import com.yunche.loan.service.LoanQueryService;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.lang.reflect.Type;
 import java.util.List;
 
 import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
@@ -24,6 +31,9 @@ import static com.yunche.loan.config.constant.LoanProcessEnum.TELEPHONE_VERIFY;
 @Service
 public class FinanceServiceImpl implements FinanceService
 {
+    private static final Logger LOG = LoggerFactory.getLogger(FinanceServiceImpl.class);
+    @Resource
+    private BusinessReviewManager businessReviewManager;
 
     @Resource
     private LoanQueryDOMapper loanQueryDOMapper;
@@ -127,5 +137,46 @@ public class FinanceServiceImpl implements FinanceService
                 return ResultBean.ofError("错误");
             }
 
+    }
+
+    @Override
+    public ResultBean payment(Long orderId)
+    {
+        //先校验是否已经打款
+
+
+
+        PaymentParam paymentParam = new PaymentParam();
+
+        UniversalRemitDetails universalRemitDetails = loanQueryDOMapper.selectUniversalRemitDetails(orderId);
+        UniversalInfoVO universalInfoVO = loanQueryDOMapper.selectUniversalInfo(orderId);
+
+        paymentParam.setOrder_id(orderId);
+        paymentParam.setAmount(universalRemitDetails.getRemit_amount());
+        paymentParam.setAccount_name(universalRemitDetails.getRemit_beneficiary_bank());
+        paymentParam.setAccount_number(universalRemitDetails.getRemit_beneficiary_account_number());
+
+        paymentParam.setDebit_name(universalInfoVO.getCustomer_name());
+        paymentParam.setDebit_cert_no(universalInfoVO.getCustomer_id_card());
+        paymentParam.setDebit_mobile_no(universalInfoVO.getCustomer_mobile());
+
+        String financeResult = businessReviewManager.financeUnisal2(paymentParam,"/payment");
+
+        CommonFinanceResult Result = new CommonFinanceResult();
+        if (financeResult !=null && !"".equals(financeResult))
+        {
+            Type type =new TypeToken<CommonFinanceResult>(){}  .getType();
+            Gson gson = new Gson();
+            Result = gson.fromJson(financeResult, type);
+        }
+
+        if (!Result.getResultCode().trim().equals("200"))
+        {
+            return ResultBean.ofError("打款失败:"+Result.getMessage());
+        }
+
+        //更新打款单打款状态---待讨论
+
+        return ResultBean.ofSuccess("打款成功！");
     }
 }

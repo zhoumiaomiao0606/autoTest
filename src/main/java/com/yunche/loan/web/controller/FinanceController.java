@@ -29,4 +29,9 @@ public class FinanceController {
     public ResultBean update(@RequestBody RemitDetailsParam remitDetailsParam) {
         return financeService.update(remitDetailsParam);
     }
+
+    @GetMapping(value = "/payment")
+    public ResultBean payment(@RequestParam Long orderId) {
+        return financeService.payment(orderId);
+    }
 }

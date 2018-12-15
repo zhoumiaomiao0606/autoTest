@@ -561,7 +561,7 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
         List<CustomerVO> sortedCommonLenderList = commonLenderList.parallelStream().sorted(Comparator.comparing(CustomerVO::getId)).collect(Collectors.toList());
         List<CustomerVO> sortedGuarantorList = guarantorList.parallelStream().sorted(Comparator.comparing(CustomerVO::getId)).collect(Collectors.toList());
         List<CustomerVO> sortedEmergencyContactList = emergencyContactList.parallelStream().sorted(Comparator.comparing(CustomerVO::getId)).collect(Collectors.toList());
-        List<CustomerVO> sortedSpecialContactList = emergencyContactList.parallelStream().sorted(Comparator.comparing(CustomerVO::getId)).collect(Collectors.toList());
+        List<CustomerVO> sortedSpecialContactList = specialContactList.parallelStream().sorted(Comparator.comparing(CustomerVO::getId)).collect(Collectors.toList());
 
         custDetailVO.setCommonLenderList(sortedCommonLenderList);
         custDetailVO.setGuarantorList(sortedGuarantorList);
