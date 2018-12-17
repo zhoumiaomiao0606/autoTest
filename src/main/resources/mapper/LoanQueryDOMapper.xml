@@ -2701,6 +2701,7 @@
            LEFT JOIN loan_process ON main.id = loan_process.order_id
            LEFT JOIN loan_customer ON main.loan_customer_id = loan_customer.id
            LEFT JOIN loan_base_info b ON main.loan_base_info_id = b.id
+           LEFT JOIN employee e ON b.salesman_id = e.id
            LEFT JOIN partner ON b.partner_id = partner.id
            LEFT JOIN remit_details ON main.remit_details_id = remit_details.id
            LEFT JOIN loan_financial_plan f on main.loan_financial_plan_id = f.id
@@ -2724,6 +2725,9 @@
         </if>
         <if test="partnerId != null and partnerId != ''">
             AND partner.id = #{partnerId}
+        </if>
+        <if test="salesmanId != null and salesmanId !=''">
+            AND e.id = #{salesmanId}
         </if>
         <if test="loanBank != null and loanBank != '' ">
             AND b.bank = #{loanBank}

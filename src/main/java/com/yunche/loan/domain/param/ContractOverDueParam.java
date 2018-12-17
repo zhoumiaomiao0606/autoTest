@@ -19,6 +19,8 @@ public class ContractOverDueParam
 
     private Long partnerId;
 
+    private Long salesmanId;
+
     private String remitTimeStart;
 
     private String remitTimeEnd;
