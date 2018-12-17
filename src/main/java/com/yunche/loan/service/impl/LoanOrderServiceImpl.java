@@ -623,6 +623,17 @@ public class LoanOrderServiceImpl implements LoanOrderService {
                         });
             }
 
+            if (!CollectionUtils.isEmpty(custDetailVO.getSpecialContactList())) {
+                List<CustomerVO> specialContactList = custDetailVO.getSpecialContactList();
+
+                specialContactList.stream()
+                        .filter(Objects::nonNull)
+                        .forEach(e -> {
+                            // 封装用户信息并填充到容器
+                            fillLoanSimpleCustomerInfoVO(e, loanSimpleCustomerInfoVOS);
+                        });
+            }
+
         }
 
         return ResultBean.ofSuccess(loanSimpleCustomerInfoVOS);

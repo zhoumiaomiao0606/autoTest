@@ -20,11 +20,12 @@
     <result column="remit_bank" jdbcType="VARCHAR" property="remit_bank" />
     <result column="remit_account" jdbcType="VARCHAR" property="remit_account" />
     <result column="remit_account_number" jdbcType="VARCHAR" property="remit_account_number" />
+    <result column="remit_status" jdbcType="TINYINT" property="remit_status" />
   </resultMap>
   <sql id="Base_Column_List">
     id, beneficiary_bank, beneficiary_account, beneficiary_account_number, remit_amount, 
     return_rate_amount, insurance_situation, remark, payment_organization, application_date, 
-    remit_time, gmt_create, gmt_modify, status, feature, remit_bank, remit_account, remit_account_number
+    remit_time, gmt_create, gmt_modify, status, feature, remit_bank, remit_account, remit_account_number,remit_status
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
     select 
@@ -43,14 +44,14 @@
       remark, payment_organization, application_date, 
       remit_time, gmt_create, gmt_modify, 
       status, feature, remit_bank, 
-      remit_account, remit_account_number)
+      remit_account, remit_account_number,remit_status)
     values (#{id,jdbcType=BIGINT}, #{beneficiary_bank,jdbcType=VARCHAR}, #{beneficiary_account,jdbcType=VARCHAR}, 
       #{beneficiary_account_number,jdbcType=VARCHAR}, #{remit_amount,jdbcType=DECIMAL}, 
       #{return_rate_amount,jdbcType=DECIMAL}, #{insurance_situation,jdbcType=VARCHAR}, 
       #{remark,jdbcType=VARCHAR}, #{payment_organization,jdbcType=VARCHAR}, #{application_date,jdbcType=TIMESTAMP}, 
       #{remit_time,jdbcType=TIMESTAMP}, #{gmt_create,jdbcType=TIMESTAMP}, #{gmt_modify,jdbcType=TIMESTAMP}, 
       #{status,jdbcType=TINYINT}, #{feature,jdbcType=VARCHAR}, #{remit_bank,jdbcType=VARCHAR}, 
-      #{remit_account,jdbcType=VARCHAR}, #{remit_account_number,jdbcType=VARCHAR})
+      #{remit_account,jdbcType=VARCHAR}, #{remit_account_number,jdbcType=VARCHAR}, #{remit_status,jdbcType=TINYINT})
   </insert>
   <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.RemitDetailsDO"  useGeneratedKeys="true" keyColumn="id" keyProperty="id">
     insert into remit_details
@@ -109,6 +110,9 @@
       <if test="remit_account_number != null">
         remit_account_number,
       </if>
+      <if test="remit_status != null">
+        remit_status,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="id != null">
@@ -164,6 +168,9 @@
       </if>
       <if test="remit_account_number != null">
         #{remit_account_number,jdbcType=VARCHAR},
+      </if>
+      <if test="remit_status != null">
+        #{remit_status,jdbcType=TINYINT},
       </if>
     </trim>
   </insert>
@@ -221,6 +228,9 @@
       <if test="remit_account_number != null">
         remit_account_number = #{remit_account_number,jdbcType=VARCHAR},
       </if>
+      <if test="remit_status != null">
+        remit_status = #{remit_status,jdbcType=TINYINT},
+      </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
@@ -242,7 +252,8 @@
       feature = #{feature,jdbcType=VARCHAR},
       remit_bank = #{remit_bank,jdbcType=VARCHAR},
       remit_account = #{remit_account,jdbcType=VARCHAR},
-      remit_account_number = #{remit_account_number,jdbcType=VARCHAR}
+      remit_account_number = #{remit_account_number,jdbcType=VARCHAR},
+      remit_status = #{remit_status,jdbcType=TINYINT}
     where id = #{id,jdbcType=BIGINT}
   </update>
 </mapper>

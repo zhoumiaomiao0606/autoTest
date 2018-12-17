@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -19,11 +20,11 @@ public class PaymentParam
     private String branch_bank_name;//收款银行支行名称
 
     //必填
-    private String merchan_no;//商户编号 传“60099001”
+    private String merchan_no = "60099001";//商户编号 传“60099001”
 
     private Long order_id;//订单号
 
-    private String amount;//打款金额
+    private BigDecimal amount;//打款金额
 
     private String account_name;//收款帐户的开户名称
 
@@ -47,11 +48,11 @@ public class PaymentParam
 
     private String debit_mobile_no;//购车人手机号码
 
+    private String urgency = "1";//是否需要实时出款,只能填写0或者1 。“ 1”表示实时出款，“0”表示非实时出款
 
     //非必填
     private String debit_address;//购车人地址
 
-    private String urgency;//是否需要实时出款,只能填写0或者1 。“ 1”表示实时出款，“0”表示非实时出款
 
     private String leave_word;//留言
 

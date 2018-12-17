@@ -111,6 +111,7 @@ public class ShiroConfig {
             filterChainDefinitionMap.put("/api/v1/secondHandCar/queryCarTypeByVIN**", "anon");
             filterChainDefinitionMap.put("/api/v1/bank/areaListByBankName**", "anon");
             filterChainDefinitionMap.put("/api/v1/insurance/query**", "anon");
+            filterChainDefinitionMap.put("/api/v1/loanorder/finance/remitInfo", "anon");
             filterChainDefinitionMap.put("/**", "authc");
 //            filterChainDefinitionMap.put("/**", "authc,perms");
         }
