@@ -168,5 +168,7 @@ public class LoanProcessDO implements LoanProcessDO_ {
 
     private Byte dataFlowRegisterC2bReview;
 
+    private Byte underLineVideoReview;
+
     //////////////////// 资料流转 /////////////////////
 }

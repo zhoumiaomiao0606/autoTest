@@ -35,6 +35,7 @@ public enum LoanProcessEnum {
     INSTALL_GPS("usertask_install_gps", "GPS安装"),
     COMMIT_KEY("usertask_commit_key", "待收钥匙"),
     VIDEO_REVIEW("usertask_video_review", "视频审核"),
+    UNDER_LINE_VIDEO_REVIEW("usertask_under_line_video_review", "线下视频审核"),
 
     MATERIAL_REVIEW("usertask_material_review", "资料审核"),
     MATERIAL_PRINT_REVIEW("usertask_material_print_review", "合同套打"),
@@ -58,7 +59,10 @@ public enum LoanProcessEnum {
     REMIT_REVIEW_FILTER("filter_remit_review", "打款确认-拦截任务"),
     DATA_FLOW_MORTGAGE_P2C_NEW_FILTER("filter_data_flow_mortgage_p2c_new", "005-抵押资料合伙人至公司-新建-拦截任务"),
     APPLY_INSTEAD_PAY_FILTER("filter_apply_instead_pay", "申请代偿-开始-拦截任务"),
+    VIDEO_REVIEW_BEFORE_FILTER("filter_video_review_before", "视频审核-拦截任务(先)"),
     VIDEO_REVIEW_FILTER("filter_video_review", "视频审核-拦截任务"),
+    UNDER_LINE_VIDEO_REVIEW_FILTER("filter_under_line_video_review", "线下视频审核-拦截任务"),
+    UNDER_LINE_VIDEO_REVIEW_BEFORE_FILTER("filter_under_line_video_review_before", "线下视频审核-拦截任务(先)"),
     ///////////////////////////////////////////// ↑↑↑↑↑--filter--↑↑↑↑↑ /////////////////////////////////////////////////
 
     /////////////////////////////////////////// ↓↓↓↓↓--流程外的节点--↓↓↓↓↓ //////////////////////////////////////////////
