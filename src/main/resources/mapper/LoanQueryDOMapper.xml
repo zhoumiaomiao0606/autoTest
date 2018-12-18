@@ -1082,6 +1082,7 @@
             resultType="com.yunche.loan.domain.vo.UniversalRemitDetails">
       select
             remit.beneficiary_bank                                                                  AS remit_beneficiary_bank,
+            remit.bank_code                                                                  AS remit_bank_code,
             remit.beneficiary_account                                                               AS remit_beneficiary_account,
             remit.beneficiary_account_number                                                        AS remit_beneficiary_account_number,
 

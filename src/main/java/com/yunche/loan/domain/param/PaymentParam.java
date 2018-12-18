@@ -22,6 +22,8 @@ public class PaymentParam
     //必填
     private String merchan_no = "60099001";//商户编号 传“60099001”
 
+    private String bank_code;
+
     private Long order_id;//订单号
 
     private BigDecimal amount;//打款金额

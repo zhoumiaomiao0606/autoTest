@@ -95,6 +95,9 @@ public class PartnerServiceImpl implements PartnerService {
     @Autowired
     private BizAreaService bizAreaService;
 
+    @Autowired
+    private BankCodeDOMapper bankCodeDOMapper;
+
     @Override
     @Transactional
     public ResultBean<Long> create(PartnerParam partnerParam) {
@@ -1286,4 +1289,12 @@ public class PartnerServiceImpl implements PartnerService {
             employeeVO.setParent(supperEmployeeList);
         }
     }
+
+    public List<BankCodeDO> selectAllBankName(String bankName)
+    {
+        List<BankCodeDO> bankCodeDOS = bankCodeDOMapper.selectByBankName(bankName);
+
+        return bankCodeDOS;
+    }
+
 }

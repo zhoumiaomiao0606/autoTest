@@ -3,6 +3,7 @@
 <mapper namespace="com.yunche.loan.mapper.RemitDetailsDOMapper">
   <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.RemitDetailsDO">
     <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="bank_code" jdbcType="VARCHAR" property="bank_code" />
     <result column="beneficiary_bank" jdbcType="VARCHAR" property="beneficiary_bank" />
     <result column="beneficiary_account" jdbcType="VARCHAR" property="beneficiary_account" />
     <result column="beneficiary_account_number" jdbcType="VARCHAR" property="beneficiary_account_number" />
@@ -23,7 +24,7 @@
     <result column="remit_status" jdbcType="TINYINT" property="remit_status" />
   </resultMap>
   <sql id="Base_Column_List">
-    id, beneficiary_bank, beneficiary_account, beneficiary_account_number, remit_amount, 
+    id, bank_code,beneficiary_bank, beneficiary_account, beneficiary_account_number, remit_amount,
     return_rate_amount, insurance_situation, remark, payment_organization, application_date, 
     remit_time, gmt_create, gmt_modify, status, feature, remit_bank, remit_account, remit_account_number,remit_status
   </sql>
@@ -38,14 +39,14 @@
     where id = #{id,jdbcType=BIGINT}
   </delete>
   <insert id="insert" parameterType="com.yunche.loan.domain.entity.RemitDetailsDO"  useGeneratedKeys="true" keyColumn="id" keyProperty="id">
-    insert into remit_details (id, beneficiary_bank, beneficiary_account, 
+    insert into remit_details (id, bank_code,beneficiary_bank, beneficiary_account,
       beneficiary_account_number, remit_amount, 
       return_rate_amount, insurance_situation, 
       remark, payment_organization, application_date, 
       remit_time, gmt_create, gmt_modify, 
       status, feature, remit_bank, 
       remit_account, remit_account_number,remit_status)
-    values (#{id,jdbcType=BIGINT}, #{beneficiary_bank,jdbcType=VARCHAR}, #{beneficiary_account,jdbcType=VARCHAR}, 
+    values (#{id,jdbcType=BIGINT},#{bank_code,jdbcType=VARCHAR}, #{beneficiary_bank,jdbcType=VARCHAR}, #{beneficiary_account,jdbcType=VARCHAR},
       #{beneficiary_account_number,jdbcType=VARCHAR}, #{remit_amount,jdbcType=DECIMAL}, 
       #{return_rate_amount,jdbcType=DECIMAL}, #{insurance_situation,jdbcType=VARCHAR}, 
       #{remark,jdbcType=VARCHAR}, #{payment_organization,jdbcType=VARCHAR}, #{application_date,jdbcType=TIMESTAMP}, 
@@ -58,6 +59,9 @@
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="id != null">
         id,
+      </if>
+      <if test="bank_code != null">
+        bank_code,
       </if>
       <if test="beneficiary_bank != null">
         beneficiary_bank,
@@ -118,6 +122,9 @@
       <if test="id != null">
         #{id,jdbcType=BIGINT},
       </if>
+      <if test="bank_code != null">
+        #{bank_code,jdbcType=VARCHAR},
+      </if>
       <if test="beneficiary_bank != null">
         #{beneficiary_bank,jdbcType=VARCHAR},
       </if>
@@ -177,6 +184,9 @@
   <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.RemitDetailsDO">
     update remit_details
     <set>
+      <if test="bank_code != null">
+        bank_code = #{bank_code,jdbcType=VARCHAR},
+      </if>
       <if test="beneficiary_bank != null">
         beneficiary_bank = #{beneficiary_bank,jdbcType=VARCHAR},
       </if>
@@ -236,7 +246,8 @@
   </update>
   <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.RemitDetailsDO">
     update remit_details
-    set beneficiary_bank = #{beneficiary_bank,jdbcType=VARCHAR},
+    set bank_code = #{bank_code,jdbcType=VARCHAR},
+    beneficiary_bank = #{beneficiary_bank,jdbcType=VARCHAR},
       beneficiary_account = #{beneficiary_account,jdbcType=VARCHAR},
       beneficiary_account_number = #{beneficiary_account_number,jdbcType=VARCHAR},
       remit_amount = #{remit_amount,jdbcType=DECIMAL},

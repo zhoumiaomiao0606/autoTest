@@ -187,6 +187,11 @@ public class FinanceServiceImpl implements FinanceService
         UniversalInfoVO universalInfoVO = loanQueryDOMapper.selectUniversalInfo(orderId);
 
         paymentParam.setOrder_id(orderId);
+        if (remitDetailsDO.getBank_code()==null || "".equals(remitDetailsDO.getBank_code()))
+        {
+            throw new BizException("该收款银行无对应code,不能自动打款");
+        }
+        paymentParam.setBank_code(remitDetailsDO.getBank_code());
         paymentParam.setAmount(remitDetailsDO.getRemit_amount());
         paymentParam.setAccount_name(remitDetailsDO.getBeneficiary_bank());
         paymentParam.setAccount_number(remitDetailsDO.getBeneficiary_account_number());

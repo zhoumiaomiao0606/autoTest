@@ -12,6 +12,8 @@ public class PartnerBankAccountDO {
 
     private String openBank;
 
+    private String bankCode;
+
     private String accountName;
 
     private String bankAccount;
