@@ -1907,8 +1907,8 @@
                 <if test="materialPrintStartTime !=null and materialPrintEndTime !=null and materialPrintStartTime !='' and materialPrintEndTime !=''">
                     and materialPrintTime between #{materialPrintStartTime} and #{materialPrintEndTime}
                 </if>
-                <if test="materialPrintSubmitUser !=null and materialPrintSubmitUser != ''">
-                    and materialPrintSubmitUser = #{materialPrintSubmitUser}
+                <if test="materialPrintSubmitUser !=null">
+                    and materialPrintSubmitUser like CONCAT('%', #{materialPrintSubmitUser} ,'%')
                 </if>
             </if>
 
