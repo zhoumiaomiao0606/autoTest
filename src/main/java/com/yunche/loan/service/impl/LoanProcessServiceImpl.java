@@ -1877,8 +1877,21 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         autoCompleteTask(task.getProcessInstanceId(), approval.getOrderId(), FINANCIAL_SCHEME.getCode());
         // 自动执行【待收钥匙】任务
         completeCommitKeyTask(task.getProcessInstanceId(), approval.getOrderId());
+        //自动提交其中的一个审批审核（南京工行提交线上视频，其他提交线下视频）
+        authCommitVideoAuditTask(loanOrderDO, task.getProcessInstanceId(), approval.getOrderId());
         // 更新状态
         updateTelephoneVerify(approval.getOrderId(), TASK_PROCESS_DONE);
+    }
+
+    //自动提交其中的一个审批审核（南京工行提交线上视频，其他提交线下视频）
+    private void authCommitVideoAuditTask(LoanOrderDO loanOrderDO, String processInstanceId, Long orderId) {
+        LoanBaseInfoDO loanBaseInfoDO = loanBaseInfoDOMapper.selectByPrimaryKey(loanOrderDO.getLoanBaseInfoId());
+        if ((BankConst.BANK_NAME_ICBC_TaiZhou_LuQiao_Branch).equals(loanBaseInfoDO.getBank())) {
+
+            autoCompleteTask(processInstanceId, orderId, UNDER_LINE_VIDEO_REVIEW_BEFORE_FILTER.getCode());
+        }
+        autoCompleteTask(processInstanceId, orderId, VIDEO_REVIEW_BEFORE_FILTER.getCode());
+
     }
 
     /**
@@ -1934,10 +1947,14 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         Map<String, Object> variables = Maps.newHashMap();
         variables.put(PROCESS_VARIABLE_ACTION, ACTION_PASS);
 
+
+        List<Task> list =loanProcessApprovalCommonService.getCurrentTaskList(processInstanceId);
+        logger.info("节点数目:"+list.size());
         Task task = taskService.createTaskQuery()
                 .processInstanceId(processInstanceId)
                 .taskDefinitionKey(taskDefinitionKey)
                 .singleResult();
+
 
         Preconditions.checkNotNull(task, "[" + LoanProcessEnum.getNameByCode(taskDefinitionKey) + "]任务不存在");
 
@@ -3275,7 +3292,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         doAttachTask_RemitReview(approval, loanOrderDO);
 
         // 附带任务-[金融方案修改-审核]
-        doAttachTask_FinancialSchemeModifyApplyReview(approval, loanProcessDO);
+        doAttachTask_FinancialSchemeModifyApplyReview(approval, loanProcessDO,loanOrderDO);
 
         // 附带任务-[银行放款记录]
         doAttachTask_BankLendRecord(approval, loanOrderDO);
@@ -3688,8 +3705,9 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      * @param approval
      * @param loanProcessDO
      */
-    private void doAttachTask_FinancialSchemeModifyApplyReview(ApprovalParam approval, LoanProcessDO loanProcessDO) {
-
+    private void doAttachTask_FinancialSchemeModifyApplyReview(ApprovalParam approval, LoanProcessDO loanProcessDO,LoanOrderDO loanOrderDO) {
+        LoanBaseInfoDO loanBaseInfoDO = loanBaseInfoDOMapper.selectByPrimaryKey(loanOrderDO.getLoanBaseInfoId());
+        String bankName = loanBaseInfoDO.getBank();
         if (FINANCIAL_SCHEME_MODIFY_APPLY_REVIEW.getCode().equals(approval.getTaskDefinitionKey())
                 && ACTION_PASS.equals(approval.getAction())) {
 
@@ -3711,6 +3729,22 @@ public class LoanProcessServiceImpl implements LoanProcessService {
                 ResultBean<Void> approvalResult = approval(param);
                 Preconditions.checkArgument(approvalResult.getSuccess(), approvalResult.getMsg());
             }
+            if(BANK_NAME_ICBC_TaiZhou_LuQiao_Branch.equals(bankName)&&ACTION_PASS.equals(loanProcessDO.getUnderLineVideoReview())){
+                ApprovalParam param = new ApprovalParam();
+
+                param.setOrderId(approval.getOrderId());
+                param.setTaskDefinitionKey(UNDER_LINE_VIDEO_REVIEW.getCode());
+                param.setAction(ACTION_ROLL_BACK);
+                param.setInfo("金融方案修改");
+
+                param.setCheckPermission(false);
+                param.setNeedLog(true);
+                param.setNeedPush(true);
+
+                ResultBean<Void> approvalResult = approval(param);
+                Preconditions.checkArgument(approvalResult.getSuccess(), approvalResult.getMsg());
+            }
+
         }
     }
 }
