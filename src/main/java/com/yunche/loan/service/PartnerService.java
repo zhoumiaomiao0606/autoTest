@@ -1,6 +1,7 @@
 package com.yunche.loan.service;
 
 import com.yunche.loan.config.result.ResultBean;
+import com.yunche.loan.domain.entity.BankCodeDO;
 import com.yunche.loan.domain.param.PartnerParam;
 import com.yunche.loan.domain.query.BizModelQuery;
 import com.yunche.loan.domain.query.PartnerQuery;
@@ -47,4 +48,6 @@ public interface PartnerService {
     ResultBean<Set<String>> listBank(Long employeeId, Long partnerId);
 
     ResultBean updatePartnerArea(PartnerParam partnerParam);
+
+    List<BankCodeDO> selectAllBankName(String bankName);
 }

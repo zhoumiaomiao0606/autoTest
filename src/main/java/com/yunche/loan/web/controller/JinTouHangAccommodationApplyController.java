@@ -44,14 +44,26 @@ public class JinTouHangAccommodationApplyController {
 
 
     /**
-     * 单条贷款
+     * 单条贷款走接口
      *
      * @return
      */
     @PostMapping(value = "/applyLoan", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    @Transactional( rollbackFor = Exception.class)
     ResultBean applyLoan(@RequestBody AccommodationApplyParam param) {
         return accommodationApplyService.applyLoan(param);
+    }
+    /*
+    走内部提交
+     */
+    @PostMapping(value = "/applyOldLoan", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    ResultBean applyOldLoan(@RequestBody AccommodationApplyParam param) {
+        return accommodationApplyService.applyOldLoan(param);
+    }
+
+
+    @GetMapping(value = "/getbankcard")
+    ResultBean getBankCard(@RequestParam("orderId") Long orderId){
+        return accommodationApplyService.getBankCard(orderId);
     }
 
 
@@ -80,6 +92,12 @@ public class JinTouHangAccommodationApplyController {
     ResultBean export(@RequestBody ExportApplyLoanPushParam param) {
         return accommodationApplyService.export(param);
     }
+
+    @PostMapping(value = "/errorexport", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    ResultBean errorExport(@RequestBody ExportApplyLoanPushParam param) {
+        return accommodationApplyService.errorExport(param);
+    }
+
 
     //--------------------------金投行过桥处理------------------------
 
@@ -163,4 +181,21 @@ public class JinTouHangAccommodationApplyController {
     ResultBean detail(@RequestParam("bridgeProcessId") Long bridgeProcessId,@RequestParam("orderId") Long orderId) {
         return accommodationApplyService.detail(bridgeProcessId,orderId);
     }
+
+    @PostMapping("/jtxresult" )
+    String jtxResult(@RequestBody  String param){
+        return accommodationApplyService.jtxResult(param);
+
+    }
+
+
+    /*
+    异常订单处理完结
+     */
+    @PostMapping("/batchend")
+    ResultBean batchEnd(@RequestBody AccommodationApplyParam accommodationApplyParam){
+        return accommodationApplyService.batchEnd(accommodationApplyParam);
+    }
+
+
 }

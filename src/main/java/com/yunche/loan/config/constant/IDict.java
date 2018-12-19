@@ -403,6 +403,32 @@ public class IDict {
          * 拒绝
          */
         public static final Byte K_CJZT_REJECT = 3;
+        /**
+         * 处理中
+         */
+        public static final Byte K_CJZT_INHAND = 4;
+        /*
+        * 借款人信息认证失败
+         */
+        public static final Byte K_CJZT_AUTHINFIO_ERROR = 5;
+        /*
+         * 资产发布失败
+         */
+        public static final Byte K_CJZT_ASSETRELEASE_ERROR = 6;
+        /*
+        *金投行推送成功
+         */
+        public static final Byte K_CJZT_SUCCESS = 7;
+        /*
+         *金投审核不通过
+         */
+        public static final Byte K_CJZT_NOPASS = 8;
+        /*
+        *返回数据处理异常
+         */
+        public static final Byte K_CJZT_HANDLE_ERROR = 9;
+
+
 
     }
 

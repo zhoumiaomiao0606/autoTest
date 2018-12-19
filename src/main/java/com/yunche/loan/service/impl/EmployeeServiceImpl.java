@@ -470,6 +470,10 @@ public class EmployeeServiceImpl implements EmployeeService {
             // 调用安全管理器，安全管理器调用Realm
             subject.login(token);
 
+            // 放入登录用户到ThreadLocal
+            EmployeeDO loginUser = (EmployeeDO) subject.getPrincipal();
+            SessionUtils.LOGIN_USER.set(loginUser);
+
         } catch (UnknownAccountException e) {
             //用户名不存在
             return ResultBean.ofError("用户名或密码错误");
@@ -579,6 +583,9 @@ public class EmployeeServiceImpl implements EmployeeService {
         // 清空shiro会话
         SecurityUtils.getSubject().logout();
 
+        // 清空ThreadLocal
+        SessionUtils.LOGIN_USER.remove();
+
         return ResultBean.ofSuccess(null, "登出成功");
     }
 
@@ -669,6 +676,14 @@ public class EmployeeServiceImpl implements EmployeeService {
                 }
             }
         }
+    }
+
+    @Override
+    public Long getPartnerIdByEmployeeId(Long employeeId) {
+
+        Long partnerId = partnerRelaEmployeeDOMapper.getPartnerIdByEmployeeId(employeeId);
+
+        return partnerId;
     }
 
     /**

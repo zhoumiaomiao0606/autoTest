@@ -1,12 +1,11 @@
 package com.yunche.loan;
 
 import com.google.common.collect.Lists;
+import com.jcraft.jsch.SftpException;
 import com.yunche.loan.config.cache.BankCache;
 import com.yunche.loan.config.cache.TokenCache;
 import com.yunche.loan.config.thread.ThreadPool;
-import com.yunche.loan.config.util.CarLoanHttpUtil;
-import com.yunche.loan.config.util.OpenApiUtil;
-import com.yunche.loan.config.util.ZhongAnHttpUtil;
+import com.yunche.loan.config.util.*;
 import com.yunche.loan.domain.entity.PartnerDO;
 import com.yunche.loan.domain.param.ZhongAnCusParam;
 import com.yunche.loan.domain.param.ZhongAnQueryParam;
@@ -14,6 +13,7 @@ import com.yunche.loan.domain.vo.GpsDetailTotalVO;
 import com.yunche.loan.mapper.PartnerDOMapper;
 import com.yunche.loan.service.AppLoanOrderService;
 import com.yunche.loan.service.AuxiliaryService;
+import com.yunche.loan.service.JinTouHangAccommodationApplyService;
 import com.yunche.loan.service.MaterialService;
 import net.sourceforge.pinyin4j.PinyinHelper;
 import net.sourceforge.pinyin4j.format.HanyuPinyinCaseType;
@@ -25,16 +25,16 @@ import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.dom4j.DocumentException;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import sun.misc.BASE64Encoder;
 
 import javax.annotation.Resource;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.util.*;
 
-public class CacheTest  {
+public class CacheTest {
     @Autowired
     private TokenCache tokenCache;
     @Autowired
@@ -50,8 +50,139 @@ public class CacheTest  {
     AppLoanOrderService appLoanOrderService;
     @Resource
     MaterialService materialService;
-
+    @Autowired
+    JinTouHangAccommodationApplyService jinTouHangAccommodationApplyService;
     @Test
+    public void SDFSDF(){
+        JTXFileUtil sftp = new JTXFileUtil("asset", "asset001", "120.26.205.193", 22);
+        sftp.login();
+        //byte[] buff = sftp.download("/opt", "start.sh");
+        //System.out.println(Arrays.toString(buff));
+        File file = new File("/Users/admin/bbb.txt");
+        InputStream is = null;
+        try {
+            is = new FileInputStream(file);
+            sftp.upload("/home/reqFile", "jjqTest2.txt", is);
+            sftp.logout();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+    }
+    //@Test
+    public void BCXBVXCBX(){
+        JTXFileUtil sftp = new JTXFileUtil("root", "jtx@1722", "183.136.187.207", 22);
+        sftp.login();
+        try {
+            sftp.download("/root/yunche/reqFile/20181031","jjqTest.txt","/Users/admin/Desktop/jjqjjq.txt");
+        } catch (SftpException e) {
+            e.printStackTrace();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        sftp.logout();
+    }
+    //@Test
+    public void doXVZXV(){
+        Map<String, Object>  map = new HashMap();
+        Map map1 = new HashMap();
+        map1.put("A1","小李");
+        map1.put("A2","2");
+        map.put("A",map1);
+        Map map2 = new HashMap();
+        map2.put("B1","1");
+        map2.put("B2","2");
+        map.put("B",map2);
+       System.out.println( MapXmlUtil.createXmlByMap(map,"MsgText"));
+    }
+   //@Test
+    public void asdaksdjals(){
+        String xml ="<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
+                "\n" +
+                "<MsgText>\n" +
+                "  <MsgHdr>\n" +
+                "    <Ver>1.0</Ver>\n" +
+                "    <SysType>MGR</SysType>\n" +
+                "    <InstrCd>ASSET_03</InstrCd>\n" +
+                "    <TradSrc>YUNCHE</TradSrc>\n" +
+                "    <SvInst>ASSET_MANAGE_SYS</SvInst>\n" +
+                "    <Date>2018110</Date>\n" +
+                "    <Time>151121</Time>\n" +
+                "    <Ref>MGR15824823644011</Ref>\n" +
+                "  </MsgHdr>\n" +
+                "  <MsgBody>\n" +
+                "    <Type>AUDIT</Type>\n" +
+                "    <Code>0000</Code>\n" +
+                "    <Info/>\n" +
+                "    <FileName></FileName>\n" +
+                "    <FilePath>/root/yunche/resultFile/20181105/</FilePath>\n" +
+                "  </MsgBody>\n" +
+                "</MsgText>\n";
+        try {
+           System.out.println( MapXmlUtil.Xml2Map(xml).toString());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }//
+    //@Test
+    public void asdasdas(){
+        String data ="+Ee3tYz3PT34o6F4LkLjjrkafwTx1IdP6C+ZVewEOUEmmWaLDBmX1xFwpl9f/hfqNunPvLA7ZCok\n" +
+                "IYF1gInH8P7ZwWeCwJH0maj0+Xs/y/UX53pbsYgHGp711VDGNFcndWkZkyG7INUNAnh/0zcrkLsM\n" +
+                "Iq/DsbMhR1HjDxyhNNcq308mRNxuSaZb2qHa8KWkkO5/sxLripBthuW8Q8T3kBf5NaCnaPZHtTCE\n" +
+                "dCtdkKrfQ3ojpeXT7YL1jfR207C1GP/UeL4npgwLX0r4bNkeMSusjJUgI4sRAQvFykr3931J4BMx\n" +
+                "gY4EXDaI+iYBfzp6AhyV2DjF2cM5Yv5sDw/iK9WgOIn3jE8qxPSyHkM7K8rlM+AMQhFS/xJAipY5\n" +
+                "o62Qteb5q0L4OyylM5BQZs7vJPhGUf2Y/cV8IH20WulII02PxtBV08WVG9HVl6Rqfg+b1+ZmvDyq\n" +
+                "AqpWdUpGFx72dClDRnE19vytIdoNncA86kxTFAwgXfRn+5iKEoQGYjmw6uxN510xaQQhpYQHWsp2\n" +
+                "oGah4tkDKfZvq/V4nTlldin9Od/hoz80EQ==";
+        try {
+            System.out.println(JTXByteUtil.decrypt(data,"netwxactive","GBK","DES"));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    @Test
+    public void bvjkashkj(){
+        try {
+            String s="<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
+                    "\n" +
+                    "<MsgText>\n" +
+                    "  <MsgHdr>\n" +
+                    "    <Ver>1.0</Ver>\n" +
+                    "    <SysType>MGR</SysType>\n" +
+                    "    <InstrCd>ASSET_03</InstrCd>\n" +
+                    "    <TradSrc>YUNCHE</TradSrc>\n" +
+                    "    <SvInst>ASSET_MANAGE_SYS</SvInst>\n" +
+                    "    <Date>2018110</Date>\n" +
+                    "    <Time>151121</Time>\n" +
+                    "    <Ref>MGR15824823644011</Ref>\n" +
+                    "  </MsgHdr>\n" +
+                    "  <MsgBody>\n" +
+                    "    <Type>AUDIT</Type>\n" +
+                    "    <Code>0000</Code>\n" +
+                    "    <Info/>\n" +
+                    "    <FileName>wqeqw</FileName>\n" +
+                    "    <FilePath>/root/yunche/resultFile/20181105/</FilePath>\n" +
+                    "  </MsgBody>\n" +
+                    "</MsgText>\n";
+            byte[] param = JTXByteUtil.encrypt(s.getBytes("GBK"), "netwxactive".getBytes("GBK"),"DES");
+            String encode_req = new BASE64Encoder().encode(param);
+            System.out.println(encode_req);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    //@Test
+    public void knkjashkjadkd(){
+        System.out.println(jinTouHangAccommodationApplyService.jtxResult("+Ee3tYz3PT34o6F4LkLjjrkafwTx1IdP6C+ZVewEOUF/U77RXsHRn6v1eJ05ZXYp5Krxa4p+wNCC\n" +
+                "9Y30dtOwtQaoMaSRRtr3j8bQVdPFlRvR1Zekan4Pm/8QQZcqsCPHPegmHG7fn6iEphnglA9VH3ZJ\n" +
+                "lIewvFlyZZIaPBjNkXlbUYv1Vikq70+k8ddLE20VGesQadd2FqRQ61rZ1fUwIjiWHtOEJFrSbo7X\n" +
+                "dp4HsJ4wh/vQ8k6RPAeY32bx9wbczgvQdL8KJ/m/jBLLEWs6Q1elO79iYeJtrxw8gMSFsXet334h\n" +
+                "ibs7RePD9i+7c7b8d67xuC2lRBzpjz5mRnXu8Pm7twoMAhGKx1t1XebdItGAjJnjIhwZtbRW+52E\n" +
+                "kpymnGoL8VBITWD+ZVJ5NRM3nG/i5p/yUDyspbTXtEmuAaFCTWE6pg1KJ3GKIdou+sDO"));
+    }
+
+    //@Test
     public void ASDASD(){
         String chinese="金祎朋";
         int length = chinese.length();
@@ -83,7 +214,7 @@ public class CacheTest  {
         System.out.println(pybf.toString());
     }
 
-   // @Test
+    // @Test
     public void DFDSf(){
         List<String> list =new ArrayList<>();
         list.add(null);
@@ -101,7 +232,7 @@ public class CacheTest  {
         list.retainAll(list1);
         System.out.println(list.size());
     }
-   // @Test
+    // @Test
     public void DFDS(){
         List list =new ArrayList(2);
         list.add(1);

@@ -11,6 +11,8 @@ public class TelephoneVerifyNodeOrdersVO {
     String customer_id_card;
     String saleman_name;
     String partner_name;
+    String partner_code;
+    String partner_group;
     String saleman_department_name;
     String loan_amount;
     String gps_number;

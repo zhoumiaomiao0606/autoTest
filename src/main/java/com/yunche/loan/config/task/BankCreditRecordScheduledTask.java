@@ -46,9 +46,6 @@ import static com.yunche.loan.config.constant.ProcessApprovalConst.ACTION_REJECT
 public class BankCreditRecordScheduledTask {
 
     private static final Logger logger = LoggerFactory.getLogger(BankCreditRecordScheduledTask.class);
-    private static final Logger logger_debug = LoggerFactory.getLogger(BankCreditRecordScheduledTask.class);
-
-    public static final ThreadLocal<Long> doAutoRejectTask_RANDOM = new ThreadLocal();
 
     @Autowired
     private BankInterfaceSerialDOMapper bankInterfaceSerialDOMapper;
@@ -79,27 +76,11 @@ public class BankCreditRecordScheduledTask {
     @DistributedLock(60)
     public void doAutoRejectTask() {
 
-
-        long random = System.currentTimeMillis();
-        logger_debug.info("-----1-----      START    doAutoRejectTask       >>>     random : {}", random);
-
-
-        doAutoRejectTask_RANDOM.set(random);
-
-
         // 扫描：[银行征信] - 推送失败的 所有订单ID
-        logger_debug.info("-----2-----      listOfBankCreditRecordPushFailed    START       >>>     random : {}", random);
         List<BankInterfaceSerialDO> bankInterfaceSerialDOS = listOfBankCreditRecordPushFailed();
-        logger_debug.info("-----3-----      listOfBankCreditRecordPushFailed    END       >>>     random : {}   ,   bankInterfaceSerialDOS  : {}",
-                random, JSON.toJSONString(bankInterfaceSerialDOS));
 
         // 自动打回
-        logger_debug.info("-----4-----      doAutoReject    START       >>>     random : {}", random);
         doAutoReject(bankInterfaceSerialDOS);
-        logger_debug.info("-----5-----      doAutoReject    END       >>>     random : {}", random);
-
-
-        logger_debug.info("-----6-----      END    doAutoRejectTask       >>>     random : {}", random);
     }
 
     /**
@@ -121,9 +102,6 @@ public class BankCreditRecordScheduledTask {
      */
     private void doAutoReject(List<BankInterfaceSerialDO> bankInterfaceSerialDOS) {
 
-        Long random = doAutoRejectTask_RANDOM.get();
-
-
         if (CollectionUtils.isEmpty(bankInterfaceSerialDOS)) {
             return;
         }
@@ -138,10 +116,6 @@ public class BankCreditRecordScheduledTask {
         orderIdDOSMap.forEach((orderId, dos) -> {
 
             approval.setOrderId(orderId);
-
-            logger_debug.info("random : {}      >>>     orderId : {}    ,   approval : {}    ,   dos : {}",
-                    random, orderId, JSON.toJSONString(approval), JSON.toJSONString(dos));
-
 
             // info拼接
             final String[] info = {null};
@@ -179,28 +153,19 @@ public class BankCreditRecordScheduledTask {
                         }
 
                         enableCustomerIdSet.add(bankInterfaceSerialDO.getCustomerId());
-                        logger_debug.info("---1---      enableCustomerIdSet : {}        >>>     random : {}",
-                                JSON.toJSONString(enableCustomerIdSet), random);
                     });
 
 
             // enable_type
-            logger_debug.info("---2---      enableCustomerIdSet : {}        >>>     random : {}",
-                    JSON.toJSONString(enableCustomerIdSet), random);
             if (!CollectionUtils.isEmpty(enableCustomerIdSet)) {
                 String ids = enableCustomerIdSet.stream().map(String::valueOf).collect(Collectors.joining(","));
-                logger_debug.info("---3---      ids : {}        >>>     random : {}", ids, random);
                 loanCustomerService.enable(ids, ENABLE_TYPE_BANK);
-                logger_debug.info("---4---      enable end!        >>>     random : {}", random);
             }
 
 
             // 提交打回
             approval.setInfo(info[0]);
-            logger_debug.info("---5---      approval : {}        >>>     random : {}", JSON.toJSONString(approval), random);
             autoReject(approval);
-            logger_debug.info("---6---      autoReject end!        >>>     random : {}", random);
-
         });
 
     }

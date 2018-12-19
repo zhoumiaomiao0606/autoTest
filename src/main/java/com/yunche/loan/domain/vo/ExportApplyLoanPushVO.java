@@ -16,4 +16,6 @@ public class ExportApplyLoanPushVO {
     String interestRate;
     String loanForm;
     String bank;
+    String tel;
+    String bankCard;
 }

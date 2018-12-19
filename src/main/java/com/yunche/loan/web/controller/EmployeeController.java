@@ -184,4 +184,10 @@ public class EmployeeController {
         return ResultBean.ofSuccess(null, "编辑成功");
     }
 
+    @PostMapping(value = "/getPartnerByEmployeeId")
+    public ResultBean<Long> getPartnerIdByEmployeeId(@RequestParam Long employeeId) {
+
+        return ResultBean.ofSuccess(employeeService.getPartnerIdByEmployeeId(employeeId));
+    }
+
 }

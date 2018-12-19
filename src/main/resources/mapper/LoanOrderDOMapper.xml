@@ -22,6 +22,8 @@
         <result column="feature" property="feature" jdbcType="VARCHAR"/>
         <result column="rebate_entry" jdbcType="TINYINT" property="rebateEntry" />
         <result column="rebate_periods" jdbcType="INTEGER" property="rebatePeriods" />
+        <result column="second_hand_car_evaluate_id" jdbcType="BIGINT" property="second_hand_car_evaluate_id" />
+        <result column="second_hand_car_first_site_id" jdbcType="BIGINT" property="second_hand_car_first_site_id" />
     </resultMap>
 
     <sql id="Base_Column_List">
@@ -29,6 +31,7 @@
         loan_home_visit_id, material_audit_id, cost_details_id, remit_details_id, vehicle_information_id,
         apply_license_plate_deposit_info_id, bank_card_record_id, bank_lend_record_id, status,
         gmt_create, gmt_modify, feature, rebate_entry,rebate_periods
+        gmt_create, gmt_modify, feature,second_hand_car_evaluate_id,second_hand_car_first_site_id
     </sql>
 
     <!--getCustIdById-->
@@ -100,6 +103,7 @@
         remit_details_id, vehicle_information_id, apply_license_plate_deposit_info_id,
         bank_card_record_id, bank_lend_record_id, status,
         gmt_create, gmt_modify, feature, rebate_entry,rebate_periods
+        gmt_create, gmt_modify, feature,second_hand_car_evaluate_id,second_hand_car_first_site_id
         )
         values (#{id,jdbcType=BIGINT}, #{processInstId,jdbcType=VARCHAR}, #{loanBaseInfoId,jdbcType=BIGINT},
         #{loanCustomerId,jdbcType=BIGINT}, #{loanCarInfoId,jdbcType=BIGINT}, #{loanFinancialPlanId,jdbcType=BIGINT},
@@ -108,6 +112,7 @@
         #{bankCardRecordId,jdbcType=BIGINT}, #{bankLendRecordId,jdbcType=BIGINT}, #{status,jdbcType=TINYINT},
         #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModify,jdbcType=TIMESTAMP}, #{feature,jdbcType=VARCHAR},
         #{rebateEntry,jdbcType=TINYINT},#{rebatePeriods,jdbcType=INTEGER}
+        #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModify,jdbcType=TIMESTAMP}, #{feature,jdbcType=VARCHAR}, #{second_hand_car_evaluate_id,jdbcType=BIGINT}, #{second_hand_car_first_site_id,jdbcType=BIGINT}
         )
     </insert>
 
@@ -167,6 +172,12 @@
             </if>
             <if test="feature != null">
                 feature,
+            </if>
+            <if test="second_hand_car_evaluate_id != null">
+                second_hand_car_evaluate_id,
+            </if>
+            <if test="second_hand_car_first_site_id != null">
+                second_hand_car_first_site_id,
             </if>
             <if test="rebateEntry != null">
                 rebate_entry,
@@ -238,6 +249,12 @@
                 #{rebatePeriods,jdbcType=INTEGER},
             </if>
 
+            <if test="second_hand_car_evaluate_id != null">
+                #{second_hand_car_evaluate_id,jdbcType=BIGINT},
+            </if>
+            <if test="second_hand_car_first_site_id != null">
+                #{second_hand_car_first_site_id,jdbcType=BIGINT},
+            </if>
         </trim>
     </insert>
 
@@ -302,6 +319,12 @@
                 rebate_periods = #{rebatePeriods,jdbcType=INTEGER},
             </if>
 
+            <if test="second_hand_car_evaluate_id != null">
+                second_hand_car_evaluate_id = #{second_hand_car_evaluate_id,jdbcType=BIGINT},
+            </if>
+            <if test="second_hand_car_first_site_id != null">
+                second_hand_car_first_site_id = #{second_hand_car_first_site_id,jdbcType=BIGINT},
+            </if>
         </set>
         where id = #{id,jdbcType=BIGINT}
     </update>
@@ -327,6 +350,9 @@
         feature = #{feature,jdbcType=VARCHAR},
         rebate_entry = #{rebateEntry,jdbcType=TINYINT},
         rebate_periods = #{rebatePeriods,jdbcType=INTEGER}
+        feature = #{feature,jdbcType=VARCHAR},
+        second_hand_car_evaluate_id = #{second_hand_car_evaluate_id,jdbcType=BIGINT},
+        second_hand_car_first_site_id = #{second_hand_car_first_site_id,jdbcType=BIGINT}
         where id = #{id,jdbcType=BIGINT}
     </update>
 

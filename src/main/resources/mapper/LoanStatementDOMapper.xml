@@ -41,6 +41,12 @@
         customer.id_card AS customer_id_card,
         saleman.NAME AS saleman_name,
         partner.NAME AS partner_name,
+        partner.partner_code as partner_code,
+
+        CASE
+        WHEN partner.partner_group is null THEN
+        partner.partner_group ELSE CONCAT(partner.partner_group ,'组')
+        END AS partner_group,
         department.NAME AS saleman_department_name,
         plan.loan_amount AS loan_amount,
 
@@ -754,6 +760,13 @@
         SELECT
         base_area.area_name,
         partner.NAME AS partner_name,
+        partner.partner_code as partner_code,
+
+        CASE
+        WHEN partner.partner_group is null THEN
+        partner.partner_group ELSE CONCAT(partner.partner_group ,'组')
+        END AS partner_group,
+
         customer.NAME AS customer_name,
         customer.id_card,
         loan_base_info.bank,
@@ -766,6 +779,19 @@
         ( SELECT create_time FROM loan_process_log WHERE orders.id = loan_process_log.order_id AND
         loan_process_log.task_definition_key = 'usertask_material_review' ORDER BY id DESC LIMIT 1 ) AS
         materialReviewSubmit,
+        DATE_FORMAT((
+        SELECT
+        loan_process_log.create_time
+        FROM
+        loan_process_log
+        WHERE
+        order_id = principal_orders.id
+        AND task_definition_key = 'usertask_material_print_review'
+        ORDER BY
+        id DESC
+        LIMIT 1
+        ), '%Y-%m-%d %H:%i:%S' )
+        as materialPrintTime,
         CASE
 
         WHEN loan_process.material_review = 1 THEN
@@ -1310,7 +1336,7 @@
         loan_process_log
         WHERE
         order_id = orders.id
-        AND task_definition_key = 'usertask_remit_review'
+        AND task_definition_key = 'usertask_remit_review' and loan_process_log.action =1
         ORDER BY
         create_time DESC
         LIMIT 1
@@ -1322,7 +1348,55 @@
         loan_process_log
         WHERE
         order_id = orders.id
-        AND task_definition_key = 'usertask_refund_apply_review'
+        AND task_definition_key = 'usertask_business_review' and loan_process_log.action =1
+        ORDER BY
+        create_time DESC
+        LIMIT 1
+        ) as businessReviewTime,
+        (
+        SELECT
+        loan_process_log.user_name
+        FROM
+        loan_process_log
+        WHERE
+        order_id = orders.id
+        AND task_definition_key = 'usertask_business_review' and loan_process_log.action =1
+        ORDER BY
+        create_time DESC
+        LIMIT 1
+        ) as businessReviewUsername,
+        (
+        SELECT
+        loan_process_log.create_time
+        FROM
+        loan_process_log
+        WHERE
+        order_id = orders.id
+        AND task_definition_key = 'usertask_loan_review' and loan_process_log.action =1
+        ORDER BY
+        create_time DESC
+        LIMIT 1
+        ) as loanReviewTime,
+        (
+        SELECT
+        loan_process_log.user_name
+        FROM
+        loan_process_log
+        WHERE
+        order_id = orders.id
+        AND task_definition_key = 'usertask_loan_review' and loan_process_log.action =1
+        ORDER BY
+        create_time DESC
+        LIMIT 1
+        ) as loanReviewUsername,
+        (
+        SELECT
+        loan_process_log.create_time
+        FROM
+        loan_process_log
+        WHERE
+        order_id = orders.id
+        AND task_definition_key = 'usertask_refund_apply_review' and loan_process_log.action =1
         ORDER BY
         create_time DESC
         LIMIT 1
@@ -1334,7 +1408,7 @@
         loan_process_log
         WHERE
         order_id = orders.id
-        AND task_definition_key = 'usertask_remit_review'
+        AND task_definition_key = 'usertask_remit_review' and loan_process_log.action =1
         ORDER BY
         create_time DESC
         LIMIT 1
@@ -1414,10 +1488,13 @@
         conf_third.loan_time           AS loanTime,
         conf_third.year_rate           AS interestRate,
         loan.id                        AS loanForm,
-        base.bank                      AS bank
+        base.bank                      AS bank,
+        customer.mobile                AS tel,
+        visit.debit_card               AS bankCard
+
 
         from
-        (select * from loan_process_bridge where bridge_handle=2) process
+        (select * from loan_process_bridge where bridge_handle=2 and order_status = 1) process
         LEFT JOIN loan_order  loan ON process.order_id = loan.id
         LEFT JOIN conf_third_real_bridge_process  real_c ON real_c.bridge_process_id = process.id
         LEFT JOIN conf_third_party_money conf_third ON conf_third.id =real_c.conf_third_party_id
@@ -1427,7 +1504,33 @@
         LEFT JOIN remit_details remit  ON loan.remit_details_id =remit.id
         LEFT JOIN loan_car_info car ON loan.loan_car_info_id=car.id
         LEFT JOIN third_party_fund_business third_party ON third_party.bridge_procecss_id=process.id
-        where 	if((select count(*) from third_party_fund_business where bridge_procecss_id=process.id and lend_status=3)=1,false,true)
+        left join loan_home_visit visit on visit.id = loan.loan_home_visit_id
+        where 	if((select count(*) from third_party_fund_business where bridge_procecss_id=process.id and lend_status in (3,4,5,6,7,8,9))=1,false,true)
+    </select>
+
+
+    <select id="exportErrorOrder" parameterType="com.yunche.loan.domain.param.ExportApplyLoanPushParam"
+            resultType="com.yunche.loan.domain.vo.ExportErrorOrderVO">
+        select
+        customer.name     AS customerName,
+        customer.id_card  AS customerIdCard,
+        useGetCarName(car.car_detail_id)  AS carDetailName,
+        financial.car_price  AS carPrice,
+        financial.down_payment_money   AS downPaymentMoney,
+        remit.remit_amount             AS remitAmount,
+        financial.loan_time           AS loanTime,
+        base.bank                      AS bank
+
+        from
+        (select * from loan_process_bridge where bridge_handle=2 and order_status =1) process
+        LEFT JOIN loan_order  loan ON process.order_id = loan.id
+        LEFT JOIN loan_base_info base ON loan.loan_base_info_id=base.id
+        LEFT JOIN loan_customer customer ON loan.loan_customer_id = customer.id
+        LEFT JOIN loan_financial_plan financial ON financial.id = loan.loan_financial_plan_id
+        LEFT JOIN remit_details remit  ON loan.remit_details_id =remit.id
+        LEFT JOIN loan_car_info car ON loan.loan_car_info_id=car.id
+				LEFT JOIN third_party_fund_business third_party ON third_party.bridge_procecss_id=process.id
+        where third_party.lend_status in (5,6,8,9)
     </select>
 
     <select id="exportJinTouHangRepayInfo" parameterType="com.yunche.loan.domain.param.ExportApplyLoanPushParam"
@@ -1466,7 +1569,7 @@
             AND fund.repay_date &gt;= #{startRepayDate}
         </if>
         <if test="endRepayDate !=null">
-            AND fund.repay_date &gt;= #{endRepayDate}
+            AND fund.repay_date &lt;= #{endRepayDate}
         </if>
     </select>
 
@@ -1718,6 +1821,31 @@
         vehicle_information.license_plate_number AS licensePlateNumber,
         vehicle_information.vehicle_identification_number AS vehicleIdentificationNumber,
         vehicle_information.engine_number AS engineNumber,
+        DATE_FORMAT((
+        SELECT
+        loan_process_log.create_time
+        FROM
+        loan_process_log
+        WHERE
+        order_id = principal_orders.id
+        AND task_definition_key = 'usertask_material_print_review'
+        ORDER BY
+        id DESC
+        LIMIT 1
+        ), '%Y-%m-%d %H:%i:%S' )
+         as materialPrintTime,
+        (
+        SELECT
+        loan_process_log.user_name
+        FROM
+        loan_process_log
+        WHERE
+        order_id = principal_orders.id
+        AND task_definition_key = 'usertask_material_print_review'
+        ORDER BY
+        id DESC
+        LIMIT 1
+        ) as materialPrintSubmitUser,
         CASE
         WHEN parea.parent_area_id = '' OR parea.parent_area_id = NULL THEN
         CONCAT(area.parent_area_name,area.area_name)
@@ -1776,6 +1904,29 @@
             </if>
             <if test="startTime !=null and endTime !=null and startTime !='' and endTime !=''">
                 having express_receive_date between #{startTime} and #{endTime}
+                <if test="materialPrintStartTime !=null and materialPrintEndTime !=null and materialPrintStartTime !='' and materialPrintEndTime !=''">
+                    and materialPrintTime between #{materialPrintStartTime} and #{materialPrintEndTime}
+                </if>
+                <if test="materialPrintSubmitUser !=null">
+                    and materialPrintSubmitUser like CONCAT('%', #{materialPrintSubmitUser} ,'%')
+                </if>
+            </if>
+
+            <if test="startTime ==null or endTime ==null or startTime =='' or endTime ==''">
+                <if test="materialPrintStartTime !=null and materialPrintEndTime !=null and materialPrintStartTime !='' and materialPrintEndTime !=''">
+                    having materialPrintTime between #{materialPrintStartTime} and #{materialPrintEndTime}
+                    <if test="materialPrintSubmitUser !=null and materialPrintSubmitUser != ''">
+                        and materialPrintSubmitUser = #{materialPrintSubmitUser}
+                    </if>
+                </if>
+            </if>
+
+            <if test="startTime ==null or endTime ==null or startTime =='' or endTime ==''">
+                <if test="materialPrintStartTime ==null or materialPrintEndTime ==null or materialPrintStartTime =='' or materialPrintEndTime ==''">
+                    <if test="materialPrintSubmitUser !=null and materialPrintSubmitUser != ''">
+                        having materialPrintSubmitUser = #{materialPrintSubmitUser}
+                    </if>
+                </if>
             </if>
 
         </where>

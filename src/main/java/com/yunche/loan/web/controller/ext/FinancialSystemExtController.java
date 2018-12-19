@@ -21,11 +21,6 @@ public class FinancialSystemExtController {
     @Autowired
     private CustomersLoanFinanceInfoByPartnerService customersLoanFinanceInfoByPartnerservice;
 
-    @GetMapping("/list")
-    public ResultBean list() {
-
-        return ResultBean.ofSuccess(null);
-    }
 
     //获取财务信息
     @PostMapping("/customersLoanFinanceInfoByPartner")

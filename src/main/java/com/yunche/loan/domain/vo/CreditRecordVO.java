@@ -33,6 +33,10 @@ public class CreditRecordVO {
      * 紧急联系人列表
      */
     private List<CustomerCreditRecord> emergencyContactList = Collections.EMPTY_LIST;
+    /**
+     * 特殊联系人列表
+     */
+    private List<CustomerCreditRecord> specialContactList = Collections.EMPTY_LIST;
 
 
     @Data

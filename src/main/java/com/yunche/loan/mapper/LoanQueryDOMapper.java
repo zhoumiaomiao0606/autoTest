@@ -1,6 +1,7 @@
 package com.yunche.loan.mapper;
 
 import com.yunche.loan.config.anno.FunctionTime;
+import com.yunche.loan.domain.param.ContractOverDueParam;
 import com.yunche.loan.domain.vo.*;
 import org.apache.ibatis.annotations.Param;
 
@@ -70,6 +71,12 @@ public interface LoanQueryDOMapper {
                                                                          @Param("name") String name,
                                                                          @Param("maxGroupLevel") Long maxGroupLevel,
                                                                          @Param("juniorIds") Set<String> juniorIds);
+
+    List<UniversalCustomerOrderVO> selectUniversalRoleChangeOrder(@Param("employeeId") Long employeeId,
+                                                                  @Param("name") String name,
+                                                                  @Param("maxGroupLevel") Long maxGroupLevel,
+                                                                  @Param("juniorIds") Set<String> juniorIds);
+
 
     /**
      * 资料流转-新增 客户列表
@@ -351,4 +358,8 @@ public interface LoanQueryDOMapper {
 
 
     List<Long> selectOrderIdByIdCard(@Param("idCard") String idCard);
+
+    List<ContractOverDueVO> contractOverDueList(ContractOverDueParam param);
+
+    ContractOverDueCustomerInfoVO selectContractOverDueCustomerInfoInfo(Long orderId);
 }

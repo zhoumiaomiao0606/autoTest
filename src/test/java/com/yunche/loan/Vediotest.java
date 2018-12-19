@@ -1,5 +1,8 @@
 package com.yunche.loan;
 
+import com.aliyun.oss.model.OSSObject;
+import com.yunche.loan.config.exception.BizException;
+import com.yunche.loan.config.util.OSSUnit;
 import net.bramp.ffmpeg.FFmpeg;
 import net.bramp.ffmpeg.FFmpegExecutor;
 import net.bramp.ffmpeg.FFmpegUtils;
@@ -12,9 +15,12 @@ import net.bramp.ffmpeg.probe.FFmpegStream;
 import net.bramp.ffmpeg.progress.Progress;
 import net.bramp.ffmpeg.progress.ProgressListener;
 import org.junit.Test;
+import sun.misc.BASE64Encoder;
 
-import java.io.IOException;
+import java.io.*;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -25,6 +31,71 @@ import java.util.concurrent.TimeUnit;
 
 public class Vediotest
 {
+    @Test
+    public void osstest(){
+        /*//根据路径从oss上获取文件输入流---进行base64编码
+        OSSObject ossObject = OSSUnit.getObject(OSSUnit.getOSSClient(), "img/2018/201808/20180824/YNiiRpcyhf.jpg");
+        StringBuilder objectContent = null;
+        try {
+            InputStream inputStream = ossObject.getObjectContent();
+            objectContent = new StringBuilder();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+            while (true) {
+                String line = reader.readLine();
+                if (line == null)
+                    break;
+                objectContent.append(line);
+            }
+            inputStream.close();
+
+            System.out.println("====读取到的内容为"+objectContent.toString());
+        }catch (Exception e){
+            throw new BizException("读取oss文件失败");
+        }*/
+
+        String a = "上饶市";
+        int i = a.indexOf("牛");
+        String substring = a.substring(0, 2);
+        String string = "2016-10-24 21:59:06";
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        //System.out.println("====="+(null==2));
+
+    }
+
+    @Test
+    public void osstest2(){
+        //根据路径从oss上获取文件输入流---进行base64编码
+        InputStream inputStream =null;
+
+        byte[] data = null;
+        System.out.println("大小为");
+        try {
+            inputStream = OSSUnit.getOSS2InputStream("img/2018/201808/20180824/YNiiRpcyhf.jpg");
+
+            ByteArrayOutputStream swapStream = new ByteArrayOutputStream();
+            byte[] buff = new byte[1024];
+            int rc = 0;
+            while ((rc = inputStream.read(buff, 0, 100)) > 0) {
+                swapStream.write(buff, 0, rc);
+            }
+            data = swapStream.toByteArray();
+
+            // 对字节数组Base64编码
+
+            BASE64Encoder encoder = new BASE64Encoder();
+
+            String encode = encoder.encode(data);// 返回Base64编码过的字节数组字符串
+
+            System.out.println("转化后大小"+encode.length());
+
+
+            System.out.println("====读取到的内容为"+encode);
+        }catch (Exception e){
+            throw new BizException("读取oss文件失败");
+        }
+    }
+
+
     //基本设置参数及输出
     @Test
     public void ffmpeg() throws IOException {

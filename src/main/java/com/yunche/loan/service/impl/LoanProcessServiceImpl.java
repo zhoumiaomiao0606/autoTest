@@ -3,6 +3,8 @@ package com.yunche.loan.service.impl;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.yunche.loan.config.constant.BankConst;
+import com.yunche.loan.config.constant.BaseConst;
 import com.yunche.loan.config.constant.IDict;
 import com.yunche.loan.config.constant.LoanProcessEnum;
 import com.yunche.loan.config.exception.BizException;
@@ -48,6 +50,7 @@ import static com.yunche.loan.config.constant.LoanOrderProcessConst.*;
 import static com.yunche.loan.config.constant.LoanProcessConst.APPROVAL_NOT_NEED_ORDER_ID_PROCESS_KEYS;
 import static com.yunche.loan.config.constant.LoanProcessEnum.*;
 import static com.yunche.loan.config.constant.LoanProcessVariableConst.*;
+import static com.yunche.loan.config.constant.LoanRefundApplyConst.REFUND_REASON_2;
 import static com.yunche.loan.config.constant.LoanRefundApplyConst.REFUND_REASON_3;
 import static com.yunche.loan.config.constant.LoanUserGroupConst.*;
 import static com.yunche.loan.config.constant.ProcessApprovalConst.*;
@@ -128,6 +131,12 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
     @Autowired
     private RemitDetailsDOMapper remitDetailsDOMapper;
+
+    @Autowired
+    private PartnerDOMapper partnerDOMapper;
+
+    @Autowired
+    private LoanTelephoneVerifyDOMapper loanTelephoneVerifyDOMapper;
 
     @Autowired
     private ConfThirdRealBridgeProcessDOMapper confThirdRealBridgeProcessDOMapper;
@@ -903,14 +912,22 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
                 // 退款原因(类型)：3-业务审批重审     ===>   自动打回 ->【业务付款】
                 LoanRefundApplyDO loanRefundApplyDO = getLoanRefundApply(approval.getOrderId());
-                if (REFUND_REASON_3.equals(loanRefundApplyDO.getRefund_reason())) {
+                if (REFUND_REASON_3.equals(loanRefundApplyDO.getRefund_reason()))
+                {
 
                     // 自动打回   [退款申请-已提交] ->【业务付款】 （重走【业务付款】）
-                    if (TASK_PROCESS_DONE.equals(loanProcessDO.getRemitReview())) {
+                    if (TASK_PROCESS_DONE.equals(loanProcessDO.getRemitReview()))
+                    {
 
                         // 能发起[退款申请]的节点：[打款确认]-已提交
                         autoReject2BusinessPay(loanProcessDO.getOrderId(), REMIT_REVIEW_FILTER.getCode(), loanProcessDO);
                     }
+                }
+
+                if (REFUND_REASON_2.equals(loanRefundApplyDO.getRefund_reason()))
+                {
+                    loanProcessDO.setOrderStatus(ORDER_STATUS_CANCEL);
+
                 }
 
                 // 更新申请单状态
@@ -1207,8 +1224,11 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      * @param loanOrderDO
      * @param loanProcessDO
      */
-    private void checkPreCondition(String taskDefinitionKey, Byte action, LoanOrderDO loanOrderDO, LoanProcessDO loanProcessDO) {
-        Preconditions.checkArgument(ORDER_STATUS_DOING.equals(loanProcessDO.getOrderStatus()), "当前订单" + getOrderStatusText(loanProcessDO));
+    private void checkPreCondition(String taskDefinitionKey, Byte action, LoanOrderDO loanOrderDO, LoanProcessDO loanProcessDO)
+    {
+        //如果是退单且退单理由为退款不做and节点为合同归档===正常走流程
+        LoanRefundApplyDO loanRefundApplyDO = loanRefundApplyDOMapper.lastByOrderId(loanOrderDO.getId());
+        Preconditions.checkArgument(ORDER_STATUS_DOING.equals(loanProcessDO.getOrderStatus())||(ORDER_STATUS_CANCEL.equals(loanProcessDO.getOrderStatus()) && MATERIAL_MANAGE.getCode().equals(taskDefinitionKey)  && loanRefundApplyDO!=null && REFUND_REASON_2.equals(loanRefundApplyDO.getRefund_reason()) ), "当前订单" + getOrderStatusText(loanProcessDO));
 
         // 【征信申请】时，若身份证有效期<=（today+7），不允许提交，提示“身份证已过期，不允许申请贷款”
         if (CREDIT_APPLY.getCode().equals(taskDefinitionKey) && ACTION_PASS.equals(action)) {
@@ -1336,11 +1356,11 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         }
 
         // [002-合同资料合伙人至公司-确认接收]
-        else if (DATA_FLOW_CONTRACT_P2C_REVIEW.getCode().equals(taskDefinitionKey)) {
-            // 如果有待收钥匙的待办，未完成，则不能提交“资料流转002”，点击后弹出报错提示：该订单尚未完成待办：待收钥匙
-            Byte commitKeyStatus = loanProcessDO.getCommitKey();
-            Preconditions.checkArgument(TASK_PROCESS_DONE.equals(commitKeyStatus), "当前订单[待收钥匙]未提交");
-        }
+//        else if (DATA_FLOW_CONTRACT_P2C_REVIEW.getCode().equals(taskDefinitionKey)) {
+//            // TODO 如果有待收钥匙的待办，未完成，则不能提交“资料流转002”，点击后弹出报错提示：该订单尚未完成待办：待收钥匙
+//            Byte commitKeyStatus = loanProcessDO.getCommitKey();
+//            Preconditions.checkArgument(TASK_PROCESS_DONE.equals(commitKeyStatus), "当前订单[待收钥匙]未提交");
+//        }
     }
 
     /**
@@ -2251,14 +2271,16 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         loanProcessApprovalCommonService.updateLoanProcess(loanProcessDO);
 
         // 自动提交打回的【征信申请】
-        ApprovalParam approvalParam = new ApprovalParam();
-        approvalParam.setOrderId(approval.getOrderId());
-        approvalParam.setTaskId(approval.getTaskId());
-        approvalParam.setTaskDefinitionKey(CREDIT_APPLY.getCode());
-        approvalParam.setAction(ACTION_PASS);
-        approvalParam.setNeedLog(false);
-        approvalParam.setCheckPermission(false);
-        approval(approvalParam);
+        approval.setTaskDefinitionKey(CREDIT_APPLY.getCode());
+        approval.setAction(ACTION_PASS);
+        approval.setNeedLog(false);
+        approval.setCheckPermission(false);
+        // 本次不执行-[附加任务]   为了不重复生成：征信历史记录（增信增补时，会重复生成2条记录！因为这里走了一遍，下面继续走，就会又走一遍！）
+        approval.setDoAttachTask(false);
+        approval(approval);
+
+        // 上面不走-[附加任务]，这里再走！！！
+        approval.setDoAttachTask(true);
     }
 
     @Override
@@ -3242,9 +3264,13 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      * @param loanProcessDO
      */
     private void doCurrentNodeAttachTask(ApprovalParam approval, LoanOrderDO loanOrderDO, LoanProcessDO loanProcessDO) {
+        // 如果不执行-[附加任务]
+        if (!approval.getDoAttachTask()) {
+            return;
+        }
 
         // 附带任务-[征信申请]
-        doAttachTask_creditApply(approval, loanOrderDO);
+        doAttachTask_CreditApply(approval, loanOrderDO);
 
         // 附带任务-[银行征信]
         doAttachTask_BankCreditRecord(approval, loanOrderDO);
@@ -3253,7 +3279,10 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         doAttachTask_SocialCreditRecord(approval, loanOrderDO);
 
         // 附带任务-[贷款申请]
-        doAttachTask_loanApply(approval, loanOrderDO, loanProcessDO);
+        doAttachTask_LoanApply(approval, loanOrderDO, loanProcessDO);
+
+        // 附带任务-[电审]
+        doAttachTask_TelephoneVerify(approval, loanOrderDO, loanProcessDO);
 
         // 附带任务-[打款确认]
         doAttachTask_RemitReview(approval, loanOrderDO);
@@ -3264,18 +3293,90 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         // 附带任务-[银行放款记录]
         doAttachTask_BankLendRecord(approval, loanOrderDO);
 
+        // 附带任务-[视频审核]
+        doAttachTask_VideoReview(approval, loanOrderDO);
+
         // 附带任务-[弃单]
         doAttachTask_CancelTask(approval, loanOrderDO);
-
-        // 附带任务-[视频审核记录次数]
-        doAttachTask_VideoFaceNum(approval, loanOrderDO);
     }
 
-    private void doAttachTask_VideoFaceNum(ApprovalParam approval, LoanOrderDO loanOrderDO) {
+    /**
+     * 附带任务-[电审]
+     *
+     * @param approval
+     * @param loanOrderDO
+     * @param loanProcessDO
+     */
+    private void doAttachTask_TelephoneVerify(ApprovalParam approval, LoanOrderDO loanOrderDO, LoanProcessDO loanProcessDO) {
+
+        if (TELEPHONE_VERIFY.getCode().equals(approval.getTaskDefinitionKey()) && ACTION_PASS.equals(approval.getAction())) {
+
+            // TODO 例外：如果该订单被电审设置为 风险分担比例100%，则强制不会生成代收钥匙待办（电审选择不重要）
+
+            // 订单总风险分担比例
+//            double total_risk_rate = getOrderTotalRiskRate(loanOrderDO.getId());
+//
+//            if (total_risk_rate == 100) {
+//
+//                Byte commitKeyStatus = loanProcessDO.getCommitKey();
+//                if (TASK_PROCESS_TODO.equals(commitKeyStatus) || TASK_PROCESS_REJECT.equals(commitKeyStatus)) {
+//
+//                    // 直接完成任务
+//                    autoCompleteTask(loanOrderDO.getProcessInstId(), loanOrderDO.getId(), COMMIT_KEY.getCode());
+//
+//                    // 将状态更新为：0 -> init
+//                    loanProcessDO.setCommitKey(TASK_PROCESS_INIT);
+//                    loanProcessApprovalCommonService.updateLoanProcess(loanProcessDO);
+//                }
+//            }
+        }
+    }
+
+    /**
+     * 订单总风险分担比例
+     *
+     * @param orderId
+     * @return
+     */
+    private double getOrderTotalRiskRate(Long orderId) {
+
+        // 基础风险分担比例
+        PartnerDO partnerDO = partnerDOMapper.queryPartnerInfoByOrderId(orderId);
+        Preconditions.checkNotNull(partnerDO, "当前订单所属合伙人不存在");
+        BigDecimal riskBearRate = partnerDO.getRiskBearRate();
+        Preconditions.checkNotNull(riskBearRate, "合伙人基础风险分担比例不能为空");
+        Preconditions.checkArgument(riskBearRate.doubleValue() <= 100,
+                "合伙人基础风险分担比例不能大于100%！当前：%s%", riskBearRate.doubleValue());
+
+        // 风险分担加成
+        LoanTelephoneVerifyDO loanTelephoneVerifyDO = loanTelephoneVerifyDOMapper.selectByPrimaryKey(orderId);
+        Preconditions.checkNotNull(loanTelephoneVerifyDO, "风险分担加成记录丢失");
+        BigDecimal riskSharingAddition = loanTelephoneVerifyDO.getRiskSharingAddition();
+       if (riskSharingAddition ==null)
+       {
+           riskSharingAddition = new BigDecimal("0");
+       }
+
+        // 总风险分担比例
+        double total_risk_rate = riskBearRate.doubleValue() + riskSharingAddition.doubleValue();
+        return total_risk_rate;
+    }
+
+    /**
+     * 附带任务-[视频审核]
+     *
+     * @param approval
+     * @param loanOrderDO
+     */
+    private void doAttachTask_VideoReview(ApprovalParam approval, LoanOrderDO loanOrderDO) {
+
         if (VIDEO_REVIEW.getCode().equals(approval.getTaskDefinitionKey()) && ACTION_PASS.equals(approval.getAction())) {
+
+            // 视频审核记录次数
             VideoFaceNumDO videoFaceNumDO = videoFaceNumDOMapper.selectByPrimaryKey(loanOrderDO.getId());
             VideoFaceNumDO videoFaceNumDO1 = new VideoFaceNumDO();
             videoFaceNumDO1.setOrder_id(loanOrderDO.getId());
+
             if (videoFaceNumDO == null) {
                 videoFaceNumDO1.setFace_num(1);
                 videoFaceNumDOMapper.insertSelective(videoFaceNumDO1);
@@ -3321,7 +3422,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      * @param loanOrderDO
      * @param loanProcessDO
      */
-    private void doAttachTask_loanApply(ApprovalParam approval, LoanOrderDO loanOrderDO, LoanProcessDO loanProcessDO) {
+    private void doAttachTask_LoanApply(ApprovalParam approval, LoanOrderDO loanOrderDO, LoanProcessDO loanProcessDO) {
 
         if (LOAN_APPLY.getCode().equals(approval.getTaskDefinitionKey()) && ACTION_PASS.equals(approval.getAction())) {
 
@@ -3383,6 +3484,21 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
                 approval(approvalParam);
             }
+
+
+            // 3、[银卡开卡]    是否电审前开卡，根据银行做区分，台州工行默认值为是；其他行默认为否
+            LoanCustomerDO loanCustomerDO = getLoanCustomer(loanOrderDO.getLoanCustomerId());
+            //
+            String bank = loanBaseInfoDO.getBank();
+            // 台州工行默认值为是；其他行默认为否
+            if (BankConst.BANK_NAME_ICBC_TaiZhou_LuQiao_Branch.equals(bank)) {
+
+                loanCustomerDO.setOpenCardOrder(String.valueOf(BaseConst.K_YORN_YES));
+            } else {
+
+                loanCustomerDO.setOpenCardOrder(String.valueOf(BaseConst.K_YORN_NO));
+            }
+            loanCustomerService.update(loanCustomerDO);
         }
     }
 
@@ -3434,7 +3550,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      * @param approval
      * @param loanOrderDO
      */
-    private void doAttachTask_creditApply(ApprovalParam approval, LoanOrderDO loanOrderDO) {
+    private void doAttachTask_CreditApply(ApprovalParam approval, LoanOrderDO loanOrderDO) {
 
         // 征信申请 && PASS
         if (CREDIT_APPLY.getCode().equals(approval.getTaskDefinitionKey()) && ACTION_PASS.equals(approval.getAction())) {
@@ -3525,8 +3641,10 @@ public class LoanProcessServiceImpl implements LoanProcessService {
                 LoanProcessBridgeDO loanProcessBridgeDO = loanProcessBridgeDOMapper.selectByOrderId(loanOrderDO.getId());
                 if (loanProcessBridgeDO != null) {
                     if (loanProcessBridgeDO.getBridgeRepayRecord() == 2) {
-                        CalMoneyVO calMoneyVO = calBankLendRecord(loanProcessBridgeDO.getId(), loanProcessBridgeDO.getOrderId());
-                        thirdPartyFundBusinessDOMapper.updateInfo(loanOrderDO.getId(), DateUtil.getDate10(calMoneyVO.getBankDate()), new BigDecimal(calMoneyVO.getInterest()), new BigDecimal(calMoneyVO.getPoundage()));
+                        CalMoneyVO calMoneyVO = calBankLendRecord(loanProcessBridgeDO.getId(), loanProcessBridgeDO.getOrderId(), approval.getBankLendDate());
+                        if (calMoneyVO.getInterest() != null && !"".equals(calMoneyVO.getInterest())) {
+                            thirdPartyFundBusinessDOMapper.updateInfo(loanOrderDO.getId(), DateUtil.getDate10(calMoneyVO.getBankDate()), new BigDecimal(calMoneyVO.getInterest()), new BigDecimal(calMoneyVO.getPoundage()));
+                        }
                     }
                 }
             }
@@ -3534,7 +3652,8 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
     }
 
-    public CalMoneyVO calBankLendRecord(Long bridgeProcessId, Long orderId) {
+    public CalMoneyVO calBankLendRecord(Long bridgeProcessId, Long orderId, Date bankLendDate) {
+
         CalMoneyVO calMoneyVO = new CalMoneyVO();
         BigDecimal yearRate;
         BigDecimal singleRate;
@@ -3552,26 +3671,26 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             singleRate = confThirdPartyMoneyDO.getSingleRate();
             ThirdPartyFundBusinessDO thirdPartyFundBusinessDO = thirdPartyFundBusinessDOMapper.selectByPrimaryKey(bridgeProcessId);
             lendDate = thirdPartyFundBusinessDO.getLendDate();
-            BankLendRecordDO bankLendRecordDO = bankLendRecordDOMapper.selectByLoanOrder(orderId);
-            repayDate = bankLendRecordDO.getLendDate();
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-            if (bankLendRecordDO != null) {
-                if (repayDate != null) {
 
+            if (lendDate != null && bankLendDate != null) {
+                //BankLendRecordDO bankLendRecordDO = bankLendRecordDOMapper.selectByLoanOrder(orderId);
+                repayDate = bankLendDate;
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                if (repayDate != null) {
                     Calendar c = Calendar.getInstance();
-                    c.setTime(bankLendRecordDO.getLendDate());
+                    c.setTime(repayDate);
                     c.add(Calendar.DAY_OF_MONTH, 1);
                     repayDate = c.getTime();
                 }
+                timeNum = (int) ((repayDate.getTime() - lendDate.getTime()) / (1000 * 3600 * 24));
+                lend_amount = thirdPartyFundBusinessDO.getLendAmount();
+                if (lend_amount == null) {
+                    lend_amount = new BigDecimal("0.00");
+                }
+                calMoneyVO.setInterest(String.valueOf(yearRate.divide(BigDecimal.valueOf(100)).multiply(lend_amount).multiply(BigDecimal.valueOf(timeNum)).divide(BigDecimal.valueOf(365), 2, BigDecimal.ROUND_HALF_UP)));
+                calMoneyVO.setPoundage(String.valueOf(singleRate.divide(BigDecimal.valueOf(100)).multiply(lend_amount).multiply(BigDecimal.valueOf(timeNum)).divide(BigDecimal.valueOf(365), 2, BigDecimal.ROUND_HALF_UP)));
+                calMoneyVO.setBankDate(sdf.format(repayDate));
             }
-            timeNum = (int) ((repayDate.getTime() - lendDate.getTime()) / (1000 * 3600 * 24));
-            lend_amount = thirdPartyFundBusinessDO.getLendAmount();
-            if (lend_amount != null) {
-                lend_amount = new BigDecimal("0.00");
-            }
-            calMoneyVO.setInterest(String.valueOf(yearRate.divide(BigDecimal.valueOf(100)).multiply(lend_amount).multiply(BigDecimal.valueOf(timeNum)).divide(BigDecimal.valueOf(365), 2, BigDecimal.ROUND_HALF_UP)));
-            calMoneyVO.setPoundage(String.valueOf(singleRate.divide(BigDecimal.valueOf(100)).multiply(lend_amount).multiply(BigDecimal.valueOf(timeNum)).divide(BigDecimal.valueOf(365), 2, BigDecimal.ROUND_HALF_UP)));
-            calMoneyVO.setBankDate(sdf.format(repayDate));
         }
         return calMoneyVO;
     }

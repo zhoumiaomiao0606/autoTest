@@ -68,6 +68,7 @@ public class LoanBusinessPaymentServiceImpl implements LoanBusinessPaymentServic
         if (remitDetailsId == null) {
             RemitDetailsDO remitDetailsDO = new RemitDetailsDO();
             remitDetailsDO.setBeneficiary_account(loanBusinessPaymentParam.getRemit_beneficiary_account());//收款账户
+            remitDetailsDO.setBank_code(loanBusinessPaymentParam.getRemit_bankCode());//收款账户code
             remitDetailsDO.setBeneficiary_account_number(loanBusinessPaymentParam.getRemit_beneficiary_account_number());//收款账号
             remitDetailsDO.setBeneficiary_bank(loanBusinessPaymentParam.getRemit_beneficiary_bank());//收款银行
 //            remitDetailsDO.setPayment_organization(loanBusinessPaymentParam.get());//付款组织
@@ -83,6 +84,7 @@ public class LoanBusinessPaymentServiceImpl implements LoanBusinessPaymentServic
                 //进行新增 但是id得用order_id表中存在的id
                 RemitDetailsDO remitDetailsDO = new RemitDetailsDO();
                 remitDetailsDO.setBeneficiary_account(loanBusinessPaymentParam.getRemit_beneficiary_account());//收款账户
+                remitDetailsDO.setBank_code(loanBusinessPaymentParam.getRemit_bankCode());//收款账户code
                 remitDetailsDO.setBeneficiary_account_number(loanBusinessPaymentParam.getRemit_beneficiary_account_number());//收款账号
                 remitDetailsDO.setBeneficiary_bank(loanBusinessPaymentParam.getRemit_beneficiary_bank());//收款银行
 //            remitDetailsDO.setPayment_organization(loanBusinessPaymentParam.get());//付款组织
@@ -96,6 +98,7 @@ public class LoanBusinessPaymentServiceImpl implements LoanBusinessPaymentServic
                 //进行更新
                 RemitDetailsDO remitDetailsDO = new RemitDetailsDO();
                 remitDetailsDO.setBeneficiary_account(loanBusinessPaymentParam.getRemit_beneficiary_account());//收款账户
+                remitDetailsDO.setBank_code(loanBusinessPaymentParam.getRemit_bankCode());//收款账户code
                 remitDetailsDO.setBeneficiary_account_number(loanBusinessPaymentParam.getRemit_beneficiary_account_number());//收款账号
                 remitDetailsDO.setBeneficiary_bank(loanBusinessPaymentParam.getRemit_beneficiary_bank());//收款银行
 //            remitDetailsDO.setPayment_organization(loanBusinessPaymentParam.get());//付款组织

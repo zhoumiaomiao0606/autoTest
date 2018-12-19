@@ -15,7 +15,13 @@ import java.util.List;
 public class LoanCarInfoVO {
     private Long id;
 
+    private Long second_hand_car_evaluate_id;
+
+    private String  vin;
+
     private Byte carType;
+
+    private Byte evaluationType;
 
     private Integer gpsNum;
 

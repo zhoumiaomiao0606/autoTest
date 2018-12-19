@@ -95,6 +95,8 @@ public interface LoanCustomerDOMapper {
      */
     List<LoanCustomerDO> selectCusByOrderId(@Param("orderId") Long orderId);
 
+    List<LoanCustomerDO> selectCusByOrderIdAll(@Param("orderId") Long orderId);
+
 
     List<LoanCustomerDO> selectByIdCard(@Param("idCard") String idCard);
 

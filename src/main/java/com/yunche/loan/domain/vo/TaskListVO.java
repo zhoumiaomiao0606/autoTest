@@ -21,10 +21,14 @@ public class TaskListVO {
     private String partnerCompensationAmount;
     private String visitGmtCreate;
 
+    private String bankOpenCardTime;
+
     private String salesmanId;
     private String salesman;
     private String partnerId;
     private String partner;
+    private String partnerCode;
+    private String partnerGroup;
     private String customerId;
     private String customer;
     private String orderGmtCreate;
@@ -162,6 +166,13 @@ public class TaskListVO {
 
 
     private String faceNum;
+
+
+    // 角色变更
+    private String roleChangeHisId;
+    private String roleChangeHisCreateTime;
+    private String roleChangeHisUserId;
+    private String roleChangeHisUserName;
 }
 
 

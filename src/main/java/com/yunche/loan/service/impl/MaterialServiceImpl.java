@@ -12,6 +12,7 @@ import com.yunche.loan.config.constant.BaseConst;
 import com.yunche.loan.config.constant.LoanCustomerEnum;
 import com.yunche.loan.config.constant.LoanFileEnum;
 import com.yunche.loan.config.exception.BizException;
+import com.yunche.loan.config.feign.client.MaterialDownClient;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.BeanPlasticityUtills;
 import com.yunche.loan.config.util.GeneratorIDUtil;
@@ -56,7 +57,6 @@ import static com.yunche.loan.config.constant.LoanFileConst.UPLOAD_TYPE_NORMAL;
 import static com.yunche.loan.config.constant.LoanFileConst.UPLOAD_TYPE_SUPPLEMENT;
 import static com.yunche.loan.config.constant.LoanFileEnum.*;
 import static com.yunche.loan.config.constant.LoanProcessEnum.*;
-import static com.yunche.loan.config.constant.LoanProcessEnum.TELEPHONE_VERIFY;
 
 @Service
 public class MaterialServiceImpl implements MaterialService {
@@ -102,6 +102,9 @@ public class MaterialServiceImpl implements MaterialService {
     @Autowired
     private LoanTelephoneVerifyDOMapper loanTelephoneVerifyDOMapper;
 
+
+    @Autowired
+    private MaterialDownClient materialDownClient;
 
     @Override
     public RecombinationVO detail(Long orderId) {
@@ -155,11 +158,9 @@ public class MaterialServiceImpl implements MaterialService {
         recombinationVO.setBusinessreview_msg(loanQueryDOMapper.selectUniversalApprovalInfo(BUSINESS_REVIEW.getCode(), orderId));
 
         UniversalApprovalInfo universalApprovalInfo = loanQueryDOMapper.selectUniversalApprovalInfo(TELEPHONE_VERIFY.getCode(), orderId);
-        if (universalApprovalInfo !=null)
-        {
+        if (universalApprovalInfo != null) {
             LoanTelephoneVerifyDO loanTelephoneVerifyDO = loanTelephoneVerifyDOMapper.selectByPrimaryKey(orderId);
-            if (loanTelephoneVerifyDO !=null)
-            {
+            if (loanTelephoneVerifyDO != null) {
                 universalApprovalInfo.setDecribe(loanTelephoneVerifyDO.getInfo());
             }
         }
@@ -215,34 +216,39 @@ public class MaterialServiceImpl implements MaterialService {
      */
     @Override
     public ResultBean<String> downloadFiles2OSS(Long orderId, Boolean reGenerateZip) {
-        Preconditions.checkNotNull(orderId, "订单编号不能为空");
+        return materialDownClient.down2OSS(orderId, reGenerateZip == null ? false : reGenerateZip);
+//        try{
+//            Preconditions.checkNotNull(orderId, "订单编号不能为空");
+//
+//            Long customerId = null;
+//
+//            LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
+//            Preconditions.checkNotNull(loanOrderDO, "订单不存在");
+//
+//            customerId = loanOrderDO.getLoanCustomerId();
+//            Preconditions.checkNotNull(customerId, "主贷人不存在");
+//
+//            if (!reGenerateZip) {
+//                // 是否已经存在文件了        26-zip包
+//                List<LoanFileDO> loanFileDOS = loanFileDOMapper.listByCustomerIdAndType(customerId, new Byte("26"), UPLOAD_TYPE_NORMAL);
+//                if (!CollectionUtils.isEmpty(loanFileDOS)) {
+//                    LoanFileDO loanFileDO = loanFileDOS.get(0);
+//                    if (null != loanFileDO) {
+//                        String path = loanFileDO.getPath();
+//                        List<String> url = JSON.parseArray(path, String.class);
+//                        if (!CollectionUtils.isEmpty(url)) {
+//                            return ResultBean.ofSuccess(url.get(0));
+//                        }
+//                    }
+//                }
+//            }
+//
+//            return packZipFile2OSS(orderId, customerId);
+//        }catch (Exception e){
+//            return ResultBean.ofError(e.getMessage());
+//        }
 
-        Long customerId = null;
-
-        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
-        Preconditions.checkNotNull(loanOrderDO, "订单不存在");
-
-        customerId = loanOrderDO.getLoanCustomerId();
-        Preconditions.checkNotNull(customerId, "主贷人不存在");
-
-        if (!reGenerateZip) {
-            // 是否已经存在文件了        26-zip包
-            List<LoanFileDO> loanFileDOS = loanFileDOMapper.listByCustomerIdAndType(customerId, new Byte("26"), UPLOAD_TYPE_NORMAL);
-            if (!CollectionUtils.isEmpty(loanFileDOS)) {
-                LoanFileDO loanFileDO = loanFileDOS.get(0);
-                if (null != loanFileDO) {
-                    String path = loanFileDO.getPath();
-                    List<String> url = JSON.parseArray(path, String.class);
-                    if (!CollectionUtils.isEmpty(url)) {
-                        return ResultBean.ofSuccess(url.get(0));
-                    }
-                }
-            }
-        }
-
-        return packZipFile2OSS(orderId, customerId);
     }
-
 
 
     @Override
@@ -302,7 +308,7 @@ public class MaterialServiceImpl implements MaterialService {
                         List<String> unique = list.stream().distinct().collect(Collectors.toList());
                         param.setPathList(unique);
                     });
-            if(downloadParams.size()!=0){
+            if (downloadParams.size() != 0) {
                 //先将文件状态改为进行中
                 List<LoanFileDO> loanFileDOS = loanFileDOMapper.listBySupplementIdAndType(infoSupplementId, ZIP_PACK.getType(), UPLOAD_TYPE_SUPPLEMENT);
                 if (CollectionUtils.isEmpty(loanFileDOS)) {
@@ -326,7 +332,7 @@ public class MaterialServiceImpl implements MaterialService {
                 ossClient = OSSUnit.getOSSClient();
                 String fileName = null;
                 if (downloadParams != null) {
-                    fileName = downloadParams.get(0).getName() + "_" + downloadParams.get(0).getIdCard()+"_"+infoSupplementId+ ".zip";
+                    fileName = downloadParams.get(0).getName() + "_" + downloadParams.get(0).getIdCard() + "_" + infoSupplementId + ".zip";
 //                fileName = downloadParams.get(0).getName() +".zip";
                 }
                 // 创建临时文件
@@ -453,6 +459,7 @@ public class MaterialServiceImpl implements MaterialService {
 
         return ResultBean.ofSuccess(returnKey, "下载完成");
     }
+
     @Override
     public ResultBean<String> downCarFiles2OSS(Long orderId, Boolean reGenerateZip) {
         String returnKey = null;
@@ -463,7 +470,7 @@ public class MaterialServiceImpl implements MaterialService {
         Set<String> NAME_ENTRY = Sets.newHashSet();
         try {
             List<MaterialDownloadParam> downloadParams = materialAuditDOMapper.selectDownloadMaterial(orderId, null);
-            if (downloadParams == null || downloadParams.size() ==0) {
+            if (downloadParams == null || downloadParams.size() == 0) {
                 return null;
             }
             downloadParams.parallelStream().filter(Objects::nonNull)
@@ -552,8 +559,8 @@ public class MaterialServiceImpl implements MaterialService {
                         }
 
 
-                        if (preCheck(NAME_ENTRY,  documentType  + "/" + url.split("/")[url.split("/").length - 1])) {
-                            zos.putNextEntry(new ZipEntry( documentType  + "/" + url.split("/")[url.split("/").length - 1]));
+                        if (preCheck(NAME_ENTRY, documentType + "/" + url.split("/")[url.split("/").length - 1])) {
+                            zos.putNextEntry(new ZipEntry(documentType + "/" + url.split("/")[url.split("/").length - 1]));
                         } else {
                             continue;
                         }
@@ -573,13 +580,13 @@ public class MaterialServiceImpl implements MaterialService {
             if (StringUtil.isEmpty(bucketName)) {
                 Preconditions.checkNotNull("OSS压缩文件上传目录不存在");
             }
-            if(flag){
+            if (flag) {
                 String diskName = ossConfig.getZipDiskName();
                 //删除OSS上的文件
                 OSSUnit.deleteFile(ossClient, bucketName, diskName + File.separator, zipFile.getName());
                 OSSUnit.uploadObject2OSS(ossClient, zipFile, bucketName, diskName + File.separator);
                 returnKey = diskName + File.separator + zipFile.getName();
-            }else{
+            } else {
                 returnKey = null;
             }
 
@@ -636,10 +643,12 @@ public class MaterialServiceImpl implements MaterialService {
                 loanFileDO.setUploadType(UPLOAD_TYPE_NORMAL);
                 loanFileDO.setType(ZIP_PACK.getType());
                 loanFileDO.setCustomerId(customerId);
+                loanFileDO.setGmtCreate(new Date());
                 loanFileDOMapper.insertSelective(loanFileDO);
             } else {
                 loanFileDOS.parallelStream().forEach(e -> {
                     e.setStatus(DOING_STATUS);
+                    e.setGmtCreate(new Date());
                     loanFileDOMapper.updateByPrimaryKeySelective(e);
                 });
             }
@@ -689,7 +698,7 @@ public class MaterialServiceImpl implements MaterialService {
                     try {
                         ossObject = OSSUnit.getObject(ossClient, url);
                     } catch (Exception e) {
-                        logger.info(">>>>>>>>>文件不存在:" + url);
+                        logger.error(">>>>>>>>>文件不存在:" + url + "    " + e.getMessage(), e);
                         continue;
                     }
 
@@ -732,7 +741,7 @@ public class MaterialServiceImpl implements MaterialService {
 
 
 //                    if (preCheck(NAME_ENTRY, typeFile.getCustTypeName() + "/" + documentType + "/" + typeFile.getTypeName() + "/" + url.split("/")[url.split("/").length - 1])) {
-                        zos.putNextEntry(new ZipEntry(typeFile.getCustTypeName() + "/" + documentType + "/" + typeFile.getTypeName() + "/" +generateNewFileName(url.split("/")[url.split("/").length - 1])));
+                    zos.putNextEntry(new ZipEntry(typeFile.getCustTypeName() + "/" + documentType + "/" + typeFile.getTypeName() + "/" + generateNewFileName(url.split("/")[url.split("/").length - 1])));
 //                    } else {
 //                        continue;
 //                    }
@@ -1002,7 +1011,7 @@ public class MaterialServiceImpl implements MaterialService {
                 param.getVehicle_customize_brand(), param.getVehicle_purchase_car_invoice_price(),
                 param.getVehicle_invoice_down_payment(), param.getVehicle_purchase_car_invoice_date(),
                 param.getVehicle_invoice_car_dealer(), param.getVehicle_displacement(),
-                param.getVehicle_register_date(), param.getQualified_certificate_number(),param.getVehicle_car_category()
+                param.getVehicle_register_date(), param.getQualified_certificate_number(), param.getVehicle_car_category()
         )) {
             VehicleInformationDO vehicleInformationDO = new VehicleInformationDO();
             vehicleInformationDO.setId(vid);
@@ -1142,7 +1151,7 @@ public class MaterialServiceImpl implements MaterialService {
             e.setPath("[" + s + "]");
             e.setType(ZIP_PACK.getType());
             e.setStatus(VALID_STATUS);
-            e.setGmtCreate(new Date());
+            e.setGmtModify(new Date());
             loanFileDOMapper.updateByPrimaryKeySelective(e);
         });
     }
@@ -1167,15 +1176,16 @@ public class MaterialServiceImpl implements MaterialService {
 
     /**
      * 文件重命名
+     *
      * @param ossFileName
      * @return
      */
-    private String generateNewFileName(String ossFileName){
-        try{
+    private String generateNewFileName(String ossFileName) {
+        try {
             String[] split = ossFileName.split("\\.");
-            String hz = split[split.length-1];//文件后缀
-            return  GeneratorIDUtil.execute()+"."+hz;
-        }catch (Exception e){
+            String hz = split[split.length - 1];//文件后缀
+            return GeneratorIDUtil.execute() + "." + hz;
+        } catch (Exception e) {
             return ossFileName;
         }
 

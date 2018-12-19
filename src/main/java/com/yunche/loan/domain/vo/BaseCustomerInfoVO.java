@@ -14,6 +14,9 @@ public class BaseCustomerInfoVO
 {
     //业务编号
     private String order_id;
+
+    private String material_num;
+
     //主贷人姓名
     private String customer_name;
     //联系电话

@@ -272,8 +272,8 @@ public class ExportQueryServiceImpl implements ExportQueryService
 
         List<ExportMaterialReviewDetailQueryVO> list = loanStatementDOMapper.exportMaterialReviewQuerys(exportMaterialReviewQueryVerifyParam);
 
-        ArrayList<String> header = Lists.newArrayList("业务区域", "业务团队", "客户姓名", "身份证号",
-                 "贷款银行", "银行分期本金", "垫款日期", "资料接收日期", "资料齐全日期", "资料审核提交日期", "资料审核状态", "资料增补次数", "资料增补内容",
+        ArrayList<String> header = Lists.newArrayList("业务区域", "业务团队","合伙人编码","合伙人组别", "客户姓名", "身份证号",
+                 "贷款银行", "银行分期本金", "垫款日期", "资料接收日期", "资料齐全日期", "资料审核提交日期","套打时间", "资料审核状态", "资料增补次数", "资料增补内容",
                 "提车资料提交时间","资料增补时间","合同上交银行日期","垫款超期天数","纸审超期天数","备注"
         );
 
@@ -572,7 +572,7 @@ public class ExportQueryServiceImpl implements ExportQueryService
         ArrayList<String> header = Lists.newArrayList("业务区域","客户姓名", "身份证号",
                 "手机号", "贷款银行", "业务团队", "业务员", "车型", "车价", "执行利率", "首付款", "贷款金额", "银行分期本金", "打款金额",
                 "公司收益","履约金","上牌押金","GPS使用费","风险金","公正评估费","上省外牌","基础保证金","其他","返利不内扣","返利金额","额外费用",
-                "创建时间","垫款时间","退款时间","提交人"
+                "创建时间","业务审批时间","业务审批人","放款审批时间","放款审批人","垫款时间","退款时间","提交人"
         );
 
 
@@ -710,6 +710,8 @@ public class ExportQueryServiceImpl implements ExportQueryService
                 "汽车办理抵押地区",
                 "汽车权属人姓名",
                 "申请人与抵押物权属人关系",
+                "合同套打时间",
+                "合同套打提交人",
 
                 "亲属联系人1姓名",
                 "关系",
