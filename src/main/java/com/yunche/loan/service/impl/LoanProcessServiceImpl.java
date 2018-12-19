@@ -2825,6 +2825,8 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
                         // target -> 补充生成 [社会征信录入]
                         variables.put(PROCESS_VARIABLE_TARGET, SOCIAL_CREDIT_RECORD.getCode());
+                        // 创建征信查询历史记录  --> 社会
+                        loanCreditInfoHisService.saveCreditInfoHis_CreditApply(loanOrderDO.getLoanCustomerId(), getLoanBaseInfoDO(loanOrderDO.getLoanBaseInfoId()).getLoanAmount());
                     }
 
                 }
