@@ -65,9 +65,6 @@ public class FinanceServiceImpl implements FinanceService
     @Autowired
     private RemitDetailsDOMapper remitDetailsDOMapper;
 
-    @Resource
-    private BusinessReviewManager businessReviewManager;
-
     private LoanProcessService loanProcessService;
 
 
