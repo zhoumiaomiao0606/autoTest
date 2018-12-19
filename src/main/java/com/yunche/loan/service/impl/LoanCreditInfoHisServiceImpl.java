@@ -120,7 +120,10 @@ public class LoanCreditInfoHisServiceImpl implements LoanCreditInfoHisService {
                     });
 
             // 第2+次    过滤出：当前正在查询银行/社会征信的客户
-            customers = filterCustomers_reject(customers, enableType[0], false);
+            if (enableType[0]!=null)
+            {
+                customers = filterCustomers_reject(customers, enableType[0], false);
+            }
 
             if (!CollectionUtils.isEmpty(customers)) {
 
