@@ -1068,11 +1068,14 @@
                   </when>
                   <when test="taskDefinitionKey == 'usertask_remit_review'">
                       AND case when #{taskStatus} = 0 then deputy.remit_review  != 0                        else deputy.remit_review                     = #{taskStatus} end
-                      and case when #{remitSatus} = 0 then join_bp.remit_status = 0
-                      when #{remitSatus} = 1 then join_bp.remit_status = 1
-                      when #{remitSatus} = 2 then join_bp.remit_status = 2
-                      when #{remitSatus} = 3 then join_bp.remit_status = 3
-                      end
+                      <if test="remitSatus !=null and remitSatus !=''">
+                          and case
+                          when #{remitSatus} = 1 then join_bp.remit_status = 1
+                          when #{remitSatus} = 2 then join_bp.remit_status = 2
+                          when #{remitSatus} = 3 then join_bp.remit_status = 3
+                          end
+                      </if>
+
                   </when>
                   <when test="taskDefinitionKey == 'usertask_bank_lend_record'">
                       AND case when #{taskStatus} = 0 then deputy.bank_lend_record  != 0                          else deputy.bank_lend_record                           = #{taskStatus} end

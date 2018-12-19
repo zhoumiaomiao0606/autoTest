@@ -32,9 +32,9 @@ import static com.yunche.loan.config.constant.BaseExceptionEnum.EL00000003;
 public class BusinessReviewManager {
     private static final Logger LOG = LoggerFactory.getLogger(BusinessReviewManager.class);
 
-    private static final String HOST = "http://47.96.78.20:8012";
+    private static final String HOST = "http://47.96.78.20:8012";//财务打款单，计算，账户类
 
-    private static final String HOST2 = "http://47.97.122.31:8888";
+    private static final String HOST2 = "http://47.97.122.31:8888";//二手车
 
     private static final String HOST3 = "http://192.168.2.183:8019";//临时测试--金福猫支付
 

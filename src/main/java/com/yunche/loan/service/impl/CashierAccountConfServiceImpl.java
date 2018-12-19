@@ -12,6 +12,7 @@ import com.yunche.loan.domain.vo.CashierAccountConfVO;
 import com.yunche.loan.domain.vo.CashierEmployName;
 import com.yunche.loan.mapper.CashierAccountConfDOMapper;
 import com.yunche.loan.service.CashierAccountConfService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -22,6 +23,8 @@ import java.util.List;
 @Transactional
 public class CashierAccountConfServiceImpl implements CashierAccountConfService
 {
+
+    @Autowired
     private CashierAccountConfDOMapper cashierAccountConfDOMapper;
 
     @Override
