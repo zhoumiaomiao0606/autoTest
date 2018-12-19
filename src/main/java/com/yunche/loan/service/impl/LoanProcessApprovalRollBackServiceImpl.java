@@ -109,6 +109,11 @@ public class LoanProcessApprovalRollBackServiceImpl implements LoanProcessApprov
 
             doRollBackTask_VideoReview(approval, loanOrderDO, loanProcessDO);
         }
+        // [线下视频审核]
+        else if (UNDER_LINE_VIDEO_REVIEW.getCode().equals(approval.getTaskDefinitionKey())) {
+
+            doRollBackTask_UnderLineVideoReview(approval, loanOrderDO, loanProcessDO);
+        }
 
         // 其他节点，暂不支持
         else {
@@ -324,6 +329,35 @@ public class LoanProcessApprovalRollBackServiceImpl implements LoanProcessApprov
                 Lists.newArrayList(),
                 Lists.newArrayList(),
                 VIDEO_REVIEW_FILTER.getCode()
+        );
+
+        // 反审状态更新
+        updateRollBackLoanProcess(approval, nextTaskKeys);
+    }
+
+    /**
+     * [线下视频审核]-反审
+     *
+     * @param approval
+     * @param loanOrderDO
+     * @param loanProcessDO
+     */
+    private void doRollBackTask_UnderLineVideoReview(ApprovalParam approval, LoanOrderDO loanOrderDO, LoanProcessDO loanProcessDO) {
+
+        // 被反审的节点列表
+        List<String> nextTaskKeys = Lists.newArrayList(UNDER_LINE_VIDEO_REVIEW_FILTER.getCode());
+
+        // 领取校验
+        checkTaskDistribution(approval.getOrderId(), nextTaskKeys);
+
+        // 提交校验
+        checkTaskProcessStatus(loanProcessDO, nextTaskKeys, approval.getTaskDefinitionKey());
+
+        // 执行[反审]
+        doRollBack(loanOrderDO.getProcessInstId(),
+                Lists.newArrayList(),
+                Lists.newArrayList(),
+                UNDER_LINE_VIDEO_REVIEW_FILTER.getCode()
         );
 
         // 反审状态更新
