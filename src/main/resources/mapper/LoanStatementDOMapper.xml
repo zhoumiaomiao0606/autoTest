@@ -80,7 +80,12 @@
         END ELSE '未知'
         END AS action,
         partner.id as partner_id,
-        car.car_type
+        car.car_type,
+        (select create_time from loan_process_log where task_definition_key = 'usertask_telephone_verify' and action =6
+        and order_id = orders.id order by create_time limit 1) as receive_time,
+        ( select create_time from loan_process_log where task_definition_key = 'usertask_telephone_verify' and action in(0,1,2,3)
+        and order_id = orders.id order by create_time limit 1) as feedback_time
+
 
         FROM
         loan_order orders

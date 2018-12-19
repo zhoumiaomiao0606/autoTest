@@ -212,7 +212,7 @@ public class TelephoneVerifyServiceImpl implements TelephoneVerifyService {
 
 
             ArrayList<String> header = Lists.newArrayList("申请单号", "客户名称", "证件类型", "证件号",
-                    "业务员", "合伙人团队","合伙人编码","合伙人组别", "贷款银行", "贷款金额", "银行分期本金", "gps数量", "审核结果", "审核状态", "审核员", "审核时间", "备注", "车辆类型"
+                    "业务员", "合伙人团队","合伙人编码","合伙人组别", "贷款银行", "贷款金额", "银行分期本金", "gps数量", "审核结果", "审核状态", "审核员","领取时间","反馈时间", "审核时间", "备注", "车辆类型"
             );
             //申请单号	客户名称	证件类型	证件号	业务员	合伙人团队	贷款金额	gps数量	申请单状态	提交状态	备注	审核员	审核时间
             XSSFRow headRow = sheet.createRow(0);
@@ -273,14 +273,19 @@ public class TelephoneVerifyServiceImpl implements TelephoneVerifyService {
                 cell = row.createCell(14);
                 cell.setCellValue(telephoneVerifyNodeOrdersVO.getOp_user_name());
 
-
                 cell = row.createCell(15);
-                cell.setCellValue(telephoneVerifyNodeOrdersVO.getOp_time());
+                cell.setCellValue(telephoneVerifyNodeOrdersVO.getReceive_time());
 
                 cell = row.createCell(16);
-                cell.setCellValue(telephoneVerifyNodeOrdersVO.getOp_info());
+                cell.setCellValue(telephoneVerifyNodeOrdersVO.getFeedback_time());
 
                 cell = row.createCell(17);
+                cell.setCellValue(telephoneVerifyNodeOrdersVO.getOp_time());
+
+                cell = row.createCell(18);
+                cell.setCellValue(telephoneVerifyNodeOrdersVO.getOp_info());
+
+                cell = row.createCell(19);
                 cell.setCellValue(CarTypeEnum.getValueByKey(telephoneVerifyNodeOrdersVO.getCar_type()));
             }
             //文件宽度自适应
@@ -300,7 +305,10 @@ public class TelephoneVerifyServiceImpl implements TelephoneVerifyService {
             sheet.autoSizeColumn((short) 13);
             sheet.autoSizeColumn((short) 14);
             sheet.autoSizeColumn((short) 15);
-
+            sheet.autoSizeColumn((short) 16);
+            sheet.autoSizeColumn((short) 17);
+            sheet.autoSizeColumn((short) 18);
+            sheet.autoSizeColumn((short) 19);
             workbook.write(out);
             //上传OSS
             OSSClient ossClient = OSSUnit.getOSSClient();
