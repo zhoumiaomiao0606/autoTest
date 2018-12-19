@@ -115,4 +115,65 @@
       create_time = #{createTime,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=BIGINT}
   </update>
+
+
+  <select id="listAll" parameterType="com.yunche.loan.domain.param.QueryCashierAccountConfParam" resultMap="BaseResultMap">
+    select
+    id,
+    employee_id as employeeId,
+    employee.name as  employeeName,
+    company_account as companyAccount,
+    company_account_bank as companyAccountBank,
+    company_account_number as  companyAccountNumber,
+    create_user as  createUser,
+    create_time as  createTime
+    from cashier_account_conf
+    left join employee on  cashier_account_conf.employee_id = employee.id
+    <where>
+      <if test="employeeId !=null and employeeId !=''" >
+        employee_id = #{employeeId,jdbcType=BIGINT}
+      </if>
+      <if test="createUser !=null and employeeId !=''" >
+        create_user like CONCAT('%', #{employeeId,jdbcType=BIGINT} ,'%')
+      </if>
+
+    </where>
+
+  </select>
+
+  <select id="listAllEmployName"  resultType="com.yunche.loan.domain.vo.CashierEmployName">
+    select
+    employee.id as employeeId,
+    employee.name as  employeeName
+    from
+    (select
+    distinct
+    employee_id
+    from cashier_account_conf
+    ) t
+    left join employee on  t.employee_id = employee.id
+
+
+  </select>
+
+  <select id="listAllCreateUserName"  resultType="String">
+    select
+    distinct
+    create_user
+    from cashier_account_conf
+
+
+  </select>
+
+  <select id="listAllCashierAccountConfByEmployeeId" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from cashier_account_conf
+    where employee_id = #{employeeId,jdbcType=BIGINT}
+  </select>
+
+  <delete id="deleteByEmployeeId" parameterType="java.lang.Long">
+    delete from cashier_account_conf
+    where employee_id = #{employeeId,jdbcType=BIGINT}
+  </delete>
 </mapper>

@@ -1,14 +1,17 @@
-package com.yunche.loan.domain.entity;
+package com.yunche.loan.domain.vo;
 
 import lombok.Data;
 
 import java.util.Date;
 
 @Data
-public class CashierAccountConfDO {
+public class CashierAccountConfVO
+{
     private Long id;
 
     private Long employeeId;
+
+    private String employeeName;
 
     private String companyAccount;
 
@@ -19,6 +22,4 @@ public class CashierAccountConfDO {
     private String createUser;
 
     private Date createTime;
-
-
 }
