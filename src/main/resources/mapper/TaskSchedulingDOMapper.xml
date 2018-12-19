@@ -572,6 +572,10 @@
                           deputy.video_review                       AS taskStatus,
                           videonum.face_num                         AS faceNum
                       </when>
+                <when test="taskDefinitionKey == 'usertask_under_line_video_review'">
+                    deputy.under_line_video_review                       AS taskStatus,
+                    videonum.face_num                         AS faceNum
+                </when>
                       <when test="taskDefinitionKey == 'usertask_info_supplement'">
                           join_s.type                               AS supplementType,
                           join_s.content                            AS supplementContent,
@@ -945,7 +949,8 @@
                   left join conf_third_party_money conf_t               on real_b.conf_third_party_id = conf_t.id
                   left join third_party_fund_business  third_party      on third_party.bridge_procecss_id    = deputy_b.id
               </if>
-              <if test="taskDefinitionKey == 'usertask_video_review'">
+              <if test="taskDefinitionKey == 'usertask_video_review' ||
+                                taskDefinitionKey == 'usertask_under_line_video_review'">
                   left join video_face_num videonum                 on videonum.order_id = main.id
               </if>
 
@@ -1103,6 +1108,11 @@
                       else
                       1 = if( (SELECT count( id ) FROM video_face_log WHERE order_id = main.id) &gt; 0, 1, 0 )
                       end
+                  </when>
+                  <when test="taskDefinitionKey == 'usertask_under_line_video_review'">
+                      AND case when #{taskStatus} = 0 then deputy.under_line_video_review != 0
+                      else deputy.under_line_video_review        = #{taskStatus} end
+
                   </when>
                   <when test="taskDefinitionKey == 'usertask_apply_instead_pay'">
                       AND case when #{taskStatus} = 0 then deputy_.apply_instead_pay != 0                else deputy_.apply_instead_pay        = #{taskStatus} end

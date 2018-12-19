@@ -174,5 +174,7 @@ public class LoanProcessVO extends LoanProcessDO {
 
     private Byte dataFlowRegisterC2bReview;
 
+    private Byte underLineVideoReview;
+
     //////////////////// 资料流转 /////////////////////
 }
