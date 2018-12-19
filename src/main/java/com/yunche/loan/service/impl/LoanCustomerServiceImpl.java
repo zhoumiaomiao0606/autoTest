@@ -10,6 +10,7 @@ import com.yunche.loan.config.util.ImageUtil;
 import com.yunche.loan.config.util.OSSUnit;
 import com.yunche.loan.domain.entity.*;
 import com.yunche.loan.domain.param.AllCustDetailParam;
+import com.yunche.loan.domain.param.CustomerListQuery;
 import com.yunche.loan.domain.param.CustomerParam;
 import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.mapper.*;
@@ -309,8 +310,11 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
         ResultBean<Void> fileResultBean = loanFileService.updateOrInsertByCustomerIdAndUploadType(resultBean.getData(), customerParam.getFiles(), UPLOAD_TYPE_NORMAL);
         Preconditions.checkArgument(fileResultBean.getSuccess(), fileResultBean.getMsg());
 
-        // enable_type：增信增补(自动)打回
-        enable(String.valueOf(resultBean.getData()), ENABLE_TYPE_CREDIT_SUPPLEMENT);
+        // enable_type：增信增补(自动)打回----如果是特殊关联人--则不需要征信打回
+        if (!CUST_TYPE_SPECIAL_CONTACT.equals(customerParam.getCustType()))
+        {
+            enable(String.valueOf(resultBean.getData()), ENABLE_TYPE_CREDIT_SUPPLEMENT);
+        }
 
         return ResultBean.ofSuccess(resultBean.getData(), "创建关联人成功");
     }
@@ -474,6 +478,7 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
         List<CustomerVO> commonLenderList = Lists.newArrayList();
         List<CustomerVO> guarantorList = Lists.newArrayList();
         List<CustomerVO> emergencyContactList = Lists.newArrayList();
+        List<CustomerVO> specialContactList = Lists.newArrayList();
 
         loanCustomerDOList.stream()
                 .filter(Objects::nonNull)
@@ -537,15 +542,31 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
 
                         emergencyContactList.add(emergencyContact);
                     }
+                    //特殊联系人
+                    else if (CUST_TYPE_SPECIAL_CONTACT.equals(e.getCustType())) {
+
+                        CustomerVO emergencyContact = new CustomerVO();
+                        BeanUtils.copyProperties(e, emergencyContact);
+
+                        // fillFiles
+                        //fillFiles(emergencyContact, fileUploadType);
+
+                        // fillCredit
+                        //fillCredit(emergencyContact, e.getId());
+
+                        specialContactList.add(emergencyContact);
+                    }
                 });
 
         List<CustomerVO> sortedCommonLenderList = commonLenderList.parallelStream().sorted(Comparator.comparing(CustomerVO::getId)).collect(Collectors.toList());
         List<CustomerVO> sortedGuarantorList = guarantorList.parallelStream().sorted(Comparator.comparing(CustomerVO::getId)).collect(Collectors.toList());
         List<CustomerVO> sortedEmergencyContactList = emergencyContactList.parallelStream().sorted(Comparator.comparing(CustomerVO::getId)).collect(Collectors.toList());
+        List<CustomerVO> sortedSpecialContactList = specialContactList.parallelStream().sorted(Comparator.comparing(CustomerVO::getId)).collect(Collectors.toList());
 
         custDetailVO.setCommonLenderList(sortedCommonLenderList);
         custDetailVO.setGuarantorList(sortedGuarantorList);
         custDetailVO.setEmergencyContactList(sortedEmergencyContactList);
+        custDetailVO.setSpecialContactList(sortedSpecialContactList);
     }
 
     /**
@@ -612,6 +633,17 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
         if (!CollectionUtils.isEmpty(emergencyContactList)) {
 
             emergencyContactList.parallelStream()
+                    .filter(Objects::nonNull)
+                    .forEach(e -> {
+                        updateOrInsertCustomer(e);
+                    });
+        }
+
+        // 特殊联系人列表
+        List<CustomerParam> specialContactList = allCustDetailParam.getSpecialContactList();
+        if (!CollectionUtils.isEmpty(specialContactList)) {
+
+            specialContactList.parallelStream()
                     .filter(Objects::nonNull)
                     .forEach(e -> {
                         updateOrInsertCustomer(e);
@@ -743,6 +775,22 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
                         }
                     });
         }
+        List<CustomerParam> specialContactList = allCustDetailParam.getSpecialContactList();
+        if (!CollectionUtils.isEmpty(specialContactList)) {
+
+            specialContactList.stream()
+                    .filter(Objects::nonNull)
+                    .forEach(e -> {
+
+                        String idCard = e.getIdCard();
+                        if (StringUtils.isNotBlank(idCard)) {
+
+                            idCard = idCard.trim();
+                            Preconditions.checkArgument(!idCardList.contains(idCard), "有身份证号码重复，请先检查再提交");
+                            idCardList.add(idCard);
+                        }
+                    });
+        }
 
         List<CustomerParam> commonLenderList = allCustDetailParam.getCommonLenderList();
         if (!CollectionUtils.isEmpty(commonLenderList)) {
@@ -761,5 +809,11 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
                     });
         }
 
+    }
+
+    @Override
+    public ResultBean<List<CustomerListVO>> queryCustomerList(CustomerListQuery customerListQuery)
+    {
+        return null;
     }
 }

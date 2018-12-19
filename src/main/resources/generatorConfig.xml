@@ -394,26 +394,29 @@
 -->
 
 
-        <table tableName="base_brand" domainObjectName="BaseBrandDO"
+       <!-- <table tableName="cashier_account_conf" domainObjectName="CashierAccountConfDO"
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
-            <!--采用下划线字段-->
-            <property name="useActualColumnNames" value="true"/>
+        </table>-->
+
+        <table tableName="bank_code" domainObjectName="BankCodeDO"
+               enableCountByExample="false" enableUpdateByExample="false"
+               enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
         </table>
 
-        <table tableName="base_series" domainObjectName="BaseSeriesDO"
+        <!--<table tableName="base_series" domainObjectName="BaseSeriesDO"
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
-            <!--采用下划线字段-->
+            &lt;!&ndash;采用下划线字段&ndash;&gt;
             <property name="useActualColumnNames" value="true"/>
         </table>
 
         <table tableName="base_model" domainObjectName="BaseModelDO"
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
-            <!--采用下划线字段-->
+            &lt;!&ndash;采用下划线字段&ndash;&gt;
             <property name="useActualColumnNames" value="true"/>
-        </table>
+        </table>-->
         <!-- 忽略列，不生成bean 字段
         <ignoreColumn column="FRED" />-->
 

@@ -271,9 +271,9 @@ public class LoanQueryServiceImpl implements LoanQueryService {
 
                         UniversalCustomerFileVO universalCustomerFileVO = typeFilesMap.get(type);
 
-                        List<String> urls = universalCustomerFileVO.getUrls();
+                        List<String> addurls = universalCustomerFileVO.getAddurls();
 
-                        urls.addAll(e.getUrls());
+                        addurls.addAll(e.getUrls());
 
                     } else {
                         typeFilesMap.put(type, e);

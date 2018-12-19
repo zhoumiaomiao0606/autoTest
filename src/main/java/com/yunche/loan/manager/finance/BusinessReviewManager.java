@@ -33,6 +33,8 @@ public class BusinessReviewManager {
 
     private static final String HOST2 = "http://47.97.122.31:8888";
 
+    private static final String HOST3 = "http://192.168.2.183:8019";//临时测试--金福猫支付
+
    /* private static final String HOST2 = "http://192.168.0.140:8888";*/
 
 
@@ -83,6 +85,29 @@ public class BusinessReviewManager {
         String result = null;
         try {
             result = HttpUtils.doPost(HOST2, PATH,null, param.toString());
+            /*LOG.info("请求参数"+param.toString());*/
+            LOG.info("请求结果"+result);
+
+            if (result == null)
+            {
+                throw new BizException("请求到数据为空");
+            }
+
+        } catch (Exception e) {
+            LOG.error("请求财务系统出错---！！",e);
+            throw new BizException("请求财务系统出错");
+
+        }
+
+        return result;
+    }
+
+    //通用
+    public static <T> String financeUnisal3(T param,String PATH)
+    {
+        String result = null;
+        try {
+            result = HttpUtils.doPost(HOST3, PATH,null, param.toString());
             /*LOG.info("请求参数"+param.toString());*/
             LOG.info("请求结果"+result);
 

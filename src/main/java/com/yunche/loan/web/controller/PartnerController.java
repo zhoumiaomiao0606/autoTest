@@ -1,6 +1,7 @@
 package com.yunche.loan.web.controller;
 
 import com.yunche.loan.config.result.ResultBean;
+import com.yunche.loan.domain.entity.BankCodeDO;
 import com.yunche.loan.domain.query.BizModelQuery;
 import com.yunche.loan.domain.query.PartnerQuery;
 import com.yunche.loan.domain.query.RelaQuery;
@@ -51,6 +52,12 @@ public class PartnerController {
     @GetMapping(value = "/delete")
     public ResultBean<Void> delete(@RequestParam("id") Long id) {
         return partnerService.delete(id);
+    }
+
+    @GetMapping(value = "/selectAllBankName")
+    public List<BankCodeDO> selectAllBankName(@RequestParam("bankName") String bankName)
+    {
+        return partnerService.selectAllBankName(bankName);
     }
 
     /**

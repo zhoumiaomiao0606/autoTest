@@ -403,7 +403,7 @@ public class LoanOrderServiceImpl implements LoanOrderService {
                 SecondHandCarEvaluateDO secondHandCarEvaluateDO = secondHandCarEvaluateDOMapper.selectByPrimaryKey(loanCarInfoParam.getSecond_hand_car_evaluate_id());
 
                 // #车牌号码 #车辆类型（小型轿车）  #所有人名称  #发动机号码  #注册日期   #车型颜色
-                vehicleInformationUpdateParam.setLicense_plate_number(secondHandCarEvaluateDO.getPlate_num());
+                //vehicleInformationUpdateParam.setLicense_plate_number(secondHandCarEvaluateDO.getPlate_num());
                 vehicleInformationUpdateParam.setCar_category(secondHandCarEvaluateDO.getVehicle_type());
                 //vehicleInformationUpdateParam.setNow_driving_license_owner(secondHandCarEvaluateDO.getOwner());
                 vehicleInformationUpdateParam.setEngine_number(secondHandCarEvaluateDO.getEngine_num());
@@ -471,7 +471,7 @@ public class LoanOrderServiceImpl implements LoanOrderService {
                 SecondHandCarEvaluateDO secondHandCarEvaluateDO = secondHandCarEvaluateDOMapper.selectByPrimaryKey(loanCarInfoParam.getSecond_hand_car_evaluate_id());
 
                 // #车牌号码 #车辆类型（小型轿车）  #所有人名称  #发动机号码  #注册日期   #车型颜色
-                vehicleInformationUpdateParam.setLicense_plate_number(secondHandCarEvaluateDO.getPlate_num());
+                //vehicleInformationUpdateParam.setLicense_plate_number(secondHandCarEvaluateDO.getPlate_num());
                 vehicleInformationUpdateParam.setCar_category(secondHandCarEvaluateDO.getVehicle_type());
                 //vehicleInformationUpdateParam.setNow_driving_license_owner(secondHandCarEvaluateDO.getOwner());
                 vehicleInformationUpdateParam.setEngine_number(secondHandCarEvaluateDO.getEngine_num());
@@ -616,6 +616,17 @@ public class LoanOrderServiceImpl implements LoanOrderService {
                 List<CustomerVO> emergencyContactList = custDetailVO.getEmergencyContactList();
 
                 emergencyContactList.stream()
+                        .filter(Objects::nonNull)
+                        .forEach(e -> {
+                            // 封装用户信息并填充到容器
+                            fillLoanSimpleCustomerInfoVO(e, loanSimpleCustomerInfoVOS);
+                        });
+            }
+
+            if (!CollectionUtils.isEmpty(custDetailVO.getSpecialContactList())) {
+                List<CustomerVO> specialContactList = custDetailVO.getSpecialContactList();
+
+                specialContactList.stream()
                         .filter(Objects::nonNull)
                         .forEach(e -> {
                             // 封装用户信息并填充到容器
@@ -1133,6 +1144,7 @@ public class LoanOrderServiceImpl implements LoanOrderService {
         List<CustomerParam> commonLenderList = param.getCommonLenderList();
         List<CustomerParam> guarantorList = param.getGuarantorList();
         List<CustomerParam> emergencyContactList = param.getEmergencyContactList();
+        List<CustomerParam> specialContactList = param.getSpecialContactList();
 
         createLoanCustomerList(principalLenderId, commonLenderList);
 
@@ -1143,6 +1155,8 @@ public class LoanOrderServiceImpl implements LoanOrderService {
             Preconditions.checkArgument(false, "您选择的担保人与主担保人关系有误，请核查");
         }
 
+
+        createLoanCustomerList(principalLenderId, specialContactList);
         createLoanCustomerList(principalLenderId, emergencyContactList);
 
         return principalLenderId;

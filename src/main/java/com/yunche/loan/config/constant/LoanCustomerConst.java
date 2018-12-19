@@ -23,6 +23,10 @@ public class LoanCustomerConst {
      * 客户类型：紧急联系人-4
      */
     public static final Byte CUST_TYPE_EMERGENCY_CONTACT = 4;
+    /**
+     * 客户类型：紧急联系人-4
+     */
+    public static final Byte CUST_TYPE_SPECIAL_CONTACT = 5;
     ////////////////////////////////////////////////// 客户类型 /////////////////////////////////////////////////////////
 
 

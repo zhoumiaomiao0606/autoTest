@@ -23,6 +23,8 @@ public class TaskListQuery {
     @NotNull
     private Integer pageSize = 10;
 
+    private Byte remitSatus;
+
     Long employeeId;
 
     Long telephoneVerifyLevel;

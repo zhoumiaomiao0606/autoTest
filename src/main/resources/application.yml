@@ -44,6 +44,10 @@ spring:
     jtxPassword: jtx@1722
     jtxUrl: http://121.41.20.151:7013/assetApi/service
     jtxPort: 22
+  finance:
+    callBackUrl: http://www.yunchejinrong.com:8090/api/v1/loanorder/finance/remitInfo
+
+
 
 ---
 

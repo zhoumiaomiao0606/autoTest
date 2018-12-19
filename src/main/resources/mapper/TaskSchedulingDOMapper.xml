@@ -463,7 +463,7 @@
             FROM
             loan_process_log
             WHERE
-            order_id = principal_orders.id
+            order_id = main.id
             AND task_definition_key = 'usertask_bank_open_card'
             and action = 1
             ORDER BY
@@ -960,6 +960,9 @@
                       <when test="taskDefinitionKey == 'usertask_settle_order'">
                           and deputy.order_status = 2
                       </when>
+                      <when test="taskDefinitionKey == 'usertask_material_manage'">
+                          and (deputy.order_status = 1 or deputy.order_status = 3)
+                      </when>
                       <otherwise>
                           and deputy.order_status = 1
                       </otherwise>
@@ -1065,6 +1068,11 @@
                   </when>
                   <when test="taskDefinitionKey == 'usertask_remit_review'">
                       AND case when #{taskStatus} = 0 then deputy.remit_review  != 0                        else deputy.remit_review                     = #{taskStatus} end
+                      and case when #{remitSatus} = 0 then join_bp.remit_status = 0
+                      when #{remitSatus} = 1 then join_bp.remit_status = 1
+                      when #{remitSatus} = 2 then join_bp.remit_status = 2
+                      when #{remitSatus} = 3 then join_bp.remit_status = 3
+                      end
                   </when>
                   <when test="taskDefinitionKey == 'usertask_bank_lend_record'">
                       AND case when #{taskStatus} = 0 then deputy.bank_lend_record  != 0                          else deputy.bank_lend_record                           = #{taskStatus} end

@@ -1,6 +1,7 @@
 package com.yunche.loan.mapper;
 
 import com.yunche.loan.config.anno.FunctionTime;
+import com.yunche.loan.domain.param.ContractOverDueParam;
 import com.yunche.loan.domain.vo.*;
 import org.apache.ibatis.annotations.Param;
 
@@ -357,4 +358,8 @@ public interface LoanQueryDOMapper {
 
 
     List<Long> selectOrderIdByIdCard(@Param("idCard") String idCard);
+
+    List<ContractOverDueVO> contractOverDueList(ContractOverDueParam param);
+
+    ContractOverDueCustomerInfoVO selectContractOverDueCustomerInfoInfo(Long orderId);
 }

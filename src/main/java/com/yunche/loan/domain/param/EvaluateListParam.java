@@ -15,7 +15,7 @@ public class EvaluateListParam
     private String carInfo; //0有效  --  1 无效
 
     @NotNull
-    private Integer pageIndex = 0;
+    private Integer pageIndex = 1;
     @NotNull
     private Integer pageSize = 20;
 
