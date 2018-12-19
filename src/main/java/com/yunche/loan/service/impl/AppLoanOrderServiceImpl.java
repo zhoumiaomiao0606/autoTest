@@ -192,6 +192,9 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
     @Autowired
     private SecondHandCarEvaluateDOMapper secondHandCarEvaluateDOMapper;
 
+    @Autowired
+    private CarDetailDOMapper carDetailDOMapper;
+
 
     @Override
     public ResultBean<AppInfoSupplementVO> infoSupplementDetail(Long supplementOrderId) {
@@ -1370,7 +1373,11 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
             // 车型
             BaseVO carDetail = new BaseVO();
             carDetail.setId(loanCarInfoDO.getCarDetailId());
-            carDetail.setName(loanCarInfoDO.getCarDetailName());
+            if (loanCarInfoDO.getCarDetailId()!=null)
+            {
+                CarDetailDO carDetailDO = carDetailDOMapper.selectByPrimaryKey(loanCarInfoDO.getCarDetailId(), null);
+                carDetail.setName(carDetailDO.getName());
+            }
             loanCarInfoVO.setCarDetail(carDetail);
 
             // 合伙人账户信息
