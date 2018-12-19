@@ -411,7 +411,7 @@ public class HttpUtils {
         String result =null;
         if(httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK){
              result = EntityUtils.toString(httpResponse.getEntity());// 返回json格式：
-            LOG.error("数据读取！！！！"+result);
+            //LOG.error("数据读取！！！！"+result);
         }
 
         return  result;

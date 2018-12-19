@@ -180,7 +180,8 @@ public class AsyncFinanceApI {
             if(String.valueOf(map.get("resultCode")).equals("200")){
                 voucherErrRecordDO.setStatus(new Byte("2"));
             }
-        } catch (IOException e) {
+        } catch (IOException e)
+        {
             voucherErrRecordDO.setRetMessage(retJson);
         }
 

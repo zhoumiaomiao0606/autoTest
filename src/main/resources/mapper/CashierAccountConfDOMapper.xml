@@ -117,9 +117,9 @@
   </update>
 
 
-  <select id="listAll" parameterType="com.yunche.loan.domain.param.QueryCashierAccountConfParam" resultMap="BaseResultMap">
+  <select id="listAll" parameterType="com.yunche.loan.domain.param.QueryCashierAccountConfParam" resultType="com.yunche.loan.domain.vo.CashierAccountConfVO">
     select
-    id,
+    cashier_account_conf.id,
     employee_id as employeeId,
     employee.name as  employeeName,
     company_account as companyAccount,
@@ -131,10 +131,10 @@
     left join employee on  cashier_account_conf.employee_id = employee.id
     <where>
       <if test="employeeId !=null and employeeId !=''" >
-        employee_id = #{employeeId,jdbcType=BIGINT}
+        and employee_id = #{employeeId,jdbcType=BIGINT}
       </if>
-      <if test="createUser !=null and employeeId !=''" >
-        create_user like CONCAT('%', #{employeeId,jdbcType=BIGINT} ,'%')
+      <if test="createUser !=null and createUser !=''" >
+        and create_user like CONCAT('%', #{createUser,jdbcType=VARCHAR} ,'%')
       </if>
 
     </where>
