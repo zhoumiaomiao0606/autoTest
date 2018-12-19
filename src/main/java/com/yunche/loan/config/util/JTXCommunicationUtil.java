@@ -33,6 +33,7 @@ public class JTXCommunicationUtil {
         Map<String, Object> paramMap = new HashMap<>();
         headBuild(paramMap, "ASSET_01",null);
         String jtxId = (String)((Map)paramMap.get("MsgHdr")).get("Ref");
+        logger.info("ASSET_01开始了"+idPair.getOrderId());
         JtxCommunicationDO jtxCommunicationDO = new JtxCommunicationDO();
         jtxCommunicationDO.setJtxId(jtxId);
         jtxCommunicationDO.setBridgeProcecssId(idPair.getBridgeProcessId());
