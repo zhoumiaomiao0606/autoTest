@@ -15,6 +15,7 @@ import com.yunche.loan.config.feign.request.group.*;
 import com.yunche.loan.config.feign.response.ApplyStatusResponse;
 import com.yunche.loan.config.feign.response.ApplycreditstatusResponse;
 import com.yunche.loan.config.feign.response.CreditCardApplyResponse;
+import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.*;
 import com.yunche.loan.config.util.Process;
 import com.yunche.loan.domain.entity.*;
@@ -224,6 +225,18 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         }
 
 
+    }
+
+    /**
+     * 银行二手车评估
+     * @param orderId
+     * @return
+     */
+    @Override
+    public ResultBean applyevaluate(Long orderId) {
+
+        
+        return null;
     }
 
     @Override
