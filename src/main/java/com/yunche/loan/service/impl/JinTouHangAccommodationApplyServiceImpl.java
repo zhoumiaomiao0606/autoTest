@@ -220,6 +220,7 @@ public class JinTouHangAccommodationApplyServiceImpl implements JinTouHangAccomm
             @Override
             public void process() {
                 try{
+                    logger.info("异步开始了"+loanOrderDO.getId());
                     String interest = param.getLendAmount().multiply(new BigDecimal("0.08")).multiply(new BigDecimal("60")).divide(new BigDecimal("365"),2,BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal("100")).setScale(0,BigDecimal.ROUND_HALF_UP)+"";
                     Map resultMap = jtxCommunicationUtil.borrowerInfoAuth(loanCustomerDO.getName(),loanCustomerDO.getIdCard(),param.getTel(),
                             loanBaseInfoDO.getBank(),param.getBankCard(),param.getIdPair());

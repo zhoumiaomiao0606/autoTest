@@ -1960,10 +1960,14 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         Map<String, Object> variables = Maps.newHashMap();
         variables.put(PROCESS_VARIABLE_ACTION, ACTION_PASS);
 
+
+        List<Task> list =loanProcessApprovalCommonService.getCurrentTaskList(processInstanceId);
+        logger.info("节点数目:"+list.size());
         Task task = taskService.createTaskQuery()
                 .processInstanceId(processInstanceId)
                 .taskDefinitionKey(taskDefinitionKey)
                 .singleResult();
+
 
         Preconditions.checkNotNull(task, "[" + LoanProcessEnum.getNameByCode(taskDefinitionKey) + "]任务不存在");
 
@@ -2834,6 +2838,8 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
                         // target -> 补充生成 [社会征信录入]
                         variables.put(PROCESS_VARIABLE_TARGET, SOCIAL_CREDIT_RECORD.getCode());
+                        // 创建征信查询历史记录  --> 社会
+                        loanCreditInfoHisService.saveCreditInfoHis_CreditApply(loanOrderDO.getLoanCustomerId(), getLoanBaseInfoDO(loanOrderDO.getLoanBaseInfoId()).getLoanAmount());
                     }
 
                 }

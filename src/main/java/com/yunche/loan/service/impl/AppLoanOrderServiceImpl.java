@@ -1267,6 +1267,7 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
 
                 // #车牌号码 #车辆类型（小型轿车）  #所有人名称  #发动机号码  #注册日期   #车型颜色
                // vehicleInformationUpdateParam.setLicense_plate_number(secondHandCarEvaluateDO.getPlate_num());
+                //vehicleInformationUpdateParam.setLicense_plate_number(secondHandCarEvaluateDO.getPlate_num());
                 vehicleInformationUpdateParam.setCar_category(secondHandCarEvaluateDO.getVehicle_type());
                 vehicleInformationUpdateParam.setEngine_number(secondHandCarEvaluateDO.getEngine_num());
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -1396,7 +1397,6 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
                 CarDetailDO carDetailDO = carDetailDOMapper.selectByPrimaryKey(loanCarInfoDO.getCarDetailId(), null);
                 carDetail.setName(carDetailDO.getName());
             }
-
             loanCarInfoVO.setCarDetail(carDetail);
 
             // 合伙人账户信息
