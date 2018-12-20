@@ -55,9 +55,9 @@ public class PartnerController {
     }
 
     @GetMapping(value = "/selectAllBankName")
-    public List<BankCodeDO> selectAllBankName(@RequestParam("bankName") String bankName)
+    public ResultBean selectAllBankName(@RequestParam("bankName") String bankName)
     {
-        return partnerService.selectAllBankName(bankName);
+        return ResultBean.ofSuccess(partnerService.selectAllBankName(bankName));
     }
 
     /**
