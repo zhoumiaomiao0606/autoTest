@@ -18,4 +18,6 @@ public class VideoFaceExportVO {
     private String result;
     //通过时间
     private String finishTime;
+    //合伙人编码　
+    private String pCode;
 }

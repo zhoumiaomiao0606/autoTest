@@ -28,4 +28,6 @@ public interface ThirdPartyFundBusinessDOMapper {
                    @Param("interest")BigDecimal interest,
                    @Param("poundage")BigDecimal poundage);
 
+    List exportLoanButNotRepay(@Param("startDate")String startDate,@Param("endDate")String endDate);
+
 }

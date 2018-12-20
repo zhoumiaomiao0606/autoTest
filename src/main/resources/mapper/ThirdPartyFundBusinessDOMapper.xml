@@ -227,4 +227,17 @@
             #{item.lendAmount,jdbcType=DECIMAL})
         </foreach>
     </insert>
+
+
+    <select id="exportLoanButNotRepay" >
+        select * from loan_process_bridge process
+        left join third_party_fund_business third on third.bridge_procecss_id = process.id
+        where process.bridge_handle = 1 and process.bridge_repay_record != 1
+        <if test="startDate != null and startDate != ''">
+            <![CDATA[ AND third.lend_date >= #{startDate}]]>
+        </if>
+        <if test="endDate != null and endDate != ''">
+            <![CDATA[ AND third.lend_date <= #{endDate} ]]>
+        </if>
+    </select>
 </mapper>

@@ -1818,6 +1818,7 @@
 	tal.taskId,
 	tal.getTime,
 	tal.pName,
+    tal.pCode,
 	tal.cName,
 	tal.info,
     CASE
@@ -1834,8 +1835,9 @@
 		task.task_id AS taskId,
 		task.get_create AS getTime,
 		par.`name` AS pName,
+        par.partner_code AS pCode,
 		cus.`name` AS cName,
-		( SELECT info FROM video_face_log WHERE order_id = task.task_id ORDER BY id DESC LIMIT 1 ) AS info,
+        ( SELECT GROUP_CONCAT(concat( start_time, ':', remark )) AS info FROM loan_info_supplement WHERE order_id = task.task_id )  AS info,
 		( SELECT action FROM video_face_log WHERE order_id = task.task_id ORDER BY id DESC LIMIT 1 ) AS result,
 		task.finish_create AS finishTime
 	FROM
