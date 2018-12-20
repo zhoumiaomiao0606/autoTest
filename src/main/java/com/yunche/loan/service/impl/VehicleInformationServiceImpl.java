@@ -8,10 +8,7 @@ import com.yunche.loan.config.util.DateUtil;
 import com.yunche.loan.domain.entity.*;
 import com.yunche.loan.domain.param.UniversalFileParam;
 import com.yunche.loan.domain.param.VehicleInformationUpdateParam;
-import com.yunche.loan.domain.vo.RecombinationVO;
-import com.yunche.loan.domain.vo.UniversalCustomerFileVO;
-import com.yunche.loan.domain.vo.UniversalCustomerVO;
-import com.yunche.loan.domain.vo.VehicleInformationVO;
+import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.LoanQueryService;
 import com.yunche.loan.service.VehicleInformationService;
@@ -89,6 +86,7 @@ public class VehicleInformationServiceImpl implements VehicleInformationService 
                 vehicleInformationVO.setApply_license_plate_area(tmpApplyLicensePlateArea);
             }
         }
+        FinancialSchemeVO financialSchemeVO = loanQueryDOMapper.selectFinancialScheme(orderId);
         RecombinationVO<VehicleInformationVO> recombinationVO = new RecombinationVO<VehicleInformationVO>();
         recombinationVO.setInfo(vehicleInformationVO);
         recombinationVO.setCustomers(customers);
@@ -103,7 +101,7 @@ public class VehicleInformationServiceImpl implements VehicleInformationService 
         types.add(new Byte("56"));
         types.add(new Byte("58"));
         recombinationVO.setMaterials(loanQueryDOMapper.selectUniversalCustomerFileByTypes(orderId, types));
-
+        recombinationVO.setFinancial(financialSchemeVO);
 
         return recombinationVO;
     }

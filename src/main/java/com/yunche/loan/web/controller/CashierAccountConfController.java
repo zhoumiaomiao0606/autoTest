@@ -39,6 +39,7 @@ public class CashierAccountConfController
     @GetMapping(value = "/listAllEmployName")
     public ResultBean listAllEmployName()
     {
+
         return cashierAccountConfService.listAllEmployName();
     }
 
