@@ -790,7 +790,7 @@
         FROM
         loan_process_log
         WHERE
-        order_id = principal_orders.id
+        order_id = orders.id
         AND task_definition_key = 'usertask_material_print_review'
         ORDER BY
         id DESC
