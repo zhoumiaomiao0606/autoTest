@@ -1,6 +1,7 @@
 package com.yunche.loan.mapper;
 
 import com.yunche.loan.domain.entity.ThirdPartyFundBusinessDO;
+import com.yunche.loan.domain.vo.JtxExportVO;
 import org.apache.ibatis.annotations.Param;
 
 import java.math.BigDecimal;
@@ -28,6 +29,6 @@ public interface ThirdPartyFundBusinessDOMapper {
                    @Param("interest")BigDecimal interest,
                    @Param("poundage")BigDecimal poundage);
 
-    List exportLoanButNotRepay(@Param("startDate")String startDate,@Param("endDate")String endDate);
+    List<JtxExportVO> exportLoanButNotRepay(@Param("startDate")String startDate, @Param("endDate")String endDate);
 
 }

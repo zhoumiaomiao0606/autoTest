@@ -4,10 +4,7 @@ import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.query.BankCreditPrincipalQuery;
 import com.yunche.loan.domain.query.BaseQuery;
 import com.yunche.loan.domain.query.ContractSetQuery;
-import com.yunche.loan.domain.vo.BankCreditPrincipalVO;
-import com.yunche.loan.domain.vo.BusinessApprovalReportVO;
-import com.yunche.loan.domain.vo.ContractSetReportVO;
-import com.yunche.loan.domain.vo.TelBankCountVO;
+import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.service.ReportService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -81,6 +78,16 @@ public class ReportController {
         return ResultBean.ofSuccess(reportService.bankCreditAllExport(query));
     }
 
+    //信用卡专项分期业务人行征信查询登记表--按合伙人
+    @PostMapping(value = "/bankcreditpartner",consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResultBean<List<BankCreditParReportVO>> bankCreditPartner(@RequestBody BankCreditPrincipalQuery query) {
+        return reportService.bankCreditPartner(query);
+    }
+    @PostMapping(value = "/bankcreditpartnerexport",consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResultBean bankCreditPartnerExport(@RequestBody BankCreditPrincipalQuery query) {
+        return ResultBean.ofSuccess(reportService.bankCreditPartnerExport(query));
+    }
+
     //电审按银行分类统计--日报/周报/月报
     @PostMapping(value = "/telbankcount",consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean<List<TelBankCountVO>> telBankCount(@RequestBody BankCreditPrincipalQuery query) {
@@ -118,6 +125,20 @@ public class ReportController {
     @PostMapping(value = "/telcustomerdetailexport",consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean telCustomerDetailExport(@RequestBody BankCreditPrincipalQuery query) {
         return ResultBean.ofSuccess(reportService.telCustomerDetailExport(query));
+    }
+
+    //抵押权证明细表
+    @PostMapping(value = "/bankmortgagewarrant",consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResultBean bankMortgageWarrant(@RequestBody BankCreditPrincipalQuery query) {
+        return ResultBean.ofSuccess(reportService.bankMortgageWarrant(query));
+    }
+    @PostMapping(value = "/bankmortgagewarranttotal",consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResultBean bankMortgageWarrantTotal(@RequestBody BankCreditPrincipalQuery query) {
+        return ResultBean.ofSuccess(reportService.bankMortgageWarrantTotal(query));
+    }
+    @PostMapping(value = "/bankmortgagewarrantExport",consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResultBean bankmortgagewarrantExport(@RequestBody BankCreditPrincipalQuery query) {
+        return ResultBean.ofSuccess(reportService.bankmortgagewarrantExport(query));
     }
 
 }

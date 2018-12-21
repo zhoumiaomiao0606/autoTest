@@ -371,7 +371,8 @@
         ORDER BY
         create_time DESC
         LIMIT 1
-        ) as username
+        ) as username,
+        loan_financial_plan.loan_time as loan_time
         FROM
         loan_order orders
         LEFT JOIN loan_customer customer ON orders.loan_customer_id = customer.id

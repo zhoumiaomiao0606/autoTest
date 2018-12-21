@@ -649,7 +649,12 @@
         e.name AS eName,
         f.name AS pName,
         '车贷' AS businessVariety,
-        '鑫宝行' AS submitOrganization
+        '鑫宝行' AS submitOrganization,
+        DATE_FORMAT(log.create_time , '%Y/%m/%d' ) as approvalTime,
+        case when credit.result =0 then '不通过'
+        when credit.result =1 then '通过'
+        when credit.result =2 then '关注'
+        end  as result
         from
         loan_process a
         LEFT JOIN loan_order b ON a.order_id = b.id
@@ -1866,5 +1871,111 @@
             </foreach>
         </if>
 	) tal
+    </select>
+    <!--银行报表按合伙人-->
+    <select id="bankCreditPartner" resultType="com.yunche.loan.domain.vo.BankCreditParReportVO" parameterType="com.yunche.loan.domain.query.BankCreditPrincipalQuery">
+        select a.partner_id as partnerId,par.name,a.cus1,a.cus2,a.bank from(
+        SELECT
+        partner_id,
+        sum( IF ( cus.cust_type = 1, 1, 0 ) )  as cus1,
+        count(1) as  cus2
+        FROM
+        loan_customer cus
+        LEFT JOIN loan_order loan ON loan.loan_customer_id = cus.principal_cust_id
+        LEFT JOIN loan_base_info base ON base.id = loan.loan_base_info_id
+        LEFT JOIN loan_process process ON process.order_id = loan.id
+        LEFT JOIN current_node_manager node ON node.order_id = loan.id
+        WHERE
+        process.bank_credit_record = 1
+        <if test="gmtCreateStart1 != null and gmtCreateStart1 != ''">
+            <![CDATA[ AND node.usertask_bank_credit_record_create_time >= #{gmtCreateStart1}]]>
+        </if>
+        <if test="gmtCreateEnd1 != null and gmtCreateEnd1 != ''">
+            <![CDATA[ AND node.usertask_bank_credit_record_create_time <= #{gmtCreateEnd1} ]]>
+        </if>
+        <if test="partnerList != null and partnerList.size() > 0">
+            and
+            par.partner_id in
+            <foreach item="item" index="index" collection="partnerList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="bankList != null and bankList.size() > 0">
+            and
+            base.bank in
+            <foreach item="item" index="index" collection="bankList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        GROUP BY
+        base.partner_id
+        )a left join partner par on par.id = a.partner_id
+    </select>
+    <!--抵押权证明细表  -->
+    <select id="bankMortgageWarrant" parameterType="com.yunche.loan.domain.query.BankCreditPrincipalQuery" resultType="com.yunche.loan.domain.vo.BankMortgageWarrantVO">
+      SELECT
+	a.*,
+	DATEDIFF( now( ), a.postDate ) as postDays,
+	DATEDIFF( now( ), a.unsecuredDate ) as unsecuredDays
+    FROM
+        (
+    SELECT
+        par.`name` AS pName,
+        cus.`name` AS cName,
+        cus.id_card AS idCard,
+        ( SELECT DATE_FORMAT( express_send_date, '%Y-%m-%d' ) FROM loan_data_flow WHERE type IN ( 11, 12 ) AND order_id = loan.id ORDER BY express_send_date DESC LIMIT 1 ) AS postDate,
+        base.bank,
+        plan.bank_period_principal AS money,
+        ( SELECT DATE_FORMAT( lend_date, '%Y-%m-%d' ) FROM bank_lend_record WHERE loan_order = loan.id ORDER BY lend_date DESC LIMIT 1 ) AS unsecuredDate,
+        '' AS overdue,
+        area.area_name AS areaName,
+        info.license_plate_number AS number
+    FROM
+        loan_process process
+        LEFT JOIN loan_order loan ON loan.id = process.order_id
+        LEFT JOIN loan_base_info base ON base.id = loan.loan_base_info_id
+        LEFT JOIN loan_customer cus ON cus.id = loan.loan_customer_id
+        LEFT JOIN partner par ON par.id = base.partner_id
+        LEFT JOIN loan_financial_plan plan ON plan.id = loan.loan_financial_plan_id
+        LEFT JOIN vehicle_information info ON info.id = loan.vehicle_information_id
+        LEFT JOIN base_area area ON area.area_id = info.apply_license_plate_area
+    WHERE
+        process.remit_review = 1
+        AND process.apply_license_plate_deposit_info != 1
+        <if test="bankList != null and bankList.size() > 0">
+            and
+            base.bank in
+            <foreach item="item" index="index" collection="bankList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+	) a
+
+    </select>
+    <select id="bankMortgageWarrantTotal" parameterType="java.lang.String" resultType="com.yunche.loan.domain.vo.BankMortgageWarrantVO">
+        SELECT
+        sum( plan.bank_period_principal ) AS money
+
+        FROM
+        loan_process process
+        LEFT JOIN loan_order loan ON loan.id = process.order_id
+        LEFT JOIN loan_base_info base ON base.id = loan.loan_base_info_id
+        LEFT JOIN loan_customer cus ON cus.id = loan.loan_customer_id
+        LEFT JOIN partner par ON par.id = base.partner_id
+        LEFT JOIN loan_financial_plan plan ON plan.id = loan.loan_financial_plan_id
+        LEFT JOIN vehicle_information info ON info.id = loan.vehicle_information_id
+        LEFT JOIN base_area area ON area.area_id = info.apply_license_plate_area
+        WHERE
+        process.remit_review = 1
+        AND process.apply_license_plate_deposit_info != 1
+
+        <if test="bankList != null and bankList.size() > 0">
+            and
+            base.bank in
+            <foreach item="item" index="index" collection="bankList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+
     </select>
 </mapper>

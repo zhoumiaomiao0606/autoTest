@@ -74,4 +74,20 @@ public class ExportMaterialReviewDetailQueryVO
     private String revievOverdueTime;
 
 
+
+
+    //纸审领取时间
+    private String data_audit_receive_date;
+
+    //合同套打时间
+    private String contract_set_up_date;
+
+    //线上分期时间
+    private String online_staging_date;
+
+    //银行接收合同时间
+    private String bank_accept_contract_date;
+
+    //银行放款时间
+    private String bank_loan_date;
 }

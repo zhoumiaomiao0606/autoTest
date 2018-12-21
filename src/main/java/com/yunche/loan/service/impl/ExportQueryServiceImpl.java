@@ -240,7 +240,7 @@ public class ExportQueryServiceImpl implements ExportQueryService
         List list = chartDOMapper.selectFinancialDepartmentRemitDetailChartVO(param);
         ArrayList<String> header = Lists.newArrayList("大区","业务区域","客户姓名", "身份证号",
                 "手机号", "贷款银行", "业务团队", "业务员", "车型", "车价", "执行利率", "首付款", "贷款金额", "银行分期本金", "打款金额",
-                "创建时间","垫款时间","提交人"
+                "创建时间","垫款时间","提交人","期数"
         );
 
 
@@ -273,8 +273,8 @@ public class ExportQueryServiceImpl implements ExportQueryService
         List<ExportMaterialReviewDetailQueryVO> list = loanStatementDOMapper.exportMaterialReviewQuerys(exportMaterialReviewQueryVerifyParam);
 
         ArrayList<String> header = Lists.newArrayList("业务区域", "业务团队","合伙人编码","合伙人组别", "客户姓名", "身份证号",
-                 "贷款银行", "银行分期本金", "垫款日期", "资料接收日期", "资料齐全日期", "资料审核提交日期","套打时间", "资料审核状态", "资料增补次数", "资料增补内容",
-                "提车资料提交时间","资料增补时间","合同上交银行日期","垫款超期天数","纸审超期天数","备注"
+                 "贷款银行", "银行分期本金", "垫款日期", "资料接收日期", "基本资料齐全日期", "资料审核提交日期","套打时间", "资料审核状态", "资料增补次数", "资料增补内容",
+                "提车资料提交时间","资料增补时间","合同上交银行日期","垫款超期天数","纸审超期天数","纸审领取时间","合同套打时间","线上分期时间","银行接收合同时间","银行放款时间","备注"
         );
 
 

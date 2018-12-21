@@ -17,4 +17,6 @@ public class BankCreditPrincipalVO {
 	private String submitOrganization;
 	private String bnakResult;
 	private String creditApplyTime;
+	private String approvalTime;
+	private String result;
 }
