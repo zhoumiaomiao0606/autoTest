@@ -749,6 +749,12 @@ public class ExportQueryServiceImpl implements ExportQueryService
         return ossResultKey;
     }
 
+
+    public List<String> usertaskMaterialPrintUsers()
+    {
+        return loanStatementDOMapper.usertaskMaterialPrintUsers();
+    }
+
     @Override
     public String expertAwaitRemitDetailChart(AwaitRemitDetailChartParam param) {
 

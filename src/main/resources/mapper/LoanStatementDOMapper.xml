@@ -1937,6 +1937,20 @@
         </where>
     </select>
 
+
+    <select id="usertaskMaterialPrintUsers" resultType="String">
+        SELECT
+        distinct
+        loan_process_log.user_name
+        FROM
+        loan_process_log
+        WHERE
+        action = 1
+        AND task_definition_key = 'usertask_material_print_review'
+        ORDER BY
+        id DESC
+    </select>
+
     <select id="exportFamilyLinkManList" parameterType="long" resultType="com.yunche.loan.domain.vo.FamilyLinkManVO">
 
         SELECT
