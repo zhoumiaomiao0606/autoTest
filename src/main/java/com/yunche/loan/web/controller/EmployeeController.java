@@ -68,6 +68,16 @@ public class EmployeeController {
     }
 
     /**
+     * 员工-名字枚举--列表
+     *
+     * @return
+     */
+    @GetMapping("/listAllName")
+    public ResultBean<List<EmployeeDO>> listAllName() {
+        return employeeService.listAllName();
+    }
+
+    /**
      * 职位列表
      *
      * @return
