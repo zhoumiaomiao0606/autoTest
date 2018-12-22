@@ -348,8 +348,7 @@
         gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
         feature = #{feature,jdbcType=VARCHAR},
         rebate_entry = #{rebateEntry,jdbcType=TINYINT},
-        rebate_periods = #{rebatePeriods,jdbcType=INTEGER}
-        feature = #{feature,jdbcType=VARCHAR},
+        rebate_periods = #{rebatePeriods,jdbcType=INTEGER},
         second_hand_car_evaluate_id = #{second_hand_car_evaluate_id,jdbcType=BIGINT},
         second_hand_car_first_site_id = #{second_hand_car_first_site_id,jdbcType=BIGINT}
         where id = #{id,jdbcType=BIGINT}
