@@ -686,6 +686,17 @@ public class EmployeeServiceImpl implements EmployeeService {
         return partnerId;
     }
 
+    @Override
+    public ResultBean<List<EmployeeDO>> listAllName()
+    {
+
+        List<EmployeeDO> all = employeeDOMapper.getAll(TYPE_ZS, VALID_STATUS);
+
+        //employeeCache
+
+        return ResultBean.ofSuccess(all);
+    }
+
     /**
      * 校验唯一属性 (身份证号、手机号、邮箱、钉钉)
      *
