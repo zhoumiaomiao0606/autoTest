@@ -2415,7 +2415,7 @@
 
         WHERE s.order_id = #{orderId}
 
-        AND s.status = 1
+        <!--AND s.status = 1-->
 
     </select>
 

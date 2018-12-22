@@ -81,7 +81,7 @@ public class ICBCController {
     //银行二手车评估价
     @GetMapping(value = "/applyevaluate")
     public ResultBean applyevaluate(@RequestParam("orderId") Long orderId){
-        return null;
+        return bankSolutionService.applyevaluate(orderId);
     }
 
 

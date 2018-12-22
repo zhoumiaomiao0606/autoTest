@@ -1815,36 +1815,37 @@
     </select>
     <select id="videoFaceExpot" parameterType="com.yunche.loan.domain.query.VideoFaceExportQuery" resultType="com.yunche.loan.domain.vo.VideoFaceExportVO">
         SELECT
-	tal.taskId,
-	tal.getTime,
-	tal.pName,
-	tal.cName,
-	tal.info,
-    CASE
+	        tal.taskId,
+	        tal.getTime,
+            tal.partnerCode,
+	        tal.pName,
+	        tal.cName,
+	        tal.info,
+            CASE
 
-		WHEN tal.result = 1 THEN
-		'通过'
-		WHEN tal.result = 2 THEN
-		'不通过'
-	END AS result,
-	tal.finishTime
-    FROM
-	(
-	SELECT
-		task.task_id AS taskId,
-		task.get_create AS getTime,
-		par.`name` AS pName,
-		cus.`name` AS cName,
-		( SELECT info FROM video_face_log WHERE order_id = task.task_id ORDER BY id DESC LIMIT 1 ) AS info,
-		( SELECT action FROM video_face_log WHERE order_id = task.task_id ORDER BY id DESC LIMIT 1 ) AS result,
-		task.finish_create AS finishTime
-	FROM
-		task_distribution task
-		LEFT JOIN loan_order loan ON loan.id = task.task_id
-		LEFT JOIN loan_base_info base ON base.id = loan.loan_base_info_id
-		LEFT JOIN partner par ON par.id = base.partner_id
-		LEFT JOIN loan_customer cus ON cus.id = loan.loan_customer_id
-	WHERE
+	        	WHEN tal.result = 1 THEN
+	        	'通过'
+	        	WHEN tal.result = 2 THEN
+	        	'不通过'
+	        END AS result,
+	        tal.finishTime
+        FROM
+	    (
+	    SELECT
+	    	task.task_id AS taskId,
+	    	task.get_create AS getTime,
+            par.partner_code  AS partnerCode,
+	    	par.`name` AS pName,
+	    	cus.`name` AS cName,
+	    	( SELECT action FROM video_face_log WHERE order_id = task.task_id ORDER BY id DESC LIMIT 1 ) AS result,
+	    	task.finish_create AS finishTime
+	    FROM
+	    	task_distribution task
+	    	LEFT JOIN loan_order loan ON loan.id = task.task_id
+	    	LEFT JOIN loan_base_info base ON base.id = loan.loan_base_info_id
+	    	LEFT JOIN partner par ON par.id = base.partner_id
+	    	LEFT JOIN loan_customer cus ON cus.id = loan.loan_customer_id
+	    WHERE
 		task.task_key = 'usertask_video_review'
         AND 1 = if( (SELECT count( id ) FROM video_face_log WHERE order_id = task.task_id) &gt; 0, 1, 0 )
 		AND ( task.`status` = 1 OR task.`status` = 2 )
@@ -1863,6 +1864,6 @@
                 #{item}
             </foreach>
         </if>
-	) tal
+	    ) tal
     </select>
 </mapper>

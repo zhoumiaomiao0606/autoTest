@@ -9,7 +9,8 @@ import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.OSSUnit;
 import com.yunche.loan.config.util.SessionUtils;
 import com.yunche.loan.domain.query.VideoFaceExportQuery;
-import com.yunche.loan.domain.vo.*;
+import com.yunche.loan.domain.vo.RecombinationVO;
+import com.yunche.loan.domain.vo.VideoFaceExportVO;
 import com.yunche.loan.mapper.LoanQueryDOMapper;
 import com.yunche.loan.mapper.ZhonganInfoDOMapper;
 import com.yunche.loan.service.LoanQueryService;
@@ -30,7 +31,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
-import static com.yunche.loan.config.constant.LoanFileEnum.*;
+import static com.yunche.loan.config.constant.LoanFileEnum.INTERROGATION_VIDEO;
+import static com.yunche.loan.config.constant.LoanFileEnum.SIGNATURE_VIDEO;
 
 /**
  * @author liuzhe
@@ -76,8 +78,28 @@ public class VideoReviewServiceImpl implements VideoReviewService {
     public String videoFaceExport(VideoFaceExportQuery query) {
         List<VideoFaceExportVO> list = zhonganInfoDOMapper.videoFaceExpot(query);
 
+
+        //填充面签问题
+        fillVideoInfo(list);
+
         return videoFaceExcelFile(list);
     }
+
+    /**
+     * 填充面签问题
+     * @param list
+     */
+    private void fillVideoInfo(List<VideoFaceExportVO> list) {
+        
+        
+        list.stream().filter(java.util.Objects::nonNull).forEach(e->{
+            String orderId = e.getTaskId();//订单号
+
+
+        });
+
+    }
+
     private String videoFaceExcelFile(List<VideoFaceExportVO> list) {
         String timestamp = new SimpleDateFormat("yyyyMMdd").format(new Date());
         Long id = SessionUtils.getLoginUser().getId();
