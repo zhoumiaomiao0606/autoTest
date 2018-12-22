@@ -52,11 +52,13 @@ public class LoanCreditInfoHisServiceImpl implements LoanCreditInfoHisService {
         Preconditions.checkNotNull(principalCustId, "主贷人ID不能为空");
         Preconditions.checkNotNull(loanAmount, "loanAmount不能为空");
 
-        // 所有客户
-        List<LoanCustomerDO> customers = loanCustomerDOMapper.listByPrincipalCustIdAndType(principalCustId, null, VALID_STATUS);
+        // 获取订单所有需要查询征信的客户
+        List<LoanCustomerDO> customers = getAllCustomer(principalCustId);
+
         if (CollectionUtils.isEmpty(customers)) {
             return;
         }
+
 
         EmployeeDO loginUser = getLoginUser();
 
@@ -118,7 +120,10 @@ public class LoanCreditInfoHisServiceImpl implements LoanCreditInfoHisService {
                     });
 
             // 第2+次    过滤出：当前正在查询银行/社会征信的客户
-            customers = filterCustomers_reject(customers, enableType[0], false);
+            if (enableType[0]!=null)
+            {
+                customers = filterCustomers_reject(customers, enableType[0], false);
+            }
 
             if (!CollectionUtils.isEmpty(customers)) {
 
@@ -170,6 +175,41 @@ public class LoanCreditInfoHisServiceImpl implements LoanCreditInfoHisService {
     }
 
     /**
+     * 获取订单所有客户 –> 需要查询征信的客户        过滤：无需查询征信的客户-[紧急联系人]
+     *
+     * @param principalCustId
+     * @return
+     */
+    private List<LoanCustomerDO> getAllCustomer(Long principalCustId) {
+
+        List<LoanCustomerDO> customers = loanCustomerDOMapper.listByPrincipalCustIdAndType(principalCustId, null, VALID_STATUS);
+
+        // 过滤[紧急联系人]
+        customers = filterCustomers_EmergencyContact(customers);
+
+        return customers;
+    }
+
+    /**
+     * 过滤[紧急联系人]
+     *
+     * @param customers
+     * @return
+     */
+    private List<LoanCustomerDO> filterCustomers_EmergencyContact(List<LoanCustomerDO> customers) {
+
+        if (!CollectionUtils.isEmpty(customers)) {
+
+            customers = customers.stream()
+                    .filter(Objects::nonNull)
+                    .filter(e -> !CUST_TYPE_EMERGENCY_CONTACT.equals(e.getCustType()))
+                    .collect(Collectors.toList());
+        }
+
+        return customers;
+    }
+
+    /**
      * 创建征信查询历史记录   -->     customer-first
      *
      * @param loanCustomerDO
@@ -208,7 +248,7 @@ public class LoanCreditInfoHisServiceImpl implements LoanCreditInfoHisService {
     public void saveCreditInfoHis_BankCreditRecord(Long principalCustId) {
         Preconditions.checkNotNull(principalCustId, "主贷人ID不能为空");
 
-        List<LoanCustomerDO> customers = loanCustomerDOMapper.listByPrincipalCustIdAndType(principalCustId, null, VALID_STATUS);
+        List<LoanCustomerDO> customers = getAllCustomer(principalCustId);
         if (CollectionUtils.isEmpty(customers)) {
             return;
         }
@@ -243,7 +283,7 @@ public class LoanCreditInfoHisServiceImpl implements LoanCreditInfoHisService {
     public void saveCreditInfoHis_SocialCreditRecord(Long principalCustId) {
         Preconditions.checkNotNull(principalCustId, "主贷人ID不能为空");
 
-        List<LoanCustomerDO> customers = loanCustomerDOMapper.listByPrincipalCustIdAndType(principalCustId, null, VALID_STATUS);
+        List<LoanCustomerDO> customers = getAllCustomer(principalCustId);
         if (CollectionUtils.isEmpty(customers)) {
             return;
         }
@@ -276,7 +316,7 @@ public class LoanCreditInfoHisServiceImpl implements LoanCreditInfoHisService {
     public void saveCreditInfoHis_BankCreditReject(Long principalCustId, String info, boolean isAutoTask) {
         Preconditions.checkNotNull(principalCustId, "主贷人ID不能为空");
 
-        List<LoanCustomerDO> customers = loanCustomerDOMapper.listByPrincipalCustIdAndType(principalCustId, null, VALID_STATUS);
+        List<LoanCustomerDO> customers = getAllCustomer(principalCustId);
         if (CollectionUtils.isEmpty(customers)) {
             return;
         }
@@ -351,7 +391,7 @@ public class LoanCreditInfoHisServiceImpl implements LoanCreditInfoHisService {
     public void saveCreditInfoHis_SocialCreditReject(Long principalCustId, String info, boolean isAutoTask) {
         Preconditions.checkNotNull(principalCustId, "主贷人ID不能为空");
 
-        List<LoanCustomerDO> customers = loanCustomerDOMapper.listByPrincipalCustIdAndType(principalCustId, null, VALID_STATUS);
+        List<LoanCustomerDO> customers = getAllCustomer(principalCustId);
         if (CollectionUtils.isEmpty(customers)) {
             return;
         }

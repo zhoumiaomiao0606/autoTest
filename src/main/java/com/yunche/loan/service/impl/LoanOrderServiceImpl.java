@@ -29,6 +29,7 @@ import org.springframework.util.CollectionUtils;
 import javax.annotation.Resource;
 import java.io.File;
 import java.lang.Process;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -136,6 +137,9 @@ public class LoanOrderServiceImpl implements LoanOrderService {
 
     @Autowired
     private LoanFileDOMapper loanFileDOMapper;
+
+    @Autowired
+    private SecondHandCarEvaluateDOMapper secondHandCarEvaluateDOMapper;
 
 
     @Override
@@ -351,6 +355,7 @@ public class LoanOrderServiceImpl implements LoanOrderService {
     public ResultBean<Long> createLoanCarInfo(LoanCarInfoParam loanCarInfoParam) {
         Preconditions.checkNotNull(loanCarInfoParam.getOrderId(), "业务单号不能为空");
 
+
         // convert
         LoanCarInfoDO loanCarInfoDO = new LoanCarInfoDO();
         convertLoanCarInfo(loanCarInfoParam, loanCarInfoDO);
@@ -369,13 +374,55 @@ public class LoanOrderServiceImpl implements LoanOrderService {
             ResultBean<Void> updateRelaResultBean = loanProcessOrderService.update(loanOrderDO);
             Preconditions.checkArgument(updateRelaResultBean.getSuccess(), updateRelaResultBean.getMsg());
         }
-
         VehicleInformationUpdateParam vehicleInformationUpdateParam = new VehicleInformationUpdateParam();
+        //更新绑定
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(loanCarInfoParam.getOrderId());
+        if (loanCarInfoParam.getCarType() ==0 )
+        {
+            vehicleInformationUpdateParam.setNow_driving_license_owner(loanCarInfoParam.getNowDrivingLicenseOwner());
+            vehicleInformationUpdateParam.setColor(loanCarInfoParam.getColor());
+            loanOrderDO.setSecond_hand_car_evaluate_id(null);
+            loanOrderDOMapper.updateByPrimaryKeySelective(loanOrderDO);
+        }else {
+
+            if (loanCarInfoParam.getEvaluationType()==2)//手工评估
+            {
+                vehicleInformationUpdateParam.setNow_driving_license_owner(loanCarInfoParam.getNowDrivingLicenseOwner());
+                vehicleInformationUpdateParam.setColor(loanCarInfoParam.getColor());
+
+                //更新vin码---车辆行驶证号码
+                vehicleInformationUpdateParam.setVehicle_identification_number(loanCarInfoParam.getVin());
+
+                loanOrderDO.setSecond_hand_car_evaluate_id(null);
+                loanOrderDOMapper.updateByPrimaryKeySelective(loanOrderDO);
+
+            }else if(loanCarInfoParam.getEvaluationType()==1)//在线评估
+            {
+                loanOrderDO.setSecond_hand_car_evaluate_id(loanCarInfoParam.getSecond_hand_car_evaluate_id());
+                //更新车辆信息其他信息
+                SecondHandCarEvaluateDO secondHandCarEvaluateDO = secondHandCarEvaluateDOMapper.selectByPrimaryKey(loanCarInfoParam.getSecond_hand_car_evaluate_id());
+
+                // #车牌号码 #车辆类型（小型轿车）  #所有人名称  #发动机号码  #注册日期   #车型颜色
+                //vehicleInformationUpdateParam.setLicense_plate_number(secondHandCarEvaluateDO.getPlate_num());
+                vehicleInformationUpdateParam.setCar_category(secondHandCarEvaluateDO.getVehicle_type());
+                //vehicleInformationUpdateParam.setNow_driving_license_owner(secondHandCarEvaluateDO.getOwner());
+                vehicleInformationUpdateParam.setEngine_number(secondHandCarEvaluateDO.getEngine_num());
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                vehicleInformationUpdateParam.setRegister_date(sdf.format(secondHandCarEvaluateDO.getRegister_date()));
+                /*vehicleInformationUpdateParam.setColor(secondHandCarEvaluateDO.getStyle_color());*/
+                vehicleInformationUpdateParam.setColor(loanCarInfoParam.getColor());
+                vehicleInformationUpdateParam.setVehicle_identification_number(secondHandCarEvaluateDO.getVin());
+                vehicleInformationUpdateParam.setNow_driving_license_owner(loanCarInfoParam.getNowDrivingLicenseOwner());
+
+                loanOrderDOMapper.updateByPrimaryKeySelective(loanOrderDO);
+            }
+
+        }
+
+
         vehicleInformationUpdateParam.setOrder_id(loanCarInfoParam.getOrderId().toString());
         vehicleInformationUpdateParam.setApply_license_plate_area(loanCarInfoParam.getApplyLicensePlateArea());
         vehicleInformationUpdateParam.setLicense_plate_type(loanCarInfoParam.getLicensePlateType());
-        vehicleInformationUpdateParam.setNow_driving_license_owner(loanCarInfoParam.getNowDrivingLicenseOwner());
-        vehicleInformationUpdateParam.setColor(loanCarInfoParam.getColor());
 
         vehicleInformationService.update(vehicleInformationUpdateParam);
 
@@ -394,19 +441,62 @@ public class LoanOrderServiceImpl implements LoanOrderService {
     public ResultBean<Void> updateLoanCarInfo(LoanCarInfoParam loanCarInfoParam) {
         Preconditions.checkArgument(null != loanCarInfoParam && null != loanCarInfoParam.getId(), "车辆信息ID不能为空");
         Preconditions.checkNotNull(loanCarInfoParam.getOrderId(), "订单号不能为空");
+        VehicleInformationUpdateParam vehicleInformationUpdateParam = new VehicleInformationUpdateParam();
+        //更新绑定
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(loanCarInfoParam.getOrderId());
+        if (loanCarInfoParam.getCarType() ==0 )
+        {
+            vehicleInformationUpdateParam.setNow_driving_license_owner(loanCarInfoParam.getNowDrivingLicenseOwner());
+            vehicleInformationUpdateParam.setColor(loanCarInfoParam.getColor());
+            loanOrderDO.setSecond_hand_car_evaluate_id(null);
+            loanOrderDOMapper.updateByPrimaryKeySelective(loanOrderDO);
+        }else {
 
+
+            if (loanCarInfoParam.getEvaluationType()==2)//手工评估
+            {
+                vehicleInformationUpdateParam.setNow_driving_license_owner(loanCarInfoParam.getNowDrivingLicenseOwner());
+                vehicleInformationUpdateParam.setColor(loanCarInfoParam.getColor());
+
+                //更新vin码---车辆行驶证号码
+                vehicleInformationUpdateParam.setVehicle_identification_number(loanCarInfoParam.getVin());
+
+                loanOrderDO.setSecond_hand_car_evaluate_id(null);
+                loanOrderDOMapper.updateByPrimaryKeySelective(loanOrderDO);
+
+            }else if(loanCarInfoParam.getEvaluationType()==1)//在线评估
+            {
+                loanOrderDO.setSecond_hand_car_evaluate_id(loanCarInfoParam.getSecond_hand_car_evaluate_id());
+                //更新车辆信息其他信息
+                SecondHandCarEvaluateDO secondHandCarEvaluateDO = secondHandCarEvaluateDOMapper.selectByPrimaryKey(loanCarInfoParam.getSecond_hand_car_evaluate_id());
+
+                // #车牌号码 #车辆类型（小型轿车）  #所有人名称  #发动机号码  #注册日期   #车型颜色
+                //vehicleInformationUpdateParam.setLicense_plate_number(secondHandCarEvaluateDO.getPlate_num());
+                vehicleInformationUpdateParam.setCar_category(secondHandCarEvaluateDO.getVehicle_type());
+                //vehicleInformationUpdateParam.setNow_driving_license_owner(secondHandCarEvaluateDO.getOwner());
+                vehicleInformationUpdateParam.setEngine_number(secondHandCarEvaluateDO.getEngine_num());
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                vehicleInformationUpdateParam.setRegister_date(sdf.format(secondHandCarEvaluateDO.getRegister_date()));
+                /*vehicleInformationUpdateParam.setColor(secondHandCarEvaluateDO.getStyle_color());*/
+                vehicleInformationUpdateParam.setColor(loanCarInfoParam.getColor());
+                vehicleInformationUpdateParam.setNow_driving_license_owner(loanCarInfoParam.getNowDrivingLicenseOwner());
+                vehicleInformationUpdateParam.setVehicle_identification_number(secondHandCarEvaluateDO.getVin());
+
+                loanOrderDOMapper.updateByPrimaryKeySelective(loanOrderDO);
+            }else{
+                throw new BizException("估价类型有误");
+            }
+
+        }
         // convert
         LoanCarInfoDO loanCarInfoDO = new LoanCarInfoDO();
         convertLoanCarInfo(loanCarInfoParam, loanCarInfoDO);
 
         ResultBean<Void> resultBean = loanCarInfoService.update(loanCarInfoDO);
 
-        VehicleInformationUpdateParam vehicleInformationUpdateParam = new VehicleInformationUpdateParam();
         vehicleInformationUpdateParam.setOrder_id(loanCarInfoParam.getOrderId().toString());
         vehicleInformationUpdateParam.setApply_license_plate_area(loanCarInfoParam.getApplyLicensePlateArea());
         vehicleInformationUpdateParam.setLicense_plate_type(loanCarInfoParam.getLicensePlateType());
-        vehicleInformationUpdateParam.setNow_driving_license_owner(loanCarInfoParam.getNowDrivingLicenseOwner());
-        vehicleInformationUpdateParam.setColor(loanCarInfoParam.getColor());
         vehicleInformationService.update(vehicleInformationUpdateParam);
 
         String s = loanCarInfoParam.getApplyLicensePlateArea();
@@ -526,6 +616,17 @@ public class LoanOrderServiceImpl implements LoanOrderService {
                 List<CustomerVO> emergencyContactList = custDetailVO.getEmergencyContactList();
 
                 emergencyContactList.stream()
+                        .filter(Objects::nonNull)
+                        .forEach(e -> {
+                            // 封装用户信息并填充到容器
+                            fillLoanSimpleCustomerInfoVO(e, loanSimpleCustomerInfoVOS);
+                        });
+            }
+
+            if (!CollectionUtils.isEmpty(custDetailVO.getSpecialContactList())) {
+                List<CustomerVO> specialContactList = custDetailVO.getSpecialContactList();
+
+                specialContactList.stream()
                         .filter(Objects::nonNull)
                         .forEach(e -> {
                             // 封装用户信息并填充到容器
@@ -718,7 +819,8 @@ public class LoanOrderServiceImpl implements LoanOrderService {
         Long loanCarInfoId = loanOrderDOMapper.getLoanCarInfoIdById(orderId);
 
         LoanCarInfoDO loanCarInfoDO = loanCarInfoDOMapper.selectByPrimaryKey(loanCarInfoId);
-        if (null != loanCarInfoDO) {
+        if (null != loanCarInfoDO)
+        {
             BeanUtils.copyProperties(loanCarInfoDO, loanCarInfoVO);
 
             // 车型回填
@@ -733,6 +835,8 @@ public class LoanOrderServiceImpl implements LoanOrderService {
         Long vid = loanOrderDOMapper.getVehicleInformationIdById(orderId);
         LoanBaseInfoDO loanBaseInfoDO = loanBaseInfoDOMapper.getTotalInfoByOrderId(orderId);
         VehicleInformationDO vehicleInformationDO = vehicleInformationDOMapper.selectByPrimaryKey(vid);
+
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
         if (vehicleInformationDO != null) {
             loanCarInfoVO.setNowDrivingLicenseOwner(vehicleInformationDO.getNow_driving_license_owner());
             loanCarInfoVO.setLicensePlateType(vehicleInformationDO.getLicense_plate_type() == null ? null : vehicleInformationDO.getLicense_plate_type().toString());
@@ -740,10 +844,12 @@ public class LoanOrderServiceImpl implements LoanOrderService {
             loanCarInfoVO.setVehicleCarCategory(vehicleInformationDO.getCar_category());
         }
         String tmpApplyLicensePlateArea = null;
-        if (loanBaseInfoDO.getAreaId() != null) {
+        if (loanBaseInfoDO.getAreaId() != null)
+        {
             BaseAreaDO baseAreaDO = baseAreaDOMapper.selectByPrimaryKey(loanBaseInfoDO.getAreaId(), VALID_STATUS);
             //（个性化）如果上牌地是区县一级，则返回形式为 省+区
-            if ("3".equals(String.valueOf(baseAreaDO.getLevel()))) {
+            if ("3".equals(String.valueOf(baseAreaDO.getLevel())))
+            {
                 Long parentAreaId = baseAreaDO.getParentAreaId();
                 BaseAreaDO cityDO = baseAreaDOMapper.selectByPrimaryKey(parentAreaId, null);
                 baseAreaDO.setParentAreaId(cityDO.getParentAreaId());
@@ -752,7 +858,8 @@ public class LoanOrderServiceImpl implements LoanOrderService {
             loanCarInfoVO.setHasApplyLicensePlateArea(baseAreaDO);
 
             if (baseAreaDO != null) {
-                if (baseAreaDO.getParentAreaName() != null) {
+                if (baseAreaDO.getParentAreaName() != null)
+                {
                     tmpApplyLicensePlateArea = baseAreaDO.getParentAreaName() + baseAreaDO.getAreaName();
                 } else {
                     tmpApplyLicensePlateArea = baseAreaDO.getAreaName();
@@ -762,7 +869,27 @@ public class LoanOrderServiceImpl implements LoanOrderService {
         loanCarInfoVO.setApplyLicensePlateArea(tmpApplyLicensePlateArea);
         //增加业务员
         UniversalInfoVO universalInfoVO = loanQueryDOMapper.selectUniversalInfo(orderId);
-        if (universalInfoVO != null) {
+        if (loanOrderDO.getSecond_hand_car_evaluate_id()!=null && !"".equals(loanOrderDO.getSecond_hand_car_evaluate_id()))
+        {
+            SecondHandCarEvaluateDO secondHandCarEvaluateDO = secondHandCarEvaluateDOMapper.selectByPrimaryKey(loanOrderDO.getSecond_hand_car_evaluate_id());
+            if (secondHandCarEvaluateDO!=null)
+            {
+                loanCarInfoVO.setVin(secondHandCarEvaluateDO.getVin());
+                loanCarInfoVO.setSecond_hand_car_evaluate_id(loanOrderDO.getSecond_hand_car_evaluate_id());
+            }
+
+            /*if(universalInfoVO != null)
+            {
+                universalInfoVO.setCar_name(secondHandCarEvaluateDO.getName());
+            }*/
+        }
+        if (null != loanCarInfoDO && loanCarInfoDO.getCarType()==1 && loanCarInfoDO.getEvaluationType()!=null && loanCarInfoDO.getEvaluationType()==2 && vehicleInformationDO != null)
+        {
+            loanCarInfoVO.setVin(vehicleInformationDO.getVehicle_identification_number());
+        }
+
+        if (universalInfoVO != null)
+        {
             loanCarInfoVO.setSalesManName(universalInfoVO.getSalesman_name());
             loanCarInfoVO.setPartnerName(universalInfoVO.getPartner_name());
         }
@@ -1017,6 +1144,7 @@ public class LoanOrderServiceImpl implements LoanOrderService {
         List<CustomerParam> commonLenderList = param.getCommonLenderList();
         List<CustomerParam> guarantorList = param.getGuarantorList();
         List<CustomerParam> emergencyContactList = param.getEmergencyContactList();
+        List<CustomerParam> specialContactList = param.getSpecialContactList();
 
         createLoanCustomerList(principalLenderId, commonLenderList);
 
@@ -1027,6 +1155,8 @@ public class LoanOrderServiceImpl implements LoanOrderService {
             Preconditions.checkArgument(false, "您选择的担保人与主担保人关系有误，请核查");
         }
 
+
+        createLoanCustomerList(principalLenderId, specialContactList);
         createLoanCustomerList(principalLenderId, emergencyContactList);
 
         return principalLenderId;

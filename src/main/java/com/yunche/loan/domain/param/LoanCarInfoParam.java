@@ -16,6 +16,12 @@ public class LoanCarInfoParam {
      */
     private Long orderId;
 
+    private Long second_hand_car_evaluate_id;
+
+    private String vin;
+
+    private Byte evaluationType;
+
     private Long id;
 
     private Byte carType;

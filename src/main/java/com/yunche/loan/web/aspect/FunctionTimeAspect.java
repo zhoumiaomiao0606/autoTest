@@ -105,29 +105,18 @@ public class FunctionTimeAspect {
         return result;
     }
 
-    public static void main(String[] args) {
-
-        Class<LoanQueryDOMapper> clazz = LoanQueryDOMapper.class;
-
-        if (clazz.equals(LoanQueryDOMapper.class)) {
-
-            System.out.println(1);
-
-        } else if (clazz.equals(FinancialProductDOMapper.class)) {
-
-            System.out.println(2);
-        }
-    }
-
 
     boolean checkCreditTime(Long orderId) {
+
         // true：新公式  false：老公式
         boolean flag = true;
 
         if (orderId == null) {
             return flag;
         }
+
         try {
+
             // 需要额外判断一下该订单的征信申请时间，如果是2018年11月1日之前申请的，则使用老版公式
             LoanProcessLogDO loanProcessLog = loanProcessLogService.getLoanProcessLog(orderId, CREDIT_APPLY.getCode());
             if (loanProcessLog != null) {
@@ -137,9 +126,12 @@ public class FunctionTimeAspect {
             } else {
                 flag = false;
             }
+
         } catch (Exception e) {
-            return false;
+
+            flag = false;
         }
+
         return flag;
     }
 }

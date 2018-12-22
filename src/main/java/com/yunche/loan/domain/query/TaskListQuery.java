@@ -23,6 +23,8 @@ public class TaskListQuery {
     @NotNull
     private Integer pageSize = 10;
 
+    private Byte remitSatus;
+
     Long employeeId;
 
     Long telephoneVerifyLevel;
@@ -102,6 +104,12 @@ public class TaskListQuery {
     private String carType;//车辆类型
 
     private String partnerId;//合伙人团队
+
+    //合伙人编码
+    private String partnerCode;
+
+    //合伙人组别
+    private String partnerGroup;
 
     private String loanTime;//贷款期限
 

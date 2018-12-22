@@ -2,6 +2,7 @@ package com.yunche.loan.web.controller;
 
 
 import com.aliyun.oss.OSSClient;
+import com.aliyun.oss.model.OSSObject;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.yunche.loan.config.anno.Limiter;
@@ -91,9 +92,23 @@ public class UniversalController {
         return ResultBean.ofSuccess(partnerDO.getLeaderId());
     }
 
-    @GetMapping("/ftp")
-    public ResultBean ftp() {
-        FtpUtil.icbcUpload("/tmp/9999.jpg");
+    @GetMapping("/oss")
+    public ResultBean ossTest() {
+        OSSClient ossClient = OSSUnit.getOSSClient();
+        String url="img/2018/201804/20180424/Z7M7TCTF3Y.jpg";
+        try{
+            OSSObject object = OSSUnit.getObject(ossClient, url);
+        }catch (Exception e){
+            LOG.info(e.getMessage());
+        }
+
+        LOG.info("oss链接成功：" + System.currentTimeMillis());
+        String diskName = ossConfig.getZipDiskName();
+        String bucketName = ossConfig.getZipBucketName();
+        File file = new File("/tmp/hhhhhhhhhhhhh.txt");
+        OSSUnit.uploadObject2OSS(ossClient, file, bucketName, diskName + File.separator);
+
+        LOG.info("文件上传成功：" + System.currentTimeMillis());
         return ResultBean.ofSuccess("9999");
     }
 

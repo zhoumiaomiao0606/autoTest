@@ -267,10 +267,34 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
         SELECT
               case when max( t.collection_level ) = 7 then 1 else 0 end AS flag
               FROM
               ( SELECT ug.* FROM employee_rela_user_group eg INNER JOIN user_group ug ON eg.user_group_id = ug.id AND eg.employee_id = #{loginUserId} ) t
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -354,6 +378,46 @@
 
         <!--打款确认-->
         AND pc.remit_review = 1
+
+        <if test=" name != null and name != '' ">
+            AND c.name LIKE CONCAT('%', #{name}, '%')
+        </if>
+
+        <include refid="commonSql_customerOrder_getSelfAndChild"/>
+
+    </select>
+
+
+    <select id="selectUniversalRoleChangeOrder" resultType="com.yunche.loan.domain.vo.UniversalCustomerOrderVO">
+        SELECT
+        o.id AS order_id,
+        c.id AS customer_id,
+        c.name AS customer_name,
+        c.id_card AS customer_id_card,
+        c.mobile AS customer_mobile,
+        e.id AS salesman_id,
+        e.name AS salesman_name,
+        d.id AS department_id,
+        d.name AS department_name,
+        p.id AS partner_id,
+        p.name AS partner_name,
+        b.bank AS bank_name
+
+        FROM loan_order o
+        LEFT JOIN loan_process pc ON o.id = pc.order_id
+        LEFT JOIN loan_customer c ON c.id = o.loan_customer_id
+        LEFT JOIN loan_base_info b ON o.loan_base_info_id = b.id
+        LEFT JOIN employee e ON e.id = b.salesman_id
+        LEFT JOIN partner p ON p.id = b.partner_id
+        LEFT JOIN department d ON d.id = p.department_id
+
+        WHERE
+
+        <!--订单正常进行中-->
+        pc.order_status = 1
+
+        <!--贷款申请提交前的订单-->
+        AND pc.loan_apply != 1
 
         <if test=" name != null and name != '' ">
             AND c.name LIKE CONCAT('%', #{name}, '%')
@@ -537,6 +601,8 @@
             customer.ctelzone                                                                       AS customer_ctelzone,
             partner.id                                                                              AS partner_id,
             partner.name                                                                            AS partner_name,
+            partner.partner_code                                                                             AS partner_code,
+            partner.partner_group                                                                             AS partner_group,
             useGetAreaFullName(partner.area_id)                                                     AS partner_biz_area,
             partner.risk_bear_rate                                                                  AS partner_risk_bear_rate,
             partner.pay_month                                                                       AS partner_pay_month,
@@ -677,6 +743,8 @@
         customer.ctelzone                                                                       AS customer_ctelzone,
         partner.id                                                                              AS partner_id,
         partner.name                                                                            AS partner_name,
+        partner.partner_code                                                                             AS partner_code,
+        partner.partner_group                                                                             AS partner_group,
         useGetAreaFullName(partner.area_id)                                                     AS partner_biz_area,
         partner.risk_bear_rate                                                                  AS partner_risk_bear_rate,
         partner.pay_month                                                                       AS partner_pay_month,
@@ -775,6 +843,7 @@
             parameterType="java.lang.Long">
         select
         main_order.id                                                                           AS order_id,
+        lmm.material_num                                                                           AS material_num,
         customer.id_card                                                                        AS customer_id_card,
         customer.name                                                                           AS customer_name,
         customer.hprovince                                                                      AS customer_hprovince,
@@ -800,6 +869,7 @@
         left join loan_car_info car on main_order.loan_car_info_id = car.id
         left join employee salesman on loan.salesman_id = salesman.id
         left join partner partner on loan.partner_id = partner.id
+        left join loan_material_manage lmm on main_order.id = lmm.order_id
 
 
     </select>
@@ -894,15 +964,18 @@
     <select id="selectUniversalCarInfo" parameterType="java.lang.Long"
             resultType="com.yunche.loan.domain.vo.UniversalCarInfoVO">
         select
+        second_hand_car_evaluate.id                                                 as second_hand_car_evaluate_id,
+        second_hand_car_evaluate.vin                                                as vin,
             detail.price                                                            AS car_assess_price,
             brand.name                                                              AS car_brand_name,
             financial.car_price                                                     AS car_price,
             financial.actual_car_price                                              AS actual_car_price,
             useGetCarName(car.car_detail_id)                                        AS car_name,
             detail.name                                                             AS car_detail_name,
-            detail.id                                                               AS car_detail_id,
+            car.car_detail_id                                                               AS car_detail_id,
             car.vehicle_property                                                    AS car_vehicle_property,
             car.car_type                                                            AS car_type,
+            car.evaluation_type                                                            AS evaluation_type,
             car.car_key                                                            AS car_key,
             CASE
         WHEN car.car_key  = 0 THEN
@@ -942,6 +1015,7 @@
         left join car_detail detail on car.car_detail_id = detail.id
         left join car_model model on detail.model_id = model.id
         left join car_brand brand on model.brand_id = brand.id
+        left join second_hand_car_evaluate on main_order.second_hand_car_evaluate_id = second_hand_car_evaluate.id
     </select>
 
     <!--贷后-贷款车辆信息-->
@@ -1010,6 +1084,7 @@
             resultType="com.yunche.loan.domain.vo.UniversalRemitDetails">
       select
             remit.beneficiary_bank                                                                  AS remit_beneficiary_bank,
+            remit.bank_code                                                                  AS remit_bank_code,
             remit.beneficiary_account                                                               AS remit_beneficiary_account,
             remit.beneficiary_account_number                                                        AS remit_beneficiary_account_number,
 
@@ -1021,6 +1096,7 @@
             remit.return_rate_amount                                                                AS remit_return_rate_amount,
             remit.insurance_situation                                                               AS remit_insurance_situation,
             remit.payment_organization                                                              AS remit_payment_organization,
+            remit.remit_status                                                              AS remit_status,
             DATE_FORMAT(remit.application_date,'%Y-%m-%d %H:%i:%S')                                 AS remit_application_date,
             remit.remit_business_id                                                              AS remit_business_id,
             remit.remark
@@ -2543,6 +2619,8 @@
                 DATE_FORMAT(o.gmt_create  ,'%Y-%m-%d %H:%i:%S')
                                                            AS    order_gmt_create,
 
+                b.loan_amount                              AS    financial_expect_loan_amount_val,
+
                 c.id                                       AS    customer_id,
                 c.name                                     AS    customer_name,
                 c.id_card                                  AS    customer_id_card,
@@ -2551,6 +2629,8 @@
                 e.name                                     AS    salesman_name,
                 p.id                                       AS    partner_id,
                 p.name                                     AS    partner_name,
+                p.partner_code                             AS    partner_code,
+                p.partner_group                            AS    partner_group,
                 d.id                                       AS    department_id,
                 d.name                                     AS    department_name,
 
@@ -2600,6 +2680,126 @@
         WHERE
             process.order_status != 3
             AND customer.id_card = #{idCard}
+
+    </select>
+
+    <select id="contractOverDueList" parameterType="com.yunche.loan.domain.param.ContractOverDueParam" resultType="com.yunche.loan.domain.vo.ContractOverDueVO">
+
+
+           SELECT
+           t.*,
+           floor(
+                   ( UNIX_TIMESTAMP( DATE_FORMAT( now( ), '%Y-%m-%d' )) - UNIX_TIMESTAMP( DATE_FORMAT( t.remitDate, '%Y-%m-%d' ) ) ) / ( 24 * 60 * 60 )
+                   )  AS overDueDays
+           FROM
+           (
+           SELECT
+           main.id AS orderId,
+           loan_customer.`name` AS customerName,
+           loan_customer.id_card AS idCard,
+           partner.name AS partnerName,
+           b.bank,
+           f.loan_amount AS loanAmount,
+           f.bank_period_principal AS bankPeriodPrincipal,
+           f.sign_rate AS signRate,
+           remit_details.remit_amount AS remitAmount,
+           ( SELECT create_time FROM
+           loan_process_log
+           WHERE main.id = loan_process_log.order_id AND loan_process_log.task_definition_key = 'usertask_remit_review' and loan_process_log.action =1
+           ORDER BY id DESC LIMIT 1 ) AS remitDate
+
+           FROM
+           loan_order main
+           LEFT JOIN loan_process ON main.id = loan_process.order_id
+           LEFT JOIN loan_customer ON main.loan_customer_id = loan_customer.id
+           LEFT JOIN loan_base_info b ON main.loan_base_info_id = b.id
+           LEFT JOIN employee e ON b.salesman_id = e.id
+           LEFT JOIN partner ON b.partner_id = partner.id
+           LEFT JOIN remit_details ON main.remit_details_id = remit_details.id
+           LEFT JOIN loan_financial_plan f on main.loan_financial_plan_id = f.id
+           WHERE loan_process.remit_review = 1 AND loan_process.data_flow_contract_p2c_review !=1
+        <if test="bizAreaIdList != null and bizAreaIdList.size() > 0">
+            and
+            partner.id in
+            <foreach item="item" index="index" collection="bizAreaIdList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="bankList != null and bankList.size() > 0">
+            and
+            b.bank in
+            <foreach item="item" index="index" collection="bankList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="customerName != null and customerName!= '' ">
+            AND loan_customer.`name` LIKE CONCAT('%',#{customerName},'%')
+        </if>
+        <if test="partnerId != null and partnerId != ''">
+            AND partner.id = #{partnerId}
+        </if>
+        <if test="salesmanId != null and salesmanId !=''">
+            AND e.id = #{salesmanId}
+        </if>
+        <if test="loanBank != null and loanBank != '' ">
+            AND b.bank = #{loanBank}
+        </if>
+        <if test="orderId != null and orderId != '' ">
+            AND main.id = #{orderId}
+        </if>
+        <include refid="commonSql_customerOrder_getSelfAndChild"/>
+           ) t
+        <where>
+            <if test="remitTimeStart != null and remitTimeStart != '' and remitTimeEnd != null and remitTimeEnd != ''">
+                t.remitDate between #{remitTimeStart} and #{remitTimeEnd}
+            </if>
+        </where>
+           HAVING overDueDays &gt;=5
+           ORDER BY t.remitdate ASC
+
+
+
+    </select>
+
+    <!--贷后通用客户主要信息info-->
+    <select id="selectContractOverDueCustomerInfoInfo" resultType="com.yunche.loan.domain.vo.ContractOverDueCustomerInfoVO"
+            parameterType="java.lang.Long">
+SELECT
+           t.*,
+           floor(
+                   ( UNIX_TIMESTAMP( DATE_FORMAT( now( ), '%Y-%m-%d' )) - UNIX_TIMESTAMP( DATE_FORMAT( t.remitDate, '%Y-%m-%d' ) ) ) / ( 24 * 60 * 60 )
+                   )  AS overDueDays
+           FROM
+           (
+        select
+        main_order.id                                                                           AS orderId,
+        customer.id_card                                                                        AS customerIdCard,
+        customer.name                                                                           AS customerName,
+
+        customer.mobile                                                                         AS customerMobile,
+
+        partner.name                                                                            AS partnerName,
+
+        salesman.name                                                                           AS salesmanName,
+        f.loan_amount                                                                           AS loanAmount,
+        remit_details.remit_amount                                                              AS remitAmount,
+        ( SELECT create_time FROM
+           loan_process_log
+           WHERE main_order.id = loan_process_log.order_id AND loan_process_log.task_definition_key = 'usertask_remit_review' and loan_process_log.action =1
+           ORDER BY id DESC LIMIT 1 ) AS remitDate,
+
+        loan.bank                                                                               AS bank
+
+        from (select * from loan_order where id = #{orderId,jdbcType=BIGINT}) main_order
+        left join loan_process process on main_order.id = process.order_id
+        left join loan_customer customer on main_order.loan_customer_id = customer.id
+        left join loan_base_info loan on main_order.loan_base_info_id = loan.id
+        left join employee salesman on loan.salesman_id = salesman.id
+        left join partner partner on loan.partner_id = partner.id
+        LEFT JOIN loan_financial_plan f on main_order.loan_financial_plan_id = f.id
+        LEFT JOIN remit_details ON main_order.remit_details_id = remit_details.id
+        ) t
+
 
     </select>
 

@@ -18,11 +18,15 @@ public interface JinTouHangAccommodationApplyService {
 
     ResultBean applyLoan(AccommodationApplyParam param);
 
+    ResultBean applyOldLoan(AccommodationApplyParam param);
+
     ResultBean batchLoan(AccommodationApplyParam param);
 
     ResultBean batchImp(String key);
 
     ResultBean export(ExportApplyLoanPushParam param);
+
+    ResultBean errorExport(ExportApplyLoanPushParam param);
 
     ResultBean detail(Long bridgeProcessId,Long orderId);
 
@@ -42,4 +46,10 @@ public interface JinTouHangAccommodationApplyService {
     ResultBean calMoney(Long bridgeProcessId,Long orderId,String repayDate);
 
     ResultBean isReturn(Long bridgeProcessId,Long orderId);
+
+    String jtxResult(String param);
+
+    ResultBean getBankCard(Long orderId);
+
+    ResultBean batchEnd(AccommodationApplyParam accommodationApplyParam);
 }

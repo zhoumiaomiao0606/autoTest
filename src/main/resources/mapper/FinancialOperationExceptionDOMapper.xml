@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunche.loan.mapper.FinancialOperationExceptionDOMapper">
+  <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.FinancialOperationExceptionDO">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="order_id" jdbcType="BIGINT" property="orderId" />
+    <result column="process_schedule" jdbcType="TINYINT" property="processSchedule" />
+    <result column="operation_exception_param" jdbcType="VARCHAR" property="operationExceptionParam" />
+    <result column="operation_exception_time" jdbcType="TIMESTAMP" property="operationExceptionTime" />
+    <result column="operation_exception_reason" jdbcType="VARCHAR" property="operationExceptionReason" />
+    <result column="status" jdbcType="TINYINT" property="status" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, order_id, process_schedule, operation_exception_param, operation_exception_time, 
+    operation_exception_reason, status
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from financial_operation_exception
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from financial_operation_exception
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.yunche.loan.domain.entity.FinancialOperationExceptionDO">
+    insert into financial_operation_exception (id, order_id, process_schedule, 
+      operation_exception_param, operation_exception_time, 
+      operation_exception_reason, status)
+    values (#{id,jdbcType=BIGINT}, #{orderId,jdbcType=BIGINT}, #{processSchedule,jdbcType=TINYINT}, 
+      #{operationExceptionParam,jdbcType=VARCHAR}, #{operationExceptionTime,jdbcType=TIMESTAMP}, 
+      #{operationExceptionReason,jdbcType=VARCHAR}, #{status,jdbcType=TINYINT})
+  </insert>
+  <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.FinancialOperationExceptionDO">
+    insert into financial_operation_exception
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="orderId != null">
+        order_id,
+      </if>
+      <if test="processSchedule != null">
+        process_schedule,
+      </if>
+      <if test="operationExceptionParam != null">
+        operation_exception_param,
+      </if>
+      <if test="operationExceptionTime != null">
+        operation_exception_time,
+      </if>
+      <if test="operationExceptionReason != null">
+        operation_exception_reason,
+      </if>
+      <if test="status != null">
+        status,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="orderId != null">
+        #{orderId,jdbcType=BIGINT},
+      </if>
+      <if test="processSchedule != null">
+        #{processSchedule,jdbcType=TINYINT},
+      </if>
+      <if test="operationExceptionParam != null">
+        #{operationExceptionParam,jdbcType=VARCHAR},
+      </if>
+      <if test="operationExceptionTime != null">
+        #{operationExceptionTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="operationExceptionReason != null">
+        #{operationExceptionReason,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=TINYINT},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.FinancialOperationExceptionDO">
+    update financial_operation_exception
+    <set>
+      <if test="orderId != null">
+        order_id = #{orderId,jdbcType=BIGINT},
+      </if>
+      <if test="processSchedule != null">
+        process_schedule = #{processSchedule,jdbcType=TINYINT},
+      </if>
+      <if test="operationExceptionParam != null">
+        operation_exception_param = #{operationExceptionParam,jdbcType=VARCHAR},
+      </if>
+      <if test="operationExceptionTime != null">
+        operation_exception_time = #{operationExceptionTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="operationExceptionReason != null">
+        operation_exception_reason = #{operationExceptionReason,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        status = #{status,jdbcType=TINYINT},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.FinancialOperationExceptionDO">
+    update financial_operation_exception
+    set order_id = #{orderId,jdbcType=BIGINT},
+      process_schedule = #{processSchedule,jdbcType=TINYINT},
+      operation_exception_param = #{operationExceptionParam,jdbcType=VARCHAR},
+      operation_exception_time = #{operationExceptionTime,jdbcType=TIMESTAMP},
+      operation_exception_reason = #{operationExceptionReason,jdbcType=VARCHAR},
+      status = #{status,jdbcType=TINYINT}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+  <select id="list" parameterType="com.yunche.loan.domain.param.FinancialExceptionOperationParam" resultType="com.yunche.loan.domain.vo.FinancialExceptionOperationVO">
+   SELECT
+foe.order_id AS orderId,
+DATE_FORMAT(foe.operation_exception_time, '%Y-%m-%d %H:%i:%S' ) AS operationExceptionTime,
+loan_customer.`name` AS customerName,
+loan_customer.id_card AS idCard,
+loan_base_info.bank AS bank,
+loan_car_info.car_type AS carType,
+partner.`name` AS partnerName,
+foe.`status` AS operationStatus,
+foe.operation_exception_reason AS operationExceptionReason
+
+FROM
+financial_operation_exception foe
+LEFT JOIN loan_order ON foe.order_id = loan_order.id
+LEFT JOIN loan_customer ON loan_order.loan_customer_id = loan_customer.id
+LEFT JOIN loan_base_info ON loan_order.loan_base_info_id = loan_base_info.id
+LEFT JOIN loan_car_info ON loan_order.loan_car_info_id = loan_car_info.id
+LEFT JOIN partner ON loan_base_info.partner_id = partner.id
+<where>
+  <if test="customerName != null and customerName!= '' ">
+    AND loan_customer.`name` LIKE CONCAT('%',#{customerName},'%')
+  </if>
+  <if test="idCard != null">
+    AND loan_customer.id_card = #{idCard}
+  </if>
+  <if test="loanBank != null and loanBank != '' ">
+    AND loan_base_info.bank = #{loanBank}
+  </if>
+  <if test="orderId != null and orderId != '' ">
+    AND foe.order_id = #{orderId}
+  </if>
+  <if test="operationExceptionTime != null and operationExceptionTime !=''">
+    AND DATE_FORMAT(foe.operation_exception_time, '%Y-%m-%d' ) = #{operationExceptionTime}
+  </if>
+  <if test="status != null">
+    AND foe.`status` = #{status}
+  </if>
+  <if test="carType != null">
+    AND loan_car_info.car_type = #{carType}
+  </if>
+</where>
+  </select>
+</mapper>

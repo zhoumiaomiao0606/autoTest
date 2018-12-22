@@ -6,16 +6,14 @@ import org.apache.http.*;
 import org.apache.http.client.CookieStore;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpDelete;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpPut;
+import org.apache.http.client.methods.*;
 import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.conn.ClientConnectionManager;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeRegistry;
 import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.entity.ByteArrayEntity;
+import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -66,6 +64,23 @@ public class HttpUtils {
         HttpClient httpClient = wrapClient(host);
 
         HttpGet request = new HttpGet(buildUrl(host, path, querys));
+        if(headers!=null){
+            for (Map.Entry<String, String> e : headers.entrySet()) {
+                request.addHeader(e.getKey(), e.getValue());
+            }
+        }
+
+
+        return httpClient.execute(request);
+    }
+
+    public static HttpResponse doGet2(String host, String path, String method,
+                                     Map<String, String> headers,
+                                     Map<String, String> querys)
+            throws Exception {
+        HttpClient httpClient = wrapClient(host);
+
+        HttpGet request = new HttpGet(buildUrl2(host, path, querys));
         if(headers!=null){
             for (Map.Entry<String, String> e : headers.entrySet()) {
                 request.addHeader(e.getKey(), e.getValue());
@@ -295,6 +310,38 @@ public class HttpUtils {
         return sbUrl.toString();
     }
 
+    private static String buildUrl2(String host, String path, Map<String, String> querys) throws UnsupportedEncodingException {
+        StringBuilder sbUrl = new StringBuilder();
+        sbUrl.append(host);
+        if (!StringUtils.isBlank(path)) {
+            sbUrl.append(path);
+        }
+        if (null != querys) {
+            StringBuilder sbQuery = new StringBuilder();
+            for (Map.Entry<String, String> query : querys.entrySet()) {
+                if (0 < sbQuery.length()) {
+                    sbQuery.append("/");
+                }
+                if (StringUtils.isBlank(query.getKey()) && !StringUtils.isBlank(query.getValue())) {
+                    sbQuery.append(query.getValue());
+                }
+                if (!StringUtils.isBlank(query.getKey())) {
+                    sbQuery.append(query.getKey());
+                    if (!StringUtils.isBlank(query.getValue())) {
+                        sbQuery.append("/");
+                        sbQuery.append(URLEncoder.encode(query.getValue(), "utf-8"));
+                    }
+                }
+            }
+            if (0 < sbQuery.length()) {
+                sbUrl.append("/").append(sbQuery);
+            }
+        }
+        System.out.println("===请求路径"+sbUrl.toString());
+
+        return sbUrl.toString();
+    }
+
     private static HttpClient wrapClient(String host) {
         HttpClient httpClient = new DefaultHttpClient();
         if (host.startsWith("https://")) {
@@ -352,7 +399,7 @@ public class HttpUtils {
        /* request.setHeader(new BasicHeader("Cookie",cookie));*/
 
         if (StringUtils.isNotBlank(body)) {
-            StringEntity s = new StringEntity(body);
+            StringEntity s = new StringEntity(body,"UTF-8");
             s.setContentEncoding("UTF-8");
             //发送json数据需要设置contentType
             s.setContentType("application/json");
@@ -364,10 +411,41 @@ public class HttpUtils {
         String result =null;
         if(httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK){
              result = EntityUtils.toString(httpResponse.getEntity());// 返回json格式：
-            LOG.error("数据读取！！！！"+result);
+            //LOG.error("数据读取！！！！"+result);
         }
 
         return  result;
+    }
+
+
+    //-----解决编码问题--------
+    public static String doPostJson(String host,String path, String json) {
+
+        // 创建Httpclient对象
+        CloseableHttpClient httpClient = HttpClients.createDefault();
+        CloseableHttpResponse response = null;
+        String resultString = "";
+        try {
+            // 创建Http Post请求
+            HttpPost httpPost = new HttpPost(buildUrl(host, path, null));
+            // 创建请求内容
+            StringEntity entity = new StringEntity(json, ContentType.APPLICATION_JSON);
+            httpPost.setEntity(entity);
+            // 执行http请求
+            response = httpClient.execute(httpPost);
+            resultString = EntityUtils.toString(response.getEntity(), "UTF-8");
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                response.close();
+            } catch (IOException e) {
+
+                e.printStackTrace();
+            }
+        }
+
+        return resultString;
     }
 
 

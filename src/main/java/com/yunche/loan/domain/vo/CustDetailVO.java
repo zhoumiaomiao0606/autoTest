@@ -1,5 +1,6 @@
 package com.yunche.loan.domain.vo;
 
+import com.yunche.loan.domain.param.CustomerParam;
 import lombok.Data;
 
 import java.util.Collections;
@@ -31,4 +32,8 @@ public class CustDetailVO {
      * 紧急联系人列表
      */
     private List<CustomerVO> emergencyContactList = Collections.EMPTY_LIST;
+    /**
+     * 特殊关联人列表
+     */
+    private List<CustomerVO> specialContactList = Collections.EMPTY_LIST;
 }

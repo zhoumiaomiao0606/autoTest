@@ -3,6 +3,7 @@ package com.yunche.loan.domain.vo;
 import com.alibaba.fastjson.JSON;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +18,15 @@ public class UniversalCustomerFileVO {
         if (StringUtils.isBlank(urls)) {
             return new ArrayList<String>();
         }
-        return JSON.parseArray(urls, String.class);
+        if (CollectionUtils.isEmpty(addurls))
+        {
+            return JSON.parseArray(urls, String.class);
+        }
+        List<String> urls1 = JSON.parseArray(urls, String.class);
+        urls1.addAll(addurls);
+        return urls1;
+
     }
+
+    private List addurls = new ArrayList();
 }

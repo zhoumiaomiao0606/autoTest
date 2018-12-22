@@ -1200,6 +1200,11 @@
         b.cust_type != 4
     </select>
 
+    <select id="selectCusByOrderIdAll" resultMap="BaseResultMap">
+        select b.* from loan_customer b where b.principal_cust_id =(
+        select a.loan_customer_id from loan_order a where a.id = #{orderId,jdbcType=BIGINT}) and b.`status` =0
+    </select>
+
     <select id="selectByIdCard" resultMap="BaseResultMap" parameterType="java.lang.String">
         select
         <include refid="Base_Column_List"/>

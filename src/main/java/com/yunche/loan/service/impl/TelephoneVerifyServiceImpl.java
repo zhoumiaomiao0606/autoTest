@@ -5,6 +5,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.yunche.loan.config.common.OSSConfig;
 import com.yunche.loan.config.constant.CarTypeEnum;
+import com.yunche.loan.config.constant.LoanFileEnum;
 import com.yunche.loan.config.util.OSSUnit;
 import com.yunche.loan.config.util.SessionUtils;
 import com.yunche.loan.domain.entity.*;
@@ -28,9 +29,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
 import static com.yunche.loan.config.constant.LoanProcessEnum.TELEPHONE_VERIFY;
@@ -73,6 +72,9 @@ public class TelephoneVerifyServiceImpl implements TelephoneVerifyService {
     @Autowired
     private BaseAreaDOMapper baseAreaDOMapper;
 
+    @Autowired
+    private PartnerDOMapper partnerDOMapper;
+
     @Override
     public RecombinationVO detail(Long orderId) {
 
@@ -110,10 +112,24 @@ public class TelephoneVerifyServiceImpl implements TelephoneVerifyService {
         }
 
         RecombinationVO recombinationVO = new RecombinationVO();
+
+        LoanTelephoneVerifyDO loanTelephoneVerifyDO = loanTelephoneVerifyDOMapper.selectByPrimaryKey(orderId);
+        //显示
+        Set<Byte> types = new HashSet<Byte>();
+        types.add(LoanFileEnum.LETTER_COMMITMENT_SIGNED_PARTNERS.getType());
+        List<UniversalMaterialRecordVO> materialRecord = loanQueryDOMapper.selectUniversalCustomerFileByTypes(orderId, types);
+
+        recombinationVO.setMaterials(materialRecord);
+
+
+        PartnerDO partnerDO = partnerDOMapper.selectByPrimaryKey(loanBaseInfoDO.getPartnerId(), new Byte("0"));
+
         UniversalInfoVO universalInfoVO = loanQueryDOMapper.selectUniversalInfo(orderId);
         universalInfoVO.setVehicle_apply_license_plate_area(tmpApplyLicensePlateArea);
+        universalInfoVO.setRiskBearRate(partnerDO.getRiskBearRate()==null?new BigDecimal("0"):partnerDO.getRiskBearRate());
         recombinationVO.setInfo(universalInfoVO);
-        recombinationVO.setTelephone_des(loanTelephoneVerifyDOMapper.selectByPrimaryKey(orderId));
+
+        recombinationVO.setTelephone_des(loanTelephoneVerifyDO);
         recombinationVO.setCredits(credits);
         recombinationVO.setHome(loanQueryDOMapper.selectUniversalHomeVisitInfo(orderId));
         recombinationVO.setCurrent_msg(loanQueryDOMapper.selectUniversalApprovalInfo(TELEPHONE_VERIFY.getCode(), orderId));
@@ -196,7 +212,7 @@ public class TelephoneVerifyServiceImpl implements TelephoneVerifyService {
 
 
             ArrayList<String> header = Lists.newArrayList("申请单号", "客户名称", "证件类型", "证件号",
-                    "业务员", "合伙人团队", "贷款银行", "贷款金额", "银行分期本金", "gps数量", "审核结果", "审核状态", "审核员", "审核时间", "备注", "车辆类型"
+                    "业务员", "合伙人团队","合伙人编码","合伙人组别", "贷款银行", "贷款金额", "银行分期本金", "gps数量", "审核结果", "审核状态", "审核员","领取时间","反馈时间", "审核时间", "备注", "车辆类型"
             );
             //申请单号	客户名称	证件类型	证件号	业务员	合伙人团队	贷款金额	gps数量	申请单状态	提交状态	备注	审核员	审核时间
             XSSFRow headRow = sheet.createRow(0);
@@ -231,34 +247,45 @@ public class TelephoneVerifyServiceImpl implements TelephoneVerifyService {
                 cell.setCellValue(telephoneVerifyNodeOrdersVO.getPartner_name());
 
                 cell = row.createCell(6);
-                cell.setCellValue(telephoneVerifyNodeOrdersVO.getBank());
+                cell.setCellValue(telephoneVerifyNodeOrdersVO.getPartner_code());
 
                 cell = row.createCell(7);
-                cell.setCellValue(telephoneVerifyNodeOrdersVO.getLoan_amount());
+                cell.setCellValue(telephoneVerifyNodeOrdersVO.getPartner_group());
 
                 cell = row.createCell(8);
-                cell.setCellValue(telephoneVerifyNodeOrdersVO.getBank_period_principal());
+                cell.setCellValue(telephoneVerifyNodeOrdersVO.getBank());
 
                 cell = row.createCell(9);
-                cell.setCellValue(telephoneVerifyNodeOrdersVO.getGps_number());
+                cell.setCellValue(telephoneVerifyNodeOrdersVO.getLoan_amount());
 
                 cell = row.createCell(10);
-                cell.setCellValue(telephoneVerifyNodeOrdersVO.getAction());
+                cell.setCellValue(telephoneVerifyNodeOrdersVO.getBank_period_principal());
 
                 cell = row.createCell(11);
-                cell.setCellValue(telephoneVerifyNodeOrdersVO.getCommit_status());
+                cell.setCellValue(telephoneVerifyNodeOrdersVO.getGps_number());
 
                 cell = row.createCell(12);
-                cell.setCellValue(telephoneVerifyNodeOrdersVO.getOp_user_name());
-
+                cell.setCellValue(telephoneVerifyNodeOrdersVO.getAction());
 
                 cell = row.createCell(13);
-                cell.setCellValue(telephoneVerifyNodeOrdersVO.getOp_time());
+                cell.setCellValue(telephoneVerifyNodeOrdersVO.getCommit_status());
 
                 cell = row.createCell(14);
-                cell.setCellValue(telephoneVerifyNodeOrdersVO.getOp_info());
+                cell.setCellValue(telephoneVerifyNodeOrdersVO.getOp_user_name());
 
                 cell = row.createCell(15);
+                cell.setCellValue(telephoneVerifyNodeOrdersVO.getReceive_time());
+
+                cell = row.createCell(16);
+                cell.setCellValue(telephoneVerifyNodeOrdersVO.getFeedback_time());
+
+                cell = row.createCell(17);
+                cell.setCellValue(telephoneVerifyNodeOrdersVO.getOp_time());
+
+                cell = row.createCell(18);
+                cell.setCellValue(telephoneVerifyNodeOrdersVO.getOp_info());
+
+                cell = row.createCell(19);
                 cell.setCellValue(CarTypeEnum.getValueByKey(telephoneVerifyNodeOrdersVO.getCar_type()));
             }
             //文件宽度自适应
@@ -278,7 +305,10 @@ public class TelephoneVerifyServiceImpl implements TelephoneVerifyService {
             sheet.autoSizeColumn((short) 13);
             sheet.autoSizeColumn((short) 14);
             sheet.autoSizeColumn((short) 15);
-
+            sheet.autoSizeColumn((short) 16);
+            sheet.autoSizeColumn((short) 17);
+            sheet.autoSizeColumn((short) 18);
+            sheet.autoSizeColumn((short) 19);
             workbook.write(out);
             //上传OSS
             OSSClient ossClient = OSSUnit.getOSSClient();

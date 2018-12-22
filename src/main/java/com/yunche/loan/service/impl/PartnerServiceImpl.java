@@ -4,6 +4,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.yunche.loan.config.cache.DepartmentCache;
+import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.MD5Utils;
 import com.yunche.loan.domain.entity.*;
@@ -94,6 +95,9 @@ public class PartnerServiceImpl implements PartnerService {
     @Autowired
     private BizAreaService bizAreaService;
 
+    @Autowired
+    private BankCodeDOMapper bankCodeDOMapper;
+
     @Override
     @Transactional
     public ResultBean<Long> create(PartnerParam partnerParam) {
@@ -139,6 +143,17 @@ public class PartnerServiceImpl implements PartnerService {
      */
     private Long createPartnerLeaderAccount(PartnerParam partnerParam) {
         EmployeeDO employeeDO = new EmployeeDO();
+
+        //判断partner——code不能重复
+        if (partnerParam.getPartnerCode()!=null && !partnerParam.getPartnerCode().equals(""))
+        {
+            PartnerDO partnerCode = partnerDOMapper.selectByPartnerCode(partnerParam.getPartnerCode());
+
+            if (partnerCode!=null)
+            {
+                throw  new BizException("合伙人编码不能重复");
+            }
+        }
 
         employeeDO.setName(partnerParam.getLeaderName());
         employeeDO.setIdCard(partnerParam.getLeaderIdCard());
@@ -258,6 +273,22 @@ public class PartnerServiceImpl implements PartnerService {
         BeanUtils.copyProperties(partnerParam, partnerDO);
 
         partnerParam.setGmtModify(new Date());
+
+        //判断partner——code不能重复
+        if (partnerParam.getPartnerCode()!=null && !partnerParam.getPartnerCode().equals(""))
+        {
+            PartnerDO partnerCode = partnerDOMapper.selectByPartnerCode(partnerParam.getPartnerCode());
+
+            PartnerDO oldP = partnerDOMapper.selectByPrimaryKey(partnerParam.getId(), null);
+
+
+            if ((partnerCode!=null && oldP.getPartnerCode()!=null && !partnerParam.getPartnerCode().equals(oldP.getPartnerCode()))||(partnerCode!=null && oldP.getPartnerCode()==null))
+            {
+                throw  new BizException("合伙人编码不能重复");
+            }
+        }
+
+
         int count = partnerDOMapper.updateByPrimaryKeySelective(partnerDO);
         Preconditions.checkArgument(count > 0, "编辑失败");
 
@@ -777,6 +808,11 @@ public class PartnerServiceImpl implements PartnerService {
     private void fillMsg(PartnerDO partnerDO, PartnerVO partnerVO) {
         fillDepartment(partnerDO.getDepartmentId(), partnerVO);
         fillArea(partnerDO.getAreaId(), partnerVO);
+        if (partnerDO.getPartnerGroup()!=null)
+        {
+            partnerVO.setPartnerGroup(String.valueOf(partnerDO.getPartnerGroup()));
+        }
+
         fillEmployeeNum(partnerVO);
         // 财务合作信息
         fillBankAccount(partnerDO.getId(), partnerVO);
@@ -1253,4 +1289,12 @@ public class PartnerServiceImpl implements PartnerService {
             employeeVO.setParent(supperEmployeeList);
         }
     }
+
+    public List<BankCodeDO> selectAllBankName(String bankName)
+    {
+        List<BankCodeDO> bankCodeDOS = bankCodeDOMapper.selectByBankName(bankName);
+
+        return bankCodeDOS;
+    }
+
 }

@@ -2,6 +2,7 @@ package com.yunche.loan.domain.param;
 
 import lombok.Data;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -26,4 +27,9 @@ public class AllCustDetailParam {
      * 紧急联系人列表
      */
     private List<CustomerParam> emergencyContactList;
+
+    /**
+     * 特殊关联人列表
+     */
+    private List<CustomerParam> specialContactList;
 }

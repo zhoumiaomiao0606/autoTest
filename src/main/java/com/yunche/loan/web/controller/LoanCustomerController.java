@@ -4,13 +4,12 @@ import com.yunche.loan.config.anno.Limiter;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.param.AllCustDetailParam;
 import com.yunche.loan.domain.param.CustomerParam;
-import com.yunche.loan.domain.vo.BankAndSocietyExportVO;
-import com.yunche.loan.domain.vo.CustDetailVO;
-import com.yunche.loan.domain.vo.LoanRepeatVO;
+import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.service.LoanCustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+
 
 /**
  * @author liuzhe

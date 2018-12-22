@@ -68,6 +68,16 @@ public class EmployeeController {
     }
 
     /**
+     * 员工-名字枚举--列表
+     *
+     * @return
+     */
+    @GetMapping("/listAllName")
+    public ResultBean<List<EmployeeDO>> listAllName() {
+        return employeeService.listAllName();
+    }
+
+    /**
      * 职位列表
      *
      * @return
@@ -182,6 +192,12 @@ public class EmployeeController {
     public ResultBean<Void> bindBizArea(@RequestBody @Validated @Valid BindBizAreaParam param) {
         employeeService.bindBizArea(param.getId(), param.getBizAreaIds());
         return ResultBean.ofSuccess(null, "编辑成功");
+    }
+
+    @PostMapping(value = "/getPartnerByEmployeeId")
+    public ResultBean<Long> getPartnerIdByEmployeeId(@RequestParam Long employeeId) {
+
+        return ResultBean.ofSuccess(employeeService.getPartnerIdByEmployeeId(employeeId));
     }
 
 }

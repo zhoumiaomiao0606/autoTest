@@ -40,9 +40,13 @@ public interface LoanStatementDOMapper {
 
     List<ExportApplyLoanPushVO> exportApplyLoanPush(ExportApplyLoanPushParam param);
 
+    List<ExportErrorOrderVO> exportErrorOrder(ExportApplyLoanPushParam param);
+
     List<JinTouHangRepayInfoVO> exportJinTouHangRepayInfo(ExportApplyLoanPushParam param);
 
     List<JinTouHangInterestRegisterVO> exportJinTouHangInterestRegister(ExportApplyLoanPushParam param);
+
+    List<String> usertaskMaterialPrintUsers();
 
     List<CreditPicExportVO> selectCreditPicExport(LoanCreditExportQuery param);
 

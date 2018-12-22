@@ -283,6 +283,8 @@
         join_i.car_type AS carType,
         join_h.license_plate_number AS licensePlateNumber,
         join_p.name AS partner,
+        join_p.partner_code AS partnerCode,
+        join_p.partner_group AS partnerGroup,
         join_f.loan_time AS loanTime,
         join_f.down_payment_money AS downPaymentMoney,
         join_car.car_detail_id,
@@ -453,8 +455,22 @@
                         </otherwise>
                     </choose>
                   main.id                                      AS id,
-            loan_credit_info_bank_his.credit_apply_time        as creditApplySubmitTime,
+                  jbds.cat        as creditApplySubmitTime,
                   join_e.id                                    AS salesmanId,
+            DATE_FORMAT((
+            SELECT
+            loan_process_log.create_time
+            FROM
+            loan_process_log
+            WHERE
+            order_id = main.id
+            AND task_definition_key = 'usertask_bank_open_card'
+            and action = 1
+            ORDER BY
+            id DESC
+            LIMIT 1
+            ), '%Y-%m-%d %H:%i:%S' )
+            as bankOpenCardTime,
                   join_p.id                                    AS partnerId,
                   join_b.area_id                               AS bizAreaId,
                   join_c.id                                    AS customerId,
@@ -472,6 +488,8 @@
                   join_i.car_type                              AS carType,
                   join_h.license_plate_number                  AS licensePlateNumber,
                   join_p.name                                  AS partner,
+                  join_p.partner_code                          AS partnerCode,
+                  join_p.partner_group                         AS partnerGroup,
                   join_f.loan_time                             AS loanTime,
                   join_f.down_payment_money                    AS downPaymentMoney,
                   0                                            AS overdueNum,
@@ -554,6 +572,10 @@
                           deputy.video_review                       AS taskStatus,
                           videonum.face_num                         AS faceNum
                       </when>
+                <when test="taskDefinitionKey == 'usertask_under_line_video_review'">
+                    deputy.under_line_video_review                       AS taskStatus,
+                    videonum.face_num                         AS faceNum
+                </when>
                       <when test="taskDefinitionKey == 'usertask_info_supplement'">
                           join_s.type                               AS supplementType,
                           join_s.content                            AS supplementContent,
@@ -811,10 +833,14 @@
                       </otherwise>
                   </choose>
               from loan_order main
+            LEFT JOIN
+            (SELECT principal_cust_id, MAX(credit_apply_time) cat
+            FROM
+            (SELECT  allhis.customer_id,allhis.credit_apply_time,loan_customer.principal_cust_id FROM
+            (select customer_id,max(credit_apply_time) AS credit_apply_time FROM loan_credit_info_bank_his GROUP BY customer_id) allhis
+            LEFT JOIN loan_customer ON allhis.customer_id = loan_customer.id) qnmd GROUP BY principal_cust_id) jbds
+            ON jbds.principal_cust_id= main.loan_customer_id
               inner join loan_process deputy               on main.id               = deputy.order_id
-              left join (select customer_id,max(id) as credithisId FROM loan_credit_info_bank_his GROUP BY customer_id) tab on
-              tab.customer_id = main.loan_customer_id
-              left join loan_credit_info_bank_his on tab.credithisId = loan_credit_info_bank_his.id
               left  join loan_customer join_c              on join_c.id             = main.loan_customer_id
               left  join loan_base_info join_b             on join_b.id             = main.loan_base_info_id
               left  join loan_financial_plan join_f        on join_f.id             = main.loan_financial_plan_id
@@ -923,7 +949,8 @@
                   left join conf_third_party_money conf_t               on real_b.conf_third_party_id = conf_t.id
                   left join third_party_fund_business  third_party      on third_party.bridge_procecss_id    = deputy_b.id
               </if>
-              <if test="taskDefinitionKey == 'usertask_video_review'">
+              <if test="taskDefinitionKey == 'usertask_video_review' ||
+                                taskDefinitionKey == 'usertask_under_line_video_review'">
                   left join video_face_num videonum                 on videonum.order_id = main.id
               </if>
 
@@ -932,6 +959,9 @@
                   <choose>
                       <when test="taskDefinitionKey == 'usertask_settle_order'">
                           and deputy.order_status = 2
+                      </when>
+                      <when test="taskDefinitionKey == 'usertask_material_manage'">
+                          and (deputy.order_status = 1 or deputy.order_status = 3)
                       </when>
                       <otherwise>
                           and deputy.order_status = 1
@@ -1038,6 +1068,15 @@
                   </when>
                   <when test="taskDefinitionKey == 'usertask_remit_review'">
                       AND case when #{taskStatus} = 0 then deputy.remit_review  != 0                        else deputy.remit_review                     = #{taskStatus} end
+                      <if test="remitSatus !=null and remitSatus !=''">
+                          and case
+                          when #{remitSatus} = 1 then join_bp.remit_status = 1
+
+                          when #{remitSatus} = 3 then join_bp.remit_status = 3
+                          else 1=1
+                          end
+                      </if>
+
                   </when>
                   <when test="taskDefinitionKey == 'usertask_bank_lend_record'">
                       AND case when #{taskStatus} = 0 then deputy.bank_lend_record  != 0                          else deputy.bank_lend_record                           = #{taskStatus} end
@@ -1082,6 +1121,11 @@
                       1 = if( (SELECT count( id ) FROM video_face_log WHERE order_id = main.id) &gt; 0, 1, 0 )
                       end
                   </when>
+                  <when test="taskDefinitionKey == 'usertask_under_line_video_review'">
+                      AND case when #{taskStatus} = 0 then deputy.under_line_video_review != 0
+                      else deputy.under_line_video_review        = #{taskStatus} end
+
+                  </when>
                   <when test="taskDefinitionKey == 'usertask_apply_instead_pay'">
                       AND case when #{taskStatus} = 0 then deputy_.apply_instead_pay != 0                else deputy_.apply_instead_pay        = #{taskStatus} end
                   </when>
@@ -1125,10 +1169,12 @@
                       AND case when #{taskStatus} = 0 then deputy.material_manage != 0                   else deputy.material_manage   = #{taskStatus} end
                   </when>
                   <when test="taskDefinitionKey == 'usertask_bridge_handle'">
-                      AND case when #{lendStatus} = 1 then deputy_b.bridge_handle in (2,3)
-                                       and if((select count(*) from third_party_fund_business where bridge_procecss_id=deputy_b.id and lend_status=3)=1,false,true)
-                               when #{lendStatus} = 2 then deputy_b.bridge_handle = 1
-                               when #{lendStatus} = 3 then deputy_b.bridge_handle = 2 and third_party.lend_status = 3
+                      AND case when #{lendStatus} = 1 then deputy_b.bridge_handle in (2,3) and deputy_b.order_status = 1
+                                       and if((select count(*) from third_party_fund_business where bridge_procecss_id=deputy_b.id and deputy_b.order_status = 1 and lend_status in(3,4,5,6,7,8,9))=1,false,true)
+                               when #{lendStatus} = 2 then deputy_b.bridge_handle = 1 and deputy_b.order_status = 1
+                               when #{lendStatus} = 3 then deputy_b.bridge_handle = 2 and third_party.lend_status in(3,8) and deputy_b.order_status = 1
+                               when #{lendStatus} = 4 then deputy_b.bridge_handle = 2 and third_party.lend_status in(5,6,9) and deputy_b.order_status = 1
+                               when #{lendStatus} = 5 then deputy_b.bridge_handle = 2 and third_party.lend_status in(4,7) and deputy_b.order_status = 1
                       end
                       <if test="startLendDate !=null">
                           AND third_party.lend_date &gt;= #{startLendDate}
@@ -1186,6 +1232,12 @@
               <if test="orderId != null">
                   AND tab.id = #{orderId}
               </if>
+            <if test="partnerCode != null and partnerCode !=''">
+                AND tab.partnerCode = #{partnerCode}
+            </if>
+            <if test="partnerGroup != null and partnerGroup !=''">
+                AND tab.partnerGroup = #{partnerGroup}
+            </if>
               <if test="customer != null and customer != ''">
                   AND tab.customer LIKE CONCAT('%', #{customer} ,'%')
               </if>
@@ -1549,7 +1601,7 @@
                     </otherwise>
                 </choose>
             </if>
-            <if test="taskDefinitionKey != 'usertask_telephone_verify'">
+            <if test="taskDefinitionKey != 'usertask_telephone_verify' and taskDefinitionKey != 'usertask_bank_credit_record' ">
             <choose>
                 <when test="taskDefinitionKey == 'usertask_collection_workbench'">
                     order by complex.urgeGmtCreate ASC
@@ -1570,6 +1622,25 @@
                     order by complex.orderGmtCreate DESC
                 </otherwise>
             </choose>
+            </if>
+            <if test="taskDefinitionKey == 'usertask_bank_credit_record'">
+                <choose>
+                <when test="taskStatus == 0">
+                    order by complex.creditApplySubmitTime DESC ,complex.taskStatus ASC
+                </when>
+                <when test="taskStatus == 1">
+                    order by complex.creditApplySubmitTime DESC
+                </when>
+                <when test="taskStatus == 2">
+                    order by complex.creditApplySubmitTime ASC
+                </when>
+                <when test="taskStatus == 3">
+                    order by complex.creditApplySubmitTime ASC
+                </when>
+                <otherwise>
+                    order by complex.creditApplySubmitTime DESC
+                </otherwise>
+                </choose>
             </if>
         </select>
 
@@ -2621,6 +2692,88 @@
         <if test="endRemitGmtCreate != null">
             AND TO_DAYS(complex_log.usertask_remit_review_create_time) &lt;= TO_DAYS(#{endRemitGmtCreate})
         </if>
+
+    </select>
+
+    <!-- selectRoleChangeHisTaskList -->
+    <select id="selectRoleChangeHisTaskList" parameterType="com.yunche.loan.domain.query.TaskListQuery"
+            resultType="com.yunche.loan.domain.vo.TaskListVO">
+
+        SELECT
+
+        a.id               					AS  id,
+        c.name    				  			AS  customer,
+        c.id_card   						AS  idCard,
+        c.mobile   							AS  mobile,
+        b.bank								AS  bank,
+        b.salesman_id     				    AS  salesmanId,
+        e.name             					AS  salesman,
+        b.partner_id      					AS  partnerId,
+        p.name             					AS  partner,
+        d.name             					AS  departmentName,
+        r_c_his.id             			    AS  roleChangeHisId,
+        DATE_FORMAT(r_c_his.gmt_create,'%Y-%m-%d %H:%i:%S')
+                                            AS  roleChangeHisCreateTime,
+        r_c_his.user_id             		AS  roleChangeHisUserId,
+        r_c_his.user_name             		AS  roleChangeHisUserName
+
+
+        FROM        loan_cust_role_change_his	        AS r_c_his
+
+        LEFT JOIN   loan_order           				AS a     ON	  a.id = r_c_his.order_id
+        LEFT JOIN   loan_process         				AS pc    ON   a.id = pc.order_id
+        LEFT JOIN   loan_customer        				AS c     ON   c.id = a.loan_customer_id
+        LEFT JOIN   loan_base_info      				AS b     ON   b.id = a.loan_base_info_id
+        LEFT JOIN   employee             				AS e     ON   e.id = b.salesman_id
+        LEFT JOIN   department           				AS d     ON	  d.id = e.department_id
+        LEFT JOIN   partner             				AS p     ON   p.id = b.partner_id
+        LEFT JOIN   current_node_manager                AS complex_log on complex_log.order_id = a.id
+
+        <where>
+            <if test="orderId != null and orderId != '' ">
+                AND a.id = #{orderId}
+            </if>
+            <if test="customer != null and customer != '' ">
+                AND	c.name LIKE CONCAT('%', #{customer}, '%')
+            </if>
+            <if test="idCard != null and idCard != '' ">
+                AND c.id_card = #{idCard}
+            </if>
+            <if test="loanBank != null and loanBank != '' ">
+                AND b.bank = #{loanBank}
+            </if>
+            <if test="partnerId != null">
+                AND p.id = #{partnerId}
+            </if>
+            <if test="startPrintGmtCreate != null">
+                AND TO_DAYS(complex_log.usertask_remit_review_create_time) &gt;= TO_DAYS(#{startPrintGmtCreate})
+            </if>
+            <if test="endPrintGmtCreate != null">
+                AND TO_DAYS(complex_log.usertask_remit_review_create_time) &lt;= TO_DAYS(#{endPrintGmtCreate})
+            </if>
+            <if test="dataFlowTypeList != null and dataFlowTypeList.size() > 0">
+                AND  df.type IN
+                <foreach item="item" collection="dataFlowTypeList" open="(" close=")" separator=",">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="bizAreaIdList != null and bizAreaIdList.size() > 0">
+                AND
+                b.partner_id IN
+                <foreach item="item" index="index" collection="bizAreaIdList" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="bankList != null and bankList.size() > 0">
+                AND
+                b.bank IN
+                <foreach item="item" index="index" collection="bankList" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
+
+        ORDER BY r_c_his.gmt_create DESC
 
     </select>
 

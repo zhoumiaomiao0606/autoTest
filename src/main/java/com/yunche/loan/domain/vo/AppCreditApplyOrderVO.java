@@ -35,4 +35,9 @@ public class AppCreditApplyOrderVO {
      * 紧急联系人列表
      */
     private List<CustomerVO> emergencyContactList = Collections.EMPTY_LIST;
+
+    /**
+     * 特殊联系人列表
+     */
+    private List<CustomerVO> specialContactList = Collections.EMPTY_LIST;
 }

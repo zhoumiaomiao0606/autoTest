@@ -2,6 +2,8 @@ package com.yunche.loan.service;
 
 import com.yunche.loan.domain.param.*;
 
+import java.util.List;
+
 public interface ExportQueryService
 {
     String exportBankCreditQuery(ExportBankCreditQueryVerifyParam exportBankCreditQueryVerifyParam);
@@ -35,6 +37,8 @@ public interface ExportQueryService
 
     String exportCustomerInfo(ExportCustomerInfoParam exportCustomerInfoParam);
 
+
+    List<String> usertaskMaterialPrintUsers();
 
     public String expertAwaitRemitDetailChart(AwaitRemitDetailChartParam param);
 

@@ -35,4 +35,9 @@ public class CreditApplyOrderParam {
      * 紧急联系人列表
      */
     private List<CustomerParam> emergencyContactList = Collections.EMPTY_LIST;
+
+    /**
+     * 特殊关联人列表
+     */
+    private List<CustomerParam> specialContactList = Collections.EMPTY_LIST;
 }

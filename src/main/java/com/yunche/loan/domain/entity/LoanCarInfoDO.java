@@ -13,6 +13,8 @@ public class LoanCarInfoDO {
 
     private String carDetailName;
 
+    private Byte evaluationType;
+
     private Byte carType;
 
     private Integer gpsNum;

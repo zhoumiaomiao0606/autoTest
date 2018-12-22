@@ -165,6 +165,7 @@ public class BankLendRecordServiceImpl implements BankLendRecordService {
 
                     approvalParam.setNeedLog(true);
                     approvalParam.setCheckPermission(false);
+                    approvalParam.setBankLendDate(bankLendRecordDO.getLendDate());
                     try{
                         ResultBean<Void> approvalResultBean = loanProcessService.approval(approvalParam);
                     }catch(Exception e){

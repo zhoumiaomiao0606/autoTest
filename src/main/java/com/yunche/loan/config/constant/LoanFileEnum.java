@@ -157,7 +157,14 @@ public enum LoanFileEnum {
     LOAN_VOUCHER((byte) 95, "金投行委托授权书"),
 
     //银行征信图片下载包
-    BANK_CREDIT_PIC((byte)96,"银行征信图片下载包");
+    BANK_CREDIT_PIC((byte)96,"银行征信图片下载包"),
+
+    //上门借记卡号
+    VISIT_DOOR_CARD((byte)97,"借记卡号"),
+
+    LETTER_COMMITMENT_SIGNED_PARTNERS((byte) 98, "合伙人签字承诺函");
+
+
 
 
     @Getter

@@ -26,8 +26,9 @@ public class LoanTelephoneVerifyController {
      * @param loanTelephoneVerifyParam
      * @return
      */
-    @PostMapping(value = "/save", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResultBean<Void> create(@RequestBody LoanTelephoneVerifyParam loanTelephoneVerifyParam) {
+    @PostMapping(value = "/save", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResultBean<Void> create(@RequestBody LoanTelephoneVerifyParam loanTelephoneVerifyParam)
+    {
         return loanTelephoneVerifyService.save(loanTelephoneVerifyParam);
     }
 

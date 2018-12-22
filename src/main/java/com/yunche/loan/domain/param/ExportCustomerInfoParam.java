@@ -27,6 +27,12 @@ public class ExportCustomerInfoParam
 
     private String endTime;
 
+    private String materialPrintStartTime;
+
+    private String materialPrintEndTime;
+
+    private String materialPrintSubmitUser;
+
     private Long maxGroupLevel;
 
     private Set<String> juniorIds = Sets.newHashSet();

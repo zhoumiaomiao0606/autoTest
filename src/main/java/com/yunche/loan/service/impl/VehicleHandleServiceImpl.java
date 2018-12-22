@@ -130,7 +130,11 @@ public class VehicleHandleServiceImpl implements VehicleHandleService
             }
         }
 
-        vehicleInfoVO.setApply_license_plate_area(tmpApplyLicensePlateArea);
+        if (vehicleInfoVO!=null)
+        {
+            vehicleInfoVO.setApply_license_plate_area(tmpApplyLicensePlateArea);
+        }
+
 
 
         //贷款业务详细信息

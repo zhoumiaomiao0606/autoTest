@@ -30,7 +30,7 @@ import static com.yunche.loan.config.constant.ProcessApprovalConst.ACTION_PASS;
 public class AsyncFinanceApI {
     private static final Logger LOG = LoggerFactory.getLogger(AsyncFinanceApI.class);
 
-    private static final String HOST = "http://192.168.0.132:8012";
+    private static final String HOST = "http://47.96.78.20:8012";
 
     private static final String PATH = "/costcalculation/insert";
 
@@ -180,7 +180,8 @@ public class AsyncFinanceApI {
             if(String.valueOf(map.get("resultCode")).equals("200")){
                 voucherErrRecordDO.setStatus(new Byte("2"));
             }
-        } catch (IOException e) {
+        } catch (IOException e)
+        {
             voucherErrRecordDO.setRetMessage(retJson);
         }
 
