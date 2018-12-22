@@ -9,6 +9,7 @@ import com.yunche.loan.config.common.OSSConfig;
 import com.yunche.loan.config.constant.CarTypeEnum;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.OSSUnit;
+import com.yunche.loan.config.util.POIUtil;
 import com.yunche.loan.config.util.SessionUtils;
 import com.yunche.loan.domain.entity.BankDO;
 import com.yunche.loan.domain.param.TelephoneVerifyParam;
@@ -382,6 +383,160 @@ public class ReportServiceImpl implements ReportService {
     }
 
     @Override
+    public ResultBean<List<BankCreditParReportVO>> bankCreditPartner(BankCreditPrincipalQuery query) {
+        Long loginUserId = SessionUtils.getLoginUser().getId();
+        List<String> banks = zhonganInfoDOMapper.selectBankByUserId(loginUserId);
+        List<String> bankList = query.getBankList();
+        List<String> nullList = new ArrayList<>();
+        nullList.add("ZX");
+        if(banks == null){
+            query.setBankList(nullList);
+        }else{
+            if(bankList.size() == 0){
+                banks.removeAll(Collections.singleton(null));
+                banks = banks.stream().distinct().collect(Collectors.toList());
+                if(banks.size()>0){
+                    query.setBankList(banks);
+                }else{
+                    query.setBankList(nullList);
+                }
+            }else{
+                banks.removeAll(Collections.singleton(null));
+                banks = banks.stream().distinct().collect(Collectors.toList());
+                banks.retainAll(bankList);
+                if(banks.size()>0){
+                    query.setBankList(banks);
+                }else{
+                    query.setBankList(nullList);
+                }
+            }
+        }
+        PageHelper.startPage(query.getPageIndex(), query.getPageSize(), true);
+        List<BankCreditParReportVO> list = zhonganInfoDOMapper.bankCreditPartner(query);
+        PageInfo<BankCreditParReportVO> pageInfo = new PageInfo<>(list);
+        Long totalNum = pageInfo.getTotal();
+
+        return ResultBean.ofSuccess(list, new Long(totalNum).intValue(), pageInfo.getPageNum(), pageInfo.getPageSize());
+    }
+
+    @Override
+    public String bankCreditPartnerExport(BankCreditPrincipalQuery query) {
+        Long loginUserId = SessionUtils.getLoginUser().getId();
+        List<String> banks = zhonganInfoDOMapper.selectBankByUserId(loginUserId);
+        List<String> bankList = query.getBankList();
+        List<String> nullList = new ArrayList<>();
+        nullList.add("ZX");
+        if(banks == null){
+            query.setBankList(nullList);
+        }else{
+            if(bankList.size() == 0){
+                banks.removeAll(Collections.singleton(null));
+                banks = banks.stream().distinct().collect(Collectors.toList());
+                if(banks.size()>0){
+                    query.setBankList(banks);
+                }else{
+                    query.setBankList(nullList);
+                }
+            }else{
+                banks.removeAll(Collections.singleton(null));
+                banks = banks.stream().distinct().collect(Collectors.toList());
+                banks.retainAll(bankList);
+                if(banks.size()>0){
+                    query.setBankList(banks);
+                }else{
+                    query.setBankList(nullList);
+                }
+            }
+        }
+        ArrayList<String> header = Lists.newArrayList("合伙人", "主贷人数量", "客户数量"
+        );
+        List<BankCreditParReportVO> list = zhonganInfoDOMapper.bankCreditPartner(query);
+        String ossResultKey = POIUtil.createExcelFile("BankCreditPartner",list,header,BankCreditParReportVO.class,ossConfig);
+        return ossResultKey;
+    }
+
+    @Override
+    public ResultBean<List<BankMortgageWarrantVO>> bankMortgageWarrant(BankCreditPrincipalQuery query) {
+        Long loginUserId = SessionUtils.getLoginUser().getId();
+        List<String> banks = zhonganInfoDOMapper.selectBankByUserId(loginUserId);
+        List<String> bankList = query.getBankList();
+        List<String> nullList = new ArrayList<>();
+        nullList.add("ZX");
+        if(banks == null){
+            query.setBankList(nullList);
+        }else{
+            if(bankList.size() == 0){
+                banks.removeAll(Collections.singleton(null));
+                banks = banks.stream().distinct().collect(Collectors.toList());
+                if(banks.size()>0){
+                    query.setBankList(banks);
+                }else{
+                    query.setBankList(nullList);
+                }
+            }else{
+                banks.removeAll(Collections.singleton(null));
+                banks = banks.stream().distinct().collect(Collectors.toList());
+                banks.retainAll(bankList);
+                if(banks.size()>0){
+                    query.setBankList(banks);
+                }else{
+                    query.setBankList(nullList);
+                }
+            }
+        }
+        PageHelper.startPage(query.getPageIndex(), query.getPageSize(), true);
+        List<BankMortgageWarrantVO> list = zhonganInfoDOMapper.bankMortgageWarrant(query);
+        PageInfo<BankMortgageWarrantVO> pageInfo = new PageInfo<>(list);
+        Long totalNum = pageInfo.getTotal();
+
+        return ResultBean.ofSuccess(list, new Long(totalNum).intValue(), pageInfo.getPageNum(), pageInfo.getPageSize());
+    }
+
+    @Override
+    public ResultBean bankMortgageWarrantTotal(BankCreditPrincipalQuery query) {
+        String money = zhonganInfoDOMapper.bankMortgageWarrantTotal(query);
+        return ResultBean.ofSuccess(money);
+    }
+
+    @Override
+    public String bankmortgagewarrantExport(BankCreditPrincipalQuery query) {
+        Long loginUserId = SessionUtils.getLoginUser().getId();
+        List<String> banks = zhonganInfoDOMapper.selectBankByUserId(loginUserId);
+        List<String> bankList = query.getBankList();
+        List<String> nullList = new ArrayList<>();
+        nullList.add("ZX");
+        if(banks == null){
+            query.setBankList(nullList);
+        }else{
+            if(bankList.size() == 0){
+                banks.removeAll(Collections.singleton(null));
+                banks = banks.stream().distinct().collect(Collectors.toList());
+                if(banks.size()>0){
+                    query.setBankList(banks);
+                }else{
+                    query.setBankList(nullList);
+                }
+            }else{
+                banks.removeAll(Collections.singleton(null));
+                banks = banks.stream().distinct().collect(Collectors.toList());
+                banks.retainAll(bankList);
+                if(banks.size()>0){
+                    query.setBankList(banks);
+                }else{
+                    query.setBankList(nullList);
+                }
+            }
+        }
+        List<BankMortgageWarrantVO> list = zhonganInfoDOMapper.bankMortgageWarrant(query);
+        ArrayList<String> header = Lists.newArrayList("合伙人", "主贷姓名", "身份证号", "抵押材料公司至合伙人日期", "已邮寄天数"
+                , "按揭银行", "银行放款本金", "放款日期", "未抵押天数", "超期范围", "上牌地","车牌号"
+        );
+        String ossResultKey = POIUtil.createExcelFile("BankMortgageWarrant",list,header,BankMortgageWarrantVO.class,ossConfig);
+        return ossResultKey;
+
+    }
+
+    @Override
     public ResultBean<List<TelBankCountVO>> telBankCount(BankCreditPrincipalQuery query) {
         Long loginUserId = SessionUtils.getLoginUser().getId();
 
@@ -429,6 +584,8 @@ public class ReportServiceImpl implements ReportService {
         List<TelCusDetailVO> list = zhonganInfoDOMapper.telCusDetail(query);
         return createTelCusDEtailExcelFile(list);
     }
+
+
 
     @Override
     public ResultBean<List<TelUserCountVO>> telUserCount(BankCreditPrincipalQuery query) {

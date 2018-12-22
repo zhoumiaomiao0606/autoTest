@@ -877,6 +877,17 @@ public class JinTouHangAccommodationApplyServiceImpl implements JinTouHangAccomm
     }
 
     @Override
+    public ResultBean exportLoanButNotRepay(ExportApplyLoanPushParam param) {
+        List<JtxExportVO> list = thirdPartyFundBusinessDOMapper.exportLoanButNotRepay(param.getStartLendDate(),param.getEndLendDate());
+
+        ArrayList<String> header = Lists.newArrayList("委托人", "身份证号","车型","车价", "首付款", "垫资金额",
+                "出借时间", "借款期限","最终放款银行"
+        );
+        String ossResultKey = POIUtil.createExcelFile("JtxLoanNotRepay",list,header,JtxExportVO.class,ossConfig);
+        return ResultBean.ofSuccess(ossResultKey);
+    }
+
+    @Override
     public ResultBean detail(Long bridgeProcessId, Long orderId) {
         Preconditions.checkNotNull(bridgeProcessId, "流程ID不能为空");
         ThirdPartyFundBusinessDO thirdPartyFundBusinessDO = thirdPartyFundBusinessDOMapper.selectByPrimaryKey(bridgeProcessId);

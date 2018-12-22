@@ -60,4 +60,7 @@ public class CompanyRemitDetailChartVO
     //提交时间
     private Date submitTime;
 
+    //经办人
+    private String username;
+
 }

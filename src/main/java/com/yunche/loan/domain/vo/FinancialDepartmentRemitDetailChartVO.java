@@ -65,4 +65,7 @@ public class FinancialDepartmentRemitDetailChartVO
 
     //提交人
     private String username;
+
+    //期数
+    private String loan_time;
 }

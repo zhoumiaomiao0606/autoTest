@@ -821,7 +821,38 @@
         ( SELECT create_time FROM loan_process_log WHERE orders.id = loan_process_log.order_id AND task_definition_key =
         'usertask_vehicle_information' ORDER BY id DESC LIMIT 1 ) AS carMaterialCreateTime,
         ( SELECT loan_data_flow.express_send_date FROM loan_data_flow WHERE orders.id = loan_data_flow.order_id AND
-        (type = 3 or type = 4) ORDER BY id DESC LIMIT 1 ) AS express_sendbank_date
+        (type = 3 or type = 4) ORDER BY id DESC LIMIT 1 ) AS express_sendbank_date,
+        (SELECT
+        create_time
+        FROM
+        loan_process_log
+        WHERE
+        order_id = orders.id
+        AND task_definition_key = 'usertask_material_review'
+        AND action = 6
+        ORDER BY create_time limit 1) AS data_audit_receive_date,
+        (SELECT
+        create_time
+        FROM
+        loan_process_log
+        WHERE
+        task_definition_key = 'usertask_material_print_review' and order_id = orders.id  and action =1
+        ORDER BY create_time desc limit 1)AS contract_set_up_date,
+        (select request_time from bank_interface_serial where trans_code = 'applydivigeneral'
+        and order_id = orders.id
+        order by request_time limit 1) AS online_staging_date,
+        (SELECT
+        create_time
+        FROM
+        loan_process_log
+        WHERE
+        task_definition_key = 'usertask_data_flow_contract_c2b_review'
+        AND order_id = orders.id
+        AND action = 1
+        ORDER BY
+        create_time
+        LIMIT 1) AS bank_accept_contract_date,
+        (select lend_date from bank_lend_record where loan_order =  orders.id order by lend_date desc limit 1) AS bank_loan_date
         FROM
         loan_order orders
         LEFT JOIN loan_customer customer ON orders.loan_customer_id = customer.id

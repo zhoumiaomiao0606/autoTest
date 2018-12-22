@@ -63,6 +63,8 @@ public interface ZhonganInfoDOMapper {
 
     List<BankCreditPrincipalVO> bankCreditAllExport(BankCreditPrincipalQuery query);
 
+    List<BankCreditParReportVO> bankCreditPartner(BankCreditPrincipalQuery query);
+
     List<TelBankCountVO> telBankCount(BankCreditPrincipalQuery query);
 
     List<TelUserCountVO> telUserCount(BankCreditPrincipalQuery query);
@@ -101,4 +103,8 @@ public interface ZhonganInfoDOMapper {
     List<TelCusDetailVO> telCusDetail(BankCreditPrincipalQuery query);
 
     List<VideoFaceExportVO> videoFaceExpot(VideoFaceExportQuery query);
+
+    List<BankMortgageWarrantVO> bankMortgageWarrant(BankCreditPrincipalQuery bankCreditPrincipalQuery);
+
+    String bankMortgageWarrantTotal(BankCreditPrincipalQuery bankCreditPrincipalQuery);
 }

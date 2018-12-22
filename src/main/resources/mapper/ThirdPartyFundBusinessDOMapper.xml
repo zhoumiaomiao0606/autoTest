@@ -227,4 +227,35 @@
             #{item.lendAmount,jdbcType=DECIMAL})
         </foreach>
     </insert>
+
+
+    <select id="exportLoanButNotRepay" resultType="com.yunche.loan.domain.vo.JtxExportVO">
+        SELECT
+        cus.NAME    as name,
+        cus.id_card   as idCard,
+        useGetCarName ( car.car_detail_id ) as carName,
+        car.car_price  as carprice,
+        plan.down_payment_money  as downPaymentMoney,
+        third.lend_amount   as lendAmount,
+        third.lend_date    as lendDate,
+        plan.loan_time     as loanTime,
+        base.bank        as bank
+        FROM
+        loan_process_bridge process
+        LEFT JOIN third_party_fund_business third ON third.bridge_procecss_id = process.id
+        LEFT JOIN loan_order loan ON loan.id = process.order_id
+        LEFT JOIN loan_customer cus ON cus.id = loan.loan_customer_id
+        LEFT JOIN loan_car_info car ON car.id = loan.loan_car_info_id
+        LEFT JOIN loan_financial_plan plan ON plan.id = loan.loan_financial_plan_id
+        LEFT JOIN loan_base_info base ON base.id = loan.loan_base_info_id
+        WHERE
+        process.bridge_handle = 1
+        AND process.bridge_repay_record != 1
+        <if test="startDate != null and startDate != ''">
+            <![CDATA[ AND third.lend_date >= #{startDate}]]>
+        </if>
+        <if test="endDate != null and endDate != ''">
+            <![CDATA[ AND third.lend_date <= #{endDate} ]]>
+        </if>
+    </select>
 </mapper>

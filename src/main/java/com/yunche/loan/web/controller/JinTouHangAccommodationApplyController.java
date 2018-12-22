@@ -197,5 +197,10 @@ public class JinTouHangAccommodationApplyController {
         return accommodationApplyService.batchEnd(accommodationApplyParam);
     }
 
+    //导出借款未还款
+    @PostMapping(value = "/exportloanbutnotrepay", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    ResultBean exportLoanButNotRepay(@RequestBody ExportApplyLoanPushParam param){
+        return accommodationApplyService.exportLoanButNotRepay(param);
+    }
 
 }

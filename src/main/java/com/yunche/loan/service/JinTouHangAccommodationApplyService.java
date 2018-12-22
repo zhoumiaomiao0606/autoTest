@@ -52,4 +52,6 @@ public interface JinTouHangAccommodationApplyService {
     ResultBean getBankCard(Long orderId);
 
     ResultBean batchEnd(AccommodationApplyParam accommodationApplyParam);
+
+    ResultBean exportLoanButNotRepay(ExportApplyLoanPushParam param);
 }

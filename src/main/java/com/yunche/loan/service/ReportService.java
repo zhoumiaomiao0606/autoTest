@@ -38,6 +38,10 @@ public interface ReportService {
     String bankCreditAllExport(BankCreditPrincipalQuery query);
 
 
+    ResultBean<List<BankCreditParReportVO>> bankCreditPartner(BankCreditPrincipalQuery query);
+    String bankCreditPartnerExport(BankCreditPrincipalQuery query);
+
+
     ResultBean<List<TelBankCountVO>> telBankCount(BankCreditPrincipalQuery query);
 
     String telBankCountExport(BankCreditPrincipalQuery query);
@@ -53,5 +57,11 @@ public interface ReportService {
     ResultBean<List<TelCusDetailVO>> telCustomerDetail(BankCreditPrincipalQuery query);
 
     String telCustomerDetailExport(BankCreditPrincipalQuery query);
+
+    ResultBean<List<BankMortgageWarrantVO>> bankMortgageWarrant(BankCreditPrincipalQuery query);
+
+    ResultBean bankMortgageWarrantTotal(BankCreditPrincipalQuery query);
+
+    String bankmortgagewarrantExport(BankCreditPrincipalQuery query);
 
 }

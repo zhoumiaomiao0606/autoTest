@@ -115,7 +115,7 @@ public class VideoReviewServiceImpl implements VideoReviewService {
             XSSFSheet sheet = workbook.createSheet();
 
 
-            ArrayList<String> header = Lists.newArrayList("单号", "领取时间", "合伙人", "客户姓名",
+            ArrayList<String> header = Lists.newArrayList("单号", "领取时间","合伙人编码", "合伙人", "客户姓名",
                     "视频问题", "是否通过", "通过时间"
             );
             XSSFRow headRow = sheet.createRow(0);
@@ -137,18 +137,21 @@ public class VideoReviewServiceImpl implements VideoReviewService {
                 cell.setCellValue(videoFaceExportVO.getGetTime());
 
                 cell = row.createCell(2);
-                cell.setCellValue(videoFaceExportVO.getPName());
+                cell.setCellValue(videoFaceExportVO.getPCode());
 
                 cell = row.createCell(3);
-                cell.setCellValue(videoFaceExportVO.getCName());
+                cell.setCellValue(videoFaceExportVO.getPName());
 
                 cell = row.createCell(4);
-                cell.setCellValue(videoFaceExportVO.getInfo());
+                cell.setCellValue(videoFaceExportVO.getCName());
 
                 cell = row.createCell(5);
-                cell.setCellValue(videoFaceExportVO.getResult());
+                cell.setCellValue(videoFaceExportVO.getInfo());
 
                 cell = row.createCell(6);
+                cell.setCellValue(videoFaceExportVO.getResult());
+
+                cell = row.createCell(7);
                 cell.setCellValue(videoFaceExportVO.getFinishTime());
             }
             //文件宽度自适应
@@ -159,6 +162,7 @@ public class VideoReviewServiceImpl implements VideoReviewService {
             sheet.autoSizeColumn((short) 4);
             sheet.autoSizeColumn((short) 5);
             sheet.autoSizeColumn((short) 6);
+            sheet.autoSizeColumn((short) 7);
 
             workbook.write(out);
             //上传OSS

@@ -595,23 +595,23 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
             }
 
             // 紧急联系人
-                List<CustomerVO> emergencyContactVOList = custDetailVO.getEmergencyContactList();
-                if (!CollectionUtils.isEmpty(emergencyContactVOList)) {
+            List<CustomerVO> emergencyContactVOList = custDetailVO.getEmergencyContactList();
+            if (!CollectionUtils.isEmpty(emergencyContactVOList)) {
 
-                    List<AppCustomerInfoVO.EmergencyContact> emergencyContactList = Lists.newArrayList();
+                List<AppCustomerInfoVO.EmergencyContact> emergencyContactList = Lists.newArrayList();
 
-                    emergencyContactVOList.parallelStream()
-                            .filter(Objects::nonNull)
-                            .forEach(e -> {
-                                AppCustomerInfoVO.EmergencyContact emergencyContact = new AppCustomerInfoVO.EmergencyContact();
-                                //fillCustomerInfo(e, (AppCustomerInfoVO.CustomerInfo) emergencyContact);
-                                if (e != null) {
-                                    BeanUtils.copyProperties(e, emergencyContact);
-                                }
-                                emergencyContactList.add(emergencyContact);
-                            });
+                emergencyContactVOList.parallelStream()
+                        .filter(Objects::nonNull)
+                        .forEach(e -> {
+                            AppCustomerInfoVO.EmergencyContact emergencyContact = new AppCustomerInfoVO.EmergencyContact();
+                            //fillCustomerInfo(e, (AppCustomerInfoVO.CustomerInfo) emergencyContact);
+                            if (e != null) {
+                                BeanUtils.copyProperties(e, emergencyContact);
+                            }
+                            emergencyContactList.add(emergencyContact);
+                        });
 
-                    customerInfoVO.setEmergencyContactList(emergencyContactList);
+                customerInfoVO.setEmergencyContactList(emergencyContactList);
 
             }
             // 特殊联系人
@@ -716,9 +716,9 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
                     {
                         businessInfoVO.setNeedCollectKey("已收");
                     }else
-                        {
-                            businessInfoVO.setNeedCollectKey("待收");
-                        }
+                    {
+                        businessInfoVO.setNeedCollectKey("待收");
+                    }
 
 
                 }
@@ -970,7 +970,29 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
                         if (qcqlInfo.contains("高危行为") || qcqlInfo.contains("风险记录")) {
                             qcqlInfoMap = JSON.parseObject(qcqlInfo);
                         }
-
+                        String litigationDetailsMap = (String)creditResultMap.get("litigationDetails");
+                        if(litigationDetailsMap !=null &&!"".equals(litigationDetailsMap)){
+                            Map litigationMap = (Map) JSON.parse(litigationDetailsMap);
+                            if(litigationMap != null){
+                                String seconds = (String)litigationMap.get("seconds");
+                                String success = (String)litigationMap.get("success");
+                                String fxpgnum = String.valueOf(litigationMap.get("fxpgnum"));
+                                String message = (String)litigationMap.get("message");
+                                String fxmsgnum = String.valueOf(litigationMap.get("fxmsgnum"));
+                                JSONObject fxcontent = (JSONObject)litigationMap.get("fxcontent");
+                                String shixin = fxcontent.getString("shixin");
+                                String xianchu = fxcontent.getString("xianchu");
+                                String qianshui = fxcontent.getString("qianshui");
+                                String xiangao = fxcontent.getString("xiangao");
+                                String zuifan = fxcontent.getString("zuifan");
+                                String feizheng = fxcontent.getString("feizheng");
+                                String zhixing = fxcontent.getString("zhixing");
+                                String qiankuan = fxcontent.getString("qiankuan");
+                                String shenpan = fxcontent.getString("shenpan");
+                                String caipan = fxcontent.getString("caipan");
+                                String weifa = fxcontent.getString("weifa");
+                            }
+                        }
                         zhongAnInfoDO.setIdCard(zhongAnCusParam.getIdcard());
                         zhongAnInfoDO.setAge(creditResultMap.getString("age"));
                         zhongAnInfoDO.setGender(creditResultMap.getString("gender"));
@@ -1266,8 +1288,7 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
                 SecondHandCarEvaluateDO secondHandCarEvaluateDO = secondHandCarEvaluateDOMapper.selectByPrimaryKey(loanCarInfoParam.getSecond_hand_car_evaluate_id());
 
                 // #车牌号码 #车辆类型（小型轿车）  #所有人名称  #发动机号码  #注册日期   #车型颜色
-               // vehicleInformationUpdateParam.setLicense_plate_number(secondHandCarEvaluateDO.getPlate_num());
-                //vehicleInformationUpdateParam.setLicense_plate_number(secondHandCarEvaluateDO.getPlate_num());
+                // vehicleInformationUpdateParam.setLicense_plate_number(secondHandCarEvaluateDO.getPlate_num());
                 vehicleInformationUpdateParam.setCar_category(secondHandCarEvaluateDO.getVehicle_type());
                 vehicleInformationUpdateParam.setEngine_number(secondHandCarEvaluateDO.getEngine_num());
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -1279,10 +1300,10 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
                 throw new BizException("估价类型有误");
             }
         }else
-            {
-                vehicleInformationUpdateParam.setNow_driving_license_owner(loanCarInfoParam.getNowDrivingLicenseOwner());
-                vehicleInformationUpdateParam.setColor(loanCarInfoParam.getColor());
-            }
+        {
+            vehicleInformationUpdateParam.setNow_driving_license_owner(loanCarInfoParam.getNowDrivingLicenseOwner());
+            vehicleInformationUpdateParam.setColor(loanCarInfoParam.getColor());
+        }
 
         ResultBean<Void> updateRelaResultBean = loanProcessOrderService.update(loanOrderDO);
         Preconditions.checkArgument(updateRelaResultBean.getSuccess(), updateRelaResultBean.getMsg());
@@ -1397,6 +1418,7 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
                 CarDetailDO carDetailDO = carDetailDOMapper.selectByPrimaryKey(loanCarInfoDO.getCarDetailId(), null);
                 carDetail.setName(carDetailDO.getName());
             }
+
             loanCarInfoVO.setCarDetail(carDetail);
 
             // 合伙人账户信息
@@ -1501,47 +1523,47 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
      * 贷款申请校验1大于，2小于，3大于等于，4小于等于
      */
     private void doAttachTask_loanApply( Long orderId,AppLoanFinancialPlanParam appLoanFinancialPlanParam) {
-            LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
 /*            Map map = financialProductDOMapper.selectProductInfoByOrderId(loanOrderDO.getId());
             Long loanFinancialPlanId = loanOrderDOMapper.getLoanFinancialPlanIdById(loanOrderDO.getId());
             LoanFinancialPlanDO loanFinancialPlanDO = loanFinancialPlanDOMapper.selectByPrimaryKey(loanFinancialPlanId);*/
-            //金融手续费
-            BigDecimal financialServiceFee = appLoanFinancialPlanParam.getBankPeriodPrincipal().subtract(appLoanFinancialPlanParam.getLoanAmount());
-            //首付比例
-            BigDecimal downPaymentRatio = appLoanFinancialPlanParam.getDownPaymentRatio();
-            //贷款比例
-            BigDecimal loanRate = appLoanFinancialPlanParam.getLoanAmount().divide(appLoanFinancialPlanParam.getCarPrice(),2,BigDecimal.ROUND_HALF_UP);
-            //银行分期比例
-            BigDecimal stagingRatio = appLoanFinancialPlanParam.getStagingRatio();
-            LoanBaseInfoDO loanBaseInfoDO = loanBaseInfoDOMapper.selectByPrimaryKey(loanOrderDO.getLoanBaseInfoId());
-            String bankName = loanBaseInfoDO.getBank();
-            LoanCarInfoDO loanCarInfoDO = loanCarInfoDOMapper.selectByPrimaryKey(loanOrderDO.getLoanCarInfoId());
-            if (loanCarInfoDO ==null)
-            {
-                throw new BizException("车辆信息未保存！！");
+        //金融手续费
+        BigDecimal financialServiceFee = appLoanFinancialPlanParam.getBankPeriodPrincipal().subtract(appLoanFinancialPlanParam.getLoanAmount());
+        //首付比例
+        BigDecimal downPaymentRatio = appLoanFinancialPlanParam.getDownPaymentRatio();
+        //贷款比例
+        BigDecimal loanRate = appLoanFinancialPlanParam.getLoanAmount().divide(appLoanFinancialPlanParam.getCarPrice(),2,BigDecimal.ROUND_HALF_UP);
+        //银行分期比例
+        BigDecimal stagingRatio = appLoanFinancialPlanParam.getStagingRatio();
+        LoanBaseInfoDO loanBaseInfoDO = loanBaseInfoDOMapper.selectByPrimaryKey(loanOrderDO.getLoanBaseInfoId());
+        String bankName = loanBaseInfoDO.getBank();
+        LoanCarInfoDO loanCarInfoDO = loanCarInfoDOMapper.selectByPrimaryKey(loanOrderDO.getLoanCarInfoId());
+        if (loanCarInfoDO ==null)
+        {
+            throw new BizException("车辆信息未保存！！");
+        }
+        int carType = loanCarInfoDO.getCarType();
+        ConfLoanApplyDOKey confLoanApplyDOKey = new ConfLoanApplyDOKey();
+        confLoanApplyDOKey.setBank(bankName);
+        confLoanApplyDOKey.setCar_type(carType);
+        ConfLoanApplyDO confLoanApplyDO = confLoanApplyDOMapper.selectByPrimaryKey(confLoanApplyDOKey);
+        if(confLoanApplyDO!=null) {
+            if (confLoanApplyDO.getDown_payment_ratio() != null && confLoanApplyDO.getDown_payment_ratio_compare() != null) {
+                compardNum(confLoanApplyDO.getDown_payment_ratio_compare(), downPaymentRatio, confLoanApplyDO.getDown_payment_ratio(), "首付比例");
             }
-            int carType = loanCarInfoDO.getCarType();
-            ConfLoanApplyDOKey confLoanApplyDOKey = new ConfLoanApplyDOKey();
-            confLoanApplyDOKey.setBank(bankName);
-            confLoanApplyDOKey.setCar_type(carType);
-            ConfLoanApplyDO confLoanApplyDO = confLoanApplyDOMapper.selectByPrimaryKey(confLoanApplyDOKey);
-            if(confLoanApplyDO!=null) {
-                if (confLoanApplyDO.getDown_payment_ratio() != null && confLoanApplyDO.getDown_payment_ratio_compare() != null) {
-                    compardNum(confLoanApplyDO.getDown_payment_ratio_compare(), downPaymentRatio, confLoanApplyDO.getDown_payment_ratio(), "首付比例");
-                }
-                if (confLoanApplyDO.getFinancial_service_fee() != null && confLoanApplyDO.getFinancial_service_fee_compard() != null) {
-                    compardNum(confLoanApplyDO.getFinancial_service_fee_compard(), financialServiceFee.divide(new BigDecimal("10000")), confLoanApplyDO.getFinancial_service_fee(), "金融手续费");
-                }
-                if (confLoanApplyDO.getCar_ratio() != null && confLoanApplyDO.getCar_ratio_compard() != null) {
-                    compardNum(confLoanApplyDO.getCar_ratio_compard(), financialServiceFee, appLoanFinancialPlanParam.getCarPrice().multiply(confLoanApplyDO.getCar_ratio().divide(new BigDecimal("100"))), "金融手续费2");
-                }
-                if (confLoanApplyDO.getLoan_ratio() != null && confLoanApplyDO.getLoan_ratio_compare() != null) {
-                    compardNum(confLoanApplyDO.getLoan_ratio_compare(), loanRate, confLoanApplyDO.getLoan_ratio().divide(new BigDecimal("100")), "贷款比例");
-                }
-                if (confLoanApplyDO.getStaging_ratio() != null && confLoanApplyDO.getStaging_ratio_compard() != null) {
-                    compardNum(confLoanApplyDO.getStaging_ratio_compard(), stagingRatio, confLoanApplyDO.getStaging_ratio(), "银行分期比例");
-                }
+            if (confLoanApplyDO.getFinancial_service_fee() != null && confLoanApplyDO.getFinancial_service_fee_compard() != null) {
+                compardNum(confLoanApplyDO.getFinancial_service_fee_compard(), financialServiceFee.divide(new BigDecimal("10000")), confLoanApplyDO.getFinancial_service_fee(), "金融手续费");
             }
+            if (confLoanApplyDO.getCar_ratio() != null && confLoanApplyDO.getCar_ratio_compard() != null) {
+                compardNum(confLoanApplyDO.getCar_ratio_compard(), financialServiceFee, appLoanFinancialPlanParam.getCarPrice().multiply(confLoanApplyDO.getCar_ratio().divide(new BigDecimal("100"))), "金融手续费2");
+            }
+            if (confLoanApplyDO.getLoan_ratio() != null && confLoanApplyDO.getLoan_ratio_compare() != null) {
+                compardNum(confLoanApplyDO.getLoan_ratio_compare(), loanRate, confLoanApplyDO.getLoan_ratio().divide(new BigDecimal("100")), "贷款比例");
+            }
+            if (confLoanApplyDO.getStaging_ratio() != null && confLoanApplyDO.getStaging_ratio_compard() != null) {
+                compardNum(confLoanApplyDO.getStaging_ratio_compard(), stagingRatio, confLoanApplyDO.getStaging_ratio(), "银行分期比例");
+            }
+        }
     }
     //1大于，2小于，3大于等于，4小于等于
     public void compardNum(String flag, BigDecimal now, BigDecimal data, String reason) {
