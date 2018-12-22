@@ -1518,20 +1518,25 @@
     <select id="selectUniversalLoanRefundApply" resultType="com.yunche.loan.domain.vo.UniversalLoanRefundApplyVO">
 
         select
-                    id 											AS refund_id,
-                    order_id 								    AS order_id,
-                    refund_amount 					            AS refund_amount,
-                    DATE_FORMAT(refund_date,'%Y-%m-%d %H:%i:%S') AS refund_date,
-                    refund_reason 					            AS refund_reason,
-                    refund_apply_account_id  	                AS refund_apply_account_id,
-                    path 										AS path,
-                    advances_interest                           AS advances_interest,
-                    other_interest                              AS other_interest,
-                    penalty_interest                            AS penalty_interest
+            refund.id 											AS refund_id,
+            refund.order_id 								    AS order_id,
+            refund.refund_amount 					            AS refund_amount,
+            DATE_FORMAT(refund.refund_date,'%Y-%m-%d %H:%i:%S') AS refund_date,
+            refund.refund_reason 					            AS refund_reason,
+            refund.refund_apply_account_id  	                AS refund_apply_account_id,
+            refund.path 										AS path,
+            refund.advances_interest                           AS advances_interest,
+            refund.other_interest                              AS other_interest,
+            refund.penalty_interest                            AS penalty_interest,
+            conf_refund.refund_pay_open_bank                   AS refund_pay_open_bank,
+            conf_refund.refund_pay_account_name                AS refund_pay_account_name,
+            conf_refund.refund_pay_account                     AS refund_pay_account
 
-        FROM    loan_refund_apply
-
-        WHERE   id = #{refundId} AND order_id = #{orderId}
+        FROM
+                loan_refund_apply refund
+                LEFT JOIN conf_refund_apply_account conf_refund on refund.refund_apply_account_id= conf_refund.id
+        WHERE
+                refund.id = #{refundId} AND refund.order_id = #{orderId}
 
     </select>
 
