@@ -30,8 +30,8 @@
         id, process_inst_id, loan_base_info_id, loan_customer_id, loan_car_info_id, loan_financial_plan_id,
         loan_home_visit_id, material_audit_id, cost_details_id, remit_details_id, vehicle_information_id,
         apply_license_plate_deposit_info_id, bank_card_record_id, bank_lend_record_id, status,
-        gmt_create, gmt_modify, feature, rebate_entry,rebate_periods
-        gmt_create, gmt_modify, feature,second_hand_car_evaluate_id,second_hand_car_first_site_id
+        gmt_create, gmt_modify, feature, rebate_entry,rebate_periods,
+        second_hand_car_evaluate_id,second_hand_car_first_site_id
     </sql>
 
     <!--getCustIdById-->
@@ -102,8 +102,8 @@
         loan_home_visit_id, material_audit_id, cost_details_id,
         remit_details_id, vehicle_information_id, apply_license_plate_deposit_info_id,
         bank_card_record_id, bank_lend_record_id, status,
-        gmt_create, gmt_modify, feature, rebate_entry,rebate_periods
-        gmt_create, gmt_modify, feature,second_hand_car_evaluate_id,second_hand_car_first_site_id
+        gmt_create, gmt_modify, feature, rebate_entry,rebate_periods,
+        second_hand_car_evaluate_id,second_hand_car_first_site_id
         )
         values (#{id,jdbcType=BIGINT}, #{processInstId,jdbcType=VARCHAR}, #{loanBaseInfoId,jdbcType=BIGINT},
         #{loanCustomerId,jdbcType=BIGINT}, #{loanCarInfoId,jdbcType=BIGINT}, #{loanFinancialPlanId,jdbcType=BIGINT},
@@ -111,8 +111,8 @@
         #{remitDetailsId,jdbcType=BIGINT}, #{vehicleInformationId,jdbcType=BIGINT}, #{applyLicensePlateDepositInfoId,jdbcType=BIGINT},
         #{bankCardRecordId,jdbcType=BIGINT}, #{bankLendRecordId,jdbcType=BIGINT}, #{status,jdbcType=TINYINT},
         #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModify,jdbcType=TIMESTAMP}, #{feature,jdbcType=VARCHAR},
-        #{rebateEntry,jdbcType=TINYINT},#{rebatePeriods,jdbcType=INTEGER}
-        #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModify,jdbcType=TIMESTAMP}, #{feature,jdbcType=VARCHAR}, #{second_hand_car_evaluate_id,jdbcType=BIGINT}, #{second_hand_car_first_site_id,jdbcType=BIGINT}
+        #{rebateEntry,jdbcType=TINYINT},#{rebatePeriods,jdbcType=INTEGER},
+        #{second_hand_car_evaluate_id,jdbcType=BIGINT}, #{second_hand_car_first_site_id,jdbcType=BIGINT}
         )
     </insert>
 
@@ -242,18 +242,17 @@
             <if test="feature != null">
                 #{feature,jdbcType=VARCHAR},
             </if>
-            <if test="rebateEntry != null">
-                #{rebateEntry,jdbcType=TINYINT},
-            </if>
-            <if test="rebatePeriods != null">
-                #{rebatePeriods,jdbcType=INTEGER},
-            </if>
-
             <if test="second_hand_car_evaluate_id != null">
                 #{second_hand_car_evaluate_id,jdbcType=BIGINT},
             </if>
             <if test="second_hand_car_first_site_id != null">
                 #{second_hand_car_first_site_id,jdbcType=BIGINT},
+            </if>
+            <if test="rebateEntry != null">
+                #{rebateEntry,jdbcType=TINYINT},
+            </if>
+            <if test="rebatePeriods != null">
+                #{rebatePeriods,jdbcType=INTEGER},
             </if>
         </trim>
     </insert>
