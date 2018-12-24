@@ -21,6 +21,9 @@ public class UniversalLoanRefundApplyVO {
     private String advances_interest;
     private String other_interest;
     private String penalty_interest;
+    private String refund_pay_open_bank;
+    private String refund_pay_account_name;
+    private String refund_pay_account;
 
     public List<String> getPath() {
         if (StringUtils.isBlank(path)) {

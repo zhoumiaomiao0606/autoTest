@@ -46,6 +46,8 @@ public interface LoanStatementDOMapper {
 
     List<JinTouHangInterestRegisterVO> exportJinTouHangInterestRegister(ExportApplyLoanPushParam param);
 
+    List<String> usertaskMaterialPrintUsers();
+
     List<CreditPicExportVO> selectCreditPicExport(LoanCreditExportQuery param);
 
     String selectMaxLevelByOrderId(@Param("orderId")Long orderId);
