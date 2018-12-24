@@ -524,6 +524,7 @@
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1}]]></conditionExpression>
     </sequenceFlow>
     <sequenceFlow id="flow313" sourceRef="filter_video_review" targetRef="exclusivegateway44"></sequenceFlow>
+    <userTask id="usertask_contract_overdue" name="合同超期" activiti:candidateGroups="管理员,客服经理,客服"></userTask>
   </process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_loan_process">
     <bpmndi:BPMNPlane bpmnElement="loan_process" id="BPMNPlane_loan_process">
@@ -943,6 +944,9 @@
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="filter_video_review_before" id="BPMNShape_filter_video_review_before">
         <omgdc:Bounds height="55.0" width="105.0" x="3821.0" y="2360.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="usertask_contract_overdue" id="BPMNShape_usertask_contract_overdue">
+        <omgdc:Bounds height="55.0" width="105.0" x="3118.0" y="361.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge bpmnElement="flow1" id="BPMNEdge_flow1">
         <omgdi:waypoint x="333.0" y="1086.0"></omgdi:waypoint>

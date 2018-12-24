@@ -10,6 +10,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * @author: ZhongMingxiao
@@ -178,6 +179,12 @@ public class ChartController
     public ResultBean expertAwaitRemitDetailChart(@RequestBody AwaitRemitDetailChartParam param)
     {
         return ResultBean.ofSuccess(exportQueryService.expertAwaitRemitDetailChart(param));
+    }
+
+    @GetMapping(value = "/usertaskMaterialPrintUsers")
+    public ResultBean usertaskMaterialPrintUsers()
+    {
+        return ResultBean.ofSuccess(exportQueryService.usertaskMaterialPrintUsers());
     }
 
     /**

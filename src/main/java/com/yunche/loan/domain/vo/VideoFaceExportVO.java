@@ -8,6 +8,8 @@ public class VideoFaceExportVO {
     private String taskId;
     //领取时间
     private String getTime;
+    //合伙人编码
+    private String partnerCode;
     //团队名
     private String pName;
     //客户名

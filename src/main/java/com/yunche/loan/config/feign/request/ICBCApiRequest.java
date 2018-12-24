@@ -123,6 +123,34 @@ public class ICBCApiRequest {
 
     }
 
+
+    /**
+     * 二手车评估预审
+     */
+    @Data
+    public static class Applyevaluate{
+        private String platno;
+        private String cmpseq;
+        private String orderno;
+        private String cmpdate;
+        private String cmptime;
+        private String fileNum;
+        private String customerId;
+
+        private String idtype;
+        private String idno;
+        private String carType;
+        private String Price;
+        private String carNo1;
+        private String carZone;
+        private String carMile;
+        private String carDate;
+        private String AssessPrice;
+        private String EvaluateOrg;
+        private String decorateLevel;
+
+    }
+
     @Data
     public static class ReturnMsg {
         ReturnPub pub;

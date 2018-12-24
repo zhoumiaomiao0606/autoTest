@@ -1071,8 +1071,9 @@
                       <if test="remitSatus !=null and remitSatus !=''">
                           and case
                           when #{remitSatus} = 1 then join_bp.remit_status = 1
-                          when #{remitSatus} = 2 then join_bp.remit_status = 2
+
                           when #{remitSatus} = 3 then join_bp.remit_status = 3
+                          else 1=1
                           end
                       </if>
 

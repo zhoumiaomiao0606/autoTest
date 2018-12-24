@@ -76,6 +76,22 @@ public class ICBCController {
         return ResultBean.ofSuccess(null);
     }
 
+
+
+    //银行二手车评估价
+    @GetMapping(value = "/applyevaluate")
+    public ResultBean applyevaluate(@RequestParam("orderId") Long orderId){
+        return bankSolutionService.applyevaluate(orderId);
+    }
+
+
+
+
+
+
+
+
+
     //回调接口
     @PostMapping (value = "/creditresult", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public String creditresult(@RequestParam String reqparam) throws IOException {

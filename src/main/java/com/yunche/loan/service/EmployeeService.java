@@ -60,4 +60,6 @@ public interface EmployeeService {
     void bindBizArea(Long id, List<Long> bizAreaIds);
 
     Long getPartnerIdByEmployeeId(Long employeeId);
+
+    ResultBean<List<EmployeeDO>> listAllName();
 }

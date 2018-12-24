@@ -89,6 +89,8 @@ public enum LoanProcessEnum {
     UN_MORTGAGE_FILE("usertask_un_mortgage_file", "未抵押明细文件"),
 
     ROLE_CHANGE("usertask_role_change", "角色变更"),
+
+    USERTASK_CONTRACT_OVERDUE("usertask_contract_overdue","合同超期"),
     /////////////////////////////////////////// ↑↑↑↑↑--流程外的节点--↑↑↑↑↑ //////////////////////////////////////////////
 
 
