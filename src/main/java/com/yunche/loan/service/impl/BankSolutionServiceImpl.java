@@ -307,6 +307,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         SecondHandCarEvaluateDO secondHandCarEvaluateDO = secondHandCarEvaluateDOMapper.selectByPrimaryKey(loanOrderDO.getSecond_hand_car_evaluate_id());
         ICBCApiRequest.Applyevaluate applyevaluate = new ICBCApiRequest.Applyevaluate();
 
+        applyevaluate.setPlatno(sysConfig.getPlatno());
         applyevaluate.setOrderno(String.valueOf(orderId));
         applyevaluate.setCmpseq(GeneratorIDUtil.execute());
         applyevaluate.setCmpdate(DateUtil.getDate());
@@ -316,11 +317,12 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         applyevaluate.setIdtype(IDict.K_JJLX.IDCARD);
 
 
+
         applyevaluate.setIdno(loanCustomerDO.getIdCard());
         applyevaluate.setCarType(carFullName);
         applyevaluate.setPrice(BigDecimalUtil.format(loanFinancialPlanDO.getBankPeriodPrincipal(),2));
         applyevaluate.setCarNo1(vehicleInformationDO.getVehicle_identification_number());
-        applyevaluate.setCarZone(secondHandCarEvaluateDO.getCity_id());
+        applyevaluate.setCarZone(loanBaseInfoDO.getAreaId() == null ? null : loanBaseInfoDO.getAreaId().toString().substring(0, 4));
         applyevaluate.setCarMile(secondHandCarEvaluateDO.getMileage());
         applyevaluate.setCarDate(DateUtil.getDateTo8(loanCarInfoDO.getFirstRegisterDate()));
         applyevaluate.setAssessPrice(BigDecimalUtil.format(loanFinancialPlanDO.getAppraisal(),2));
