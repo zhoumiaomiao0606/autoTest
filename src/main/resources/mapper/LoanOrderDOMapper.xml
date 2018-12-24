@@ -30,8 +30,7 @@
         id, process_inst_id, loan_base_info_id, loan_customer_id, loan_car_info_id, loan_financial_plan_id,
         loan_home_visit_id, material_audit_id, cost_details_id, remit_details_id, vehicle_information_id,
         apply_license_plate_deposit_info_id, bank_card_record_id, bank_lend_record_id, status,
-        gmt_create, gmt_modify, feature, rebate_entry,rebate_periods
-        gmt_create, gmt_modify, feature,second_hand_car_evaluate_id,second_hand_car_first_site_id
+        rebate_entry,rebate_periods,gmt_create, gmt_modify, feature,second_hand_car_evaluate_id,second_hand_car_first_site_id
     </sql>
 
     <!--getCustIdById-->
@@ -102,7 +101,7 @@
         loan_home_visit_id, material_audit_id, cost_details_id,
         remit_details_id, vehicle_information_id, apply_license_plate_deposit_info_id,
         bank_card_record_id, bank_lend_record_id, status,
-        gmt_create, gmt_modify, feature, rebate_entry,rebate_periods
+        rebate_entry,rebate_periods,
         gmt_create, gmt_modify, feature,second_hand_car_evaluate_id,second_hand_car_first_site_id
         )
         values (#{id,jdbcType=BIGINT}, #{processInstId,jdbcType=VARCHAR}, #{loanBaseInfoId,jdbcType=BIGINT},
