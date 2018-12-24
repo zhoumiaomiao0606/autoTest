@@ -36,7 +36,7 @@ public class BusinessReviewManager {
 
     private static final String HOST2 = "http://47.97.122.31:8888";//二手车
 
-    private static final String HOST3 = "http://192.168.2.111:8019";//临时测试--金福猫支付
+    private static final String HOST3 = "http://47.110.7.61:8019";//临时测试--金福猫支付
 
    /* private static final String HOST2 = "http://192.168.0.140:8888";*/
 

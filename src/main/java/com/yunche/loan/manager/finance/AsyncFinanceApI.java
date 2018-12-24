@@ -179,6 +179,8 @@ public class AsyncFinanceApI {
             voucherErrRecordDO.setRetMessage(String.valueOf(map.get("message")));
             if(String.valueOf(map.get("resultCode")).equals("200")){
                 voucherErrRecordDO.setStatus(new Byte("2"));
+
+                //记录会计凭证号
             }
         } catch (IOException e)
         {

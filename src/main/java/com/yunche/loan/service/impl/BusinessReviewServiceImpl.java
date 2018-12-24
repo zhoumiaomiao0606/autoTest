@@ -365,6 +365,11 @@ public class BusinessReviewServiceImpl implements BusinessReviewService {
                 financeResult1 = gson.fromJson(financeResult, FinanceResult.class);
             }
 
+            if (!"200".equals(financeResult1.getResultCode()))
+            {
+                throw new BizException("请求财务计算错误！！");
+            }
+
             return ResultBean.ofSuccess(financeResult1);
         }catch (Exception e)
         {
