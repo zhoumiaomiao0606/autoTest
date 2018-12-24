@@ -109,8 +109,7 @@
         #{loanHomeVisitId,jdbcType=BIGINT}, #{materialAuditId,jdbcType=BIGINT}, #{costDetailsId,jdbcType=BIGINT},
         #{remitDetailsId,jdbcType=BIGINT}, #{vehicleInformationId,jdbcType=BIGINT}, #{applyLicensePlateDepositInfoId,jdbcType=BIGINT},
         #{bankCardRecordId,jdbcType=BIGINT}, #{bankLendRecordId,jdbcType=BIGINT}, #{status,jdbcType=TINYINT},
-        #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModify,jdbcType=TIMESTAMP}, #{feature,jdbcType=VARCHAR},
-        #{rebateEntry,jdbcType=TINYINT},#{rebatePeriods,jdbcType=INTEGER}
+        #{rebateEntry,jdbcType=TINYINT},#{rebatePeriods,jdbcType=INTEGER},
         #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModify,jdbcType=TIMESTAMP}, #{feature,jdbcType=VARCHAR}, #{second_hand_car_evaluate_id,jdbcType=BIGINT}, #{second_hand_car_first_site_id,jdbcType=BIGINT}
         )
     </insert>
