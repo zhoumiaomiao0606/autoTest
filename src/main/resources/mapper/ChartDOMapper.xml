@@ -902,7 +902,7 @@
                 </foreach>
             </if>
             <if test="startDate !=null and endDate !=null and startDate !='' and endDate !=''" >
-                having a.lendDate between #{startDate} and #{endDate}
+                and a.lendDate between #{startDate} and #{endDate}
             </if>
         </where>
     </select>
@@ -985,7 +985,7 @@
                 </foreach>
             </if>
             <if test="startDate !=null and endDate !=null and startDate !='' and endDate !=''" >
-                having a.submitTime #{startDate} and #{endDate}
+                and a.submitTime between #{startDate} and #{endDate}
             </if>
         </where>
     </select>
@@ -1051,7 +1051,7 @@
                 </foreach>
             </if>
             <if test="startDate !=null and endDate !=null and startDate !='' and endDate !=''" >
-                having a.submitTime #{startDate} and #{endDate}
+                and a.submitTime between #{startDate} and #{endDate}
             </if>
         </where>
 
@@ -1133,7 +1133,7 @@
                 </foreach>
             </if>
             <if test="startDate !=null and endDate !=null and startDate !='' and endDate !=''" >
-                having a.lendDate #{startDate} and #{endDate}
+                and a.lendDate between #{startDate} and #{endDate}
             </if>
         </where>
     </select>
