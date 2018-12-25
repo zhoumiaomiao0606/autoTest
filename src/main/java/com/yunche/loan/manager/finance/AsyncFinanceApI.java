@@ -106,7 +106,7 @@ public class AsyncFinanceApI {
         }
 
         //退款申请
-        if (approvalParam.getTaskDefinitionKey().equals(REFUND_APPLY.getCode()) && ACTION_PASS.equals(approvalParam.getAction())) {
+        if (approvalParam.getTaskDefinitionKey().equals(REFUND_APPLY_REVIEW.getCode()) && ACTION_PASS.equals(approvalParam.getAction())) {
             LoanRefundApplyDO loanRefundApplyDO = loanRefundApplyDOMapper.lastByOrderId(approvalParam.getOrderId());
             Preconditions.checkNotNull(loanRefundApplyDO, "退款单为空");
 
@@ -142,7 +142,8 @@ public class AsyncFinanceApI {
         }
 
         //--002 银行放款
-        if(approvalParam.getTaskDefinitionKey().equals(BANK_LEND_RECORD.getCode()) && ACTION_PASS.equals(approvalParam.getAction())){
+        if(approvalParam.getTaskDefinitionKey().equals(BANK_LEND_RECORD.getCode()) && ACTION_PASS.equals(approvalParam.getAction()))
+        {
 
         }
 
@@ -246,7 +247,7 @@ public class AsyncFinanceApI {
     //一旦-垫款提交-退款提交-偿款提交-则执行
     @Subscribe
     public void listernApproval(ApprovalParam approvalParam) {
-        if ((approvalParam.getTaskDefinitionKey().equals(REMIT_REVIEW.getCode()) && ACTION_PASS.equals(approvalParam.getAction())) || (approvalParam.getTaskDefinitionKey().equals(FINANCE_INSTEAD_PAY_REVIEW.getCode()) && ACTION_PASS.equals(approvalParam.getAction())) || (approvalParam.getTaskDefinitionKey().equals(REFUND_APPLY.getCode()) && ACTION_PASS.equals(approvalParam.getAction()))|| (approvalParam.getTaskDefinitionKey().equals(BANK_LEND_RECORD.getCode()) && ACTION_PASS.equals(approvalParam.getAction()))) {
+        if ((approvalParam.getTaskDefinitionKey().equals(REMIT_REVIEW.getCode()) && ACTION_PASS.equals(approvalParam.getAction())) || (approvalParam.getTaskDefinitionKey().equals(FINANCE_INSTEAD_PAY_REVIEW.getCode()) && ACTION_PASS.equals(approvalParam.getAction())) || (approvalParam.getTaskDefinitionKey().equals(REFUND_APPLY_REVIEW.getCode()) && ACTION_PASS.equals(approvalParam.getAction()))|| (approvalParam.getTaskDefinitionKey().equals(BANK_LEND_RECORD.getCode()) && ACTION_PASS.equals(approvalParam.getAction()))) {
             postFinanceData(approvalParam);
         }
 

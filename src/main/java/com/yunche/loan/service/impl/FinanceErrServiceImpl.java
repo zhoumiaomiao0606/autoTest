@@ -37,7 +37,7 @@ public class FinanceErrServiceImpl implements FinanceErrService {
         FinanceErrQuery financeErrQuery =new FinanceErrQuery();
         financeErrQuery.setStatus(new Byte("1"));
 
-        List<FinanceErrVO> financeErrVOS = voucherErrRecordDOMapper.listErr(null);
+        List<FinanceErrVO> financeErrVOS = voucherErrRecordDOMapper.listErr(financeErrQuery);
 
         for (FinanceErrVO financeErrVO:financeErrVOS) {
             ApprovalParam approvalParam = new ApprovalParam();
