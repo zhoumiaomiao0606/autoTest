@@ -58,6 +58,9 @@ public class AsyncFinanceApI {
     private VoucherErrRecordDOMapper voucherErrRecordDOMapper;
 
     @Autowired
+    private VoucherRecordDOMapper voucherRecordDOMapper;
+
+    @Autowired
     private LoanProcessInsteadPayDOMapper loanProcessInsteadPayDOMapper;
 
     private  RemitDetailsDO remit2FinanceVoucher(Long orderId){
@@ -152,7 +155,23 @@ public class AsyncFinanceApI {
 
             LOG.info("应答数据：" + retJson);
 
-        } catch (Exception e) {
+        } catch (Exception e)
+        {
+            //这里也要记录
+            if (approvalParam.getSerial_no()==null)
+            {
+                String execute = GeneratorIDUtil.execute();
+                VoucherErrRecordDO voucherErrRecordDO = new VoucherErrRecordDO();
+                voucherErrRecordDO.setSerialNo(execute);
+                voucherErrRecordDO.setOrderId(approvalParam.getOrderId());
+                voucherErrRecordDO.setTaskDefinitionKey(approvalParam.getTaskDefinitionKey());
+                voucherErrRecordDO.setCreateTime(new Date());
+                voucherErrRecordDO.setProcessId(approvalParam.getProcessId());
+                voucherErrRecordDO.setRetMessage("发送异常或者接口不通");
+                voucherErrRecordDOMapper.insertSelective(voucherErrRecordDO);
+
+
+            }
             LOG.error("财务数据异步发送失败！！！", e);
         }
 
@@ -165,29 +184,64 @@ public class AsyncFinanceApI {
      */
     private void errSerialRecord(String retJson,ApprovalParam approvalParam){
         ObjectMapper objectMapper = new ObjectMapper();
-        String execute = GeneratorIDUtil.execute();
-        VoucherErrRecordDO voucherErrRecordDO = new VoucherErrRecordDO();
-        voucherErrRecordDO.setSerialNo(execute);
-        voucherErrRecordDO.setOrderId(approvalParam.getOrderId());
-        voucherErrRecordDO.setTaskDefinitionKey(approvalParam.getTaskDefinitionKey());
-        voucherErrRecordDO.setCreateTime(new Date());
-        voucherErrRecordDO.setProcessId(approvalParam.getProcessId());
-
-        try {
-            Map map = objectMapper.readValue(retJson, Map.class);
-            voucherErrRecordDO.setRetStatus(String.valueOf(map.get("resultCode")));
-            voucherErrRecordDO.setRetMessage(String.valueOf(map.get("message")));
-            if(String.valueOf(map.get("resultCode")).equals("200")){
-                voucherErrRecordDO.setStatus(new Byte("2"));
-
-                //记录会计凭证号
-            }
-        } catch (IOException e)
+        if (approvalParam.getSerial_no()==null)
         {
-            voucherErrRecordDO.setRetMessage(retJson);
-        }
+            String execute = GeneratorIDUtil.execute();
+            VoucherErrRecordDO voucherErrRecordDO = new VoucherErrRecordDO();
+            voucherErrRecordDO.setSerialNo(execute);
+            voucherErrRecordDO.setOrderId(approvalParam.getOrderId());
+            voucherErrRecordDO.setTaskDefinitionKey(approvalParam.getTaskDefinitionKey());
+            voucherErrRecordDO.setCreateTime(new Date());
+            voucherErrRecordDO.setProcessId(approvalParam.getProcessId());
 
-        voucherErrRecordDOMapper.insertSelective(voucherErrRecordDO);
+            try {
+                Map map = objectMapper.readValue(retJson, Map.class);
+                voucherErrRecordDO.setRetStatus(String.valueOf(map.get("resultCode")));
+                voucherErrRecordDO.setRetMessage(String.valueOf(map.get("message")));
+                if(String.valueOf(map.get("resultCode")).equals("200")){
+                    voucherErrRecordDO.setStatus(new Byte("2"));
+
+                    //记录会计凭证号
+                    VoucherRecordDO voucherRecordDO = new VoucherRecordDO();
+                    voucherRecordDO.setOrderId(approvalParam.getOrderId());
+                    voucherRecordDO.setOperationNum(execute);
+                    voucherRecordDO.setVoucherNum(String.valueOf(map.get("datas")));
+                    voucherRecordDO.setGmtCreate(new Date());
+                    voucherRecordDOMapper.insertSelective(voucherRecordDO);
+                }
+            } catch (IOException e)
+            {
+                voucherErrRecordDO.setRetMessage(retJson);
+            }
+
+            voucherErrRecordDOMapper.insertSelective(voucherErrRecordDO);
+        }else
+            {
+                VoucherErrRecordDO voucherErrRecordDO = voucherErrRecordDOMapper.selectByPrimaryKey(approvalParam.getSerial_no());
+                try {
+                    Map map = objectMapper.readValue(retJson, Map.class);
+                    voucherErrRecordDO.setRetStatus(String.valueOf(map.get("resultCode")));
+                    voucherErrRecordDO.setRetMessage(String.valueOf(map.get("message")));
+                    if(String.valueOf(map.get("resultCode")).equals("200")){
+                        voucherErrRecordDO.setStatus(new Byte("2"));
+
+                        //记录会计凭证号
+                        VoucherRecordDO voucherRecordDO = new VoucherRecordDO();
+                        voucherRecordDO.setOrderId(approvalParam.getOrderId());
+                        voucherRecordDO.setOperationNum(approvalParam.getSerial_no());
+                        voucherRecordDO.setVoucherNum(String.valueOf(map.get("datas")));
+                        voucherRecordDO.setGmtCreate(new Date());
+                        voucherRecordDOMapper.insertSelective(voucherRecordDO);
+                    }
+                } catch (IOException e)
+                {
+                    voucherErrRecordDO.setRetMessage(retJson);
+                }
+
+                voucherErrRecordDOMapper.updateByPrimaryKeySelective(voucherErrRecordDO);
+
+            }
+
     }
     //一旦-垫款提交-退款提交-偿款提交-则执行
     @Subscribe

@@ -5,6 +5,7 @@ import lombok.Data;
 @Data
 public class FinanceErrVO {
 
+    private String serialNo;
     private String  orderId;
 
     private String  businessDate;
