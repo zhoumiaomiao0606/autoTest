@@ -833,7 +833,7 @@
         a.contractToBankDate,
         DATEDIFF(a.infoCompanyToParDate,a.contractCompanyToBankDate) as bankSealDays,
         DATEDIFF(now(),a.infoCompanyToParDate) as postDays,
-        DATEDIFF(now(),a.lengDate) as notMortgageDays,
+        DATEDIFF(now(),a.lendDate) as notMortgageDays,
         '' as extendedRange,
         a.areaName,
         '' as mortgageChannelStatus,
@@ -859,7 +859,7 @@
         FROM
         loan_process_log
         WHERE
-        order_id = orders.id
+        order_id = loan.id
         AND task_definition_key = 'usertask_remit_review'
         ORDER BY
         create_time DESC
@@ -941,7 +941,7 @@
         FROM
         loan_process_log
         WHERE
-        order_id = orders.id
+        order_id = loan.id
         AND task_definition_key = 'usertask_remit_review'
         ORDER BY
         create_time DESC

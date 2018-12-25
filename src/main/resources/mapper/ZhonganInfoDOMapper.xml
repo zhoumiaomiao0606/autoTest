@@ -662,6 +662,7 @@
         left join loan_customer d on b.loan_customer_id = d.id
         left join employee e on c.salesman_id = e.id
         left join partner f on c.partner_id = f.id
+        left join loan_credit_info credit on credit.customer_id = d.id and credit.type = 1
         LEFT JOIN (
         SELECT DISTINCT
         z.*
@@ -1875,8 +1876,9 @@
         select a.partner_id as partnerId,par.name,a.cus1,a.cus2,a.bank from(
         SELECT
         partner_id,
-        sum( IF ( cus.cust_type = 1, 1, 0 ) )  as cus1,
-        count(1) as  cus2
+        floor(sum( IF ( cus.cust_type = 1, 1, 0 ) ))  as cus1,
+        count(1) as  cus2,
+        base.bank
         FROM
         loan_customer cus
         LEFT JOIN loan_order loan ON loan.loan_customer_id = cus.principal_cust_id
@@ -1966,7 +1968,6 @@
         WHERE
         process.remit_review = 1
         AND process.apply_license_plate_deposit_info != 1
-
         <if test="bankList != null and bankList.size() > 0">
             and
             base.bank in
@@ -1974,7 +1975,5 @@
                 #{item}
             </foreach>
         </if>
-
-	    ) tal
     </select>
 </mapper>
