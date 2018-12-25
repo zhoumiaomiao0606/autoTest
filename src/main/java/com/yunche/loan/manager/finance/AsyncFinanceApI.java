@@ -246,7 +246,7 @@ public class AsyncFinanceApI {
     //一旦-垫款提交-退款提交-偿款提交-则执行
     @Subscribe
     public void listernApproval(ApprovalParam approvalParam) {
-        if ((approvalParam.getTaskDefinitionKey().equals(REMIT_REVIEW.getCode()) && ACTION_PASS.equals(approvalParam.getAction())) || (approvalParam.getTaskDefinitionKey().equals(FINANCE_INSTEAD_PAY_REVIEW.getCode()) && ACTION_PASS.equals(approvalParam.getAction())) || (approvalParam.getTaskDefinitionKey().equals(REFUND_APPLY.getCode()) && ACTION_PASS.equals(approvalParam.getAction()))) {
+        if ((approvalParam.getTaskDefinitionKey().equals(REMIT_REVIEW.getCode()) && ACTION_PASS.equals(approvalParam.getAction())) || (approvalParam.getTaskDefinitionKey().equals(FINANCE_INSTEAD_PAY_REVIEW.getCode()) && ACTION_PASS.equals(approvalParam.getAction())) || (approvalParam.getTaskDefinitionKey().equals(REFUND_APPLY.getCode()) && ACTION_PASS.equals(approvalParam.getAction()))|| (approvalParam.getTaskDefinitionKey().equals(BANK_LEND_RECORD.getCode()) && ACTION_PASS.equals(approvalParam.getAction()))) {
             postFinanceData(approvalParam);
         }
 
