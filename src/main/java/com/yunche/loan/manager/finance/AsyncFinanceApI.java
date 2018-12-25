@@ -144,6 +144,12 @@ public class AsyncFinanceApI {
         //--002 银行放款
         if(approvalParam.getTaskDefinitionKey().equals(BANK_LEND_RECORD.getCode()) && ACTION_PASS.equals(approvalParam.getAction()))
         {
+            LoanRefundApplyDO loanRefundApplyDO = loanRefundApplyDOMapper.lastByOrderId(approvalParam.getOrderId());
+            Preconditions.checkNotNull(loanRefundApplyDO, "退款单为空");
+            postFinanceData.setAdvancesInterest(String.valueOf(loanRefundApplyDO.getAdvances_interest()));//垫款利息收入
+            postFinanceData.setOtherInterest(String.valueOf(loanRefundApplyDO.getOther_interest()));//其他利息收入
+            postFinanceData.setPenaltyInterest(String.valueOf(loanRefundApplyDO.getPenalty_interest()));//罚息收入
+            postFinanceData.setType(IDict.K_VOUCHER.K_VOUCHER_2);
 
         }
 

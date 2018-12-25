@@ -918,6 +918,7 @@
         '通过'
         when loan_credit_info_bank_his.bank_credit_result = 2 then
         '不通过'
+        ELSE NULL END
         AS bnakResult,
         '车贷' AS businessVariety,
         '鑫宝行' AS submitOrganization

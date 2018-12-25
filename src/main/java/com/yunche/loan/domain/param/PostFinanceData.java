@@ -42,6 +42,66 @@ public class PostFinanceData
     private String subrogationFundInterest ;//应收代位追偿款利息
     private String subrogationFundIncome ;//应收代位追偿款费用
 
+
+
+    //--002
+    private String bankDeposits;//银行存款
+
+    private String carLoanMoney;//车贷业务代垫款
+
+    private String rebateInternalSettlement;//返利内部结算
+
+    private String partnerRebates;//应付合伙人返利
+
+    private String mortgageDeposit;//抵押押金
+
+    private String otherDeposit;//其他押金
+
+    private String riskFee;//风险金
+
+    private String customerDeposit;//客户保证金
+
+    private String carServiceIncome;//汽车服务费收入
+
+    private String servicePay;//应付技术服务费
+
+    private String payablePremium;//应付担保费
+
+    private String commissionIncome;//手续费及佣金收入
+
+    private String reviewIncome;//评审费收入
+
+    private String assessmentIncome;//公证评估费收入
+
+    private String otherIncome;//其他收入
+
+    private String homeIncome;//上门家访收入
+
+    private String cardIncome;//上省外牌收入
+
+    private String overIncome;//超年限收入
+
+    private String gpsIncome;//GPS使用费收入
+
+    private String agencyIncome;//代办费收入
+
+    private String renewalIncome;//续保收入
+
+   // private String advancesInterest;//垫款利息收入
+
+  //  private String otherInterest;//其他利息收入
+
+   // private String penaltyInterest;//罚息收入
+
+    private String guaranteeserviceIncome;//应收担保服务费
+
+    private String premiumsIncome;//担保费收入
+
+    private String technologyServiceIncome;//应收科技服务费
+
+    private String skillIncome;//技术服务收入
+
+
     @Override
     public String toString() {
         return JSON.toJSONString(this, new SerializerFeature[]{SerializerFeature.WriteMapNullValue, SerializerFeature.WriteNullListAsEmpty,
