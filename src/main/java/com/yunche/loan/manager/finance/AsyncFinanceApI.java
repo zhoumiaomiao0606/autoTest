@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Preconditions;
 import com.google.common.eventbus.Subscribe;
 import com.yunche.loan.config.constant.IDict;
+import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.util.EventBusCenter;
 import com.yunche.loan.config.util.GeneratorIDUtil;
 import com.yunche.loan.config.util.HttpUtils;
@@ -41,6 +42,12 @@ public class AsyncFinanceApI {
 
     @Autowired
     private RemitDetailsDOMapper remitDetailsDOMapper;
+
+    @Autowired
+    private LoanFinancialPlanDOMapper loanFinancialPlanDOMapper;
+
+    @Autowired
+    private CostDetailsDOMapper costDetailsDOMapper;
 
     @Autowired
     private LoanOrderDOMapper loanOrderDOMapper;
@@ -149,6 +156,40 @@ public class AsyncFinanceApI {
             postFinanceData.setAdvancesInterest(String.valueOf(loanRefundApplyDO.getAdvances_interest()));//垫款利息收入
             postFinanceData.setOtherInterest(String.valueOf(loanRefundApplyDO.getOther_interest()));//其他利息收入
             postFinanceData.setPenaltyInterest(String.valueOf(loanRefundApplyDO.getPenalty_interest()));//罚息收入
+
+            LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(approvalParam.getOrderId());
+            //查询金融方案
+            //查询花费明细
+            LoanFinancialPlanDO loanFinancialPlanDO = loanFinancialPlanDOMapper.selectByPrimaryKey(loanOrderDO.getLoanFinancialPlanId());
+            CostDetailsDO costDetailsDO = costDetailsDOMapper.selectByPrimaryKey(loanOrderDO.getCostDetailsId());
+
+
+
+            if (loanFinancialPlanDO==null)
+            {
+                throw new BizException("无金融方案信息");
+            }
+            if (costDetailsDO==null)
+            {
+                throw new BizException("无花费明细信息");
+            }
+
+
+            postFinanceData.setBankDeposits(loanFinancialPlanDO.getBankPeriodPrincipal());
+            postFinanceData.setCarLoanMoney(remitDetailsDO.getRemit_amount());
+            postFinanceData.setPartnerRebates(remitDetailsDO.getReturn_rate_amount());
+            postFinanceData.setMortgageDeposit(costDetailsDO.getApply_license_plate_deposit_fee());
+            postFinanceData.setRiskFee(costDetailsDO.getRisk_fee());
+            postFinanceData.setCustomerDeposit(costDetailsDO.getPerformance_fee());
+            postFinanceData.setAssessmentIncome(costDetailsDO.getFair_assess_fee());
+            postFinanceData.setOtherIncome(costDetailsDO.getOther_fee());
+            postFinanceData.setCardIncome(costDetailsDO.getApply_license_plate_out_province_fee());
+            postFinanceData.setGpsIncome(costDetailsDO.getInstall_gps_fee());
+
+            //新加
+            postFinanceData.setCompanyIncome(costDetailsDO.getService_fee().toString());
+
+
             postFinanceData.setType(IDict.K_VOUCHER.K_VOUCHER_2);
 
         }
