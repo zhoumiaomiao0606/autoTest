@@ -702,38 +702,40 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         Preconditions.checkArgument(null != loanFinancialPlanTempHisDO && null != loanFinancialPlanTempHisDO.getFinancial_loan_amount(), "贷款额不能为空");
         double loanAmount = loanFinancialPlanTempHisDO.getFinancial_loan_amount().doubleValue();
 
-        // 直接通过
-        if (loanAmount >= 0 && loanAmount <= 100000) {
-            // 完成任务：全部角色直接过单
-            passFinancialSchemeModifyApplyReviewTask(approval, APPLY_ORDER_PASS, loanFinancialPlanId, loanProcessDO);
-        } else if (loanAmount > 100000 && loanAmount <= 300000) {
-            // 电审主管以上可过单
-            if (maxRoleLevel < LEVEL_TELEPHONE_VERIFY_LEADER) {
-                // 记录
-                updateFinancialSchemeModifyApply(approval, maxRoleLevel);
-            } else {
-                // 完成任务
-                passFinancialSchemeModifyApplyReviewTask(approval, APPLY_ORDER_PASS, loanFinancialPlanId, loanProcessDO);
-            }
-        } else if (loanAmount > 300000 && loanAmount <= 500000) {
-            // 电审经理以上可过单
-            if (maxRoleLevel < LEVEL_TELEPHONE_VERIFY_MANAGER) {
-                // 记录
-                updateFinancialSchemeModifyApply(approval, maxRoleLevel);
-            } else {
-                // 完成任务
-                passFinancialSchemeModifyApplyReviewTask(approval, APPLY_ORDER_PASS, loanFinancialPlanId, loanProcessDO);
-            }
-        } else if (loanAmount > 500000) {
-            // 总监以上可过单
-            if (maxRoleLevel < LEVEL_DIRECTOR) {
-                // 记录
-                updateFinancialSchemeModifyApply(approval, maxRoleLevel);
-            } else {
-                // 完成任务
-                passFinancialSchemeModifyApplyReviewTask(approval, APPLY_ORDER_PASS, loanFinancialPlanId, loanProcessDO);
-            }
-        }
+        passFinancialSchemeModifyApplyReviewTask(approval, APPLY_ORDER_PASS, loanFinancialPlanId, loanProcessDO);
+
+//        // 直接通过
+//        if (loanAmount >= 0 && loanAmount <= 100000) {
+//            // 完成任务：全部角色直接过单
+//            passFinancialSchemeModifyApplyReviewTask(approval, APPLY_ORDER_PASS, loanFinancialPlanId, loanProcessDO);
+//        } else if (loanAmount > 100000 && loanAmount <= 300000) {
+//            // 电审主管以上可过单
+//            if (maxRoleLevel < LEVEL_TELEPHONE_VERIFY_LEADER) {
+//                // 记录
+//                updateFinancialSchemeModifyApply(approval, maxRoleLevel);
+//            } else {
+//                // 完成任务
+//                passFinancialSchemeModifyApplyReviewTask(approval, APPLY_ORDER_PASS, loanFinancialPlanId, loanProcessDO);
+//            }
+//        } else if (loanAmount > 300000 && loanAmount <= 500000) {
+//            // 电审经理以上可过单
+//            if (maxRoleLevel < LEVEL_TELEPHONE_VERIFY_MANAGER) {
+//                // 记录
+//                updateFinancialSchemeModifyApply(approval, maxRoleLevel);
+//            } else {
+//                // 完成任务
+//                passFinancialSchemeModifyApplyReviewTask(approval, APPLY_ORDER_PASS, loanFinancialPlanId, loanProcessDO);
+//            }
+//        } else if (loanAmount > 500000) {
+//            // 总监以上可过单
+//            if (maxRoleLevel < LEVEL_DIRECTOR) {
+//                // 记录
+//                updateFinancialSchemeModifyApply(approval, maxRoleLevel);
+//            } else {
+//                // 完成任务
+//                passFinancialSchemeModifyApplyReviewTask(approval, APPLY_ORDER_PASS, loanFinancialPlanId, loanProcessDO);
+//            }
+//        }
     }
 
     /**
