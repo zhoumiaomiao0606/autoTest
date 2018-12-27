@@ -7,7 +7,7 @@ public class BankCreditParReportVO {
 
     private String name;
 
-    private String cus1;
+    private int cus1;
 
     private String cus2;
 }

@@ -225,4 +225,50 @@ public class ChartController
     {
         return ResultBean.ofSuccess(exportQueryService.expertCompanyRemitDetailChart(param));
     }
+
+    /*
+    城站银行未抵押明细表
+     */
+    @PostMapping(value = "/hzBankNotMortgage", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResultBean hzBankNotMortgage(@RequestBody MaterialReviewParam param)
+    {
+        return chartService.hzBankNotMortgage(param);
+    }
+
+    /**
+     * 渠道部时效表
+     */
+    @PostMapping(value = "/channelPrescription", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResultBean channelPrescription(@RequestBody MaterialReviewParam param)
+    {
+        return chartService.channelPrescription(param);
+    }
+
+
+    /**
+     * 业务服务部流转表
+     */
+    @PostMapping(value = "/busDataFlow", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResultBean busDataFlow(@RequestBody MaterialReviewParam param)
+    {
+        return chartService.busDataFlow(param);
+    }
+
+    /*
+    征信时效表
+     */
+    @PostMapping(value = "/creditPrescription", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResultBean creditPrescription(@RequestBody MaterialReviewParam param)
+    {
+        return chartService.creditPrescription(param);
+    }
+
+    /**
+     * 纸审问题预警表
+     */
+    @PostMapping(value = "/examineEarlyWarning", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResultBean examineEarlyWarning(@RequestBody MaterialReviewParam param)
+    {
+        return chartService.examineEarlyWarning(param);
+    }
 }

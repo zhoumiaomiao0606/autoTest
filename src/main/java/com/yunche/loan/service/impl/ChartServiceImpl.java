@@ -367,6 +367,124 @@ public class ChartServiceImpl implements ChartService
         return ResultBean.ofSuccess(shortcutStatisticsVO);
     }
 
+    @Override
+    public ResultBean hzBankNotMortgage(MaterialReviewParam param) {
+        Long loginUserId = SessionUtils.getLoginUser().getId();
+
+        param.setJuniorIds(employeeService.getSelfAndCascadeChildIdList(loginUserId));
+        param.setMaxGroupLevel(taskSchedulingDOMapper.selectMaxGroupLevel(loginUserId));
+
+        //大区
+        if (param.getBiz_areaId() !=null)
+        {
+            List<Long> selfAndChildBiz_area = getSelfAndChildBiz_area(param.getBiz_areaId());
+            selfAndChildBiz_area.add(param.getBiz_areaId());
+            param.setBizAreaList(selfAndChildBiz_area);
+
+        }
+
+        PageHelper.startPage(param.getPageIndex(), param.getPageSize(), true);
+        List<HzBankNotMortgageVO> list = chartDOMapper.hzBankNotMortgage(param);
+        // 取分页信息
+        PageInfo<HzBankNotMortgageVO> pageInfo = new PageInfo<>(list);
+        return ResultBean.ofSuccess(pageInfo);
+    }
+
+    @Override
+    public ResultBean channelPrescription(MaterialReviewParam param) {
+        Long loginUserId = SessionUtils.getLoginUser().getId();
+
+        param.setJuniorIds(employeeService.getSelfAndCascadeChildIdList(loginUserId));
+        param.setMaxGroupLevel(taskSchedulingDOMapper.selectMaxGroupLevel(loginUserId));
+
+        //大区
+        if (param.getBiz_areaId() !=null)
+        {
+            List<Long> selfAndChildBiz_area = getSelfAndChildBiz_area(param.getBiz_areaId());
+            selfAndChildBiz_area.add(param.getBiz_areaId());
+            param.setBizAreaList(selfAndChildBiz_area);
+
+        }
+
+        PageHelper.startPage(param.getPageIndex(), param.getPageSize(), true);
+        List<ChannelPrescriptionVO> list = chartDOMapper.channelPrescription(param);
+        // 取分页信息
+        PageInfo<ChannelPrescriptionVO> pageInfo = new PageInfo<>(list);
+        return ResultBean.ofSuccess(pageInfo);
+
+    }
+
+    @Override
+    public ResultBean busDataFlow(MaterialReviewParam param) {
+
+        Long loginUserId = SessionUtils.getLoginUser().getId();
+
+        param.setJuniorIds(employeeService.getSelfAndCascadeChildIdList(loginUserId));
+        param.setMaxGroupLevel(taskSchedulingDOMapper.selectMaxGroupLevel(loginUserId));
+
+        //大区
+        if (param.getBiz_areaId() !=null)
+        {
+            List<Long> selfAndChildBiz_area = getSelfAndChildBiz_area(param.getBiz_areaId());
+            selfAndChildBiz_area.add(param.getBiz_areaId());
+            param.setBizAreaList(selfAndChildBiz_area);
+
+        }
+
+        PageHelper.startPage(param.getPageIndex(), param.getPageSize(), true);
+        List<BusDataFlowVO> list = chartDOMapper.busDataFlow(param);
+        // 取分页信息
+        PageInfo<BusDataFlowVO> pageInfo = new PageInfo<>(list);
+        return ResultBean.ofSuccess(pageInfo);
+    }
+
+    @Override
+    public ResultBean creditPrescription(MaterialReviewParam param) {
+        Long loginUserId = SessionUtils.getLoginUser().getId();
+
+        param.setJuniorIds(employeeService.getSelfAndCascadeChildIdList(loginUserId));
+        param.setMaxGroupLevel(taskSchedulingDOMapper.selectMaxGroupLevel(loginUserId));
+
+        //大区
+        if (param.getBiz_areaId() !=null)
+        {
+            List<Long> selfAndChildBiz_area = getSelfAndChildBiz_area(param.getBiz_areaId());
+            selfAndChildBiz_area.add(param.getBiz_areaId());
+            param.setBizAreaList(selfAndChildBiz_area);
+
+        }
+
+        PageHelper.startPage(param.getPageIndex(), param.getPageSize(), true);
+        List<CreditPrescriptionVO> list = chartDOMapper.creditPrescription(param);
+        // 取分页信息
+        PageInfo<CreditPrescriptionVO> pageInfo = new PageInfo<>(list);
+        return ResultBean.ofSuccess(pageInfo);
+    }
+
+    @Override
+    public ResultBean examineEarlyWarning(MaterialReviewParam param) {
+
+        Long loginUserId = SessionUtils.getLoginUser().getId();
+
+        param.setJuniorIds(employeeService.getSelfAndCascadeChildIdList(loginUserId));
+        param.setMaxGroupLevel(taskSchedulingDOMapper.selectMaxGroupLevel(loginUserId));
+
+        //大区
+        if (param.getBiz_areaId() !=null)
+        {
+            List<Long> selfAndChildBiz_area = getSelfAndChildBiz_area(param.getBiz_areaId());
+            selfAndChildBiz_area.add(param.getBiz_areaId());
+            param.setBizAreaList(selfAndChildBiz_area);
+
+        }
+
+        PageHelper.startPage(param.getPageIndex(), param.getPageSize(), true);
+        List<PaperQuestionWarningVO> list = chartDOMapper.paperQuestionWarning(param);
+        // 取分页信息
+        PageInfo<PaperQuestionWarningVO> pageInfo = new PageInfo<>(list);
+        return ResultBean.ofSuccess(pageInfo);
+    }
+
 
     public List<Long> getSelfAndChildBiz_area(Long parentId)
     {
