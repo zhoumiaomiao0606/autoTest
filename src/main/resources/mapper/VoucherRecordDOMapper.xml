@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunche.loan.mapper.VoucherRecordDOMapper">
+  <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.VoucherRecordDO">
+    <id column="order_id" jdbcType="BIGINT" property="orderId" />
+    <id column="operation_num" jdbcType="VARCHAR" property="operationNum" />
+    <result column="voucher_num" jdbcType="VARCHAR" property="voucherNum" />
+    <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    order_id, operation_num, voucher_num, gmt_create
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="com.yunche.loan.domain.entity.VoucherRecordDOKey" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from voucher_record
+    where order_id = #{orderId,jdbcType=BIGINT}
+      and operation_num = #{operationNum,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="com.yunche.loan.domain.entity.VoucherRecordDOKey">
+    delete from voucher_record
+    where order_id = #{orderId,jdbcType=BIGINT}
+      and operation_num = #{operationNum,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.yunche.loan.domain.entity.VoucherRecordDO">
+    insert into voucher_record (order_id, operation_num, voucher_num, 
+      gmt_create)
+    values (#{orderId,jdbcType=BIGINT}, #{operationNum,jdbcType=VARCHAR}, #{voucherNum,jdbcType=VARCHAR}, 
+      #{gmtCreate,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.VoucherRecordDO">
+    insert into voucher_record
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="orderId != null">
+        order_id,
+      </if>
+      <if test="operationNum != null">
+        operation_num,
+      </if>
+      <if test="voucherNum != null">
+        voucher_num,
+      </if>
+      <if test="gmtCreate != null">
+        gmt_create,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="orderId != null">
+        #{orderId,jdbcType=BIGINT},
+      </if>
+      <if test="operationNum != null">
+        #{operationNum,jdbcType=VARCHAR},
+      </if>
+      <if test="voucherNum != null">
+        #{voucherNum,jdbcType=VARCHAR},
+      </if>
+      <if test="gmtCreate != null">
+        #{gmtCreate,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.VoucherRecordDO">
+    update voucher_record
+    <set>
+      <if test="voucherNum != null">
+        voucher_num = #{voucherNum,jdbcType=VARCHAR},
+      </if>
+      <if test="gmtCreate != null">
+        gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where order_id = #{orderId,jdbcType=BIGINT}
+      and operation_num = #{operationNum,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.VoucherRecordDO">
+    update voucher_record
+    set voucher_num = #{voucherNum,jdbcType=VARCHAR},
+      gmt_create = #{gmtCreate,jdbcType=TIMESTAMP}
+    where order_id = #{orderId,jdbcType=BIGINT}
+      and operation_num = #{operationNum,jdbcType=VARCHAR}
+  </update>
+</mapper>

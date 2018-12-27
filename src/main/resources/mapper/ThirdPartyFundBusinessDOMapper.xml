@@ -231,15 +231,15 @@
 
     <select id="exportLoanButNotRepay" resultType="com.yunche.loan.domain.vo.JtxExportVO">
         SELECT
-        cus.NAME    as name,
-        cus.id_card   as idCard,
-        useGetCarName ( car.car_detail_id ) as carName,
-        car.car_price  as carprice,
-        plan.down_payment_money  as downPaymentMoney,
-        third.lend_amount   as lendAmount,
-        third.lend_date    as lendDate,
-        plan.loan_time     as loanTime,
-        base.bank        as bank
+        cus.NAME AS NAME,
+        cus.id_card AS idCard,
+        useGetCarName ( car.car_detail_id ) AS carName,
+        plan.car_price AS carPrice,
+        plan.down_payment_money AS downPaymentMoney,
+        third.lend_amount AS lendAmount,
+        DATE_FORMAT(third.lend_date,'%Y-%m-%d') AS lendDate,
+        plan.loan_time AS loanTime,
+        base.bank AS bank
         FROM
         loan_process_bridge process
         LEFT JOIN third_party_fund_business third ON third.bridge_procecss_id = process.id

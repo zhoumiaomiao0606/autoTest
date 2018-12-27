@@ -31,4 +31,15 @@ public interface ChartService
     ResultBean awaitRemitDetailChartShortcutStatistics(AwaitRemitDetailChartParam param);
 
     ResultBean companyRemitDetailChartShortcutStatistics(CompanyRemitDetailChartParam param);
+
+
+    ResultBean hzBankNotMortgage(MaterialReviewParam param);
+
+    ResultBean channelPrescription(MaterialReviewParam param);
+
+    ResultBean busDataFlow(MaterialReviewParam param);
+
+    ResultBean creditPrescription(MaterialReviewParam param);
+
+    ResultBean examineEarlyWarning(MaterialReviewParam param);
 }

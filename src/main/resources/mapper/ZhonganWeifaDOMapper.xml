@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yunche.loan.mapper.ZhonganWeifaDOMapper" >
+  <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.ZhonganWeifaDO" >
+    <result column="zhongan_id" property="zhongan_id" jdbcType="BIGINT" />
+    <result column="keyid" property="keyid" jdbcType="VARCHAR" />
+    <result column="typet" property="typet" jdbcType="VARCHAR" />
+    <result column="typetname" property="typetname" jdbcType="VARCHAR" />
+    <result column="title" property="title" jdbcType="VARCHAR" />
+    <result column="sslong" property="sslong" jdbcType="VARCHAR" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="id" property="id" jdbcType="VARCHAR" />
+    <result column="casenum" property="casenum" jdbcType="VARCHAR" />
+    <result column="court" property="court" jdbcType="VARCHAR" />
+    <result column="casetopic" property="casetopic" jdbcType="VARCHAR" />
+    <result column="content" property="content" jdbcType="VARCHAR" />
+    <result column="timetype" property="timetype" jdbcType="VARCHAR" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+    <result column="content2" property="content2" jdbcType="VARCHAR" />
+  </resultMap>
+  <insert id="insert" parameterType="com.yunche.loan.domain.entity.ZhonganWeifaDO" >
+    insert into zhongan_weifa (zhongan_id, keyid, typet, 
+      typetname, title, sslong, 
+      name, id, casenum, 
+      court, casetopic, content, 
+      timetype, remark, content2
+      )
+    values (#{zhongan_id,jdbcType=BIGINT}, #{keyid,jdbcType=VARCHAR}, #{typet,jdbcType=VARCHAR}, 
+      #{typetname,jdbcType=VARCHAR}, #{title,jdbcType=VARCHAR}, #{sslong,jdbcType=VARCHAR}, 
+      #{name,jdbcType=VARCHAR}, #{id,jdbcType=VARCHAR}, #{casenum,jdbcType=VARCHAR}, 
+      #{court,jdbcType=VARCHAR}, #{casetopic,jdbcType=VARCHAR}, #{content,jdbcType=VARCHAR}, 
+      #{timetype,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR}, #{content2,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.ZhonganWeifaDO" >
+    insert into zhongan_weifa
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="zhongan_id != null" >
+        zhongan_id,
+      </if>
+      <if test="keyid != null" >
+        keyid,
+      </if>
+      <if test="typet != null" >
+        typet,
+      </if>
+      <if test="typetname != null" >
+        typetname,
+      </if>
+      <if test="title != null" >
+        title,
+      </if>
+      <if test="sslong != null" >
+        sslong,
+      </if>
+      <if test="name != null" >
+        name,
+      </if>
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="casenum != null" >
+        casenum,
+      </if>
+      <if test="court != null" >
+        court,
+      </if>
+      <if test="casetopic != null" >
+        casetopic,
+      </if>
+      <if test="content != null" >
+        content,
+      </if>
+      <if test="timetype != null" >
+        timetype,
+      </if>
+      <if test="remark != null" >
+        remark,
+      </if>
+      <if test="content2 != null" >
+        content2,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="zhongan_id != null" >
+        #{zhongan_id,jdbcType=BIGINT},
+      </if>
+      <if test="keyid != null" >
+        #{keyid,jdbcType=VARCHAR},
+      </if>
+      <if test="typet != null" >
+        #{typet,jdbcType=VARCHAR},
+      </if>
+      <if test="typetname != null" >
+        #{typetname,jdbcType=VARCHAR},
+      </if>
+      <if test="title != null" >
+        #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="sslong != null" >
+        #{sslong,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="id != null" >
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="casenum != null" >
+        #{casenum,jdbcType=VARCHAR},
+      </if>
+      <if test="court != null" >
+        #{court,jdbcType=VARCHAR},
+      </if>
+      <if test="casetopic != null" >
+        #{casetopic,jdbcType=VARCHAR},
+      </if>
+      <if test="content != null" >
+        #{content,jdbcType=VARCHAR},
+      </if>
+      <if test="timetype != null" >
+        #{timetype,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="content2 != null" >
+        #{content2,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+
+  <select id="selectByZhonganId" resultMap="BaseResultMap" parameterType="java.lang.Long">
+    select * from zhongan_weifa where zhongan_id = #{zhonganId,jdbcType=BIGINT}
+  </select>
+</mapper>

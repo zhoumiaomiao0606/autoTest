@@ -820,5 +820,326 @@
         </if>
 
     </select>
+    <!-- 城站银行未抵押明细表 -->
+    <select id="hzBankNotMortgage" resultType="com.yunche.loan.domain.vo.HzBankNotMortgageVO" parameterType="com.yunche.loan.domain.param.MaterialReviewParam">
+        SELECT
+        a.partnerCode,
+        a.pName,
+        a.cName,
+        a.idCard,
+        a.loanAmount,
+        a.lendDate,
+        a.infoCompanyToParDate,
+        a.contractToBankDate,
+        DATEDIFF(a.infoCompanyToParDate,a.contractCompanyToBankDate) as bankSealDays,
+        DATEDIFF(now(),a.infoCompanyToParDate) as postDays,
+        DATEDIFF(now(),a.lendDate) as notMortgageDays,
+        '' as extendedRange,
+        a.areaName,
+        '' as mortgageChannelStatus,
+        '' as overdueTypeReason,
+        '' as followSituation
+        FROM
+        (
+        SELECT
+        par.partner_code AS partnerCode,
+        par.`name` AS pName,
+        cus.`name` AS cName,
+        cus.id_card AS idCard,
+        plan.loan_amount AS loanAmount,
+        lend.lend_date AS lendDate,
+        ( SELECT express_send_date FROM loan_data_flow WHERE type IN ( 11, 12 ) AND order_id = loan.id order by express_send_date desc limit 1) AS infoCompanyToParDate,
+        ( SELECT express_receive_date FROM loan_data_flow WHERE type = 4 AND order_id = loan.id  order by express_receive_date desc limit 1 ) AS contractToBankDate,
+        ( SELECT express_send_date FROM loan_data_flow WHERE type IN ( 3, 4 ) AND order_id = loan.id  order by express_send_date desc limit 1) AS contractCompanyToBankDate,
+        area.area_name AS areaName,
+        (SELECT biz_area.id FROM  biz_area_rela_partner LEFT JOIN biz_area ON biz_area_rela_partner.biz_area_id = biz_area.id WHERE biz_area_rela_partner.partner_id = par.id ORDER BY biz_area_rela_partner.gmt_create limit 1 ) AS biz_area_id,
+        (
+        SELECT
+        loan_process_log.create_time
+        FROM
+        loan_process_log
+        WHERE
+        order_id = loan.id
+        AND task_definition_key = 'usertask_remit_review'
+        ORDER BY
+        create_time DESC
+        LIMIT 1
+        ) as submitTime
+        FROM
+        loan_process process
+        LEFT JOIN current_node_manager node ON node.order_id = process.order_id
+        LEFT JOIN loan_order loan ON loan.id = process.order_id
+        LEFT JOIN loan_base_info base ON base.id = loan.loan_base_info_id
+        LEFT JOIN partner par ON par.id = base.partner_id
+        LEFT JOIN loan_customer cus ON cus.id = loan_customer_id
+        LEFT JOIN loan_financial_plan plan ON plan.id = loan.loan_financial_plan_id
+        LEFT JOIN bank_lend_record lend ON lend.loan_order = loan.id
+        LEFT JOIN base_area area ON area.area_id = base.area_id
+        WHERE
+        lend.id is not null
+        AND process.apply_license_plate_deposit_info != 1
+        <if test="partnerList != null and partnerList.size() > 0">
+            and
+            base.partner_id in
+            <foreach item="item" index="index" collection="partnerList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="bankList != null and bankList.size() > 0">
+            and
+            base.bank in
+            <foreach item="item" index="index" collection="bankList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+
+        ) a
+        <where>
+            <if test="bizAreaList !=null and bizAreaList.size() > 0" >
+                a.biz_area_id in
+                <foreach item="item" index="index" collection="bizAreaList" separator="," open="(" close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="startDate !=null and endDate !=null and startDate !='' and endDate !=''" >
+                and a.lendDate between #{startDate} and #{endDate}
+            </if>
+        </where>
+    </select>
+
+    <!--业务服务部流转表 -->
+    <select id="busDataFlow" parameterType="com.yunche.loan.domain.param.MaterialReviewParam" resultType="com.yunche.loan.domain.vo.BusDataFlowVO">
+   select a.* from (
+   SELECT
+	base.bank,
+	par.partner_code  as partnerCode,
+	(SELECT biz_area.name FROM biz_area_rela_partner LEFT JOIN biz_area ON biz_area_rela_partner.biz_area_id = biz_area.id WHERE biz_area_rela_partner.partner_id = par.id ORDER BY biz_area_rela_partner.gmt_create limit 1 ) AS bizArea,
+    (SELECT biz_area.id FROM  biz_area_rela_partner LEFT JOIN biz_area ON biz_area_rela_partner.biz_area_id = biz_area.id WHERE biz_area_rela_partner.partner_id = par.id ORDER BY biz_area_rela_partner.gmt_create limit 1 ) AS bizAreaId,
+	emp.`name`  as eName,
+	cus.`name`  as cName,
+	cus.id_card as idCard,
+	node.usertask_material_print_review_gmt_user_name  as copyClerk,
+	plan.loan_time  as loanTime,
+	case when car.car_type = 0 then '新车'
+	when car.car_type  = 1 then '二手车'
+	end as carType,
+	plan.bank_period_principal  as bankPeriodPrincipal,
+	plan.loan_amount    as loanAmount,
+	(plan.bank_period_principal - plan.loan_amount) as serviceCharge,
+	(select express_receive_date from loan_data_flow where order_id = loan.id and type = 2 order by express_receive_date desc limit 1) as expressReceiveDate,
+	'' as contractTime,
+	(select express_send_date from loan_data_flow where order_id = loan.id and type in(3,4) order by express_send_date desc limit 1) as expressSendDate,
+	area.area_name as areaName,
+	'线上' as isOnline,
+	lend.lend_date   as lendDate,
+	case when process.remit_review = 21 then
+	(select create_time from loan_process_log where task_definition_key = 'usertask_refund_apply_review' and action =1 and order_id = loan.id order by create_time desc limit 1 )
+	else '' end as refundDate,
+        (
+        SELECT
+        loan_process_log.create_time
+        FROM
+        loan_process_log
+        WHERE
+        order_id = loan.id
+        AND task_definition_key = 'usertask_remit_review'
+        ORDER BY
+        create_time DESC
+        LIMIT 1
+        ) as submitTime
+
+   FROM
+	loan_process process
+	LEFT JOIN loan_order loan ON loan.id = process.order_id
+	LEFT JOIN loan_customer cus ON cus.id = loan.loan_customer_id
+	LEFT JOIN loan_base_info base ON base.id = loan.loan_base_info_id
+	LEFT JOIN partner par ON par.id = base.partner_id
+	LEFT JOIN loan_financial_plan plan ON plan.id = loan.loan_financial_plan_id
+	LEFT JOIN loan_car_info car ON car.id = loan.loan_car_info_id
+	LEFT JOIN base_area area ON area.area_id = base.area_id
+	left join employee emp on emp.id = base.salesman_id
+	left join current_node_manager node on node.order_id = loan.id
+	left join bank_lend_record lend on lend.loan_order = loan.id
+   WHERE
+	process.remit_review in (1,21)
+        <if test="partnerList != null and partnerList.size() > 0">
+            and
+            base.partner_id in
+            <foreach item="item" index="index" collection="partnerList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="bankList != null and bankList.size() > 0">
+            and
+            base.bank in
+            <foreach item="item" index="index" collection="bankList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+    )a
+        <where>
+            <if test="bizAreaList !=null and bizAreaList.size() > 0" >
+                a.bizAreaId in
+                <foreach item="item" index="index" collection="bizAreaList" separator="," open="(" close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="startDate !=null and endDate !=null and startDate !='' and endDate !=''" >
+                and a.submitTime between #{startDate} and #{endDate}
+            </if>
+        </where>
+    </select>
+
+    <!-- 纸审问题预警表 -->
+    <select id="paperQuestionWarning" parameterType="com.yunche.loan.domain.param.MaterialReviewParam" resultType="com.yunche.loan.domain.vo.PaperQuestionWarningVO">
+     select a.*,				datediff(now(),a.submitTime)as overdueDays from (
+     SELECT
+        node.usertask_material_review_gmt_user_name  as nName,
+				(SELECT biz_area.name FROM biz_area_rela_partner LEFT JOIN biz_area ON biz_area_rela_partner.biz_area_id = biz_area.id WHERE biz_area_rela_partner.partner_id = par.id ORDER BY biz_area_rela_partner.gmt_create limit 1 ) AS bizArea,
+        (SELECT biz_area.id FROM  biz_area_rela_partner LEFT JOIN biz_area ON biz_area_rela_partner.biz_area_id = biz_area.id WHERE biz_area_rela_partner.partner_id = par.id ORDER BY biz_area_rela_partner.gmt_create limit 1 ) AS bizAreaId,
+				par.partner_code  as partnerCode,
+				par.`name` as pName,
+				cus.`name` as cName,
+				cus.id_card as idCard,
+				plan.bank_period_principal  as bankPeriodPrincipal,
+				node.usertask_material_review_create_time as nTime,
+        (
+        SELECT
+        loan_process_log.create_time
+        FROM
+        loan_process_log
+        WHERE
+        order_id = loan.id
+        AND task_definition_key = 'usertask_remit_review'
+        ORDER BY
+        create_time DESC
+        LIMIT 1
+        ) as submitTime,
+				audit.complete_material_date as completeDate,
+				base.bank
+
+        FROM
+        loan_order loan
+        LEFT JOIN loan_customer cus ON loan.loan_customer_id = cus.id
+        LEFT JOIN loan_base_info base ON loan.loan_base_info_id = base.id
+        left join partner par on par.id = base.partner_id
+				left join loan_financial_plan plan on plan.id = loan.loan_financial_plan_id
+				left join current_node_manager node on node.order_id = loan.id
+				 LEFT JOIN material_audit audit ON audit.id = loan.material_audit_id
+				 left join loan_process process on process.order_id = loan.id
+        where process.remit_review in(1,21)
+        <if test="partnerList != null and partnerList.size() > 0">
+            and
+            base.partner_id in
+            <foreach item="item" index="index" collection="partnerList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="bankList != null and bankList.size() > 0">
+            and
+            base.bank in
+            <foreach item="item" index="index" collection="bankList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+		)a
+        <where>
+            <if test="bizAreaList !=null and bizAreaList.size() > 0" >
+                a.bizAreaId in
+                <foreach item="item" index="index" collection="bizAreaList" separator="," open="(" close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="startDate !=null and endDate !=null and startDate !='' and endDate !=''" >
+                and a.submitTime between #{startDate} and #{endDate}
+            </if>
+        </where>
+
+    </select>
+
+    <!--渠道部时效表 -->
+    <select id="channelPrescription" parameterType="com.yunche.loan.domain.param.MaterialReviewParam" resultType="com.yunche.loan.domain.vo.ChannelPrescriptionVO">
+    SELECT
+	a.*,
+	datediff( a.materialReviewDate, a.remitReviewDate ) AS paperPrescription,
+	datediff( a.lendDate, a.sendDate ) AS loanPrescription,
+	datediff( a.lendDate, a.remitReviewDate ) AS moneyBackPrescription
+    FROM
+	(
+	SELECT
+		node.usertask_remit_review_create_time AS remitReviewDate,
+		node.usertask_material_review_create_time AS materialReviewDate,
+		( SELECT express_send_date FROM loan_data_flow WHERE order_id = loan.id AND type IN ( 3, 4 ) ORDER BY express_send_date DESC LIMIT 1 ) AS sendDate,
+		( SELECT express_receive_date FROM loan_data_flow WHERE order_id = loan.id AND type = 4 ORDER BY express_receive_date DESC LIMIT 1 ) AS receiveDate,
+		(
+		SELECT
+			biz_area.NAME
+		FROM
+			biz_area_rela_partner
+			LEFT JOIN biz_area ON biz_area_rela_partner.biz_area_id = biz_area.id
+		WHERE
+			biz_area_rela_partner.partner_id = par.id
+		ORDER BY
+			biz_area_rela_partner.gmt_create
+			LIMIT 1
+		) AS bizArea,
+	(SELECT
+		biz_area.id
+	FROM
+		biz_area_rela_partner
+		LEFT JOIN biz_area ON biz_area_rela_partner.biz_area_id = biz_area.id
+	WHERE
+		biz_area_rela_partner.partner_id = par.id
+	ORDER BY
+		biz_area_rela_partner.gmt_create
+		LIMIT 1
+	) AS bizAreaId,
+	par.partner_code AS partnerCode,
+	par.`name` AS pName,
+	cus.`name` AS cName,
+	cus.id_card AS idCard,
+	plan.bank_period_principal AS bankPeriodPrincipal,
+	lend.lend_date AS lendDate
+    FROM
+	loan_order loan
+	LEFT JOIN bank_lend_record lend ON lend.loan_order = loan.id
+	LEFT JOIN loan_customer cus ON cus.id = loan.loan_customer_id
+	LEFT JOIN loan_base_info base ON base.id = loan.loan_base_info_id
+	LEFT JOIN partner par ON par.id = base.partner_id
+	LEFT JOIN loan_financial_plan plan ON plan.id = loan.loan_financial_plan_id
+	LEFT JOIN current_node_manager node ON node.order_id = loan.id
+    WHERE
+	lend.id IS NOT NULL
+        <if test="partnerList != null and partnerList.size() > 0">
+            and
+            base.partner_id in
+            <foreach item="item" index="index" collection="partnerList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="bankList != null and bankList.size() > 0">
+            and
+            base.bank in
+            <foreach item="item" index="index" collection="bankList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+	) a
+        <where>
+            <if test="bizAreaList !=null and bizAreaList.size() > 0" >
+                a.bizAreaId in
+                <foreach item="item" index="index" collection="bizAreaList" separator="," open="(" close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="startDate !=null and endDate !=null and startDate !='' and endDate !=''" >
+                and a.lendDate between #{startDate} and #{endDate}
+            </if>
+        </where>
+    </select>
+
+    <select id="creditPrescription" parameterType="com.yunche.loan.domain.param.MaterialReviewParam" resultType="com.yunche.loan.domain.vo.CreditPrescriptionVO">
+
+    </select>
 
 </mapper>

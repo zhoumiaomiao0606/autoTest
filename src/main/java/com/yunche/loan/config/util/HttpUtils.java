@@ -4,6 +4,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.http.*;
 import org.apache.http.client.CookieStore;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.*;
 import org.apache.http.client.protocol.HttpClientContext;
@@ -389,6 +390,9 @@ public class HttpUtils {
         CloseableHttpClient httpClient = HttpClients.createDefault();
 
         HttpPost httpPost = new HttpPost(buildUrl(host, path, urlParas));
+
+        RequestConfig requestConfig = RequestConfig.custom().setSocketTimeout(2000).setConnectTimeout(2000).build();//设置请求和传输超时时间
+        httpPost.setConfig(requestConfig);
        /* for (Map.Entry<String, String> e : headers.entrySet()) {
             httpPost.addHeader(e.getKey(), e.getValue());
         }*/

@@ -1,6 +1,7 @@
 package com.yunche.loan.service.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
@@ -194,6 +195,41 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
 
     @Autowired
     private CarDetailDOMapper carDetailDOMapper;
+
+
+
+    @Autowired
+    private ZhonganZhixingDOMapper zhonganZhixingDOMapper;
+
+    @Autowired
+    private ZhonganCaipanDOMapper zhonganCaipanDOMapper;
+
+    @Autowired
+    private ZhonganFeizhengDOMapper zhonganFeizhengDOMapper;
+
+    @Autowired
+    private ZhonganQiankuanDOMapper zhonganQiankuanDOMapper;
+
+    @Autowired
+    private ZhonganQianshuiDOMapper zhonganQianshuiDOMapper;
+
+    @Autowired
+    private ZhonganShenpanDOMapper zhonganShenpanDOMapper;
+
+    @Autowired
+    private ZhonganWeifaDOMapper zhonganWeifaDOMapper;
+
+    @Autowired
+    private ZhonganShixinDOMapper zhonganShixinDOMapper;
+
+    @Autowired
+    private ZhonganZuifanDOMapper zhonganZuifanDOMapper;
+
+    @Autowired
+    private ZhonganXiangaoDOMapper zhonganXiangaoDOMapper;
+
+    @Autowired
+    private ZhonganXianchuDOMapper zhonganXianchuDOMapper;
 
 
     @Override
@@ -958,6 +994,18 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
                         System.currentTimeMillis() + "" + random.nextInt(10000));
 
                 if ((boolean) map.get("success")) {
+                    List<ZhonganCaipanDO> zhonganCaipanDOList = new ArrayList<>();
+                    List<ZhonganFeizhengDO> zhonganFeizhengDOList = new ArrayList<>();
+                    List<ZhonganQiankuanDO> zhonganQiankuanDOList = new ArrayList<>();
+                    List<ZhonganQianshuiDO> zhonganQianshuiDOList = new ArrayList<>();
+                    List<ZhonganShenpanDO> zhonganShenpanDOList = new ArrayList<>();
+                    List<ZhonganShixinDO> zhonganShixinDOList = new ArrayList<>();
+                    List<ZhonganWeifaDO> zhonganWeifaDOList = new ArrayList<>();
+                    List<ZhonganXianchuDO> zhonganXianchuDOList = new ArrayList<>();
+                    List<ZhonganXiangaoDO> zhonganXiangaoDOList = new ArrayList<>();
+                    List<ZhonganZhixingDO> zhonganZhixingDOList = new ArrayList<>();
+                    List<ZhonganZuifanDO> zhonganZuifanDOList = new ArrayList<>();
+
 
                     ZhonganInfoDO zhongAnInfoDO = new ZhonganInfoDO();
 
@@ -976,21 +1024,126 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
                             if(litigationMap != null){
                                 String seconds = (String)litigationMap.get("seconds");
                                 String success = (String)litigationMap.get("success");
+                                //风险信息页数
                                 String fxpgnum = String.valueOf(litigationMap.get("fxpgnum"));
                                 String message = (String)litigationMap.get("message");
+                                //风险信息条数
                                 String fxmsgnum = String.valueOf(litigationMap.get("fxmsgnum"));
                                 JSONObject fxcontent = (JSONObject)litigationMap.get("fxcontent");
-                                String shixin = fxcontent.getString("shixin");
-                                String xianchu = fxcontent.getString("xianchu");
-                                String qianshui = fxcontent.getString("qianshui");
-                                String xiangao = fxcontent.getString("xiangao");
-                                String zuifan = fxcontent.getString("zuifan");
-                                String feizheng = fxcontent.getString("feizheng");
-                                String zhixing = fxcontent.getString("zhixing");
-                                String qiankuan = fxcontent.getString("qiankuan");
-                                String shenpan = fxcontent.getString("shenpan");
-                                String caipan = fxcontent.getString("caipan");
-                                String weifa = fxcontent.getString("weifa");
+                                if(fxcontent != null){
+                                    //失信老赖名单
+                                    String shixin = fxcontent.getString("shixin");
+                                    if(!"[]".equals(shixin)){
+                                        JSONArray array = JSONArray.parseArray(shixin);
+                                        for(int i=0;i<array.size();i++){
+                                            JSONObject jsonObject = array.getJSONObject(i);
+                                            ZhonganShixinDO zhonganShixinDO = (ZhonganShixinDO)JSONObject.toJavaObject(jsonObject,ZhonganShixinDO.class);
+                                            zhonganShixinDOList.add(zhonganShixinDO);
+                                        }
+                                    }
+                                    //限制出入境名单
+                                    String xianchu = fxcontent.getString("xianchu");
+                                    if(!"[]".equals(xianchu)){
+                                        JSONArray array = JSONArray.parseArray(xianchu);
+                                        for(int i=0;i<array.size();i++){
+                                            JSONObject jsonObject = array.getJSONObject(i);
+                                            ZhonganXianchuDO zhonganXianchuDO = (ZhonganXianchuDO)JSONObject.toJavaObject(jsonObject,ZhonganXianchuDO.class);
+                                            zhonganXianchuDOList.add(zhonganXianchuDO);
+                                        }
+                                    }
+
+                                    //欠税名单
+                                    String qianshui = fxcontent.getString("qianshui");
+                                    if(!"[]".equals(qianshui)){
+                                        JSONArray array = JSONArray.parseArray(qianshui);
+                                        for(int i=0;i<array.size();i++){
+                                            JSONObject jsonObject = array.getJSONObject(i);
+                                            ZhonganQianshuiDO zhonganQianshuiDO = (ZhonganQianshuiDO)JSONObject.toJavaObject(jsonObject,ZhonganQianshuiDO.class);
+                                            zhonganQianshuiDOList.add(zhonganQianshuiDO);
+                                        }
+                                    }
+                                    //限制高消费名单
+                                    String xiangao = fxcontent.getString("xiangao");
+                                    if(!"[]".equals(xiangao)){
+                                        JSONArray array = JSONArray.parseArray(xiangao);
+                                        for(int i=0;i<array.size();i++){
+                                            JSONObject jsonObject = array.getJSONObject(i);
+                                            ZhonganXiangaoDO zhonganXiangaoDO = (ZhonganXiangaoDO)JSONObject.toJavaObject(jsonObject,ZhonganXiangaoDO.class);
+                                            zhonganXiangaoDOList.add(zhonganXiangaoDO);
+                                        }
+                                    }
+                                    //罪犯及嫌疑人名单
+                                    String zuifan = fxcontent.getString("zuifan");
+                                    if(!"[]".equals(zuifan)){
+                                        JSONArray array = JSONArray.parseArray(zuifan);
+                                        for(int i=0;i<array.size();i++){
+                                            JSONObject jsonObject = array.getJSONObject(i);
+                                            ZhonganZuifanDO zhonganZuifanDO = (ZhonganZuifanDO)JSONObject.toJavaObject(jsonObject,ZhonganZuifanDO.class);
+                                            zhonganZuifanDOList.add(zhonganZuifanDO);
+                                        }
+                                    }
+                                    //纳税非正常户
+                                    String feizheng = fxcontent.getString("feizheng");
+                                    if(!"[]".equals(feizheng)){
+                                        JSONArray array = JSONArray.parseArray(feizheng);
+                                        for(int i=0;i<array.size();i++){
+                                            JSONObject jsonObject = array.getJSONObject(i);
+                                            ZhonganFeizhengDO zhonganFeizhengDO = (ZhonganFeizhengDO)JSONObject.toJavaObject(jsonObject,ZhonganFeizhengDO.class);
+                                            zhonganFeizhengDOList.add(zhonganFeizhengDO);
+                                        }
+                                    }
+                                    //执行公开信息
+                                    String zhixing = fxcontent.getString("zhixing");
+                                    if(!"[]".equals(zhixing)){
+                                        JSONArray array = JSONArray.parseArray(zhixing);
+                                        for(int i=0;i<array.size();i++){
+                                            JSONObject jsonObject = array.getJSONObject(i);
+                                            ZhonganZhixingDO zhonganZhixingDO = (ZhonganZhixingDO)JSONObject.toJavaObject(jsonObject,ZhonganZhixingDO.class);
+                                            zhonganZhixingDOList.add(zhonganZhixingDO);
+                                        }
+                                    }
+                                    //欠款欠费名单
+                                    String qiankuan = fxcontent.getString("qiankuan");
+                                    if(!"[]".equals(qiankuan)){
+                                        JSONArray array = JSONArray.parseArray(qiankuan);
+                                        for(int i=0;i<array.size();i++){
+                                            JSONObject jsonObject = array.getJSONObject(i);
+                                            ZhonganQiankuanDO zhonganQiankuanDO = (ZhonganQiankuanDO)JSONObject.toJavaObject(jsonObject,ZhonganQiankuanDO.class);
+                                            zhonganQiankuanDOList.add(zhonganQiankuanDO);
+                                        }
+                                    }
+                                    //民商事审判流程
+                                    String shenpan = fxcontent.getString("shenpan");
+                                    if(!"[]".equals(shenpan)){
+                                        JSONArray array = JSONArray.parseArray(shenpan);
+                                        for(int i=0;i<array.size();i++){
+                                            JSONObject jsonObject = array.getJSONObject(i);
+                                            ZhonganShenpanDO zhonganShenpanDO = (ZhonganShenpanDO)JSONObject.toJavaObject(jsonObject,ZhonganShenpanDO.class);
+                                            zhonganShenpanDOList.add(zhonganShenpanDO);
+                                        }
+                                    }
+                                    //民商事裁判文书
+                                    String caipan = fxcontent.getString("caipan");
+                                    if(!"[]".equals(caipan)){
+                                        JSONArray array = JSONArray.parseArray(caipan);
+                                        for(int i=0;i<array.size();i++){
+                                            JSONObject jsonObject = array.getJSONObject(i);
+                                            ZhonganCaipanDO zhonganCaipanDO = (ZhonganCaipanDO)JSONObject.toJavaObject(jsonObject,ZhonganCaipanDO.class);
+                                            zhonganCaipanDOList.add(zhonganCaipanDO);
+                                        }
+                                    }
+                                    //行政违法记录
+                                    String weifa = fxcontent.getString("weifa");
+                                    if(!"[]".equals(weifa)){
+                                        JSONArray array = JSONArray.parseArray(weifa);
+                                        for(int i=0;i<array.size();i++){
+                                            JSONObject jsonObject = array.getJSONObject(i);
+                                            ZhonganWeifaDO zhonganWeifaDO = (ZhonganWeifaDO)JSONObject.toJavaObject(jsonObject,ZhonganWeifaDO.class);
+                                            zhonganWeifaDOList.add(zhonganWeifaDO);
+                                        }
+                                    }
+                                }
+
                             }
                         }
                         zhongAnInfoDO.setIdCard(zhongAnCusParam.getIdcard());
@@ -1061,6 +1214,75 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
                             zhongAnOverDueDOMapper.insertSelective(zhongAnOverDueDO);
                         }
                     }
+
+
+
+                    if(zhonganCaipanDOList.size()!=0){
+                        for(ZhonganCaipanDO zhonganCaipanDO:zhonganCaipanDOList){
+                            zhonganCaipanDO.setZhongan_id(zhongAnInfoDO.getId());
+                            zhonganCaipanDOMapper.insertSelective(zhonganCaipanDO);
+                        }
+                    }
+                    if(zhonganFeizhengDOList.size()!=0){
+                        for(ZhonganFeizhengDO zhonganFeizhengDO:zhonganFeizhengDOList){
+                            zhonganFeizhengDO.setZhongan_id(zhongAnInfoDO.getId());
+                            zhonganFeizhengDOMapper.insertSelective(zhonganFeizhengDO);
+                        }
+                    }
+                    if(zhonganQiankuanDOList.size()!=0){
+                        for(ZhonganQiankuanDO zhonganQiankuanDO:zhonganQiankuanDOList){
+                            zhonganQiankuanDO.setZhongan_id(zhongAnInfoDO.getId());
+                            zhonganQiankuanDOMapper.insertSelective(zhonganQiankuanDO);
+                        }
+                    }
+                    if(zhonganQianshuiDOList.size()!=0){
+                        for(ZhonganQianshuiDO zhonganQianshuiDO:zhonganQianshuiDOList){
+                            zhonganQianshuiDO.setZhongan_id(zhongAnInfoDO.getId());
+                            zhonganQianshuiDOMapper.insertSelective(zhonganQianshuiDO);
+                        }
+                    }
+                    if(zhonganShenpanDOList.size()!=0){
+                        for(ZhonganShenpanDO zhonganShenpanDO:zhonganShenpanDOList){
+                            zhonganShenpanDO.setZhongan_id(zhongAnInfoDO.getId());
+                            zhonganShenpanDOMapper.insertSelective(zhonganShenpanDO);
+                        }
+                    }
+                    if(zhonganShixinDOList.size()!=0){
+                        for(ZhonganShixinDO zhonganShixinDO:zhonganShixinDOList){
+                            zhonganShixinDO.setZhongan_id(zhongAnInfoDO.getId());
+                            zhonganShixinDOMapper.insertSelective(zhonganShixinDO);
+                        }
+                    }
+                    if(zhonganWeifaDOList.size()!=0){
+                        for(ZhonganWeifaDO zhonganWeifaDO:zhonganWeifaDOList){
+                            zhonganWeifaDO.setZhongan_id(zhongAnInfoDO.getId());
+                            zhonganWeifaDOMapper.insertSelective(zhonganWeifaDO);
+                        }
+                    }
+                    if(zhonganXianchuDOList.size()!=0){
+                        for(ZhonganXianchuDO zhonganXianchuDO:zhonganXianchuDOList){
+                            zhonganXianchuDO.setZhongan_id(zhongAnInfoDO.getId());
+                            zhonganXianchuDOMapper.insertSelective(zhonganXianchuDO);
+                        }
+                    }
+                    if(zhonganXiangaoDOList.size()!=0){
+                        for(ZhonganXiangaoDO zhonganXiangaoDO:zhonganXiangaoDOList){
+                            zhonganXiangaoDO.setZhongan_id(zhongAnInfoDO.getId());
+                            zhonganXiangaoDOMapper.insertSelective(zhonganXiangaoDO);
+                        }
+                    }
+                    if(zhonganZhixingDOList.size()!=0){
+                        for(ZhonganZhixingDO zhonganZhixingDO:zhonganZhixingDOList){
+                            zhonganZhixingDO.setZhongan_id(zhongAnInfoDO.getId());
+                            zhonganZhixingDOMapper.insertSelective(zhonganZhixingDO);
+                        }
+                    }
+                    if(zhonganZuifanDOList.size()!=0){
+                        for(ZhonganZuifanDO zhonganZuifanDO:zhonganZuifanDOList){
+                            zhonganZuifanDO.setZhongan_id(zhongAnInfoDO.getId());
+                            zhonganZuifanDOMapper.insertSelective(zhonganZuifanDO);
+                        }
+                    }
                 } else if ((boolean) map.get("success") == false) {
                     ZhonganInfoDO zhonganInfoDO = new ZhonganInfoDO();
                     zhonganInfoDO.setOrderId(Long.valueOf(zhongAnQueryParam.getOrder_id()));
@@ -1093,9 +1315,32 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
             List<ZhonganOverdueDO> overDueList = zhongAnOverDueDOMapper.selectById(zhongAnInfoDO.getId());
             List<RspCreditDO> creditList = rspCreditDOMapper.selectById(zhongAnInfoDO.getId());
             List<RspLawsuitDO> lawSuitList = rspLawSuitDOMapper.selectById(zhongAnInfoDO.getId());
+            List<ZhonganCaipanDO> zhonganCaipanDOList = zhonganCaipanDOMapper.selectByZhonganId(zhongAnInfoDO.getId());
+            List<ZhonganFeizhengDO> zhonganFeizhengDOList = zhonganFeizhengDOMapper.selectByZhonganId(zhongAnInfoDO.getId());
+            List<ZhonganQiankuanDO> zhonganQiankuanDOList = zhonganQiankuanDOMapper.selectByZhonganId(zhongAnInfoDO.getId());
+            List<ZhonganQianshuiDO> zhonganQianshuiDOList = zhonganQianshuiDOMapper.selectByZhonganId(zhongAnInfoDO.getId());
+            List<ZhonganShenpanDO> zhonganShenpanDOList = zhonganShenpanDOMapper.selectByZhonganId(zhongAnInfoDO.getId());
+            List<ZhonganShixinDO> zhonganShixinDOList = zhonganShixinDOMapper.selectByZhonganId(zhongAnInfoDO.getId());
+            List<ZhonganWeifaDO> zhonganWeifaDOList = zhonganWeifaDOMapper.selectByZhonganId(zhongAnInfoDO.getId());
+            List<ZhonganXianchuDO> zhonganXianchuDOList = zhonganXianchuDOMapper.selectByZhonganId(zhongAnInfoDO.getId());
+            List<ZhonganXiangaoDO> zhonganXiangaoDOList = zhonganXiangaoDOMapper.selectByZhonganId(zhongAnInfoDO.getId());
+            List<ZhonganZhixingDO> zhonganZhixingDOList = zhonganZhixingDOMapper.selectByZhonganId(zhongAnInfoDO.getId());
+            List<ZhonganZuifanDO> zhonganZuifanDOList = zhonganZuifanDOMapper.selectByZhonganId(zhongAnInfoDO.getId());
             zhongAnInfoDO.setOverDueList(overDueList);
             zhongAnInfoDO.setCreditList(creditList);
             zhongAnInfoDO.setLawSuitList(lawSuitList);
+            zhongAnInfoDO.setZhonganZuifanDOList(zhonganZuifanDOList);
+            zhongAnInfoDO.setZhonganZhixingDOList(zhonganZhixingDOList);
+            zhongAnInfoDO.setZhonganXiangaoDOList(zhonganXiangaoDOList);
+            zhongAnInfoDO.setZhonganXianchuDOList(zhonganXianchuDOList);
+            zhongAnInfoDO.setZhonganWeifaDOList(zhonganWeifaDOList);
+            zhongAnInfoDO.setZhonganShixinDOList(zhonganShixinDOList);
+            zhongAnInfoDO.setZhonganShenpanDOList(zhonganShenpanDOList);
+            zhongAnInfoDO.setZhonganQianshuiDOList(zhonganQianshuiDOList);
+            zhongAnInfoDO.setZhonganQiankuanDOList(zhonganQiankuanDOList);
+            zhongAnInfoDO.setZhonganFeizhengDOList(zhonganFeizhengDOList);
+            zhongAnInfoDO.setZhonganCaipanDOList(zhonganCaipanDOList);
+
         }
         zhongAnDetailQuery.setList(list);
         return zhongAnDetailQuery;

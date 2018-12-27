@@ -106,7 +106,14 @@ public class BusinessReviewServiceImpl implements BusinessReviewService {
         }
         Long costDetailsId = loanOrderDO.getCostDetailsId();//关联ID
 
-        if (costDetailsId == null)
+        CostDetailsDO costDetailsDO = null;
+        if (costDetailsId != null)
+        {
+            costDetailsDO = costDetailsDOMapper.selectByPrimaryKey(costDetailsId);
+        }
+
+
+        if (costDetailsId == null || costDetailsDO.getListrule()==null)
         {
 
             //请求财务系统初始数据
@@ -141,7 +148,7 @@ public class BusinessReviewServiceImpl implements BusinessReviewService {
             return recombinationVO;
         }else
         {
-            CostDetailsDO costDetailsDO = costDetailsDOMapper.selectByPrimaryKey(costDetailsId);
+            //CostDetailsDO costDetailsDO = costDetailsDOMapper.selectByPrimaryKey(costDetailsId);
             /*String listrules = costDetailsDO.getListrule();
             if (listrules !=null && !"".equals(listrules)){
                 Gson gson = new Gson();
@@ -363,6 +370,11 @@ public class BusinessReviewServiceImpl implements BusinessReviewService {
             {
                 Gson gson = new Gson();
                 financeResult1 = gson.fromJson(financeResult, FinanceResult.class);
+            }
+
+            if (!"200".equals(financeResult1.getResultCode()))
+            {
+                throw new BizException("请求财务计算错误！！");
             }
 
             return ResultBean.ofSuccess(financeResult1);

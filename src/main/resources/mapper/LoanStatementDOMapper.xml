@@ -655,7 +655,7 @@
         loan_process_log
         WHERE
         order_id = orders.id
-        AND task_definition_key = 'usertask_remit_review'
+        AND task_definition_key = 'usertask_remit_review' and loan_process_log.action =1
         ORDER BY
         create_time DESC
         LIMIT 1
@@ -667,7 +667,7 @@
         loan_process_log
         WHERE
         order_id = orders.id
-        AND task_definition_key = 'usertask_remit_review'
+        AND task_definition_key = 'usertask_remit_review' and loan_process_log.action =1
         ORDER BY
         create_time DESC
         LIMIT 1
@@ -777,12 +777,12 @@
         loan_base_info.bank,
         loan_financial_plan.bank_period_principal,
         ( SELECT create_time FROM loan_process_log WHERE orders.id = loan_process_log.order_id AND
-        loan_process_log.task_definition_key = 'usertask_remit_review' ORDER BY id DESC LIMIT 1 ) AS remitdate,
+        loan_process_log.task_definition_key = 'usertask_remit_review' and loan_process_log.action =1 ORDER BY id DESC LIMIT 1 ) AS remitdate,
         ( SELECT loan_data_flow.express_receive_date FROM loan_data_flow WHERE orders.id = loan_data_flow.order_id AND
         type = 2 ORDER BY loan_data_flow.id DESC LIMIT 1 ) AS express_receive_date,
         material_audit.complete_material_date,
         ( SELECT create_time FROM loan_process_log WHERE orders.id = loan_process_log.order_id AND
-        loan_process_log.task_definition_key = 'usertask_material_review' ORDER BY id DESC LIMIT 1 ) AS
+        loan_process_log.task_definition_key = 'usertask_material_review' and loan_process_log.action =1 ORDER BY id DESC LIMIT 1 ) AS
         materialReviewSubmit,
         DATE_FORMAT((
         SELECT
@@ -791,7 +791,7 @@
         loan_process_log
         WHERE
         order_id = orders.id
-        AND task_definition_key = 'usertask_material_print_review'
+        AND task_definition_key = 'usertask_material_print_review' and loan_process_log.action =1
         ORDER BY
         id DESC
         LIMIT 1
@@ -819,7 +819,7 @@
         loan_info_supplement.order_id = orders.id
         ) AS supplementTime,
         ( SELECT create_time FROM loan_process_log WHERE orders.id = loan_process_log.order_id AND task_definition_key =
-        'usertask_vehicle_information' ORDER BY id DESC LIMIT 1 ) AS carMaterialCreateTime,
+        'usertask_vehicle_information' and loan_process_log.action =1 ORDER BY id DESC LIMIT 1 ) AS carMaterialCreateTime,
         ( SELECT loan_data_flow.express_send_date FROM loan_data_flow WHERE orders.id = loan_data_flow.order_id AND
         (type = 3 or type = 4) ORDER BY id DESC LIMIT 1 ) AS express_sendbank_date,
         (SELECT
@@ -940,7 +940,7 @@
         loan_financial_plan.loan_amount,
         loan_financial_plan.bank_period_principal,
         ( SELECT create_time FROM loan_process_log WHERE orders.id = loan_process_log.order_id AND
-        loan_process_log.task_definition_key = 'usertask_remit_review' ORDER BY id DESC LIMIT 1 ) AS remitdate,
+        loan_process_log.task_definition_key = 'usertask_remit_review' and loan_process_log.action =1 ORDER BY id DESC LIMIT 1 ) AS remitdate,
         bank_lend_record.lend_date,
         ( SELECT loan_data_flow.express_send_date FROM loan_data_flow WHERE orders.id = loan_data_flow.order_id AND type
         = 12 ORDER BY id DESC LIMIT 1 ) AS sendMaterialToParter_date,
@@ -975,7 +975,7 @@
         )
         END AS depositOverdueTime,
         ( SELECT user_name FROM loan_process_log WHERE order_id = orders.id AND task_definition_key =
-        'usertask_apply_license_plate_deposit_info' ORDER BY create_time DESC LIMIT 1 ) AS submitUser
+        'usertask_apply_license_plate_deposit_info' and loan_process_log.action =1 ORDER BY create_time DESC LIMIT 1 ) AS submitUser
         FROM
         loan_order orders
         LEFT JOIN loan_customer customer ON orders.loan_customer_id = customer.id
@@ -1864,7 +1864,7 @@
         loan_process_log
         WHERE
         order_id = principal_orders.id
-        AND task_definition_key = 'usertask_material_print_review'
+        AND task_definition_key = 'usertask_material_print_review' and loan_process_log.action =1
         ORDER BY
         id DESC
         LIMIT 1
@@ -1877,7 +1877,7 @@
         loan_process_log
         WHERE
         order_id = principal_orders.id
-        AND task_definition_key = 'usertask_material_print_review'
+        AND task_definition_key = 'usertask_material_print_review' and loan_process_log.action =1
         ORDER BY
         id DESC
         LIMIT 1
