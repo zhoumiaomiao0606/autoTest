@@ -125,6 +125,10 @@ public class BankSolutionServiceImpl implements BankSolutionService {
     @Autowired
     private SecondHandCarEvaluateDOMapper secondHandCarEvaluateDOMapper;
 
+    @Autowired
+    private BaseAreaDOMapper baseAreaDOMapper;
+
+
 
     /**
      * 征信自动提交
@@ -276,7 +280,9 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         if (bankId == null) {
             throw new BizException("贷款银行不存在");
         }
-
+        if((!String.valueOf(bankId).equals(IDict.K_BANK.ICBC_HZCZ)&&!String.valueOf(bankId).equals(IDict.K_BANK.ICBC_TZLQ))){
+            return ResultBean.ofSuccess("非城站/台州支行无需调用");
+        }
         Long carDetailId = loanCarInfoDO.getCarDetailId();
         if (carDetailId == null) {
             throw new BizException("贷款车辆不存在");
@@ -302,9 +308,9 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         } else if (bankId.intValue() == 3) {
             carFullName = carBrandDO.getName() + carModelDO.getFullName().replace(carBrandDO.getName(), "");
         }
+
         VehicleInformationDO vehicleInformationDO = vehicleInformationDOMapper.selectByPrimaryKey(loanOrderDO.getVehicleInformationId());
 
-        SecondHandCarEvaluateDO secondHandCarEvaluateDO = secondHandCarEvaluateDOMapper.selectByPrimaryKey(loanOrderDO.getSecond_hand_car_evaluate_id());
         ICBCApiRequest.Applyevaluate applyevaluate = new ICBCApiRequest.Applyevaluate();
 
         applyevaluate.setPlatno(sysConfig.getPlatno());
@@ -322,14 +328,14 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         applyevaluate.setCarType(carFullName);
         applyevaluate.setPrice(BigDecimalUtil.format(loanFinancialPlanDO.getBankPeriodPrincipal(),2));
         applyevaluate.setCarNo1(vehicleInformationDO.getVehicle_identification_number());
-        applyevaluate.setCarZone(loanBaseInfoDO.getAreaId() == null ? null : loanBaseInfoDO.getAreaId().toString().substring(0, 4));
-        applyevaluate.setCarMile(secondHandCarEvaluateDO.getMileage());
+        applyevaluate.setCarZone(loanCarInfoDO.getCityId() == null ? null : loanCarInfoDO.getCityId().toString().substring(0, 4));
+        applyevaluate.setCarMile(String.valueOf(new BigDecimal(loanCarInfoDO.getMileage()).intValue()));
         applyevaluate.setCarDate(DateUtil.getDateTo8(loanCarInfoDO.getFirstRegisterDate()));
         applyevaluate.setAssessPrice(BigDecimalUtil.format(loanFinancialPlanDO.getAppraisal(),2));
         applyevaluate.setEvaluateOrg("0");//默认送0：加我科技评估机构(银行默认)
         applyevaluate.setDecorateLevel(" ");//非必填，可为空
 
-
+        violationUtil.violation(applyevaluate);
         ApplycreditstatusResponse response = icbcFeignClient.applyevaluate(applyevaluate);
 
         return ResultBean.ofSuccess(response);

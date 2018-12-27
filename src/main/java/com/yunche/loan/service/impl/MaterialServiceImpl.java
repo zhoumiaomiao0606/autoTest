@@ -25,6 +25,7 @@ import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.LoanQueryService;
 import com.yunche.loan.service.MaterialService;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -105,6 +106,10 @@ public class MaterialServiceImpl implements MaterialService {
 
     @Autowired
     private MaterialDownClient materialDownClient;
+
+
+    @Autowired
+    private BankInterfaceSerialDOMapper bankInterfaceSerialDOMapper;
 
     @Override
     public RecombinationVO detail(Long orderId) {
@@ -765,6 +770,7 @@ public class MaterialServiceImpl implements MaterialService {
             OSSUnit.uploadObject2OSS(ossClient, zipFile, bucketName, diskName + File.separator);
             returnKey = diskName + File.separator + zipFile.getName();
             logger.info("打包结束：" + System.currentTimeMillis());
+
         } catch (Exception e) {
             List<LoanFileDO> loanFileDOS = loanFileDOMapper.listByCustomerIdAndType(customerId, new Byte("26"), null);
             loanFileDOS.stream().filter(Objects::nonNull).forEach(f -> {
@@ -788,6 +794,7 @@ public class MaterialServiceImpl implements MaterialService {
                     zos.close();
                 }
 
+                FileUtils.forceDelete(zipFile);
 
             } catch (IOException e) {
                 Preconditions.checkArgument(false, e.getMessage());

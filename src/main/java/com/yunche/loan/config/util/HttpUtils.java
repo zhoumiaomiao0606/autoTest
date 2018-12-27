@@ -1,6 +1,5 @@
 package com.yunche.loan.config.util;
 
-import com.yunche.loan.config.result.ResultBean;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.*;
 import org.apache.http.client.CookieStore;
@@ -20,7 +19,6 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.cookie.BasicClientCookie;
-import org.apache.http.message.BasicHeader;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
@@ -553,6 +551,38 @@ public class HttpUtils {
         cookie.setDomain("127.0.0.1");
         cookie.setPath("/partneraccountinterface");
         cookieStore.addCookie(cookie);
+    }
+
+
+    /**
+     * PUT基础请求
+     */
+    public static String doPutJson(String url, String json) {
+        // 创建Httpclient对象
+        CloseableHttpClient httpClient = HttpClients.createDefault();
+        CloseableHttpResponse response = null;
+        String resultString = "";
+        try {
+            // 创建Http Put请求
+            HttpPut httpPut = new HttpPut(url);
+            // 创建请求内容
+            StringEntity entity = new StringEntity(json, ContentType.APPLICATION_JSON);
+            httpPut.setEntity(entity);
+            // 执行http请求
+            response = httpClient.execute(httpPut);
+            resultString = EntityUtils.toString(response.getEntity(), "utf-8");
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                response.close();
+            } catch (IOException e) {
+
+                e.printStackTrace();
+            }
+        }
+
+        return resultString;
     }
 
 

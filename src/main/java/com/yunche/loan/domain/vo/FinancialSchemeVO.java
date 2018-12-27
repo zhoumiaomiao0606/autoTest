@@ -83,6 +83,7 @@ public class FinancialSchemeVO {
     private String partner_area_id;//合伙人区域ID
     private String partner_area_name;//合伙人区域名称
     private String partner_name;//合伙人
+    private String distributor_name;//
 
 
 }

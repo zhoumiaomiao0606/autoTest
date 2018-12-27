@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Preconditions;
 import com.google.common.eventbus.Subscribe;
 import com.yunche.loan.config.constant.IDict;
+import com.yunche.loan.config.util.DateUtil;
 import com.yunche.loan.config.util.EventBusCenter;
 import com.yunche.loan.config.util.GeneratorIDUtil;
 import com.yunche.loan.config.util.HttpUtils;
@@ -11,6 +12,7 @@ import com.yunche.loan.domain.entity.*;
 import com.yunche.loan.domain.param.ApprovalParam;
 import com.yunche.loan.domain.param.PostFinanceData;
 import com.yunche.loan.mapper.*;
+import com.yunche.loan.service.LoanProcessLogService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +25,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.Map;
 
+import static com.yunche.loan.config.constant.LoanOrderProcessConst.ORDER_STATUS_CANCEL;
 import static com.yunche.loan.config.constant.LoanProcessEnum.*;
 import static com.yunche.loan.config.constant.ProcessApprovalConst.ACTION_PASS;
 
@@ -33,6 +36,11 @@ public class AsyncFinanceApI {
     private static final String HOST = "http://47.96.78.20:8012";
 
     private static final String PATH = "/costcalculation/insert";
+
+
+
+    private static final String ORDER_MODIFY = "/app/api/order/";
+    private static final String ORDER_CREATE= "/app/api/order";
 
     private static final String METHOD = "post";
 
@@ -59,6 +67,26 @@ public class AsyncFinanceApI {
 
     @Autowired
     private LoanProcessInsteadPayDOMapper loanProcessInsteadPayDOMapper;
+
+    @Autowired
+    private LoanProcessLogService loanProcessLogService;
+
+    @Autowired
+    private PartnerDOMapper partnerDOMapper;
+
+    @Autowired
+    private LoanCarInfoDOMapper loanCarInfoDOMapper;
+
+    @Autowired
+    private CarDetailDOMapper carDetailDOMapper;
+
+    @Autowired
+    private CarModelDOMapper carModelDOMapper;
+
+
+
+    @Autowired
+    private LoanCustomerDOMapper loanCustomerDOMapper;
 
     private  RemitDetailsDO remit2FinanceVoucher(Long orderId){
         LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
@@ -192,6 +220,89 @@ public class AsyncFinanceApI {
     public void listernApproval(ApprovalParam approvalParam) {
         if ((approvalParam.getTaskDefinitionKey().equals(REMIT_REVIEW.getCode()) && ACTION_PASS.equals(approvalParam.getAction())) || (approvalParam.getTaskDefinitionKey().equals(FINANCE_INSTEAD_PAY_REVIEW.getCode()) && ACTION_PASS.equals(approvalParam.getAction())) || (approvalParam.getTaskDefinitionKey().equals(REFUND_APPLY.getCode()) && ACTION_PASS.equals(approvalParam.getAction()))) {
             postFinanceData(approvalParam);
+        }
+
+
+        //通知财务系统信心
+        if(approvalParam.getTaskDefinitionKey().equals(CREDIT_APPLY.getCode())
+                && approvalParam.getTaskDefinitionKey().equals(LOAN_APPLY.getCode())
+                && approvalParam.getTaskDefinitionKey().equals(REFUND_APPLY_REVIEW.getCode())
+                && approvalParam.getTaskDefinitionKey().equals(REMIT_REVIEW.getCode())){
+
+            orderInfoPush(approvalParam);
+        }
+
+    }
+
+    /**
+     * 征信申请时 、 贷款申请时 通知财务系统订单信息
+     * @param approvalParam
+     */
+    @Async
+    private void orderInfoPush(ApprovalParam approvalParam) {
+        PostFinanceData postFinanceData = new PostFinanceData();
+
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(approvalParam.getOrderId());
+        LoanCustomerDO loanCustomerDO = loanCustomerDOMapper.selectByPrimaryKey(loanOrderDO.getLoanCustomerId(), null);
+        LoanProcessLogDO loanProcessLog = loanProcessLogService.getLoanProcessLog(approvalParam.getOrderId(), CREDIT_APPLY.getCode());
+        LoanBaseInfoDO loanBaseInfoDO = loanBaseInfoDOMapper.selectByPrimaryKey(loanOrderDO.getLoanBaseInfoId());
+        PartnerDO partnerDO = partnerDOMapper.selectByPrimaryKey(loanBaseInfoDO.getPartnerId(), null);
+        LoanCarInfoDO loanCarInfoDO = loanCarInfoDOMapper.selectByPrimaryKey(loanOrderDO.getLoanCarInfoId());
+
+        postFinanceData.setOrderId(String.valueOf(approvalParam.getOrderId()));
+        postFinanceData.setName(loanCustomerDO.getName());
+        postFinanceData.setIdCard(loanCustomerDO.getIdCard());
+        postFinanceData.setCreditOperatorName(loanProcessLog.getUserName());
+        postFinanceData.setCreateDate(DateUtil.getDateTo10(loanProcessLog.getCreateTime()));
+
+        postFinanceData.setPartnerId(loanBaseInfoDO.getPartnerId());
+        postFinanceData.setPartnerName(partnerDO.getName());
+        if(loanCarInfoDO!=null){
+            CarDetailDO carDetailDO = carDetailDOMapper.selectByPrimaryKey(loanCarInfoDO.getCarDetailId(), null);
+            CarModelDO carModelDO = carModelDOMapper.selectByPrimaryKey(carDetailDO.getModelId(), null);
+            postFinanceData.setCarDetail(String.valueOf(loanCarInfoDO.getCarDetailId()));
+            postFinanceData.setCarModel(String.valueOf(carDetailDO.getModelId()));
+            postFinanceData.setCarBrand(String.valueOf(carModelDO.getBrandId()));
+        }
+
+        //进行推送
+        try {
+            /**
+             * 订单生成 调用 新增方法   orderStatus = 1
+
+               财务垫款      修改方法   orderStatus= 2
+
+               弃单/退款 调用 修改方法   orderStatus=3
+             */
+            LOG.info("准备异步发送数据！！！" + postFinanceData.toString());
+            String retJson =null;
+            if(approvalParam.getTaskDefinitionKey().equals(CREDIT_APPLY.getCode())){
+                postFinanceData.setOrderStatus("1");//
+                //弃单
+                if(approvalParam.getAction().equals(ORDER_STATUS_CANCEL)){
+                    postFinanceData.setOrderStatus("3");//
+                }
+                retJson = HttpUtils.doPost(HOST, ORDER_CREATE, null, postFinanceData.toString());
+            }else {
+                //打款确认
+                if(approvalParam.getTaskDefinitionKey().equals(REMIT_REVIEW.getCode())){
+                    postFinanceData.setOrderStatus("2");//
+                }else if(approvalParam.getTaskDefinitionKey().equals(REFUND_APPLY_REVIEW.getCode())){
+                    postFinanceData.setOrderStatus("3");//
+                }
+                //弃单
+                if(approvalParam.getAction().equals(ORDER_STATUS_CANCEL)){
+                    postFinanceData.setOrderStatus("3");//
+                }
+                HttpUtils.doPut(HOST,ORDER_MODIFY+postFinanceData.getOrderId(),null,null,null,postFinanceData.toString());
+            }
+            //记录流水信息
+            errSerialRecord(retJson,approvalParam);
+
+            LOG.info("应答数据：" + retJson);
+
+        } catch (Exception e) {
+            LOG.error("财务数据异步发送失败！！！", e);
         }
 
     }

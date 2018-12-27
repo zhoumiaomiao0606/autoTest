@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunche.loan.mapper.PartnerRelaDistributorDOMapper">
+  <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.PartnerRelaDistributorDO">
+    <id column="partner_id" jdbcType="BIGINT" property="partnerId" />
+    <id column="distributor_id" jdbcType="BIGINT" property="distributorId" />
+    <result column="distributor_name" jdbcType="VARCHAR" property="distributorName" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    partner_id, distributor_id, distributor_name
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="com.yunche.loan.domain.entity.PartnerRelaDistributorDOKey" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from partner_rela_distributor
+    where partner_id = #{partnerId,jdbcType=BIGINT}
+      and distributor_id = #{distributorId,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="com.yunche.loan.domain.entity.PartnerRelaDistributorDOKey">
+    delete from partner_rela_distributor
+    where partner_id = #{partnerId,jdbcType=BIGINT}
+      and distributor_id = #{distributorId,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.yunche.loan.domain.entity.PartnerRelaDistributorDO">
+    insert into partner_rela_distributor (partner_id, distributor_id, distributor_name
+      )
+    values (#{partnerId,jdbcType=BIGINT}, #{distributorId,jdbcType=BIGINT}, #{distributorName,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.PartnerRelaDistributorDO">
+    insert into partner_rela_distributor
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="partnerId != null">
+        partner_id,
+      </if>
+      <if test="distributorId != null">
+        distributor_id,
+      </if>
+      <if test="distributorName != null">
+        distributor_name,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="partnerId != null">
+        #{partnerId,jdbcType=BIGINT},
+      </if>
+      <if test="distributorId != null">
+        #{distributorId,jdbcType=BIGINT},
+      </if>
+      <if test="distributorName != null">
+        #{distributorName,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.PartnerRelaDistributorDO">
+    update partner_rela_distributor
+    <set>
+      <if test="distributorName != null">
+        distributor_name = #{distributorName,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where partner_id = #{partnerId,jdbcType=BIGINT}
+      and distributor_id = #{distributorId,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.PartnerRelaDistributorDO">
+    update partner_rela_distributor
+    set distributor_name = #{distributorName,jdbcType=VARCHAR}
+    where partner_id = #{partnerId,jdbcType=BIGINT}
+      and distributor_id = #{distributorId,jdbcType=BIGINT}
+  </update>
+
+  <select id="listDistributorByPartner" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from partner_rela_distributor
+    where partner_id = #{partnerId,jdbcType=BIGINT}
+  </select>
+</mapper>

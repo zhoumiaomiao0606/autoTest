@@ -129,23 +129,38 @@ public class ICBCApiRequest {
      */
     @Data
     public static class Applyevaluate{
+        @NotEmpty(message = "平台编号不能为空")
         private String platno;
+        @NotEmpty(message = "合作机构交易流水号不能为空")
         private String cmpseq;
+        @NotEmpty(message = "合作机构订单号不能为空")
         private String orderno;
+        @NotEmpty(message = "合作机构日期不能为空")
         private String cmpdate;
+        @NotEmpty(message = "合作机构时间不能为空")
         private String cmptime;
         private String fileNum;
         private String customerId;
 
+        @NotEmpty(message = "证件类型不能为空")
         private String idtype;
+        @NotEmpty(message = "证件编号不能为空")
         private String idno;
+        @NotEmpty(message = "车辆型号不能为空")
         private String carType;
+        @NotEmpty(message = "拟分期金额（元）不能为空")
         private String Price;
+        @NotEmpty(message = "车架号不能为空")
         private String carNo1;
+        @NotEmpty(message = "所在城市不能为空")
         private String carZone;
+        @NotEmpty(message = "行驶里程不能为空")
         private String carMile;
+        @NotEmpty(message = "首次上牌日期不能为空")
         private String carDate;
+        @NotEmpty(message = "线下评估价格（元）不能为空")
         private String AssessPrice;
+        @NotEmpty(message = "评估机构不能为空")
         private String EvaluateOrg;
         private String decorateLevel;
 
