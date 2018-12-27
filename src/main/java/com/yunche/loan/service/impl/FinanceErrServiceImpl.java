@@ -34,10 +34,14 @@ public class FinanceErrServiceImpl implements FinanceErrService {
     @Override
     public ResultBean deal() {
 
-        List<FinanceErrVO> financeErrVOS = voucherErrRecordDOMapper.listErr(null);
+        FinanceErrQuery financeErrQuery =new FinanceErrQuery();
+        financeErrQuery.setStatus(new Byte("1"));
+
+        List<FinanceErrVO> financeErrVOS = voucherErrRecordDOMapper.listErr(financeErrQuery);
 
         for (FinanceErrVO financeErrVO:financeErrVOS) {
             ApprovalParam approvalParam = new ApprovalParam();
+            approvalParam.setSerial_no(financeErrVO.getSerialNo());
             approvalParam.setTaskDefinitionKey(financeErrVO.getTaskDefinitionKey());
             approvalParam.setOrderId(Long.valueOf(financeErrVO.getOrderId()));
             approvalParam.setProcessId(financeErrVO.getProcessId()==null?0:Long.valueOf(financeErrVO.getProcessId()));

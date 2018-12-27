@@ -191,18 +191,19 @@ public class LoanCreditInfoHisServiceImpl implements LoanCreditInfoHisService {
     }
 
     /**
-     * 过滤[紧急联系人]
+     * 过滤[紧急联系人] and 特殊关联人
      *
      * @param customers
      * @return
      */
     private List<LoanCustomerDO> filterCustomers_EmergencyContact(List<LoanCustomerDO> customers) {
 
-        if (!CollectionUtils.isEmpty(customers)) {
+        if (!CollectionUtils.isEmpty(customers))
+        {
 
             customers = customers.stream()
                     .filter(Objects::nonNull)
-                    .filter(e -> !CUST_TYPE_EMERGENCY_CONTACT.equals(e.getCustType()))
+                    .filter(e -> !CUST_TYPE_EMERGENCY_CONTACT.equals(e.getCustType()) && !CUST_TYPE_SPECIAL_CONTACT.equals(e.getCustType()))
                     .collect(Collectors.toList());
         }
 
