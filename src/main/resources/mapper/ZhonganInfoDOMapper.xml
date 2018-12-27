@@ -1895,7 +1895,7 @@
         </if>
         <if test="partnerList != null and partnerList.size() > 0">
             and
-            par.partner_id in
+            base.partner_id in
             <foreach item="item" index="index" collection="partnerList" open="(" separator="," close=")">
                 #{item}
             </foreach>
