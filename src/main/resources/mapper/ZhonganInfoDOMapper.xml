@@ -918,10 +918,21 @@
         a.name AS cName,
         e.name AS eName,
         f.name AS pName,
+        loan_credit_info_bank_his.credit_apply_time AS creditApplyTime,
+        case
+        when loan_credit_info_bank_his.bank_credit_result = 1 then
+        '通过'
+        when loan_credit_info_bank_his.bank_credit_result = 2 then
+        '不通过'
+        ELSE NULL END
+        AS bnakResult,
         '车贷' AS businessVariety,
         '鑫宝行' AS submitOrganization
         FROM
         loan_customer a
+        left join (select customer_id,max(id) as credithisId FROM loan_credit_info_bank_his GROUP BY customer_id) tab on
+        tab.customer_id = a.id
+        left join loan_credit_info_bank_his on tab.credithisId = loan_credit_info_bank_his.id
         LEFT JOIN loan_order b ON b.loan_customer_id = a.principal_cust_id
         LEFT JOIN loan_base_info c ON b.loan_base_info_id = c.id
         LEFT JOIN loan_process d ON d.order_id = b.id

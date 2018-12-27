@@ -250,6 +250,7 @@ public class FinancialSchemeServiceImpl implements FinancialSchemeService {
         LoanProcessDO loanProcessDO = loanProcessDOMapper.selectByPrimaryKey(orderId);
         Preconditions.checkNotNull(loanProcessDO, "流程记录丢失");
 
+        Preconditions.checkArgument(TASK_PROCESS_DONE.equals(loanProcessDO.getOrderStatus()), "订单状态为-已弃单或已完结");
         // 1
         Preconditions.checkArgument(TASK_PROCESS_DONE.equals(loanProcessDO.getTelephoneVerify()), "[电审]未通过，无法发起[金融方案修改申请]");
 

@@ -210,7 +210,7 @@ public class FinanceServiceImpl implements FinanceService
         paymentParam.setOrder_id(orderId);
         if (remitDetailsDO.getBank_code()==null || "".equals(remitDetailsDO.getBank_code()))
         {
-            throw new BizException("该收款银行无对应code,不能自动打款");
+            throw new BizException("该收款银行无对应code,不支持自动打款");
         }
         paymentParam.setBank_code(remitDetailsDO.getBank_code());
         paymentParam.setAmount(remitDetailsDO.getRemit_amount());

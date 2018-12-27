@@ -384,7 +384,7 @@
 -->
 
 
-        <table tableName="financial_operation_exception" domainObjectName="FinancialOperationExceptionDO"
+        <table tableName="voucher_record" domainObjectName="VoucherRecordDO"
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
         </table>
