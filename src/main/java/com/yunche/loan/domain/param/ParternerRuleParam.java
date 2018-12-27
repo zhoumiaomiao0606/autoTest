@@ -21,6 +21,8 @@ public class ParternerRuleParam
     private String financialBankPeriodPrincipal;
     //贷款利率
     private String rate;
+
+    private String bankRate;
     //年限
     private String year;
     //GPS数量
