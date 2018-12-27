@@ -497,7 +497,7 @@
             from loan_financial_plan_temp_his his
             left join financial_product product on his.financial_product_id = product.prod_id
 			left join loan_order main_order on his.order_id = main_order.id
-            left join financial_product product on his.financial_product_id = product.prod_id
+
 			left join loan_base_info loan on main_order.loan_base_info_id = loan.id
 			left join loan_customer customer on main_order.loan_customer_id = customer.id
 			left join employee salesman on loan.salesman_id = salesman.id
