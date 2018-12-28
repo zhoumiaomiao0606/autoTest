@@ -1963,7 +1963,7 @@
 	) a
 
     </select>
-    <select id="bankMortgageWarrantTotal" parameterType="java.lang.String" resultType="com.yunche.loan.domain.vo.BankMortgageWarrantVO">
+    <select id="bankMortgageWarrantTotal" parameterType="com.yunche.loan.domain.query.BankCreditPrincipalQuery" resultType="java.lang.String">
         SELECT
         sum( plan.bank_period_principal ) AS money
 
