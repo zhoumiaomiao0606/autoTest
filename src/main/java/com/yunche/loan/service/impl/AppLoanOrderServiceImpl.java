@@ -841,6 +841,13 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
                     businessInfoVO.setSocialCreditResult(socialLoanCreditInfoVO.getResult());
                     businessInfoVO.setSocialCreditInfo(socialLoanCreditInfoVO.getInfo());
                 }
+
+                //加入还款卡号
+                LoanCustomerDO loanCustomerDO = loanCustomerDOMapper.selectByPrimaryKey(loanOrderDO.getLoanCustomerId(), VALID_STATUS);
+                if (loanCustomerDO!=null)
+                {
+                    businessInfoVO.setRepayCardId(loanCustomerDO.getLendCard());
+                }
             }
 
             Long vid = loanOrderDOMapper.getVehicleInformationIdById(orderId);
@@ -876,6 +883,7 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
                 businessInfoVO.setColor(vehicleInformationDO.getColor());
                 //上牌日期
                 businessInfoVO.setApplyLicensePlateDate(vehicleInformationDO.getApply_license_plate_date());
+                businessInfoVO.setLicensePlateDate(vehicleInformationDO.getApply_license_plate_date());
 
             }
         }

@@ -55,6 +55,8 @@ public class AppCustomerInfoVO {
          * 与主贷人关系：0-本人;1-配偶;2-父母;3-子女;4-兄弟姐妹;5-亲戚;6-朋友;7-同学;8-同事;9-其它;
          */
         private Byte custRelation;
+
+        private Byte sex;
     }
 
     @Data
@@ -203,6 +205,28 @@ public class AppCustomerInfoVO {
          */
 
         private Byte guaranteeType;
+
+        private Byte signatureType;
+
+        private String residenceAddress;//户籍地址
+
+        private String elementarySchool;
+
+        private String professional;
+
+        private String ctelzone;
+
+        private String occupation;
+
+        private String familyAddress;
+
+        private Byte houseCertificateType;
+
+        private Byte houseOwnerRelation;
+
+        private String bankCardTransmitAddress;
+
+        private String bankCardTransmitPostcode;
 
 
         private List<FileVO> files = Collections.EMPTY_LIST;
