@@ -120,7 +120,7 @@ public class ReportController {
     //电审客户明细(待开发)
     @PostMapping(value = "/telcustomerdetail",consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean telCustomerDetail(@RequestBody BankCreditPrincipalQuery query) {
-        return ResultBean.ofSuccess(reportService.telCustomerDetail(query));
+        return reportService.telCustomerDetail(query);
     }
     @PostMapping(value = "/telcustomerdetailexport",consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean telCustomerDetailExport(@RequestBody BankCreditPrincipalQuery query) {
@@ -130,11 +130,11 @@ public class ReportController {
     //抵押权证明细表
     @PostMapping(value = "/bankmortgagewarrant",consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean bankMortgageWarrant(@RequestBody BankCreditPrincipalQuery query) {
-        return ResultBean.ofSuccess(reportService.bankMortgageWarrant(query));
+        return reportService.bankMortgageWarrant(query);
     }
     @PostMapping(value = "/bankmortgagewarranttotal",consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean bankMortgageWarrantTotal(@RequestBody BankCreditPrincipalQuery query) {
-        return ResultBean.ofSuccess(reportService.bankMortgageWarrantTotal(query));
+        return reportService.bankMortgageWarrantTotal(query);
     }
     @PostMapping(value = "/bankmortgagewarrantExport",consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean bankmortgagewarrantExport(@RequestBody BankCreditPrincipalQuery query) {
