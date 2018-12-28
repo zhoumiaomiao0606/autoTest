@@ -328,8 +328,16 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         applyevaluate.setCarType(carFullName);
         applyevaluate.setPrice(BigDecimalUtil.format(loanFinancialPlanDO.getBankPeriodPrincipal(),2));
         applyevaluate.setCarNo1(vehicleInformationDO.getVehicle_identification_number());
-        applyevaluate.setCarZone(loanCarInfoDO.getCityId() == null ? null : loanCarInfoDO.getCityId().toString().substring(0, 4));
-        applyevaluate.setCarMile(String.valueOf(new BigDecimal(loanCarInfoDO.getMileage()).intValue()));
+
+        if(loanCarInfoDO.getEvaluationType().equals(IDict.K_EVALUATION_TYPE.ONLINE)){
+            SecondHandCarEvaluateDO secondHandCarEvaluateDO = secondHandCarEvaluateDOMapper.selectByPrimaryKey(loanOrderDO.getSecond_hand_car_evaluate_id());
+            applyevaluate.setCarZone(secondHandCarEvaluateDO.getArea_id() == null ? null : secondHandCarEvaluateDO.getArea_id().toString().substring(0, 4));
+            applyevaluate.setCarMile(String.valueOf(new BigDecimal(secondHandCarEvaluateDO.getMileage()).intValue()));
+        }else if(loanCarInfoDO.getEvaluationType().equals(IDict.K_EVALUATION_TYPE.ARTIFICIAL)){
+            applyevaluate.setCarZone(loanCarInfoDO.getCityId() == null ? null : loanCarInfoDO.getCityId().toString().substring(0, 4));
+            applyevaluate.setCarMile(String.valueOf(new BigDecimal(loanCarInfoDO.getMileage()).intValue()));
+        }
+
         applyevaluate.setCarDate(DateUtil.getDateTo8(loanCarInfoDO.getFirstRegisterDate()));
         applyevaluate.setAssessPrice(BigDecimalUtil.format(loanFinancialPlanDO.getAppraisal(),2));
         applyevaluate.setEvaluateOrg("0");//默认送0：加我科技评估机构(银行默认)

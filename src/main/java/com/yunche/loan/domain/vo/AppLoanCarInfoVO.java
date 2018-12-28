@@ -66,6 +66,14 @@ public class AppLoanCarInfoVO {
 
     private List<LoanCarInfoVO.BaseArea> ableApplyLicensePlateAreaList = Collections.EMPTY_LIST;
 
+
+    private String mileage;
+
+    private Long cityId;
+
+    private String cityName;
+
+
     @Data
     public static class PartnerAccountInfo {
         private Long partnerId;

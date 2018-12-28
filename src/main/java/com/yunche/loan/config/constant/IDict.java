@@ -500,4 +500,21 @@ public class IDict {
          */
         public static final String OPEN_SUCC="5";
     }
+
+    /**
+     * 评估类型
+     */
+    public static abstract interface K_EVALUATION_TYPE{
+        /**
+         * 在线评估
+         */
+        public static final Byte ONLINE=1;
+
+        /**
+         * 人工评估
+         */
+        public static final Byte ARTIFICIAL=2;
+
+    }
 }
+
