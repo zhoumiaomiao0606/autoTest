@@ -9,7 +9,10 @@ import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.BeanPlasticityUtills;
 import com.yunche.loan.config.util.SessionUtils;
-import com.yunche.loan.domain.entity.*;
+import com.yunche.loan.domain.entity.LoanOrderDO;
+import com.yunche.loan.domain.entity.SecondHandCarEvaluateDO;
+import com.yunche.loan.domain.entity.SecondHandCarFirstSite;
+import com.yunche.loan.domain.entity.SecondHandCarVinDO;
 import com.yunche.loan.domain.param.*;
 import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.manager.finance.BusinessReviewManager;
@@ -18,12 +21,10 @@ import com.yunche.loan.service.EmployeeService;
 import com.yunche.loan.service.SecondHandCarService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import javax.annotation.Resource;
-import java.io.UnsupportedEncodingException;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.text.ParseException;
@@ -342,7 +343,11 @@ public class SecondHandCarServiceImpl implements SecondHandCarService
 
             secondHandCarEvaluateDO.setEvaluate_json(financeResult);
 
+            secondHandCarEvaluateDO.setArea_id(evaluateWebParam.getArea_id());
+
             secondHandCarEvaluateDOMapper.insertSelective(secondHandCarEvaluateDO);
+
+
 
             if (evaluateWebParam.getOrderId()!=null)
             {

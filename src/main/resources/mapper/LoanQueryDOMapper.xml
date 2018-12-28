@@ -618,8 +618,9 @@
             car.vehicle_property                                                                    AS car_vehicle_property,
             car.car_key                                                                             AS car_key,
             car.info                                                                                AS car_info,
-            car.pay_month                                                                                AS pay_month,
-            partner.pay_month                                                                                AS partner_pay_month,
+            car.pay_month                                                                           AS pay_month,
+            car.distributor_name                                                                    AS distributor_name,
+            partner.pay_month                                                                       AS partner_pay_month,
             vehicle.color                                                                           AS vehicle_color,
             vehicle.now_driving_license_owner                                                       AS vehicle_now_driving_license_owner,
             vehicle.old_driving_license_owner                                                       AS vehicle_old_driving_license_owner,
@@ -1152,7 +1153,8 @@
              cost.other_fee_type                             AS cost_other_fee_type,
              remit.remit_amount                              AS remit_amount,
              remit.return_rate_amount                        AS remit_return_rate_amount,
-             cost.rebate_not_deducted                        AS rebate_not_deducted
+             cost.rebate_not_deducted                        AS rebate_not_deducted,
+             cost.partner_rebate_amount                      AS partner_rebate_amount
 
       from (select * from loan_order where id = #{orderId,jdbcType=BIGINT}) main_order
       left join cost_details cost on main_order.cost_details_id = cost.id
@@ -1927,7 +1929,8 @@
         applay_quota(f.bank_period_principal,f.bank_fee) AS applayQuota,
         product.category_superior AS category_superior,
         par.name AS partner_name,
-        par.area_id AS partner_area_id
+        par.area_id AS partner_area_id,
+        i.distributor_name AS distributor_name
 
 
         from (select * from loan_order where id = #{orderId,jdbcType=BIGINT}) o

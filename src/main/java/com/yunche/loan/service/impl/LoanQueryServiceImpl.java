@@ -352,7 +352,7 @@ public class LoanQueryServiceImpl implements LoanQueryService {
 
             List<UniversalInfoSupplementVO> sortList = infoSupplementVOList.stream()
                     .filter(Objects::nonNull)
-                    .sorted(Comparator.comparing(UniversalInfoSupplementVO::getEndTime).reversed())
+                    .sorted(Comparator.comparing(UniversalInfoSupplementVO::getStartTime).reversed())
                     .collect(Collectors.toList());
 
             return sortList;

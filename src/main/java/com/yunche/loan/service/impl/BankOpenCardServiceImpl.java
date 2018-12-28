@@ -292,6 +292,7 @@ public class BankOpenCardServiceImpl implements BankOpenCardService {
                 LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(e.getOrderId());
                 LoanCustomerDO loanCustomerDO = loanCustomerDOMapper.selectByPrimaryKey(loanOrderDO.getLoanCustomerId(), BaseConst.VALID_STATUS);
                 loanCustomerDO.setLendCard(e.getCardNumber());
+                loanCustomerDO.setOpenCardStatus(String.valueOf(IDict.K_YORN.K_YORN_YES));
                 loanCustomerDOMapper.updateByPrimaryKeySelective(loanCustomerDO);
             });
 

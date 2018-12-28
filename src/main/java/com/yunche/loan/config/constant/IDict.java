@@ -473,4 +473,31 @@ public class IDict {
          */
         public static final Byte K_VOUCHER_8 = 8;
     }
+
+
+    /**
+     * 开卡状态
+     */
+    public static abstract interface K_KKZT{
+        /**
+         * 待申请
+         */
+        public static final String WAIT="1";
+        /**
+         * 已申请
+         */
+        public static final String HAVE_APP="2";
+        /**
+         * 异常退回
+         */
+        public static final String ERR_BACK="3";
+        /**
+         * 银行退回
+         */
+        public static final String BANK_BACK="4";
+        /**
+         * 开卡成功
+         */
+        public static final String OPEN_SUCC="5";
+    }
 }

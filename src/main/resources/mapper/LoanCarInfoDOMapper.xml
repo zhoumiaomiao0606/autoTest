@@ -1,39 +1,45 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.yunche.loan.mapper.LoanCarInfoDOMapper">
     <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.LoanCarInfoDO">
-        <id column="id" property="id" jdbcType="BIGINT"/>
-        <result column="car_detail_id" property="carDetailId" jdbcType="BIGINT"/>
-        <result column="car_detail_name" property="carDetailName" jdbcType="VARCHAR"/>
-        <result column="evaluation_type" property="evaluationType" jdbcType="TINYINT"/>
-        <result column="car_type" property="carType" jdbcType="TINYINT"/>
-        <result column="gps_num" property="gpsNum" jdbcType="INTEGER"/>
-        <result column="car_key" property="carKey" jdbcType="TINYINT"/>
-        <result column="partner_id" property="partnerId" jdbcType="BIGINT"/>
-        <result column="partner_name" property="partnerName" jdbcType="VARCHAR"/>
-        <result column="open_bank" property="openBank" jdbcType="VARCHAR"/>
-        <result column="account_name" property="accountName" jdbcType="VARCHAR"/>
-        <result column="bank_account" property="bankAccount" jdbcType="VARCHAR"/>
-        <result column="pay_month" property="payMonth" jdbcType="TINYINT"/>
-        <result column="info" property="info" jdbcType="VARCHAR"/>
-        <result column="status" property="status" jdbcType="TINYINT"/>
-        <result column="gmt_create" property="gmtCreate" jdbcType="TIMESTAMP"/>
-        <result column="gmt_modify" property="gmtModify" jdbcType="TIMESTAMP"/>
-        <result column="feature" property="feature" jdbcType="VARCHAR"/>
-        <result column="first_register_date" property="firstRegisterDate" jdbcType="DATE"/>
-        <result column="business_source" property="businessSource" jdbcType="TINYINT"/>
-        <result column="cooperation_dealer" property="cooperationDealer" jdbcType="TINYINT"/>
-        <result column="vehicle_property" property="vehicleProperty" jdbcType="TINYINT"/>
-        <result column="car_category" property="carCategory" jdbcType="VARCHAR"/>
+        <id column="id" jdbcType="BIGINT" property="id" />
+        <result column="car_detail_id" jdbcType="BIGINT" property="carDetailId" />
+        <result column="car_detail_name" jdbcType="VARCHAR" property="carDetailName" />
+        <result column="evaluation_type" jdbcType="TINYINT" property="evaluationType" />
+        <result column="car_type" jdbcType="TINYINT" property="carType" />
+        <result column="gps_num" jdbcType="INTEGER" property="gpsNum" />
+        <result column="car_key" jdbcType="TINYINT" property="carKey" />
+        <result column="partner_id" jdbcType="BIGINT" property="partnerId" />
+        <result column="partner_name" jdbcType="VARCHAR" property="partnerName" />
+        <result column="open_bank" jdbcType="VARCHAR" property="openBank" />
+        <result column="account_name" jdbcType="VARCHAR" property="accountName" />
+        <result column="bank_account" jdbcType="VARCHAR" property="bankAccount" />
+        <result column="pay_month" jdbcType="TINYINT" property="payMonth" />
+        <result column="info" jdbcType="VARCHAR" property="info" />
+        <result column="status" jdbcType="TINYINT" property="status" />
+        <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate" />
+        <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify" />
+        <result column="feature" jdbcType="VARCHAR" property="feature" />
+        <result column="first_register_date" jdbcType="DATE" property="firstRegisterDate" />
+        <result column="business_source" jdbcType="TINYINT" property="businessSource" />
+        <result column="cooperation_dealer" jdbcType="TINYINT" property="cooperationDealer" />
+        <result column="vehicle_property" jdbcType="TINYINT" property="vehicleProperty" />
+        <result column="order_id" jdbcType="BIGINT" property="orderId" />
+        <result column="car_category" jdbcType="VARCHAR" property="carCategory" />
+        <result column="distributor_name" jdbcType="VARCHAR" property="distributorName" />
+        <result column="mileage" jdbcType="VARCHAR" property="mileage" />
+        <result column="city_id" jdbcType="BIGINT" property="cityId" />
+        <result column="vin" jdbcType="VARCHAR" property="vin" />
     </resultMap>
     <sql id="Base_Column_List">
-    id, car_detail_id, car_detail_name, evaluation_type,car_type, gps_num, car_key, partner_id, partner_name,
-    open_bank, account_name, bank_account, pay_month, info, status, gmt_create, gmt_modify,
-    feature, first_register_date, business_source, cooperation_dealer, vehicle_property,car_category
-  </sql>
-    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        id, car_detail_id, car_detail_name, evaluation_type, car_type, gps_num, car_key,
+        partner_id, partner_name, open_bank, account_name, bank_account, pay_month, info,
+        status, gmt_create, gmt_modify, feature, first_register_date, business_source, cooperation_dealer,
+        vehicle_property, order_id, car_category, distributor_name, mileage, city_id,vin
+    </sql>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
         select
-        <include refid="Base_Column_List"/>
+        <include refid="Base_Column_List" />
         from loan_car_info
         where id = #{id,jdbcType=BIGINT}
     </select>
@@ -41,27 +47,29 @@
         delete from loan_car_info
         where id = #{id,jdbcType=BIGINT}
     </delete>
-    <insert id="insert" useGeneratedKeys="true" keyProperty="id" keyColumn="id"
-            parameterType="com.yunche.loan.domain.entity.LoanCarInfoDO">
-    insert into loan_car_info (id, car_detail_id, car_detail_name,evaluation_type,
-      car_type, gps_num, car_key,
-      partner_id, partner_name, open_bank,
-      account_name, bank_account, pay_month,
-      info, status, gmt_create,
-      gmt_modify, feature, first_register_date,
-      business_source, cooperation_dealer, vehicle_property
-      )
-    values (#{id,jdbcType=BIGINT}, #{carDetailId,jdbcType=BIGINT}, #{carDetailName,jdbcType=VARCHAR},#{evaluationType,jdbcType=TINYINT},
-      #{carType,jdbcType=TINYINT}, #{gpsNum,jdbcType=INTEGER}, #{carKey,jdbcType=TINYINT},
-      #{partnerId,jdbcType=BIGINT}, #{partnerName,jdbcType=VARCHAR}, #{openBank,jdbcType=VARCHAR},
-      #{accountName,jdbcType=VARCHAR}, #{bankAccount,jdbcType=VARCHAR}, #{payMonth,jdbcType=TINYINT},
-      #{info,jdbcType=VARCHAR}, #{status,jdbcType=TINYINT}, #{gmtCreate,jdbcType=TIMESTAMP},
-      #{gmtModify,jdbcType=TIMESTAMP}, #{feature,jdbcType=VARCHAR}, #{firstRegisterDate,jdbcType=DATE},
-      #{businessSource,jdbcType=TINYINT}, #{cooperationDealer,jdbcType=TINYINT}, #{vehicleProperty,jdbcType=TINYINT}
-      )
-  </insert>
-    <insert id="insertSelective" useGeneratedKeys="true" keyProperty="id" keyColumn="id"
-            parameterType="com.yunche.loan.domain.entity.LoanCarInfoDO">
+    <insert id="insert" parameterType="com.yunche.loan.domain.entity.LoanCarInfoDO" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+        insert into loan_car_info (id, car_detail_id, car_detail_name,
+        evaluation_type, car_type, gps_num,
+        car_key, partner_id, partner_name,
+        open_bank, account_name, bank_account,
+        pay_month, info, status,
+        gmt_create, gmt_modify, feature,
+        first_register_date, business_source, cooperation_dealer,
+        vehicle_property, order_id, car_category,
+        distributor_name, mileage, city_id,vin
+        )
+        values (#{id,jdbcType=BIGINT}, #{carDetailId,jdbcType=BIGINT}, #{carDetailName,jdbcType=VARCHAR},
+        #{evaluationType,jdbcType=TINYINT}, #{carType,jdbcType=TINYINT}, #{gpsNum,jdbcType=INTEGER},
+        #{carKey,jdbcType=TINYINT}, #{partnerId,jdbcType=BIGINT}, #{partnerName,jdbcType=VARCHAR},
+        #{openBank,jdbcType=VARCHAR}, #{accountName,jdbcType=VARCHAR}, #{bankAccount,jdbcType=VARCHAR},
+        #{payMonth,jdbcType=TINYINT}, #{info,jdbcType=VARCHAR}, #{status,jdbcType=TINYINT},
+        #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModify,jdbcType=TIMESTAMP}, #{feature,jdbcType=VARCHAR},
+        #{firstRegisterDate,jdbcType=DATE}, #{businessSource,jdbcType=TINYINT}, #{cooperationDealer,jdbcType=TINYINT},
+        #{vehicleProperty,jdbcType=TINYINT}, #{orderId,jdbcType=BIGINT}, #{carCategory,jdbcType=VARCHAR},
+        #{distributorName,jdbcType=VARCHAR}, #{mileage,jdbcType=VARCHAR}, #{cityId,jdbcType=BIGINT}, #{vin,jdbcType=VARCHAR}
+        )
+    </insert>
+    <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.LoanCarInfoDO" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
         insert into loan_car_info
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="id != null">
@@ -130,9 +138,25 @@
             <if test="vehicleProperty != null">
                 vehicle_property,
             </if>
+            <if test="orderId != null">
+                order_id,
+            </if>
             <if test="carCategory != null">
                 car_category,
             </if>
+            <if test="distributorName != null">
+                distributor_name,
+            </if>
+            <if test="mileage != null">
+                mileage,
+            </if>
+            <if test="cityId != null">
+                city_id,
+            </if>
+            <if test="vin != null">
+                vin,
+            </if>
+
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="id != null">
@@ -201,9 +225,25 @@
             <if test="vehicleProperty != null">
                 #{vehicleProperty,jdbcType=TINYINT},
             </if>
+            <if test="orderId != null">
+                #{orderId,jdbcType=BIGINT},
+            </if>
             <if test="carCategory != null">
                 #{carCategory,jdbcType=VARCHAR},
             </if>
+            <if test="distributorName != null">
+                #{distributorName,jdbcType=VARCHAR},
+            </if>
+            <if test="mileage != null">
+                #{mileage,jdbcType=VARCHAR},
+            </if>
+            <if test="cityId != null">
+                #{cityId,jdbcType=BIGINT},
+            </if>
+            <if test="vin != null">
+                #{vin,jdbcType=VARCHAR},
+            </if>
+
         </trim>
     </insert>
     <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.LoanCarInfoDO">
@@ -272,43 +312,66 @@
             <if test="vehicleProperty != null">
                 vehicle_property = #{vehicleProperty,jdbcType=TINYINT},
             </if>
+            <if test="orderId != null">
+                order_id = #{orderId,jdbcType=BIGINT},
+            </if>
             <if test="carCategory != null">
                 car_category = #{carCategory,jdbcType=VARCHAR},
             </if>
+            <if test="distributorName != null">
+                distributor_name = #{distributorName,jdbcType=VARCHAR},
+            </if>
+            <if test="mileage != null">
+                mileage = #{mileage,jdbcType=VARCHAR},
+            </if>
+            <if test="cityId != null">
+                city_id = #{cityId,jdbcType=BIGINT},
+            </if>
+            <if test="vin != null">
+                vin = #{vin,jdbcType=VARCHAR},
+            </if>
+
         </set>
         where id = #{id,jdbcType=BIGINT}
     </update>
     <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.LoanCarInfoDO">
-    update loan_car_info
-    set car_detail_id = #{carDetailId,jdbcType=BIGINT},
-      car_detail_name = #{carDetailName,jdbcType=VARCHAR},
-      evaluation_type = #{evaluationType,jdbcType=TINYINT},
-      car_type = #{carType,jdbcType=TINYINT},
-      gps_num = #{gpsNum,jdbcType=INTEGER},
-      car_key = #{carKey,jdbcType=TINYINT},
-      partner_id = #{partnerId,jdbcType=BIGINT},
-      partner_name = #{partnerName,jdbcType=VARCHAR},
-      open_bank = #{openBank,jdbcType=VARCHAR},
-      account_name = #{accountName,jdbcType=VARCHAR},
-      bank_account = #{bankAccount,jdbcType=VARCHAR},
-      pay_month = #{payMonth,jdbcType=TINYINT},
-      info = #{info,jdbcType=VARCHAR},
-      status = #{status,jdbcType=TINYINT},
-      gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
-      gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
-      feature = #{feature,jdbcType=VARCHAR},
-      first_register_date = #{firstRegisterDate,jdbcType=DATE},
-      business_source = #{businessSource,jdbcType=TINYINT},
-      cooperation_dealer = #{cooperationDealer,jdbcType=TINYINT},
-      vehicle_property = #{vehicleProperty,jdbcType=TINYINT}
-    where id = #{id,jdbcType=BIGINT}
-  </update>
+        update loan_car_info
+        set car_detail_id = #{carDetailId,jdbcType=BIGINT},
+        car_detail_name = #{carDetailName,jdbcType=VARCHAR},
+        evaluation_type = #{evaluationType,jdbcType=TINYINT},
+        car_type = #{carType,jdbcType=TINYINT},
+        gps_num = #{gpsNum,jdbcType=INTEGER},
+        car_key = #{carKey,jdbcType=TINYINT},
+        partner_id = #{partnerId,jdbcType=BIGINT},
+        partner_name = #{partnerName,jdbcType=VARCHAR},
+        open_bank = #{openBank,jdbcType=VARCHAR},
+        account_name = #{accountName,jdbcType=VARCHAR},
+        bank_account = #{bankAccount,jdbcType=VARCHAR},
+        pay_month = #{payMonth,jdbcType=TINYINT},
+        info = #{info,jdbcType=VARCHAR},
+        status = #{status,jdbcType=TINYINT},
+        gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+        gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
+        feature = #{feature,jdbcType=VARCHAR},
+        first_register_date = #{firstRegisterDate,jdbcType=DATE},
+        business_source = #{businessSource,jdbcType=TINYINT},
+        cooperation_dealer = #{cooperationDealer,jdbcType=TINYINT},
+        vehicle_property = #{vehicleProperty,jdbcType=TINYINT},
+        order_id = #{orderId,jdbcType=BIGINT},
+        car_category = #{carCategory,jdbcType=VARCHAR},
+        distributor_name = #{distributorName,jdbcType=VARCHAR},
+        mileage = #{mileage,jdbcType=VARCHAR},
+        city_id = #{cityId,jdbcType=BIGINT},
+        vin = #{vin,jdbcType=VARCHAR}
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
 
     <select id="selectNeedCollectKey" resultType="com.yunche.loan.domain.entity.LoanProcessLogDO" parameterType="java.lang.Long">
         select
         *
         from loan_process_log
-         where order_id =  #{orderId,jdbcType=BIGINT} and task_definition_key = '"usertask_commit_key"' order by create_time desc LIMIT 1
+        where order_id =  #{orderId,jdbcType=BIGINT} and task_definition_key = '"usertask_commit_key"' order by create_time desc LIMIT 1
     </select>
 
     <select id="selectFullNameById" parameterType="java.lang.Long" resultType="java.lang.String">

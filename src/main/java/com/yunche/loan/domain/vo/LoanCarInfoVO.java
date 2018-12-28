@@ -26,6 +26,8 @@ public class LoanCarInfoVO {
     private Integer gpsNum;
 
     private Byte carKey;
+
+    private String distributorName;
     /**
      * 车型信息
      * 父车型   ID层级列表
@@ -72,6 +74,8 @@ public class LoanCarInfoVO {
 
     private List<BaseArea> ableApplyLicensePlateAreaList = Collections.EMPTY_LIST;
 
+    private SecondCityArea secondCityArea;
+    private String mileage;
     @Data
     public static class BaseArea{
         private Long provAreaId;
@@ -83,6 +87,15 @@ public class LoanCarInfoVO {
      * 业务员
      */
     private String salesManName;
+
+    @Data
+    public static class SecondCityArea{
+       private Long provinceId;
+       private Long cityId;
+       private Long  countyId;
+
+    }
+
 
     /**
      * 合伙人团队

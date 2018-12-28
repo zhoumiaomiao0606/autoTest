@@ -3,7 +3,6 @@ package com.yunche.loan.domain.param;
 import lombok.Data;
 
 import java.math.BigDecimal;
-import java.util.Date;
 
 @Data
 public class EvaluateWebParam
@@ -19,6 +18,9 @@ public class EvaluateWebParam
     private String mileage;//里程
 
     private String city_id;//城市
+
+
+    private Long area_id;//城市ID
 
 
 
