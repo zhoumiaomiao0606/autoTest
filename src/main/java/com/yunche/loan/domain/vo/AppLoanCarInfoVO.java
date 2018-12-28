@@ -15,6 +15,8 @@ public class AppLoanCarInfoVO {
 
     private Long id;
 
+    private String salemanName;
+
     private Byte carType;
 
     private Byte evaluationType;

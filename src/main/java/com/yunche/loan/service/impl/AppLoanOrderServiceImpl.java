@@ -1682,6 +1682,17 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
 
         Long vid = loanOrderDOMapper.getVehicleInformationIdById(orderId);
         LoanBaseInfoDO loanBaseInfoDO = loanBaseInfoDOMapper.getTotalInfoByOrderId(orderId);
+
+        //业务员名
+        if (loanBaseInfoDO!=null && loanBaseInfoDO.getSalesmanId()!=null)
+        {
+            EmployeeDO employeeDO = employeeDOMapper.selectByPrimaryKey(loanBaseInfoDO.getSalesmanId(), VALID_STATUS);
+            if (employeeDO!=null)
+            {
+                loanCarInfoVO.setSalemanName(employeeDO.getName());
+            }
+        }
+
         LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
         VehicleInformationDO vehicleInformationDO = vehicleInformationDOMapper.selectByPrimaryKey(vid);
 
