@@ -491,7 +491,6 @@ public class LoanOrderServiceImpl implements LoanOrderService {
         // convert
         LoanCarInfoDO loanCarInfoDO = new LoanCarInfoDO();
         convertLoanCarInfo(loanCarInfoParam, loanCarInfoDO);
-
         ResultBean<Void> resultBean = loanCarInfoService.update(loanCarInfoDO);
 
         vehicleInformationUpdateParam.setOrder_id(loanCarInfoParam.getOrderId().toString());
@@ -878,6 +877,7 @@ public class LoanOrderServiceImpl implements LoanOrderService {
                 loanCarInfoVO.setSecond_hand_car_evaluate_id(loanOrderDO.getSecond_hand_car_evaluate_id());
             }
 
+
             /*if(universalInfoVO != null)
             {
                 universalInfoVO.setCar_name(secondHandCarEvaluateDO.getName());
@@ -886,8 +886,28 @@ public class LoanOrderServiceImpl implements LoanOrderService {
         if (null != loanCarInfoDO && loanCarInfoDO.getCarType()==1 && loanCarInfoDO.getEvaluationType()!=null && loanCarInfoDO.getEvaluationType()==2 && vehicleInformationDO != null)
         {
             loanCarInfoVO.setVin(vehicleInformationDO.getVehicle_identification_number());
+        }else{
+            loanCarInfoVO.setVin(loanCarInfoDO.getVin());
         }
 
+        if(loanCarInfoDO!=null){
+            Long area_id = loanCarInfoDO.getCityId();
+            if(area_id!=null){
+                LoanCarInfoVO.SecondCityArea secondCityArea = new LoanCarInfoVO.SecondCityArea();
+                BaseAreaDO county = baseAreaDOMapper.selectByPrimaryKey(area_id, null);
+                if(county.getLevel().toString().equals("3")){
+                    BaseAreaDO city = baseAreaDOMapper.selectByPrimaryKey(county.getParentAreaId(), null);
+                    secondCityArea.setCountyId(county.getAreaId());
+                    secondCityArea.setCityId(city.getAreaId());
+                    secondCityArea.setProvinceId(city.getParentAreaId());
+                }else if(county.getLevel().toString().equals("2")){
+                    secondCityArea.setCityId(county.getAreaId());
+                    secondCityArea.setProvinceId(county.getParentAreaId());
+                }
+                loanCarInfoVO.setSecondCityArea(secondCityArea);
+            }
+
+        }
         if (universalInfoVO != null)
         {
             loanCarInfoVO.setSalesManName(universalInfoVO.getSalesman_name());

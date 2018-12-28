@@ -17,7 +17,10 @@ public class LoginVO extends EmployeeDO {
 
     private Long userId;
 
-    private String username;
+    private String username ;
+
+
+
 
     private Set<String> userGroupSet;
     /**

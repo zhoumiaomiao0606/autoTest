@@ -77,4 +77,8 @@ public class SecondHandCarEvaluateDO
 
     private String secondCarUserdTime;
 
+
+
+    private Long area_id;
+
 }

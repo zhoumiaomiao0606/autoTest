@@ -6,7 +6,6 @@ import java.util.Date;
 
 @Data
 public class LoanCarInfoDO {
-
     private Long id;
 
     private Long carDetailId;
@@ -51,5 +50,15 @@ public class LoanCarInfoDO {
 
     private Byte vehicleProperty;
 
-    private String  carCategory;
+    private Long orderId;
+
+    private String carCategory;
+
+    private String distributorName;
+
+    private String mileage;
+
+    private Long cityId;
+
+    private String vin;
 }

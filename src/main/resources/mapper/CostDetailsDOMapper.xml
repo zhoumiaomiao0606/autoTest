@@ -29,13 +29,15 @@
       <result column="rebateSecond" property="rebateSecond" jdbcType="VARCHAR" />
     <result column="listrule" property="listrule" jdbcType="VARCHAR" />
     <result column="rebate_not_deducted" property="rebate_not_deducted" jdbcType="DECIMAL" />
+    <result column="partner_rebate_amount" property="partner_rebate_amount" jdbcType="DECIMAL" />
   </resultMap>
   <sql id="Base_Column_List" >
     id, service_fee, apply_license_plate_deposit_fee, performance_fee, install_gps_fee, 
     risk_fee, fair_assess_fee, apply_license_plate_out_province_fee, based_margin_fee, 
     service_fee_type, apply_license_plate_deposit_fee_type, performance_fee_type, install_gps_fee_type, 
     risk_fee_type, fair_assess_fee_type, apply_license_plate_out_province_fee_type, based_margin_fee_type, 
-    extra_fee, extra_fee_type, other_fee, other_fee_type, status, feature,rebateFirst,rebateSecond,listrule,rebate_not_deducted
+    extra_fee, extra_fee_type, other_fee, other_fee_type, status, feature,rebateFirst,rebateSecond,listrule,
+    rebate_not_deducted,partner_rebate_amount
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
     select 
@@ -131,6 +133,10 @@
       <if test="rebate_not_deducted != null" >
         rebate_not_deducted,
       </if>
+      <if test="partner_rebate_amount != null" >
+        partner_rebate_amount,
+      </if>
+
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="id != null" >
@@ -214,6 +220,10 @@
       <if test="rebate_not_deducted != null" >
         #{rebate_not_deducted,jdbcType=DECIMAL},
       </if>
+      <if test="partner_rebate_amount != null" >
+        #{partner_rebate_amount,jdbcType=DECIMAL},
+      </if>
+
     </trim>
   </insert>
   <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.CostDetailsDO" >
@@ -297,6 +307,10 @@
       <if test="rebate_not_deducted != null" >
         rebate_not_deducted = #{rebate_not_deducted,jdbcType=DECIMAL},
       </if>
+      <if test="partner_rebate_amount != null" >
+        partner_rebate_amount = #{partner_rebate_amount,jdbcType=DECIMAL},
+      </if>
+
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>

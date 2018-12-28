@@ -32,7 +32,7 @@
 
 
     <Loggers>
-        <logger level="INFO" name="com.yunche.loan">
+        <logger level="DEBUG" name="com.yunche.loan">
             <AppenderRef ref="App-File-Appender"/>
         </logger>
         <logger level="INFO" name="org.activiti.engine.impl.persistence.entity">

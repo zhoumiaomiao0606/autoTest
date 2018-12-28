@@ -1,7 +1,5 @@
 package com.yunche.loan.domain.vo;
 
-import lombok.Data;
-
 import java.math.BigDecimal;
 
 
@@ -63,6 +61,7 @@ public class UniversalInfoVO {
     private String car_business_source;
     private String car_vehicle_property;
     private String car_key;
+    private String distributor_name;
     private String vehicle_color;
     private String vehicle_now_driving_license_owner;
     private String vehicle_license_plate_type;

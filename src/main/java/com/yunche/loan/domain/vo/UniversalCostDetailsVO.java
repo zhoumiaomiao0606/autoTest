@@ -41,6 +41,7 @@ public class UniversalCostDetailsVO {
     private String cost_other_fee_type;
     private String remit_amount;
     private String remit_return_rate_amount;
+    private String partner_rebate_amount;
 
 
 }

@@ -334,6 +334,7 @@ public class FeignConfig {
                         } else {
                             bankInterfaceSerialDOMapper.insertSelective(DO);
                         }
+//                        return  obj;
                         throw new BizException(returnMsg);
                     }
 
