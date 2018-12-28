@@ -167,7 +167,7 @@ public class AppCustomerInfoVO {
         /**
          * 月收入
          */
-        private Integer monthIncome;
+        private BigDecimal monthIncome;
         /**
          * 房产情况:1-自有商品房有贷款;2-自有商品房无贷款;
          */
@@ -227,6 +227,13 @@ public class AppCustomerInfoVO {
         private String bankCardTransmitAddress;
 
         private String bankCardTransmitPostcode;
+
+        private Byte bankCardTransmitAddressType;
+
+        private String info;
+
+
+
 
 
         private List<FileVO> files = Collections.EMPTY_LIST;

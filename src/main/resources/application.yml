@@ -145,3 +145,5 @@ spring:
     jtxUrl: http://114.215.191.155:7013/assetApi/service
     jtxPort: 22
 
+  finance:
+     callBackUrl: http://www.yunchejinrong.com:8081/api/v1/loanorder/finance/remitInfo
