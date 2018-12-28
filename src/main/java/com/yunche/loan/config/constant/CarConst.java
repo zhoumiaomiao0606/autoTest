@@ -68,7 +68,7 @@ public class CarConst {
     public static final Map<Byte, String> CAR_TYPE_MAP = Maps.newHashMap();
 
     static {
-        CAR_TYPE_MAP.put((byte) 1, "新车");
-        CAR_TYPE_MAP.put((byte) 2, "二手车");
+        CAR_TYPE_MAP.put((byte) 0, "新车");
+        CAR_TYPE_MAP.put((byte) 1, "二手车");
     }
 }
