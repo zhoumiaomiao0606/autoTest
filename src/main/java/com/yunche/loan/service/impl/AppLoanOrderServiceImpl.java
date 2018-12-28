@@ -1670,6 +1670,30 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
             AppLoanCarInfoVO.PartnerAccountInfo partnerAccountInfo = new AppLoanCarInfoVO.PartnerAccountInfo();
             BeanUtils.copyProperties(loanCarInfoDO, partnerAccountInfo);
             loanCarInfoVO.setPartnerAccountInfo(partnerAccountInfo);
+
+            if(loanCarInfoDO!=null){
+                Long area_id = loanCarInfoDO.getCityId();
+                if(area_id!=null){
+                    loanCarInfoVO.setCityId(area_id);
+                    loanCarInfoVO.setVin(loanCarInfoDO.getVin());
+                    loanCarInfoVO.setMileage(loanCarInfoDO.getMileage());
+                    BaseAreaDO baseAreaDO = baseAreaDOMapper.selectByPrimaryKey(area_id, null);
+                    if(baseAreaDO.getLevel().toString().equals("3")){
+                        String countyName = baseAreaDO.getAreaName();
+                        Long cityId = baseAreaDO.getParentAreaId();
+                        BaseAreaDO cityDO = baseAreaDOMapper.selectByPrimaryKey(cityId, null);
+                        String cityName = cityDO.getAreaName();
+                        String provinceName = cityDO.getParentAreaName();
+                        loanCarInfoVO.setCityName(provinceName+cityName+countyName);
+                    }else if(baseAreaDO.getLevel().toString().equals("2")){
+                        BaseAreaDO cityDO = baseAreaDOMapper.selectByPrimaryKey(area_id, null);
+                        String cityName = cityDO.getAreaName();
+                        String provinceName = cityDO.getParentAreaName();
+                        loanCarInfoVO.setCityName(provinceName+cityName);
+                    }
+                }
+
+            }
         }
 
         Long vid = loanOrderDOMapper.getVehicleInformationIdById(orderId);
