@@ -8,4 +8,6 @@ public class RemitSatusParam
     private Byte remitSatus;
 
     private Long orderId;
+
+    private Long serialNo;
 }
