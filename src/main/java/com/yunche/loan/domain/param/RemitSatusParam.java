@@ -10,4 +10,6 @@ public class RemitSatusParam
     private Long orderId;
 
     private Long serialNo;
+
+    private String message;
 }

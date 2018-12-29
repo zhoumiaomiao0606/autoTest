@@ -5,11 +5,12 @@
     <id column="order_id" jdbcType="BIGINT" property="orderId" />
     <id column="serial_no" jdbcType="BIGINT" property="serialNo" />
     <result column="operation" jdbcType="INTEGER" property="operation" />
+    <result column="ex_message" jdbcType="VARCHAR" property="exMessage" />
     <result column="status" jdbcType="TINYINT" property="status" />
     <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate" />
   </resultMap>
   <sql id="Base_Column_List">
-    order_id, serial_no, operation, status, gmt_create
+    order_id, serial_no, operation, ex_message, status, gmt_create
   </sql>
   <select id="selectByPrimaryKey" parameterType="com.yunche.loan.domain.entity.SerialNoDOKey" resultMap="BaseResultMap">
     select 
@@ -25,9 +26,11 @@
   </delete>
   <insert id="insert" parameterType="com.yunche.loan.domain.entity.SerialNoDO">
     insert into serial_no (order_id, serial_no, operation, 
-      status, gmt_create)
+      ex_message, status, gmt_create
+      )
     values (#{orderId,jdbcType=BIGINT}, #{serialNo,jdbcType=BIGINT}, #{operation,jdbcType=INTEGER}, 
-      #{status,jdbcType=TINYINT}, #{gmtCreate,jdbcType=TIMESTAMP})
+      #{exMessage,jdbcType=VARCHAR}, #{status,jdbcType=TINYINT}, #{gmtCreate,jdbcType=TIMESTAMP}
+      )
   </insert>
   <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.SerialNoDO">
     insert into serial_no
@@ -40,6 +43,9 @@
       </if>
       <if test="operation != null">
         operation,
+      </if>
+      <if test="exMessage != null">
+        ex_message,
       </if>
       <if test="status != null">
         status,
@@ -58,6 +64,9 @@
       <if test="operation != null">
         #{operation,jdbcType=INTEGER},
       </if>
+      <if test="exMessage != null">
+        #{exMessage,jdbcType=VARCHAR},
+      </if>
       <if test="status != null">
         #{status,jdbcType=TINYINT},
       </if>
@@ -72,6 +81,9 @@
       <if test="operation != null">
         operation = #{operation,jdbcType=INTEGER},
       </if>
+      <if test="exMessage != null">
+        ex_message = #{exMessage,jdbcType=VARCHAR},
+      </if>
       <if test="status != null">
         status = #{status,jdbcType=TINYINT},
       </if>
@@ -85,6 +97,7 @@
   <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.SerialNoDO">
     update serial_no
     set operation = #{operation,jdbcType=INTEGER},
+      ex_message = #{exMessage,jdbcType=VARCHAR},
       status = #{status,jdbcType=TINYINT},
       gmt_create = #{gmtCreate,jdbcType=TIMESTAMP}
     where order_id = #{orderId,jdbcType=BIGINT}

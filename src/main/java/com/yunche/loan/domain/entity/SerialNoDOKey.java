@@ -2,8 +2,7 @@ package com.yunche.loan.domain.entity;
 
 public class SerialNoDOKey
 {
-    public SerialNoDOKey()
-    {
+    public SerialNoDOKey() {
     }
 
     public SerialNoDOKey(Long orderId, Long serialNo) {

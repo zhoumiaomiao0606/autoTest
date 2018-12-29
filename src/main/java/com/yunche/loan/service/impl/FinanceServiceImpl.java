@@ -319,6 +319,8 @@ public class FinanceServiceImpl implements FinanceService
 
         remitDetailsDO.setRemit_status(remitSatusParam.getRemitSatus());
 
+        serialNoDO.setExMessage(remitSatusParam.getMessage());
+
         serialNoDO.setStatus(new Byte("1"));
 
         serialNoDOMapper.updateByPrimaryKeySelective(serialNoDO);
