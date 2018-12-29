@@ -6,6 +6,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.yunche.loan.config.cache.DictMapCache;
+import com.yunche.loan.config.cache.ParamCache;
 import com.yunche.loan.config.common.SysConfig;
 import com.yunche.loan.config.constant.*;
 import com.yunche.loan.config.exception.BizException;
@@ -127,6 +128,9 @@ public class BankSolutionServiceImpl implements BankSolutionService {
 
     @Autowired
     private BaseAreaDOMapper baseAreaDOMapper;
+    
+    @Autowired
+    private ParamCache paramCache;
 
 
 
@@ -230,8 +234,6 @@ public class BankSolutionServiceImpl implements BankSolutionService {
             default:
                 return;
         }
-
-
     }
 
     /**
@@ -241,6 +243,11 @@ public class BankSolutionServiceImpl implements BankSolutionService {
      */
     @Override
     public ResultBean applyevaluate(Long orderId) {
+
+        String param = paramCache.getParam(IConstant.IS_NEED_APPLYEVALUATE);
+        if(!StringUtil.isEmpty(param) && IDict.K_YORN.K_YORN_NO.toString().equals(param)){
+            return ResultBean.ofSuccess("【系统设置】：无需查询二手车评估预审");
+        }
         LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
         if (loanOrderDO == null) {
             throw new BizException("此订单不存在");

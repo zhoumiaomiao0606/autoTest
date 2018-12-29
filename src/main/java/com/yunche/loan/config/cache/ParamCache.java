@@ -2,8 +2,8 @@ package com.yunche.loan.config.cache;
 
 import com.google.common.collect.Maps;
 import com.yunche.loan.config.exception.BizException;
-import com.yunche.loan.domain.entity.DictMapDO;
-import com.yunche.loan.mapper.DictMapDOMapper;
+import com.yunche.loan.domain.entity.UniversalParamDO;
+import com.yunche.loan.mapper.UniversalParamDOMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
@@ -15,13 +15,13 @@ import java.util.List;
 import java.util.Map;
 
 @Component
-public class DictMapCache {
+public class ParamCache {
 
-    private static final String DICT_2_BANK = "area:cache:dict2bank";
+    private static final String PARAM_DICT = "param:cache:universal_param";
 
 
     @Autowired
-    DictMapDOMapper dictMapDOMapper;
+    private UniversalParamDOMapper universalParamDOMapper;
 
     @Resource
     private StringRedisTemplate stringRedisTemplate;
@@ -33,33 +33,34 @@ public class DictMapCache {
     @PostConstruct
     public void refreshAll() {
 
-        // 获取所有行政区
-        List<DictMapDO> allDictMap = dictMapDOMapper.getAll();
 
-        if (CollectionUtils.isEmpty(allDictMap)) {
+        List<UniversalParamDO> universalParamDOS = universalParamDOMapper.allParam();
+
+
+
+        if (CollectionUtils.isEmpty(universalParamDOS)) {
             return;
         }
 
         Map<String, String> map = Maps.newHashMap();
 
-        allDictMap.parallelStream().forEach(e -> {
-            String key = e.getItemKey() + "_" + e.getSource();
-            String value = e.getTarget();
+        universalParamDOS.parallelStream().forEach(e -> {
+            String key = e.getParamId();
+            String value = e.getParamValue();
             map.put(key, value);
         });
 
-        stringRedisTemplate.opsForHash().putAll(DICT_2_BANK, map);
+        stringRedisTemplate.opsForHash().putAll(PARAM_DICT, map);
     }
 
     /**
      * @param key
-     * @param source
      * @return
      */
-    public String getValue(String key, String source) {
+    public String getParam(String key) {
 
         try {
-            return stringRedisTemplate.opsForHash().get(DICT_2_BANK, key.trim() + "_" + source.trim()).toString();
+            return stringRedisTemplate.opsForHash().get(PARAM_DICT, key.trim()).toString();
         } catch (Exception e) {
             throw new BizException("数据字典转换异常,请联系管理员");
         }

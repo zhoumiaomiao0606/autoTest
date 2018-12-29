@@ -7,6 +7,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.yunche.loan.config.anno.Limiter;
 import com.yunche.loan.config.cache.DictMapCache;
+import com.yunche.loan.config.cache.ParamCache;
 import com.yunche.loan.config.common.OSSConfig;
 import com.yunche.loan.config.constant.IDict;
 import com.yunche.loan.config.exception.BizException;
@@ -73,6 +74,9 @@ public class UniversalController {
     @Autowired
     private LoanOrderDOMapper loanOrderDOMapper;
 
+    @Autowired
+    private ParamCache paramCache;
+
 
     @GetMapping(value = "/customer")
     public ResultBean customerDetail(@RequestParam String customer_id) {
@@ -118,9 +122,10 @@ public class UniversalController {
         return ResultBean.ofSuccess("8888");
     }
 
-    @GetMapping("/dictmapcache")
+    @GetMapping("/refresh")
     public ResultBean refreshDictMap() {
         dictMapCache.refreshAll();
+        paramCache.refreshAll();
         return ResultBean.ofSuccess(null, "刷新成功");
     }
 

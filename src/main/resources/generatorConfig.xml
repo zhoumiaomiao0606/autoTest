@@ -384,7 +384,7 @@
 -->
 
 
-        <table tableName="financial_operation_exception" domainObjectName="FinancialOperationExceptionDO"
+        <table tableName="universal_param" domainObjectName="UniversalParamDO"
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
         </table>

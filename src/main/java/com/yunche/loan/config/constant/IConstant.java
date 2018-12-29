@@ -21,4 +21,11 @@ public class IConstant {
 
     public static final String RELT_SHIP="RELT_SHIP";//关系
 
+    //是否需要查询二手车评估预审
+    public static final String IS_NEED_APPLYEVALUATE ="IS_NEED_APPLYEVALUATE";
+
+
+
+
+
 }
