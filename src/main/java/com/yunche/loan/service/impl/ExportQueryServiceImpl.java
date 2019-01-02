@@ -783,7 +783,7 @@ public class ExportQueryServiceImpl implements ExportQueryService
 
         List<CompanyRemitDetailChartVO> list = chartDOMapper.selectCompanyRemitDetailChartVO(param);
         ArrayList<String> header = Lists.newArrayList("客户编号", "主贷姓名", "身份证号", "业务员","大区",
-                "省份", "业务团队", "按揭银行", "执行利率%", "车型", "首付款", "分期总额", "打款金额", "垫款时间"
+                "省份", "业务团队", "按揭银行", "执行利率%", "车型", "首付款", "分期总额", "打款金额", "垫款时间","经办人","经办时间"
 
         );
 

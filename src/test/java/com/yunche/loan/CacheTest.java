@@ -34,7 +34,7 @@ import javax.annotation.Resource;
 import java.io.*;
 import java.util.*;
 
-public class CacheTest {
+public class CacheTest extends BaseTest{
     @Autowired
     private TokenCache tokenCache;
     @Autowired
@@ -52,7 +52,7 @@ public class CacheTest {
     MaterialService materialService;
     @Autowired
     JinTouHangAccommodationApplyService jinTouHangAccommodationApplyService;
-    @Test
+    //@Test
     public void SDFSDF(){
         JTXFileUtil sftp = new JTXFileUtil("asset", "asset001", "120.26.205.193", 22);
         sftp.login();
@@ -331,18 +331,18 @@ public class CacheTest {
         materialService.downSupplementFiles2OSS(Long.valueOf("1809051406599576357"), true, Long.valueOf("193"));
     }
 
-    // @Test
+    @Test
     public void doA1123() {
         try {
             ZhongAnQueryParam zhongAnQueryParam = new ZhongAnQueryParam();
             zhongAnQueryParam.setOrder_id("123");
             List<ZhongAnCusParam> customers = Lists.newArrayList();
             ZhongAnCusParam zhongAnCusParam = new ZhongAnCusParam();
-            zhongAnCusParam.setIdcard("362228199206074083");
-            zhongAnCusParam.setName("易翠");
+            zhongAnCusParam.setIdcard("422326197004200221");
+            zhongAnCusParam.setName("杨荷香");
             zhongAnCusParam.setCustomertype("主贷人");
             zhongAnCusParam.setRalationship("1");
-            zhongAnCusParam.setTel("15757871316");
+            zhongAnCusParam.setTel("13872172908");
             zhongAnCusParam.setLoanmoney("1");
             customers.add(zhongAnCusParam);
             zhongAnQueryParam.setCustomers(customers);

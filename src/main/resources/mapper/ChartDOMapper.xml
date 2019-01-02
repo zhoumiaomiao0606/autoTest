@@ -692,7 +692,7 @@
     <!--=======================================报表 待垫款明细查询=========================================-->
     <select id="selectAwaitRemitDetailChartVO" parameterType="com.yunche.loan.domain.param.AwaitRemitDetailChartParam"  resultType="com.yunche.loan.domain.vo.AwaitRemitDetailChartVO" >
 
-        SELECT
+        select a.* from ( SELECT
         customer. NAME AS customer_name,
         customer.id_card AS customer_id_card,
         partner. NAME AS partner_name,
@@ -700,7 +700,7 @@
         loan_financial_plan.sign_rate,
         loan_financial_plan.loan_amount,
         loan_financial_plan.bank_period_principal,
-         (
+        (
         SELECT
         loan_process_log.create_time
         FROM
@@ -712,7 +712,7 @@
         create_time DESC
         LIMIT 1
         ) as operationDate,
-           (
+        (
         SELECT
         loan_process_log.user_name
         FROM
@@ -740,8 +740,9 @@
         LEFT JOIN partner partner ON partner.id = base.partner_id
         where 1=1
         and process.business_review = 1
+        ) a where 1=1
         <if test="startDate !=null and endDate !=null and startDate !='' and endDate !=''" >
-            having operationDate between #{startDate} and #{endDate}
+            and a.operationDate between #{startDate} and #{endDate}
         </if>
 
     </select>
@@ -749,7 +750,8 @@
     <!--=======================================报表 公司垫款订单明细查询=========================================-->
     <select id="selectCompanyRemitDetailChartVO" parameterType="com.yunche.loan.domain.param.CompanyRemitDetailChartParam"  resultType="com.yunche.loan.domain.vo.CompanyRemitDetailChartVO" >
 
-        SELECT
+
+        select a.* from ( SELECT
         orders.id AS orderId,
         customer.NAME AS customer_name,
         customer.id_card AS customer_id_card,
@@ -791,11 +793,23 @@
         loan_process_log
         WHERE
         order_id = orders.id
-        AND task_definition_key = 'usertask_remit_review'
+        AND task_definition_key = 'usertask_business_review'
         ORDER BY
         create_time DESC
         LIMIT 1
-        ) as username
+        ) as username,
+        (
+        SELECT
+        loan_process_log.create_time
+        FROM
+        loan_process_log
+        WHERE
+        order_id = orders.id
+        AND task_definition_key = 'usertask_business_review'
+        ORDER BY
+        create_time DESC
+        LIMIT 1
+        ) as dotime
         FROM
         loan_order orders
         LEFT JOIN loan_customer customer ON orders.loan_customer_id = customer.id
@@ -815,8 +829,9 @@
         LEFT JOIN base_area parea ON area.parent_area_id = parea.area_id
         where 1=1
         and process.remit_review = 1
+        ) a where 1=1
         <if test="startDate !=null and endDate !=null and startDate !='' and endDate !=''" >
-            having submitTime between #{startDate} and #{endDate}
+            and a.submitTime between #{startDate} and #{endDate}
         </if>
 
     </select>
