@@ -1121,6 +1121,7 @@
             remit.return_rate_amount                                                                AS remit_return_rate_amount,
             remit.insurance_situation                                                               AS remit_insurance_situation,
             remit.payment_organization                                                              AS remit_payment_organization,
+            remit.car_dealer_rebate                                                                 AS car_dealer_rebate,
             DATE_FORMAT(remit.application_date,'%Y-%m-%d')                                          AS remit_application_date,
             remit.remark
 
@@ -2630,6 +2631,7 @@
                 c.name                                     AS    customer_name,
                 c.id_card                                  AS    customer_id_card,
                 c.mobile                                   AS    customer_mobile,
+                c.signature_type                           AS    customer_signature_type,
                 e.id                                       AS    salesman_id,
                 e.name                                     AS    salesman_name,
                 p.id                                       AS    partner_id,
