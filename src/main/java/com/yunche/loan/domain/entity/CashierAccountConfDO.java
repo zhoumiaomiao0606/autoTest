@@ -16,6 +16,8 @@ public class CashierAccountConfDO {
 
     private String companyAccountNumber;
 
+    private String remitBusinessId;
+
     private String createUser;
 
     private Date createTime;
