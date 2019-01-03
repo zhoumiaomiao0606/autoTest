@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-@FeignClient(name = "tenantFeignClient", url = "http://192.168.2.116:8016")
+@FeignClient(name = "tenantFeignClient", url = "http://192.168.2.118:8016")
 public interface TenantFeignClient {
 
 
