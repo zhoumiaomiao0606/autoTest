@@ -283,8 +283,6 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
         appInfoSupplementVO.setKeyRiskPremiumConfirm(loanTelephoneVerifyDO.getKeyRiskPremiumConfirm());
 
 
-
-
         return ResultBean.ofSuccess(appInfoSupplementVO);
 
 
@@ -1384,6 +1382,16 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
     @Override
     public void zhonganInsert() {
 
+    }
+
+    @Override
+    public ResultBean addMoneyConfirm(AddMoneyConfirm addMoneyConfirm)
+    {
+        Preconditions.checkNotNull(addMoneyConfirm.getOrderId(), "业务单号不能为空");
+        Preconditions.checkNotNull(addMoneyConfirm.getKeyRiskPremiumConfirm(), "确认类型");
+
+        loanTelephoneVerifyDOMapper.selectByPrimaryKey(addMoneyConfirm.getOrderId());
+        return null;
     }
 
     @Override

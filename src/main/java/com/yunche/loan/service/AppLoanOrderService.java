@@ -72,4 +72,6 @@ public interface AppLoanOrderService {
     ZhonganNameVO zhonganName(Long orderId);
 
     void zhonganInsert();
+
+    ResultBean addMoneyConfirm(AddMoneyConfirm addMoneyConfirm);
 }
