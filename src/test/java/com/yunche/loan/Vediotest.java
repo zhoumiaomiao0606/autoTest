@@ -53,12 +53,16 @@ public class Vediotest
             throw new BizException("读取oss文件失败");
         }*/
 
-        String a = "上饶市";
+        /*String a = "上饶市";
         int i = a.indexOf("牛");
         String substring = a.substring(0, 2);
         String string = "2016-10-24 21:59:06";
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");*/
         //System.out.println("====="+(null==2));
+
+
+        String aaa = "32222222222222222222";
+        System.out.println(Long.parseLong(aaa));
 
     }
 

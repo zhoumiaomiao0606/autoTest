@@ -215,11 +215,11 @@ public class FinanceServiceImpl implements FinanceService
         }
 
         //生成该回调序列号
-        String execute = GeneratorIDUtil.execute();
+        Long execute = GeneratorIDUtil.getFixId();
 
         SerialNoDO serialNoDO = new SerialNoDO();
         serialNoDO.setOrderId(orderId);
-        serialNoDO.setSerialNo(Long.valueOf(execute));
+        serialNoDO.setSerialNo(execute);
         serialNoDO.setOperation(1);//1表示打款操作
         serialNoDO.setGmtCreate(new Date());
 
