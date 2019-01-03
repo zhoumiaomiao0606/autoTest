@@ -248,7 +248,7 @@ public class FinanceServiceImpl implements FinanceService
 
         //设置回调接口
         paymentParam.setCall_back_url(financeConfig.getCallBackUrl());
-        paymentParam.setSerial_no(execute);
+        paymentParam.setSerial_no(String.valueOf(execute));
 
         LOG.info("支付参数："+paymentParam.toString());
 

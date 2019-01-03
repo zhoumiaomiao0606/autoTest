@@ -84,6 +84,8 @@ public class AsyncFinanceApI {
     @Async
     public void postFinanceData(ApprovalParam approvalParam) {
 
+        //进行推送
+        try {
         PostFinanceData postFinanceData = new PostFinanceData();
 
         //根据orderid查询合伙人id
@@ -151,11 +153,11 @@ public class AsyncFinanceApI {
         //--002 银行放款
         if(approvalParam.getTaskDefinitionKey().equals(BANK_LEND_RECORD.getCode()) && ACTION_PASS.equals(approvalParam.getAction()))
         {
-            LoanRefundApplyDO loanRefundApplyDO = loanRefundApplyDOMapper.lastByOrderId(approvalParam.getOrderId());
+            /*LoanRefundApplyDO loanRefundApplyDO = loanRefundApplyDOMapper.lastByOrderId(approvalParam.getOrderId());
             Preconditions.checkNotNull(loanRefundApplyDO, "退款单为空");
             postFinanceData.setAdvancesInterest(String.valueOf(loanRefundApplyDO.getAdvances_interest()));//垫款利息收入
             postFinanceData.setOtherInterest(String.valueOf(loanRefundApplyDO.getOther_interest()));//其他利息收入
-            postFinanceData.setPenaltyInterest(String.valueOf(loanRefundApplyDO.getPenalty_interest()));//罚息收入
+            postFinanceData.setPenaltyInterest(String.valueOf(loanRefundApplyDO.getPenalty_interest()));//罚息收入*/
 
             LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(approvalParam.getOrderId());
             //查询金融方案
@@ -194,8 +196,7 @@ public class AsyncFinanceApI {
 
         }
 
-        //进行推送
-        try {
+
             LOG.info("准备异步发送数据！！！" + postFinanceData.toString());
             String retJson = HttpUtils.doPost(HOST, PATH, null, postFinanceData.toString());
             //记录流水信息
