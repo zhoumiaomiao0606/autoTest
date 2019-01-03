@@ -95,6 +95,8 @@ public class AsyncFinanceApI {
 
 
 
+
+
     @Autowired
     private LoanCustomerDOMapper loanCustomerDOMapper;
 
@@ -331,7 +333,8 @@ public class AsyncFinanceApI {
         if(approvalParam.getTaskDefinitionKey().equals(CREDIT_APPLY.getCode())
                 && approvalParam.getTaskDefinitionKey().equals(LOAN_APPLY.getCode())
                 && approvalParam.getTaskDefinitionKey().equals(REFUND_APPLY_REVIEW.getCode())
-                && approvalParam.getTaskDefinitionKey().equals(REMIT_REVIEW.getCode())){
+                && approvalParam.getTaskDefinitionKey().equals(REMIT_REVIEW.getCode())
+                && approvalParam.getTaskDefinitionKey().equals(BUSINESS_PAY)){
 
             orderInfoPush(approvalParam);
         }
@@ -369,6 +372,10 @@ public class AsyncFinanceApI {
             postFinanceData.setCarBrand(String.valueOf(carModelDO.getBrandId()));
         }
 
+        RemitDetailsDO remitDetailsDO = remitDetailsDOMapper.selectByPrimaryKey(loanOrderDO.getRemitDetailsId());
+        if(remitDetailsDO!=null){
+            postFinanceData.setCarDealerRebate(remitDetailsDO.getCar_dealer_rebate().toString());
+        }
         //进行推送
         try {
             /**

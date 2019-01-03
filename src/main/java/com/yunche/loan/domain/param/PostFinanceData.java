@@ -127,6 +127,7 @@ public class PostFinanceData
     private String carModel;
     private String carBrand;
     private String catPrice;
+    private String carDealerRebate;
 
 
 

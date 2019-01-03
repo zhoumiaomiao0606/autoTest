@@ -3,6 +3,7 @@ package com.yunche.loan.domain.param;
 import com.yunche.loan.domain.vo.FileVO;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -25,6 +26,7 @@ public class LoanBusinessPaymentParam {
     private Byte remit_is_sendback;
 
     private String remark;
+    private BigDecimal car_dealer_rebate;
 
     private List<FileVO> files = Collections.EMPTY_LIST;
 }

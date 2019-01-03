@@ -619,7 +619,7 @@
             car.car_key                                                                             AS car_key,
             car.info                                                                                AS car_info,
             car.pay_month                                                                           AS pay_month,
-            car.distributor_name                                                                    AS distributor_name,
+            car.distributor_name                                                                    AS car_distributor_name,
             partner.pay_month                                                                       AS partner_pay_month,
             vehicle.color                                                                           AS vehicle_color,
             vehicle.now_driving_license_owner                                                       AS vehicle_now_driving_license_owner,
@@ -762,6 +762,7 @@
         car.car_key                                                                             AS car_key,
         car.info                                                                                AS car_info,
         car.pay_month                                                                                AS pay_month,
+        car.distributor_name                                                                    AS car_distributor_name,
         vehicle.color                                                                           AS vehicle_color,
         vehicle.now_driving_license_owner                                                       AS vehicle_now_driving_license_owner,
         vehicle.old_driving_license_owner                                                       AS vehicle_old_driving_license_owner,
@@ -1100,6 +1101,7 @@
             remit.remit_status                                                              AS remit_status,
             DATE_FORMAT(remit.application_date,'%Y-%m-%d %H:%i:%S')                                 AS remit_application_date,
             remit.remit_business_id                                                              AS remit_business_id,
+            remit.car_dealer_rebate                                                              AS car_dealer_rebate,
             remit.remark
 
       from (select * from loan_order where id = #{orderId,jdbcType=BIGINT}) main_order

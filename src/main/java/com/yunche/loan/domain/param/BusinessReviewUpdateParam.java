@@ -3,7 +3,6 @@ package com.yunche.loan.domain.param;
 import lombok.Data;
 import org.hibernate.validator.constraints.NotBlank;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 @Data
@@ -76,4 +75,6 @@ public class BusinessReviewUpdateParam  {
     private String insurance_situation;//保险情况
     @NotBlank
     private String rebate_not_deducted;//返利不内扣
+
+    private String partner_rebate_amount;//合伙人返利金额
 }
