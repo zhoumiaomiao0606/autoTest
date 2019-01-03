@@ -32,5 +32,6 @@ public class UniversalRemitDetails {
     private String remit_business_id;
 
     private Byte remit_status;
+    private String car_dealer_rebate;
 
 }

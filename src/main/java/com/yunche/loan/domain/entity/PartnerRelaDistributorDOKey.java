@@ -6,5 +6,5 @@ import lombok.Data;
 public class PartnerRelaDistributorDOKey {
     private Long partnerId;
 
-    private Long distributorId;
+    private String distributorId;
 }

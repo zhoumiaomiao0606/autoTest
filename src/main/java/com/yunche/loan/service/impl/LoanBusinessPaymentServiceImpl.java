@@ -9,7 +9,6 @@ import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.LoanBusinessPaymentService;
 import com.yunche.loan.service.LoanFileService;
 import com.yunche.loan.service.LoanQueryService;
-import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,9 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.yunche.loan.config.constant.BaseConst.K_YORN_NO;
-import static com.yunche.loan.config.constant.BaseConst.K_YORN_YES;
-import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
+import static com.yunche.loan.config.constant.BaseConst.*;
 import static com.yunche.loan.config.constant.LoanFileConst.UPLOAD_TYPE_NORMAL;
 import static com.yunche.loan.config.constant.LoanOrderProcessConst.TASK_PROCESS_REFUND;
 
@@ -74,6 +71,7 @@ public class LoanBusinessPaymentServiceImpl implements LoanBusinessPaymentServic
 //            remitDetailsDO.setPayment_organization(loanBusinessPaymentParam.get());//付款组织
             remitDetailsDO.setApplication_date(loanBusinessPaymentParam.getRemit_application_date());//申请日期
             remitDetailsDO.setRemark(loanBusinessPaymentParam.getRemark());
+            remitDetailsDO.setCar_dealer_rebate(loanBusinessPaymentParam.getCar_dealer_rebate());
             remitDetailsDOMapper.insertSelective(remitDetailsDO);
             loanOrderDO.setRemitDetailsId(remitDetailsDO.getId());
             loanOrderDOMapper.updateByPrimaryKeySelective(loanOrderDO);
@@ -91,6 +89,7 @@ public class LoanBusinessPaymentServiceImpl implements LoanBusinessPaymentServic
                 remitDetailsDO.setApplication_date(loanBusinessPaymentParam.getRemit_application_date());//申请日期
                 remitDetailsDO.setId(remitDetailsId);
                 remitDetailsDO.setRemark(loanBusinessPaymentParam.getRemark());
+                remitDetailsDO.setCar_dealer_rebate(loanBusinessPaymentParam.getCar_dealer_rebate());
                 remitDetailsDOMapper.insertSelective(remitDetailsDO);
                 //但是不用更新loanOrder 因为已经存在
             } else {
@@ -105,6 +104,7 @@ public class LoanBusinessPaymentServiceImpl implements LoanBusinessPaymentServic
                 remitDetailsDO.setApplication_date(loanBusinessPaymentParam.getRemit_application_date());//申请日期
                 remitDetailsDO.setId(remitDetailsId);
                 remitDetailsDO.setRemark(loanBusinessPaymentParam.getRemark());
+                remitDetailsDO.setCar_dealer_rebate(loanBusinessPaymentParam.getCar_dealer_rebate());
                 remitDetailsDOMapper.updateByPrimaryKeySelective(remitDetailsDO);
             }
         }

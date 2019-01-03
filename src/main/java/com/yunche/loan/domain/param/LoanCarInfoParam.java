@@ -88,6 +88,7 @@ public class LoanCarInfoParam {
     private String  cityName;
     private String  mileage;
     private Long cityId;
+    private String distributorName;
 
     @Data
     public static class PartnerAccountInfo {

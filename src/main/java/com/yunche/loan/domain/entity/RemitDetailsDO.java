@@ -49,4 +49,6 @@ public class RemitDetailsDO {
     private String remit_business_id;
     private Byte remit_status;
 
+    private BigDecimal car_dealer_rebate;
+
 }
