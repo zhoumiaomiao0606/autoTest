@@ -9,13 +9,16 @@
         <result column="user_name" property="userName" jdbcType="VARCHAR"/>
         <result column="user_id" property="userId" jdbcType="BIGINT"/>
         <result column="risk_sharing_addition" property="riskSharingAddition" jdbcType="DECIMAL"/>
+        <result column="key_risk_premium" jdbcType="INTEGER" property="keyRiskPremium" />
+        <result column="key_risk_premium_confirm" jdbcType="TINYINT" property="keyRiskPremiumConfirm" />
     </resultMap>
     <sql id="Base_Column_List">
-    order_id, info, gmt_create, gmt_modify, user_name, user_id, risk_sharing_addition
+    order_id, info, gmt_create, gmt_modify, user_name, user_id, risk_sharing_addition,
+    key_risk_premium, key_risk_premium_confirm
   </sql>
-    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
+    <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
         select
-        <include refid="Base_Column_List"/>
+        <include refid="Base_Column_List" />
         from loan_telephone_verify
         where order_id = #{orderId,jdbcType=BIGINT}
     </select>
@@ -25,11 +28,13 @@
   </delete>
     <insert id="insert" parameterType="com.yunche.loan.domain.entity.LoanTelephoneVerifyDO">
     insert into loan_telephone_verify (order_id, info, gmt_create,
-    gmt_modify, user_name, user_id,
-    risk_sharing_addition)
+      gmt_modify, user_name, user_id,
+      risk_sharing_addition, key_risk_premium, key_risk_premium_confirm
+      )
     values (#{orderId,jdbcType=BIGINT}, #{info,jdbcType=VARCHAR}, #{gmtCreate,jdbcType=TIMESTAMP},
-    #{gmtModify,jdbcType=TIMESTAMP}, #{userName,jdbcType=VARCHAR}, #{userId,jdbcType=BIGINT},
-    #{riskSharingAddition,jdbcType=DECIMAL})
+      #{gmtModify,jdbcType=TIMESTAMP}, #{userName,jdbcType=VARCHAR}, #{userId,jdbcType=BIGINT},
+      #{riskSharingAddition,jdbcType=DECIMAL}, #{keyRiskPremium,jdbcType=INTEGER}, #{keyRiskPremiumConfirm,jdbcType=TINYINT}
+      )
   </insert>
     <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.LoanTelephoneVerifyDO">
         insert into loan_telephone_verify
@@ -55,6 +60,12 @@
             <if test="riskSharingAddition != null">
                 risk_sharing_addition,
             </if>
+            <if test="keyRiskPremium != null">
+                key_risk_premium,
+            </if>
+            <if test="keyRiskPremiumConfirm != null">
+                key_risk_premium_confirm,
+            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="orderId != null">
@@ -77,6 +88,12 @@
             </if>
             <if test="riskSharingAddition != null">
                 #{riskSharingAddition,jdbcType=DECIMAL},
+            </if>
+            <if test="keyRiskPremium != null">
+                #{keyRiskPremium,jdbcType=INTEGER},
+            </if>
+            <if test="keyRiskPremiumConfirm != null">
+                #{keyRiskPremiumConfirm,jdbcType=TINYINT},
             </if>
         </trim>
     </insert>
@@ -101,17 +118,25 @@
             <if test="riskSharingAddition != null">
                 risk_sharing_addition = #{riskSharingAddition,jdbcType=DECIMAL},
             </if>
+            <if test="keyRiskPremium != null">
+                key_risk_premium = #{keyRiskPremium,jdbcType=INTEGER},
+            </if>
+            <if test="keyRiskPremiumConfirm != null">
+                key_risk_premium_confirm = #{keyRiskPremiumConfirm,jdbcType=TINYINT},
+            </if>
         </set>
         where order_id = #{orderId,jdbcType=BIGINT}
     </update>
     <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.LoanTelephoneVerifyDO">
     update loan_telephone_verify
     set info = #{info,jdbcType=VARCHAR},
-    gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
-    gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
-    user_name = #{userName,jdbcType=VARCHAR},
-    user_id = #{userId,jdbcType=BIGINT},
-    risk_sharing_addition = #{riskSharingAddition,jdbcType=DECIMAL}
+      gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+      gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
+      user_name = #{userName,jdbcType=VARCHAR},
+      user_id = #{userId,jdbcType=BIGINT},
+      risk_sharing_addition = #{riskSharingAddition,jdbcType=DECIMAL},
+      key_risk_premium = #{keyRiskPremium,jdbcType=INTEGER},
+      key_risk_premium_confirm = #{keyRiskPremiumConfirm,jdbcType=TINYINT}
     where order_id = #{orderId,jdbcType=BIGINT}
   </update>
 </mapper>
