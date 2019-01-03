@@ -6,6 +6,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.yunche.loan.config.cache.DictMapCache;
+import com.yunche.loan.config.cache.ParamCache;
 import com.yunche.loan.config.common.SysConfig;
 import com.yunche.loan.config.constant.*;
 import com.yunche.loan.config.exception.BizException;
@@ -127,6 +128,9 @@ public class BankSolutionServiceImpl implements BankSolutionService {
 
     @Autowired
     private BaseAreaDOMapper baseAreaDOMapper;
+    
+    @Autowired
+    private ParamCache paramCache;
 
 
 
@@ -230,8 +234,6 @@ public class BankSolutionServiceImpl implements BankSolutionService {
             default:
                 return;
         }
-
-
     }
 
     /**
@@ -241,6 +243,11 @@ public class BankSolutionServiceImpl implements BankSolutionService {
      */
     @Override
     public ResultBean applyevaluate(Long orderId) {
+
+        String param = paramCache.getParam(IConstant.IS_NEED_APPLYEVALUATE);
+        if(!StringUtil.isEmpty(param) && IDict.K_YORN.K_YORN_NO.toString().equals(param)){
+            return ResultBean.ofSuccess("【系统设置】：无需查询二手车评估预审");
+        }
         LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
         if (loanOrderDO == null) {
             throw new BizException("此订单不存在");
@@ -328,8 +335,16 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         applyevaluate.setCarType(carFullName);
         applyevaluate.setPrice(BigDecimalUtil.format(loanFinancialPlanDO.getBankPeriodPrincipal(),2));
         applyevaluate.setCarNo1(vehicleInformationDO.getVehicle_identification_number());
-        applyevaluate.setCarZone(loanCarInfoDO.getCityId() == null ? null : loanCarInfoDO.getCityId().toString().substring(0, 4));
-        applyevaluate.setCarMile(String.valueOf(new BigDecimal(loanCarInfoDO.getMileage()).intValue()));
+
+        if(loanCarInfoDO.getEvaluationType().equals(IDict.K_EVALUATION_TYPE.ONLINE)){
+            SecondHandCarEvaluateDO secondHandCarEvaluateDO = secondHandCarEvaluateDOMapper.selectByPrimaryKey(loanOrderDO.getSecond_hand_car_evaluate_id());
+            applyevaluate.setCarZone(secondHandCarEvaluateDO.getArea_id() == null ? null : secondHandCarEvaluateDO.getArea_id().toString().substring(0, 4));
+            applyevaluate.setCarMile(String.valueOf(new BigDecimal(secondHandCarEvaluateDO.getMileage()).intValue()));
+        }else if(loanCarInfoDO.getEvaluationType().equals(IDict.K_EVALUATION_TYPE.ARTIFICIAL)){
+            applyevaluate.setCarZone(loanCarInfoDO.getCityId() == null ? null : loanCarInfoDO.getCityId().toString().substring(0, 4));
+            applyevaluate.setCarMile(String.valueOf(new BigDecimal(loanCarInfoDO.getMileage()).intValue()));
+        }
+
         applyevaluate.setCarDate(DateUtil.getDateTo8(loanCarInfoDO.getFirstRegisterDate()));
         applyevaluate.setAssessPrice(BigDecimalUtil.format(loanFinancialPlanDO.getAppraisal(),2));
         applyevaluate.setEvaluateOrg("0");//默认送0：加我科技评估机构(银行默认)

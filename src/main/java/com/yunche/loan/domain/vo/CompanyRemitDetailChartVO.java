@@ -63,4 +63,6 @@ public class CompanyRemitDetailChartVO
     //经办人
     private String username;
 
+    private String dotime;
+
 }
