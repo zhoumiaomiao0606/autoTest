@@ -64,6 +64,8 @@ public class PaymentParam
 
     private String serial_no;//终态回调地址
 
+    private Integer source_type = 1;
+
 
 
 
