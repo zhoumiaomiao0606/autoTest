@@ -88,4 +88,16 @@ public class AppInfoSupplementVO {
      * 备注
      */
     private String remark;
+
+    /**
+     * 钥匙风险金
+     */
+    private Integer keyRiskPremium;
+
+    /**
+     * 钥匙风险金-确认
+     */
+    private Byte keyRiskPremiumConfirm;
+
+    private BigDecimal addMoney;
 }

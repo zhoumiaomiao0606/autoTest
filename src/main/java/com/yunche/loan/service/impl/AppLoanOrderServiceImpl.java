@@ -196,6 +196,9 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
     @Autowired
     private CarDetailDOMapper carDetailDOMapper;
 
+    @Autowired
+    private LoanTelephoneVerifyDOMapper loanTelephoneVerifyDOMapper;
+
 
 
     @Autowired
@@ -263,6 +266,24 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
                 appInfoSupplementVO.setInitiatorUnit(departmentDO.getName());
             }
         }
+
+
+        //钥匙风险金信息
+        LoanTelephoneVerifyDO loanTelephoneVerifyDO = loanTelephoneVerifyDOMapper.selectByPrimaryKey(Long.valueOf(data.getOrderId()));
+        //取出钥匙风险金--计算加收金额
+        BigDecimal loanAmount = data.getLoanAmount();
+
+        if (loanAmount!=null)
+        {
+            BigDecimal addMoney = loanAmount.multiply(new BigDecimal(loanTelephoneVerifyDO.getKeyRiskPremium()));
+
+            appInfoSupplementVO.setAddMoney(addMoney);
+        }
+        appInfoSupplementVO.setKeyRiskPremium(loanTelephoneVerifyDO.getKeyRiskPremium());
+        appInfoSupplementVO.setKeyRiskPremiumConfirm(loanTelephoneVerifyDO.getKeyRiskPremiumConfirm());
+
+
+
 
         return ResultBean.ofSuccess(appInfoSupplementVO);
 
@@ -841,6 +862,13 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
                     businessInfoVO.setSocialCreditResult(socialLoanCreditInfoVO.getResult());
                     businessInfoVO.setSocialCreditInfo(socialLoanCreditInfoVO.getInfo());
                 }
+
+                //加入还款卡号
+                LoanCustomerDO loanCustomerDO = loanCustomerDOMapper.selectByPrimaryKey(loanOrderDO.getLoanCustomerId(), VALID_STATUS);
+                if (loanCustomerDO!=null)
+                {
+                    businessInfoVO.setRepayCardId(loanCustomerDO.getLendCard());
+                }
             }
 
             Long vid = loanOrderDOMapper.getVehicleInformationIdById(orderId);
@@ -876,6 +904,7 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
                 businessInfoVO.setColor(vehicleInformationDO.getColor());
                 //上牌日期
                 businessInfoVO.setApplyLicensePlateDate(vehicleInformationDO.getApply_license_plate_date());
+                businessInfoVO.setLicensePlateDate(vehicleInformationDO.getApply_license_plate_date());
 
             }
         }
@@ -1698,6 +1727,17 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
 
         Long vid = loanOrderDOMapper.getVehicleInformationIdById(orderId);
         LoanBaseInfoDO loanBaseInfoDO = loanBaseInfoDOMapper.getTotalInfoByOrderId(orderId);
+
+        //业务员名
+        if (loanBaseInfoDO!=null && loanBaseInfoDO.getSalesmanId()!=null)
+        {
+            EmployeeDO employeeDO = employeeDOMapper.selectByPrimaryKey(loanBaseInfoDO.getSalesmanId(), VALID_STATUS);
+            if (employeeDO!=null)
+            {
+                loanCarInfoVO.setSalemanName(employeeDO.getName());
+            }
+        }
+
         LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
         VehicleInformationDO vehicleInformationDO = vehicleInformationDOMapper.selectByPrimaryKey(vid);
 

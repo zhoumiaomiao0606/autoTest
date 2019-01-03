@@ -62,6 +62,8 @@ public class PaymentParam
 
     private String call_back_url;//终态回调地址
 
+    private String serial_no;//终态回调地址
+
 
 
 
