@@ -3,6 +3,7 @@ package com.yunche.loan.manager.finance;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Preconditions;
 import com.google.common.eventbus.Subscribe;
+import com.yunche.loan.config.common.FinanceConfig;
 import com.yunche.loan.config.constant.IDict;
 import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.util.EventBusCenter;
@@ -31,11 +32,14 @@ import static com.yunche.loan.config.constant.ProcessApprovalConst.ACTION_PASS;
 public class AsyncFinanceApI {
     private static final Logger LOG = LoggerFactory.getLogger(AsyncFinanceApI.class);
 
-    private static final String HOST = "http://47.96.78.20:8012";
+    //private static final String HOST = "http://47.96.78.20:8012";
 
     private static final String PATH = "/costcalculation/insert";
 
     private static final String METHOD = "post";
+
+    @Autowired
+    private FinanceConfig financeConfig;
 
     @Autowired
     private LoanBaseInfoDOMapper loanBaseInfoDOMapper;
@@ -200,7 +204,7 @@ public class AsyncFinanceApI {
 
 
             LOG.info("准备异步发送数据！！！" + postFinanceData.toString());
-            String retJson = HttpUtils.doPost(HOST, PATH, null, postFinanceData.toString());
+            String retJson = HttpUtils.doPost(financeConfig.getAccountingVoucherHost(), PATH, null, postFinanceData.toString());
             //记录流水信息
             errSerialRecord(retJson,approvalParam);
 

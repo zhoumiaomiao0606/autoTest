@@ -46,6 +46,9 @@ spring:
     jtxPort: 22
   finance:
     callBackUrl: http://www.yunchejinrong.com:8090/api/v1/loanorder/finance/remitInfo
+    accountingVoucherHost: http://47.96.78.20:8012
+    secondCarHost: http://47.97.122.31:8888
+    paymentHost: http://47.96.78.20:8019
 
 
 

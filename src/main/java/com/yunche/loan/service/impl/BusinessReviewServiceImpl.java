@@ -2,6 +2,7 @@ package com.yunche.loan.service.impl;
 
 import com.google.common.base.Preconditions;
 import com.google.gson.Gson;
+import com.yunche.loan.config.common.FinanceConfig;
 import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.BeanPlasticityUtills;
@@ -28,7 +29,11 @@ import static com.yunche.loan.config.constant.LoanProcessEnum.TELEPHONE_VERIFY;
 
 @Service
 @Transactional
-public class BusinessReviewServiceImpl implements BusinessReviewService {
+public class BusinessReviewServiceImpl implements BusinessReviewService
+{
+
+    @Autowired
+    private FinanceConfig financeConfig;
 
     @Resource
     private LoanOrderDOMapper loanOrderDOMapper;
@@ -134,7 +139,7 @@ public class BusinessReviewServiceImpl implements BusinessReviewService {
             //上牌地城市id
             param.setAreaId(universalInfoVO.getVehicle_apply_license_plate_area_id());
 
-            String financeResult = businessReviewManager.financeUnisal(param, "/costcalculation");
+            String financeResult = businessReviewManager.financeUnisal(param,financeConfig.getHOST(), "/costcalculation");
         FinanceResult financeResult1 = new FinanceResult();
         if (financeResult !=null && !"".equals(financeResult))
         {
@@ -365,7 +370,7 @@ public class BusinessReviewServiceImpl implements BusinessReviewService {
         param.setBail(universalInfoVO.getFinancial_cash_deposit());
 
         try {
-            String financeResult = businessReviewManager.financeUnisal(param,"/costcalculation/detail");
+            String financeResult = businessReviewManager.financeUnisal(param,financeConfig.getHOST(),"/costcalculation/detail");
             FinanceResult financeResult1 = new FinanceResult();
             if (financeResult !=null && !"".equals(financeResult))
             {

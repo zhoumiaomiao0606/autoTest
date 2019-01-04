@@ -252,7 +252,7 @@ public class FinanceServiceImpl implements FinanceService
 
         LOG.info("支付参数："+paymentParam.toString());
 
-        String financeResult = businessReviewManager.financeUnisal3(paymentParam,"/payment");
+        String financeResult = businessReviewManager.financeUnisal3(paymentParam,financeConfig.getPaymentHost(),"/payment");
 
         CommonFinanceResult Result = new CommonFinanceResult();
         if (financeResult !=null && !"".equals(financeResult))
@@ -339,7 +339,7 @@ public class FinanceServiceImpl implements FinanceService
     @Override
     public ResultBean getAccount()
     {
-        String financeResult = businessReviewManager.getFinanceUnisal("/costcalculation/finance/account");
+        String financeResult = businessReviewManager.getFinanceUnisal("/costcalculation/finance/account",financeConfig.getHOST());
 
         System.out.println("====="+financeResult);
 

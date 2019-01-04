@@ -5,6 +5,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.yunche.loan.config.common.FinanceConfig;
 import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.BeanPlasticityUtills;
@@ -35,6 +36,9 @@ import java.util.*;
 public class SecondHandCarServiceImpl implements SecondHandCarService
 {
     private static final Logger LOG = LoggerFactory.getLogger(SecondHandCarServiceImpl.class);
+
+    @Autowired
+    private FinanceConfig financeConfig;
     @Resource
     private BusinessReviewManager businessReviewManager;
 
@@ -70,7 +74,7 @@ public class SecondHandCarServiceImpl implements SecondHandCarService
     public ResultBean drivinglicense(DrivinglicensePara evaluationPara)
     {
 
-        String financeResult = businessReviewManager.financeUnisal2(evaluationPara, "/api/orc/drivinglicense");
+        String financeResult = businessReviewManager.financeUnisal2(evaluationPara,financeConfig.getSecondCarHost(), "/api/orc/drivinglicense");
         CommonFinanceResult<SecondHandCarVinDO> financeResult1 = new CommonFinanceResult<SecondHandCarVinDO>();
         if (financeResult !=null && !"".equals(financeResult))
         {
@@ -165,7 +169,7 @@ public class SecondHandCarServiceImpl implements SecondHandCarService
         Map querys = new HashMap<>();
         querys.put("vin",vin);
         System.out.println("========");
-        String financeResult = businessReviewManager.getFinanceUnisal2("/api/car",querys);
+        String financeResult = businessReviewManager.getFinanceUnisal2("/api/car",financeConfig.getSecondCarHost(),querys);
 
        /* String financeResult = "{\n" +
                 "    \"datas\": [\n" +
@@ -293,7 +297,7 @@ public class SecondHandCarServiceImpl implements SecondHandCarService
         param.setTrimId(evaluateWebParam.getTrimId());
         param.setCityId(evaluateWebParam.getCity_id());
         LOG.info("请求参数"+param.toString());
-        String financeResult = businessReviewManager.financeUnisal2(param, "/api/car/evaluate");
+        String financeResult = businessReviewManager.financeUnisal2(param, financeConfig.getSecondCarHost(),"/api/car/evaluate");
         CommonFinanceResult<EvaluateVO> financeResult1 = new CommonFinanceResult<EvaluateVO>();
         if (financeResult !=null && !"".equals(financeResult))
         {
@@ -542,7 +546,7 @@ public class SecondHandCarServiceImpl implements SecondHandCarService
 
             LOG.info(param.toString());
 
-            String financeResult = businessReviewManager.financeUnisal2(param, "/api/car/iautos");
+            String financeResult = businessReviewManager.financeUnisal2(param,financeConfig.getSecondCarHost(), "/api/car/iautos");
            /* String financeResult = "{\n" +
                     "    \"datas\": [\n" +
                     "        {\n" +

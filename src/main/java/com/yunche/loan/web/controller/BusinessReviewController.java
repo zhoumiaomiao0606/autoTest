@@ -1,5 +1,6 @@
 package com.yunche.loan.web.controller;
 
+import com.yunche.loan.config.common.FinanceConfig;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.param.BusinessReviewCalculateParam;
 import com.yunche.loan.domain.param.BusinessReviewUpdateParam;
@@ -7,6 +8,7 @@ import com.yunche.loan.domain.param.ParternerRuleParam;
 import com.yunche.loan.domain.param.ParternerRuleSharpTuningeParam;
 import com.yunche.loan.manager.finance.BusinessReviewManager;
 import com.yunche.loan.service.BusinessReviewService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -17,6 +19,10 @@ import javax.annotation.Resource;
 @RestController
 @RequestMapping("/api/v1/loanorder/businessreview")
 public class BusinessReviewController {
+
+    @Autowired
+    private FinanceConfig financeConfig;
+
     @Resource
     private BusinessReviewService businessReviewService;
 
@@ -56,7 +62,7 @@ public class BusinessReviewController {
      */
     @PostMapping(value = "/parternerRule", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public String parternerRule(@RequestBody @Validated ParternerRuleParam param) {
-        return businessReviewManager.financeUnisal(param,"/costcalculation");
+        return businessReviewManager.financeUnisal(param,financeConfig.getHOST(),"/costcalculation");
     }
 
     /**
