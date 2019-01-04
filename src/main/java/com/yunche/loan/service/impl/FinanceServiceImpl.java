@@ -267,6 +267,10 @@ public class FinanceServiceImpl implements FinanceService
             return ResultBean.ofError("打款失败:"+Result.getMessage());
         }
 
+
+        //插入打款行id，打款会计凭证需要
+        remitDetailsDO.setRemit_business_id("10029905");
+
         //更新打款单打款状态---待讨论
 
 
