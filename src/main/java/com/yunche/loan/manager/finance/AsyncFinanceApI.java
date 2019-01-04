@@ -159,6 +159,8 @@ public class AsyncFinanceApI {
             postFinanceData.setOtherInterest(String.valueOf(loanRefundApplyDO.getOther_interest()));//其他利息收入
             postFinanceData.setPenaltyInterest(String.valueOf(loanRefundApplyDO.getPenalty_interest()));//罚息收入*/
 
+            postFinanceData.setCompanyId(remitDetailsDO.getRemit_business_id());
+
             LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(approvalParam.getOrderId());
             //查询金融方案
             //查询花费明细
