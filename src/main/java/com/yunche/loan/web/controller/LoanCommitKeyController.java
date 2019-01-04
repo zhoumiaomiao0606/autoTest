@@ -25,8 +25,8 @@ public class LoanCommitKeyController {
      * @param orderId
      * @return
      */
-//    @GetMapping("/riskUncollected")
-//    public ResultBean<Void> riskUncollected(@RequestParam Long orderId) {
-//        return loanCommitKeyService.riskUncollected(orderId);
-//    }
+    @GetMapping("/riskUncollected")
+    public ResultBean<Void> riskUncollected(@RequestParam Long orderId) {
+        return loanCommitKeyService.riskUncollected(orderId);
+    }
 }

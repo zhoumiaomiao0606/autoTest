@@ -72,6 +72,9 @@ public class LoanCommitKeyServiceImpl implements LoanCommitKeyService {
         ResultBean<Void> riskResult = loanTelephoneVerifyService.save(loanTelephoneVerifyDO);
         Preconditions.checkArgument(riskResult.getSuccess(), riskResult.getMsg());
 
+
+        //状态--不收钥匙
+
         return ResultBean.ofSuccess(null, "成功");
     }
 }
