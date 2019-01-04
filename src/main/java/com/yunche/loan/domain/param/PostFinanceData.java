@@ -5,7 +5,6 @@ import com.alibaba.fastjson.serializer.SerializerFeature;
 import lombok.Data;
 
 import java.math.BigDecimal;
-import java.util.Date;
 
 @Data
 public class PostFinanceData
@@ -108,46 +107,6 @@ public class PostFinanceData
   //  private String otherInterest;//其他利息收入
 
    // private String penaltyInterest;//罚息收入
-
-
-
-
-
-    //--订单信息
-
-    private String orderId;
-    private String name;
-    private String idCard;
-    private String creditOperatorName;
-    private String partnerName;
-//    private String partnerId;
-    private Date createDate;
-    private String orderStatus;
-    private String carDetail;
-    private String carModel;
-    private String carBrand;
-    private String catPrice;
-    private String carDealerRebate;
-
-
-
-    //订单id（orderId）
-//客户姓名(name)
-//客户身份证号(idCard)
-//信贷员（征信提交人)(creditOperatorName)
-//渠道 江苏某某 合伙人团队(partnerName)
-//合伙人id(partnerId)
-//下单时间(createDate)
-//订单状态(orderStatus)
-//放款时间(无)
-//车商  ID（无）
-//车商  返利金额  （需要新增）（无）
-//车的信息
-//    车型 (carDetail)
-//    车系 （carModel）
-//    品牌 (carBrand)
-//    价格 (catPrice)
-//    年款
 
     @Override
     public String toString() {
