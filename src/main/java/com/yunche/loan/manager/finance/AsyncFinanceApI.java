@@ -408,7 +408,7 @@ public class AsyncFinanceApI {
                 HttpUtils.doPut(HOST,ORDER_MODIFY+postFinanceData.getOrderId(),null,null,null,postFinanceData.toString());
             }
             //记录流水信息
-            errSerialRecord(retJson,approvalParam);
+//            errSerialRecord(retJson,approvalParam);
 
             LOG.info("应答数据：" + retJson);
 
