@@ -61,4 +61,6 @@ public class CostDetailsDO {
     private BigDecimal rebate_not_deducted;
 
     private BigDecimal partner_rebate_amount;//合伙人返利金额
+
+    private Byte key_risk_premium_type;
 }

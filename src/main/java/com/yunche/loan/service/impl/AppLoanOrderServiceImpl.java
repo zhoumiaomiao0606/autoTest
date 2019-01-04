@@ -61,6 +61,10 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
 
     private static final Logger logger = LoggerFactory.getLogger(AppLoanOrderServiceImpl.class);
 
+    private static final Byte CONFIRM = 1;
+
+    private static final Byte UNCONFIRM = 0;
+
     @Autowired
     private LoanOrderDOMapper loanOrderDOMapper;
 
@@ -1390,8 +1394,13 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
         Preconditions.checkNotNull(addMoneyConfirm.getOrderId(), "业务单号不能为空");
         Preconditions.checkNotNull(addMoneyConfirm.getKeyRiskPremiumConfirm(), "确认类型");
 
-        loanTelephoneVerifyDOMapper.selectByPrimaryKey(addMoneyConfirm.getOrderId());
-        return null;
+        LoanTelephoneVerifyDO loanTelephoneVerifyDO = loanTelephoneVerifyDOMapper.selectByPrimaryKey(addMoneyConfirm.getOrderId());
+        if (loanTelephoneVerifyDO.getKeyRiskPremium()!=0 && loanTelephoneVerifyDO.getKeyRiskPremiumConfirm()!=CONFIRM)
+        {
+            loanTelephoneVerifyDO.setKeyRiskPremiumConfirm(CONFIRM);
+            loanTelephoneVerifyDOMapper.updateByPrimaryKeySelective(loanTelephoneVerifyDO);
+        }
+        return ResultBean.ofSuccess("确认成功！！！");
     }
 
     @Override

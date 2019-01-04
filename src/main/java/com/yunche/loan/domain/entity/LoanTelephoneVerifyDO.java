@@ -27,7 +27,7 @@ public class LoanTelephoneVerifyDO {
 
 
     /**
-     * 钥匙风险金
+     * 钥匙风险金比例
      */
     private Integer keyRiskPremium;
 

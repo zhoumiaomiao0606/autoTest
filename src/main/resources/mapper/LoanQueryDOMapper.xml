@@ -1134,6 +1134,8 @@
     <select id="selectUniversalCostDetails" parameterType="java.lang.Long"
             resultType="com.yunche.loan.domain.vo.UniversalCostDetailsVO">
       select
+      (loan_telephone_verify.key_risk_premium * loan_financial_plan.loan_amount/100) AS key_risk_premium_fee,
+      cost.key_risk_premium_type                                AS key_risk_premium_type,
              cost.service_fee                                AS cost_service_fee,
              cost.apply_license_plate_deposit_fee            AS cost_apply_license_plate_deposit_fee,
              cost.performance_fee                            AS cost_performance_fee,
@@ -1162,6 +1164,8 @@
       from (select * from loan_order where id = #{orderId,jdbcType=BIGINT}) main_order
       left join cost_details cost on main_order.cost_details_id = cost.id
       left join remit_details remit on main_order.remit_details_id = remit.id
+      LEFT JOIN loan_financial_plan ON main_order.loan_financial_plan_id = loan_financial_plan.id
+	  LEFT JOIN loan_telephone_verify ON main_order.id = loan_telephone_verify.order_id
 
     </select>
 

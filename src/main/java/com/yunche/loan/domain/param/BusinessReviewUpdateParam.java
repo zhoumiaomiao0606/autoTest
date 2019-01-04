@@ -77,4 +77,6 @@ public class BusinessReviewUpdateParam  {
     private String rebate_not_deducted;//返利不内扣
 
     private String partner_rebate_amount;//合伙人返利金额
+
+    private String key_risk_premium_type;
 }
