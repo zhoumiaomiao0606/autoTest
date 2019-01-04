@@ -318,6 +318,7 @@ public class FinanceServiceImpl implements FinanceService
             approvalParam.setOrderId(remitSatusParam.getOrderId());
             approvalParam.setTaskDefinitionKey(REMIT_REVIEW.getCode());
             approvalParam.setAction(ACTION_PASS);
+            approvalParam.setCheckPermission(false);
 
             ResultBean<Void> approval = loanProcessService.approval(approvalParam);
             Preconditions.checkArgument(approval.getSuccess(), approval.getMsg());

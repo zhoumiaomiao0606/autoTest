@@ -150,3 +150,6 @@ spring:
 
   finance:
      callBackUrl: http://www.yunchejinrong.com:8081/api/v1/loanorder/finance/remitInfo
+     accountingVoucherHost: http://47.110.7.61:8012
+     secondCarHost: http://47.97.122.31:8888
+     paymentHost: http://47.110.7.61:8019
