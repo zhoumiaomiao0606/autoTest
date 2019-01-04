@@ -229,7 +229,7 @@ public class FinanceServiceImpl implements FinanceService
 
         paymentParam.setBank_code(remitDetailsDO.getBank_code());
         paymentParam.setAmount(remitDetailsDO.getRemit_amount());
-        paymentParam.setAccount_name(remitDetailsDO.getBeneficiary_bank());
+        paymentParam.setAccount_name(remitDetailsDO.getBeneficiary_account());
         paymentParam.setAccount_number(remitDetailsDO.getBeneficiary_account_number());
 
         Map<String,String> map = new HashMap<>();
