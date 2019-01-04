@@ -80,6 +80,8 @@ public class ExportRemitDetailQueryForRemitOrderVO
       //额外费用
       private String extra_fee;
 
+      private String keyRiskPremiumFee;
+
     //创建时间
     private String gmt_create;
 
