@@ -26,6 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.lang.reflect.Type;
@@ -36,6 +37,7 @@ import static com.yunche.loan.config.constant.LoanProcessEnum.*;
 import static com.yunche.loan.config.constant.ProcessApprovalConst.ACTION_PASS;
 
 @Service
+@Transactional
 public class FinanceServiceImpl implements FinanceService
 {
     private static final Logger LOG = LoggerFactory.getLogger(FinanceServiceImpl.class);
@@ -66,6 +68,8 @@ public class FinanceServiceImpl implements FinanceService
     @Autowired
     private RemitDetailsDOMapper remitDetailsDOMapper;
 
+
+    @Autowired
     private LoanProcessService loanProcessService;
 
 
