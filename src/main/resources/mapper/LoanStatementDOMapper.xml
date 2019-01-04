@@ -1333,6 +1333,7 @@
             resultType="com.yunche.loan.domain.vo.ExportRemitDetailQueryForRemitOrderVO">
 
         SELECT
+        (loan_telephone_verify.key_risk_premium * loan_financial_plan.loan_amount/100) AS keyRiskPremiumFee,
         base_area.area_name,
         customer. NAME AS customer_name,
         customer.id_card AS customer_id_card,
@@ -1451,6 +1452,7 @@
         ) as username
         FROM
         loan_order orders
+        LEFT JOIN loan_telephone_verify ON orders.id = loan_telephone_verify.order_id
         LEFT JOIN loan_customer customer ON orders.loan_customer_id = customer.id
         LEFT JOIN loan_base_info loaninfo ON orders.loan_base_info_id = loaninfo.id
         LEFT JOIN base_area ON loaninfo.area_id = base_area.area_id
