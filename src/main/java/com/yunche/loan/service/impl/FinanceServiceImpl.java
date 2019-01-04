@@ -329,7 +329,7 @@ public class FinanceServiceImpl implements FinanceService
 
         serialNoDO.setExMessage(remitSatusParam.getMessage());
 
-        serialNoDO.setStatus(new Byte("1"));
+        serialNoDO.setStatus(INVALID_STATUS);
 
         serialNoDOMapper.updateByPrimaryKeySelective(serialNoDO);
 
