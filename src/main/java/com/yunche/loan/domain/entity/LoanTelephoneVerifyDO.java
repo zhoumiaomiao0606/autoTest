@@ -24,4 +24,15 @@ public class LoanTelephoneVerifyDO {
      * 风险分担加成
      */
     private BigDecimal riskSharingAddition;
+
+
+    /**
+     * 钥匙风险金比例
+     */
+    private Integer keyRiskPremium;
+
+    /**
+     * 钥匙风险金-确认
+     */
+    private Byte keyRiskPremiumConfirm;
 }

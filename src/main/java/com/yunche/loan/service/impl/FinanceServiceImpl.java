@@ -8,6 +8,7 @@ import com.google.gson.reflect.TypeToken;
 import com.yunche.loan.config.common.FinanceConfig;
 import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.result.ResultBean;
+import com.yunche.loan.config.util.GeneratorIDUtil;
 import com.yunche.loan.domain.entity.*;
 import com.yunche.loan.domain.param.ApprovalParam;
 import com.yunche.loan.domain.param.PaymentParam;
@@ -28,10 +29,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static com.yunche.loan.config.constant.BaseConst.*;
 import static com.yunche.loan.config.constant.LoanProcessEnum.*;
@@ -58,6 +56,9 @@ public class FinanceServiceImpl implements FinanceService
 
     @Autowired
     private BaseAreaDOMapper baseAreaDOMapper;
+
+    @Autowired
+    private SerialNoDOMapper serialNoDOMapper;
 
     @Autowired
     private LoanOrderDOMapper loanOrderDOMapper;
@@ -212,6 +213,20 @@ public class FinanceServiceImpl implements FinanceService
         {
             throw new BizException("该收款银行无对应code,不支持自动打款");
         }
+
+        //生成该回调序列号
+        String execute = GeneratorIDUtil.execute();
+
+        SerialNoDO serialNoDO = new SerialNoDO();
+        serialNoDO.setOrderId(orderId);
+        serialNoDO.setSerialNo(Long.valueOf(execute));
+        serialNoDO.setOperation(1);//1表示打款操作
+        serialNoDO.setGmtCreate(new Date());
+
+        int ins = serialNoDOMapper.insertSelective(serialNoDO);
+        Preconditions.checkArgument(ins > 0, "操作序列号生成失败");
+
+
         paymentParam.setBank_code(remitDetailsDO.getBank_code());
         paymentParam.setAmount(remitDetailsDO.getRemit_amount());
         paymentParam.setAccount_name(remitDetailsDO.getBeneficiary_bank());
@@ -233,6 +248,7 @@ public class FinanceServiceImpl implements FinanceService
 
         //设置回调接口
         paymentParam.setCall_back_url(financeConfig.getCallBackUrl());
+        paymentParam.setSerial_no(execute);
 
         LOG.info("支付参数："+paymentParam.toString());
 
@@ -272,9 +288,20 @@ public class FinanceServiceImpl implements FinanceService
     public ResultBean remitInfo(RemitSatusParam remitSatusParam)
     {
         Preconditions.checkNotNull(remitSatusParam.getOrderId(),"订单id不能为空");
+        Preconditions.checkNotNull(remitSatusParam.getSerialNo(),"操作序列号不能为空");
         Preconditions.checkNotNull(remitSatusParam.getRemitSatus(),"打款状态不能为空");
 
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(remitSatusParam.getOrderId());
+        Preconditions.checkNotNull(loanOrderDO,"无该订单");
 
+        //判断该操作序列号不能为空
+        SerialNoDO serialNoDO = serialNoDOMapper.selectByPrimaryKey(new SerialNoDOKey(remitSatusParam.getOrderId(), remitSatusParam.getSerialNo()));
+        if (serialNoDO==null || serialNoDO.getStatus()!=0)
+        {
+            throw new BizException("该操作序列号无效");
+        }
+
+        //
         if (remitSatusParam.getRemitSatus().equals(REMIT_STATUS_TWO))
         {
             //提交订单
@@ -288,13 +315,15 @@ public class FinanceServiceImpl implements FinanceService
             Preconditions.checkArgument(approval.getSuccess(), approval.getMsg());
         }
 
-        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(remitSatusParam.getOrderId());
-
-        Preconditions.checkNotNull(loanOrderDO,"该单号订单不存在");
-
         RemitDetailsDO remitDetailsDO = remitDetailsDOMapper.selectByPrimaryKey(loanOrderDO.getRemitDetailsId());
 
         remitDetailsDO.setRemit_status(remitSatusParam.getRemitSatus());
+
+        serialNoDO.setExMessage(remitSatusParam.getMessage());
+
+        serialNoDO.setStatus(new Byte("1"));
+
+        serialNoDOMapper.updateByPrimaryKeySelective(serialNoDO);
 
         int i = remitDetailsDOMapper.updateByPrimaryKeySelective(remitDetailsDO);
 

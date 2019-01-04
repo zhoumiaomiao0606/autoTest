@@ -10,6 +10,8 @@ import com.yunche.loan.config.util.OSSUnit;
 import com.yunche.loan.config.util.SessionUtils;
 import com.yunche.loan.domain.query.VideoFaceExportQuery;
 import com.yunche.loan.domain.vo.RecombinationVO;
+import com.yunche.loan.domain.vo.UniversalCustomerFileVO;
+import com.yunche.loan.domain.vo.UniversalCustomerVO;
 import com.yunche.loan.domain.vo.VideoFaceExportVO;
 import com.yunche.loan.mapper.LoanQueryDOMapper;
 import com.yunche.loan.mapper.ZhonganInfoDOMapper;
@@ -60,6 +62,12 @@ public class VideoReviewServiceImpl implements VideoReviewService {
 
         RecombinationVO recombinationVO = new RecombinationVO();
 
+        List<UniversalCustomerVO> customers = loanQueryDOMapper.selectUniversalCustomer(orderId);
+        for (UniversalCustomerVO universalCustomerVO : customers) {
+            List<UniversalCustomerFileVO> files = loanQueryService.selectUniversalCustomerFile(Long.valueOf(universalCustomerVO.getCustomer_id()));
+            universalCustomerVO.setFiles(files);
+        }
+           recombinationVO.setCustomers(customers);
         recombinationVO.setInfo(loanQueryDOMapper.selectUniversalBaseInfo(orderId));
         recombinationVO.setCar(loanQueryDOMapper.selectUniversalCarInfo(orderId));
         recombinationVO.setFinancial(loanQueryDOMapper.selectFinancialScheme(orderId));

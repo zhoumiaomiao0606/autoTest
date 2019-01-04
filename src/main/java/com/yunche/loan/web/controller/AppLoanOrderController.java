@@ -294,6 +294,17 @@ public class AppLoanOrderController {
     }
 
     /**
+     * 资料增补详情页--确认按钮
+     *
+     * @param addMoneyConfirm
+     * @return
+     */
+    @PostMapping(value = "/infosupplement/addMoneyConfirm", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResultBean addMoneyConfirm(@RequestBody AddMoneyConfirm addMoneyConfirm) {
+        return appLoanOrderService.addMoneyConfirm(addMoneyConfirm);
+    }
+
+    /**
      * APP端 -客户信息查询 -基本信息
      *
      * @param orderId

@@ -59,4 +59,8 @@ public class CostDetailsDO {
     private String rebateSecond;   //第二道返利
 
     private BigDecimal rebate_not_deducted;
+
+    private BigDecimal partner_rebate_amount;//合伙人返利金额
+
+    private Byte key_risk_premium_type;
 }

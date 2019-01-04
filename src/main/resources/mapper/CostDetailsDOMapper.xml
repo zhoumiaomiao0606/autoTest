@@ -1,317 +1,394 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.yunche.loan.mapper.CostDetailsDOMapper" >
-  <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.CostDetailsDO" >
-    <id column="id" property="id" jdbcType="BIGINT" />
-    <result column="service_fee" property="service_fee" jdbcType="DECIMAL" />
-    <result column="apply_license_plate_deposit_fee" property="apply_license_plate_deposit_fee" jdbcType="DECIMAL" />
-    <result column="performance_fee" property="performance_fee" jdbcType="DECIMAL" />
-    <result column="install_gps_fee" property="install_gps_fee" jdbcType="DECIMAL" />
-    <result column="risk_fee" property="risk_fee" jdbcType="DECIMAL" />
-    <result column="fair_assess_fee" property="fair_assess_fee" jdbcType="DECIMAL" />
-    <result column="apply_license_plate_out_province_fee" property="apply_license_plate_out_province_fee" jdbcType="DECIMAL" />
-    <result column="based_margin_fee" property="based_margin_fee" jdbcType="DECIMAL" />
-    <result column="service_fee_type" property="service_fee_type" jdbcType="TINYINT" />
-    <result column="apply_license_plate_deposit_fee_type" property="apply_license_plate_deposit_fee_type" jdbcType="TINYINT" />
-    <result column="performance_fee_type" property="performance_fee_type" jdbcType="TINYINT" />
-    <result column="install_gps_fee_type" property="install_gps_fee_type" jdbcType="TINYINT" />
-    <result column="risk_fee_type" property="risk_fee_type" jdbcType="TINYINT" />
-    <result column="fair_assess_fee_type" property="fair_assess_fee_type" jdbcType="TINYINT" />
-    <result column="apply_license_plate_out_province_fee_type" property="apply_license_plate_out_province_fee_type" jdbcType="TINYINT" />
-    <result column="based_margin_fee_type" property="based_margin_fee_type" jdbcType="TINYINT" />
-    <result column="extra_fee" property="extra_fee" jdbcType="DECIMAL" />
-    <result column="extra_fee_type" property="extra_fee_type" jdbcType="TINYINT" />
-    <result column="other_fee" property="other_fee" jdbcType="DECIMAL" />
-    <result column="other_fee_type" property="other_fee_type" jdbcType="TINYINT" />
-    <result column="status" property="status" jdbcType="TINYINT" />
-    <result column="feature" property="feature" jdbcType="VARCHAR" />
-      <result column="rebateFirst" property="rebateFirst" jdbcType="VARCHAR" />
-      <result column="rebateSecond" property="rebateSecond" jdbcType="VARCHAR" />
-    <result column="listrule" property="listrule" jdbcType="VARCHAR" />
-    <result column="rebate_not_deducted" property="rebate_not_deducted" jdbcType="DECIMAL" />
-    <result column="partner_rebate_amount" property="partner_rebate_amount" jdbcType="DECIMAL" />
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunche.loan.mapper.CostDetailsDOMapper">
+  <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.CostDetailsDO">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="service_fee" jdbcType="DECIMAL" property="service_fee" />
+    <result column="apply_license_plate_deposit_fee" jdbcType="DECIMAL" property="apply_license_plate_deposit_fee" />
+    <result column="performance_fee" jdbcType="DECIMAL" property="performance_fee" />
+    <result column="install_gps_fee" jdbcType="DECIMAL" property="install_gps_fee" />
+    <result column="risk_fee" jdbcType="DECIMAL" property="risk_fee" />
+    <result column="fair_assess_fee" jdbcType="DECIMAL" property="fair_assess_fee" />
+    <result column="apply_license_plate_out_province_fee" jdbcType="DECIMAL" property="apply_license_plate_out_province_fee" />
+    <result column="based_margin_fee" jdbcType="DECIMAL" property="based_margin_fee" />
+    <result column="service_fee_type" jdbcType="TINYINT" property="service_fee_type" />
+    <result column="apply_license_plate_deposit_fee_type" jdbcType="TINYINT" property="apply_license_plate_deposit_fee_type" />
+    <result column="performance_fee_type" jdbcType="TINYINT" property="performance_fee_type" />
+    <result column="install_gps_fee_type" jdbcType="TINYINT" property="install_gps_fee_type" />
+    <result column="risk_fee_type" jdbcType="TINYINT" property="risk_fee_type" />
+    <result column="fair_assess_fee_type" jdbcType="TINYINT" property="fair_assess_fee_type" />
+    <result column="apply_license_plate_out_province_fee_type" jdbcType="TINYINT" property="apply_license_plate_out_province_fee_type" />
+    <result column="based_margin_fee_type" jdbcType="TINYINT" property="based_margin_fee_type" />
+    <result column="extra_fee" jdbcType="DECIMAL" property="extra_fee" />
+    <result column="extra_fee_type" jdbcType="TINYINT" property="extra_fee_type" />
+    <result column="other_fee" jdbcType="DECIMAL" property="other_fee" />
+    <result column="other_fee_type" jdbcType="TINYINT" property="other_fee_type" />
+    <result column="status" jdbcType="TINYINT" property="status" />
+    <result column="feature" jdbcType="VARCHAR" property="feature" />
+    <result column="order_id" jdbcType="BIGINT" property="order_id" />
+    <result column="rebate_not_deducted" jdbcType="DECIMAL" property="rebate_not_deducted" />
+    <result column="listrule" jdbcType="VARCHAR" property="listrule" />
+    <result column="rebateFirst" jdbcType="VARCHAR" property="rebateFirst" />
+    <result column="rebateSecond" jdbcType="VARCHAR" property="rebateSecond" />
+    <result column="partner_rebate_amount" jdbcType="DECIMAL" property="partner_rebate_amount" />
+    <result column="key_risk_premium_type" jdbcType="TINYINT" property="key_risk_premium_type" />
   </resultMap>
-  <sql id="Base_Column_List" >
+  <sql id="Base_Column_List">
     id, service_fee, apply_license_plate_deposit_fee, performance_fee, install_gps_fee, 
     risk_fee, fair_assess_fee, apply_license_plate_out_province_fee, based_margin_fee, 
     service_fee_type, apply_license_plate_deposit_fee_type, performance_fee_type, install_gps_fee_type, 
     risk_fee_type, fair_assess_fee_type, apply_license_plate_out_province_fee_type, based_margin_fee_type, 
-    extra_fee, extra_fee_type, other_fee, other_fee_type, status, feature,rebateFirst,rebateSecond,listrule,
-    rebate_not_deducted,partner_rebate_amount
+    extra_fee, extra_fee_type, other_fee, other_fee_type, status, feature, order_id, 
+    rebate_not_deducted, listrule, rebateFirst, rebateSecond, partner_rebate_amount, 
+    key_risk_premium_type
   </sql>
-  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
     select 
     <include refid="Base_Column_List" />
     from cost_details
     where id = #{id,jdbcType=BIGINT}
   </select>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
     delete from cost_details
     where id = #{id,jdbcType=BIGINT}
   </delete>
-  <insert id="insertSelective" useGeneratedKeys="true" keyProperty="id"  parameterType="com.yunche.loan.domain.entity.CostDetailsDO" >
+  <insert id="insert" parameterType="com.yunche.loan.domain.entity.CostDetailsDO">
+    insert into cost_details (id, service_fee, apply_license_plate_deposit_fee, 
+      performance_fee, install_gps_fee, risk_fee, 
+      fair_assess_fee, apply_license_plate_out_province_fee, 
+      based_margin_fee, service_fee_type, apply_license_plate_deposit_fee_type, 
+      performance_fee_type, install_gps_fee_type, 
+      risk_fee_type, fair_assess_fee_type, apply_license_plate_out_province_fee_type, 
+      based_margin_fee_type, extra_fee, extra_fee_type, 
+      other_fee, other_fee_type, status, 
+      feature, order_id, rebate_not_deducted, 
+      listrule, rebateFirst, rebateSecond, 
+      partner_rebate_amount, key_risk_premium_type
+      )
+    values (#{id,jdbcType=BIGINT}, #{service_fee,jdbcType=DECIMAL}, #{apply_license_plate_deposit_fee,jdbcType=DECIMAL}, 
+      #{performance_fee,jdbcType=DECIMAL}, #{install_gps_fee,jdbcType=DECIMAL}, #{risk_fee,jdbcType=DECIMAL}, 
+      #{fair_assess_fee,jdbcType=DECIMAL}, #{apply_license_plate_out_province_fee,jdbcType=DECIMAL}, 
+      #{based_margin_fee,jdbcType=DECIMAL}, #{service_fee_type,jdbcType=TINYINT}, #{apply_license_plate_deposit_fee_type,jdbcType=TINYINT}, 
+      #{performance_fee_type,jdbcType=TINYINT}, #{install_gps_fee_type,jdbcType=TINYINT}, 
+      #{risk_fee_type,jdbcType=TINYINT}, #{fair_assess_fee_type,jdbcType=TINYINT}, #{apply_license_plate_out_province_fee_type,jdbcType=TINYINT}, 
+      #{based_margin_fee_type,jdbcType=TINYINT}, #{extra_fee,jdbcType=DECIMAL}, #{extra_fee_type,jdbcType=TINYINT}, 
+      #{other_fee,jdbcType=DECIMAL}, #{other_fee_type,jdbcType=TINYINT}, #{status,jdbcType=TINYINT}, 
+      #{feature,jdbcType=VARCHAR}, #{order_id,jdbcType=BIGINT}, #{rebate_not_deducted,jdbcType=DECIMAL}, 
+      #{listrule,jdbcType=VARCHAR}, #{rebateFirst,jdbcType=VARCHAR}, #{rebateSecond,jdbcType=VARCHAR}, 
+      #{partner_rebate_amount,jdbcType=DECIMAL}, #{key_risk_premium_type,jdbcType=TINYINT}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.CostDetailsDO">
     insert into cost_details
-    <trim prefix="(" suffix=")" suffixOverrides="," >
-      <if test="id != null" >
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
         id,
       </if>
-      <if test="service_fee != null" >
+      <if test="service_fee != null">
         service_fee,
       </if>
-      <if test="apply_license_plate_deposit_fee != null" >
+      <if test="apply_license_plate_deposit_fee != null">
         apply_license_plate_deposit_fee,
       </if>
-      <if test="performance_fee != null" >
+      <if test="performance_fee != null">
         performance_fee,
       </if>
-      <if test="install_gps_fee != null" >
+      <if test="install_gps_fee != null">
         install_gps_fee,
       </if>
-      <if test="risk_fee != null" >
+      <if test="risk_fee != null">
         risk_fee,
       </if>
-      <if test="fair_assess_fee != null" >
+      <if test="fair_assess_fee != null">
         fair_assess_fee,
       </if>
-      <if test="apply_license_plate_out_province_fee != null" >
+      <if test="apply_license_plate_out_province_fee != null">
         apply_license_plate_out_province_fee,
       </if>
-      <if test="based_margin_fee != null" >
+      <if test="based_margin_fee != null">
         based_margin_fee,
       </if>
-      <if test="service_fee_type != null" >
+      <if test="service_fee_type != null">
         service_fee_type,
       </if>
-      <if test="apply_license_plate_deposit_fee_type != null" >
+      <if test="apply_license_plate_deposit_fee_type != null">
         apply_license_plate_deposit_fee_type,
       </if>
-      <if test="performance_fee_type != null" >
+      <if test="performance_fee_type != null">
         performance_fee_type,
       </if>
-      <if test="install_gps_fee_type != null" >
+      <if test="install_gps_fee_type != null">
         install_gps_fee_type,
       </if>
-      <if test="risk_fee_type != null" >
+      <if test="risk_fee_type != null">
         risk_fee_type,
       </if>
-      <if test="fair_assess_fee_type != null" >
+      <if test="fair_assess_fee_type != null">
         fair_assess_fee_type,
       </if>
-      <if test="apply_license_plate_out_province_fee_type != null" >
+      <if test="apply_license_plate_out_province_fee_type != null">
         apply_license_plate_out_province_fee_type,
       </if>
-      <if test="based_margin_fee_type != null" >
+      <if test="based_margin_fee_type != null">
         based_margin_fee_type,
       </if>
-      <if test="extra_fee != null" >
+      <if test="extra_fee != null">
         extra_fee,
       </if>
-      <if test="extra_fee_type != null" >
+      <if test="extra_fee_type != null">
         extra_fee_type,
       </if>
-      <if test="other_fee != null" >
+      <if test="other_fee != null">
         other_fee,
       </if>
-      <if test="other_fee_type != null" >
+      <if test="other_fee_type != null">
         other_fee_type,
       </if>
-      <if test="status != null" >
+      <if test="status != null">
         status,
       </if>
-      <if test="feature != null" >
+      <if test="feature != null">
         feature,
       </if>
-        <if test="rebateFirst != null" >
-            rebateFirst,
-        </if>
-        <if test="rebateSecond != null" >
-            rebateSecond,
-        </if>
-      <if test="listrule != null" >
-        listrule,
+      <if test="order_id != null">
+        order_id,
       </if>
-      <if test="rebate_not_deducted != null" >
+      <if test="rebate_not_deducted != null">
         rebate_not_deducted,
       </if>
-      <if test="partner_rebate_amount != null" >
+      <if test="listrule != null">
+        listrule,
+      </if>
+      <if test="rebateFirst != null">
+        rebateFirst,
+      </if>
+      <if test="rebateSecond != null">
+        rebateSecond,
+      </if>
+      <if test="partner_rebate_amount != null">
         partner_rebate_amount,
       </if>
-
+      <if test="key_risk_premium_type != null">
+        key_risk_premium_type,
+      </if>
     </trim>
-    <trim prefix="values (" suffix=")" suffixOverrides="," >
-      <if test="id != null" >
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
         #{id,jdbcType=BIGINT},
       </if>
-      <if test="service_fee != null" >
+      <if test="service_fee != null">
         #{service_fee,jdbcType=DECIMAL},
       </if>
-      <if test="apply_license_plate_deposit_fee != null" >
+      <if test="apply_license_plate_deposit_fee != null">
         #{apply_license_plate_deposit_fee,jdbcType=DECIMAL},
       </if>
-      <if test="performance_fee != null" >
+      <if test="performance_fee != null">
         #{performance_fee,jdbcType=DECIMAL},
       </if>
-      <if test="install_gps_fee != null" >
+      <if test="install_gps_fee != null">
         #{install_gps_fee,jdbcType=DECIMAL},
       </if>
-      <if test="risk_fee != null" >
+      <if test="risk_fee != null">
         #{risk_fee,jdbcType=DECIMAL},
       </if>
-      <if test="fair_assess_fee != null" >
+      <if test="fair_assess_fee != null">
         #{fair_assess_fee,jdbcType=DECIMAL},
       </if>
-      <if test="apply_license_plate_out_province_fee != null" >
+      <if test="apply_license_plate_out_province_fee != null">
         #{apply_license_plate_out_province_fee,jdbcType=DECIMAL},
       </if>
-      <if test="based_margin_fee != null" >
+      <if test="based_margin_fee != null">
         #{based_margin_fee,jdbcType=DECIMAL},
       </if>
-      <if test="service_fee_type != null" >
+      <if test="service_fee_type != null">
         #{service_fee_type,jdbcType=TINYINT},
       </if>
-      <if test="apply_license_plate_deposit_fee_type != null" >
+      <if test="apply_license_plate_deposit_fee_type != null">
         #{apply_license_plate_deposit_fee_type,jdbcType=TINYINT},
       </if>
-      <if test="performance_fee_type != null" >
+      <if test="performance_fee_type != null">
         #{performance_fee_type,jdbcType=TINYINT},
       </if>
-      <if test="install_gps_fee_type != null" >
+      <if test="install_gps_fee_type != null">
         #{install_gps_fee_type,jdbcType=TINYINT},
       </if>
-      <if test="risk_fee_type != null" >
+      <if test="risk_fee_type != null">
         #{risk_fee_type,jdbcType=TINYINT},
       </if>
-      <if test="fair_assess_fee_type != null" >
+      <if test="fair_assess_fee_type != null">
         #{fair_assess_fee_type,jdbcType=TINYINT},
       </if>
-      <if test="apply_license_plate_out_province_fee_type != null" >
+      <if test="apply_license_plate_out_province_fee_type != null">
         #{apply_license_plate_out_province_fee_type,jdbcType=TINYINT},
       </if>
-      <if test="based_margin_fee_type != null" >
+      <if test="based_margin_fee_type != null">
         #{based_margin_fee_type,jdbcType=TINYINT},
       </if>
-      <if test="extra_fee != null" >
+      <if test="extra_fee != null">
         #{extra_fee,jdbcType=DECIMAL},
       </if>
-      <if test="extra_fee_type != null" >
+      <if test="extra_fee_type != null">
         #{extra_fee_type,jdbcType=TINYINT},
       </if>
-      <if test="other_fee != null" >
+      <if test="other_fee != null">
         #{other_fee,jdbcType=DECIMAL},
       </if>
-      <if test="other_fee_type != null" >
+      <if test="other_fee_type != null">
         #{other_fee_type,jdbcType=TINYINT},
       </if>
-      <if test="status != null" >
+      <if test="status != null">
         #{status,jdbcType=TINYINT},
       </if>
-      <if test="feature != null" >
+      <if test="feature != null">
         #{feature,jdbcType=VARCHAR},
       </if>
-        <if test="rebateFirst != null" >
-            #{rebateFirst,jdbcType=VARCHAR},
-        </if>
-        <if test="rebateSecond != null" >
-            #{rebateSecond,jdbcType=VARCHAR},
-        </if>
-      <if test="listrule != null" >
-        #{listrule,jdbcType=VARCHAR},
+      <if test="order_id != null">
+        #{order_id,jdbcType=BIGINT},
       </if>
-      <if test="rebate_not_deducted != null" >
+      <if test="rebate_not_deducted != null">
         #{rebate_not_deducted,jdbcType=DECIMAL},
       </if>
-      <if test="partner_rebate_amount != null" >
+      <if test="listrule != null">
+        #{listrule,jdbcType=VARCHAR},
+      </if>
+      <if test="rebateFirst != null">
+        #{rebateFirst,jdbcType=VARCHAR},
+      </if>
+      <if test="rebateSecond != null">
+        #{rebateSecond,jdbcType=VARCHAR},
+      </if>
+      <if test="partner_rebate_amount != null">
         #{partner_rebate_amount,jdbcType=DECIMAL},
       </if>
-
+      <if test="key_risk_premium_type != null">
+        #{key_risk_premium_type,jdbcType=TINYINT},
+      </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.CostDetailsDO" >
+  <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.CostDetailsDO">
     update cost_details
-    <set >
-      <if test="service_fee != null" >
+    <set>
+      <if test="service_fee != null">
         service_fee = #{service_fee,jdbcType=DECIMAL},
       </if>
-      <if test="apply_license_plate_deposit_fee != null" >
+      <if test="apply_license_plate_deposit_fee != null">
         apply_license_plate_deposit_fee = #{apply_license_plate_deposit_fee,jdbcType=DECIMAL},
       </if>
-      <if test="performance_fee != null" >
+      <if test="performance_fee != null">
         performance_fee = #{performance_fee,jdbcType=DECIMAL},
       </if>
-      <if test="install_gps_fee != null" >
+      <if test="install_gps_fee != null">
         install_gps_fee = #{install_gps_fee,jdbcType=DECIMAL},
       </if>
-      <if test="risk_fee != null" >
+      <if test="risk_fee != null">
         risk_fee = #{risk_fee,jdbcType=DECIMAL},
       </if>
-      <if test="fair_assess_fee != null" >
+      <if test="fair_assess_fee != null">
         fair_assess_fee = #{fair_assess_fee,jdbcType=DECIMAL},
       </if>
-      <if test="apply_license_plate_out_province_fee != null" >
+      <if test="apply_license_plate_out_province_fee != null">
         apply_license_plate_out_province_fee = #{apply_license_plate_out_province_fee,jdbcType=DECIMAL},
       </if>
-      <if test="based_margin_fee != null" >
+      <if test="based_margin_fee != null">
         based_margin_fee = #{based_margin_fee,jdbcType=DECIMAL},
       </if>
-      <if test="service_fee_type != null" >
+      <if test="service_fee_type != null">
         service_fee_type = #{service_fee_type,jdbcType=TINYINT},
       </if>
-      <if test="apply_license_plate_deposit_fee_type != null" >
+      <if test="apply_license_plate_deposit_fee_type != null">
         apply_license_plate_deposit_fee_type = #{apply_license_plate_deposit_fee_type,jdbcType=TINYINT},
       </if>
-      <if test="performance_fee_type != null" >
+      <if test="performance_fee_type != null">
         performance_fee_type = #{performance_fee_type,jdbcType=TINYINT},
       </if>
-      <if test="install_gps_fee_type != null" >
+      <if test="install_gps_fee_type != null">
         install_gps_fee_type = #{install_gps_fee_type,jdbcType=TINYINT},
       </if>
-      <if test="risk_fee_type != null" >
+      <if test="risk_fee_type != null">
         risk_fee_type = #{risk_fee_type,jdbcType=TINYINT},
       </if>
-      <if test="fair_assess_fee_type != null" >
+      <if test="fair_assess_fee_type != null">
         fair_assess_fee_type = #{fair_assess_fee_type,jdbcType=TINYINT},
       </if>
-      <if test="apply_license_plate_out_province_fee_type != null" >
+      <if test="apply_license_plate_out_province_fee_type != null">
         apply_license_plate_out_province_fee_type = #{apply_license_plate_out_province_fee_type,jdbcType=TINYINT},
       </if>
-      <if test="based_margin_fee_type != null" >
+      <if test="based_margin_fee_type != null">
         based_margin_fee_type = #{based_margin_fee_type,jdbcType=TINYINT},
       </if>
-      <if test="extra_fee != null" >
+      <if test="extra_fee != null">
         extra_fee = #{extra_fee,jdbcType=DECIMAL},
       </if>
-      <if test="extra_fee_type != null" >
+      <if test="extra_fee_type != null">
         extra_fee_type = #{extra_fee_type,jdbcType=TINYINT},
       </if>
-      <if test="other_fee != null" >
+      <if test="other_fee != null">
         other_fee = #{other_fee,jdbcType=DECIMAL},
       </if>
-      <if test="other_fee_type != null" >
+      <if test="other_fee_type != null">
         other_fee_type = #{other_fee_type,jdbcType=TINYINT},
       </if>
-      <if test="status != null" >
+      <if test="status != null">
         status = #{status,jdbcType=TINYINT},
       </if>
-      <if test="feature != null" >
+      <if test="feature != null">
         feature = #{feature,jdbcType=VARCHAR},
       </if>
-        <if test="rebateFirst != null" >
-            rebateFirst = #{rebateFirst,jdbcType=VARCHAR},
-        </if>
-        <if test="rebateSecond != null" >
-            rebateSecond = #{rebateSecond,jdbcType=VARCHAR},
-        </if>
-      <if test="listrule != null" >
-        listrule = #{listrule,jdbcType=VARCHAR},
+      <if test="order_id != null">
+        order_id = #{order_id,jdbcType=BIGINT},
       </if>
-      <if test="rebate_not_deducted != null" >
+      <if test="rebate_not_deducted != null">
         rebate_not_deducted = #{rebate_not_deducted,jdbcType=DECIMAL},
       </if>
-      <if test="partner_rebate_amount != null" >
+      <if test="listrule != null">
+        listrule = #{listrule,jdbcType=VARCHAR},
+      </if>
+      <if test="rebateFirst != null">
+        rebateFirst = #{rebateFirst,jdbcType=VARCHAR},
+      </if>
+      <if test="rebateSecond != null">
+        rebateSecond = #{rebateSecond,jdbcType=VARCHAR},
+      </if>
+      <if test="partner_rebate_amount != null">
         partner_rebate_amount = #{partner_rebate_amount,jdbcType=DECIMAL},
       </if>
-
+      <if test="key_risk_premium_type != null">
+        key_risk_premium_type = #{key_risk_premium_type,jdbcType=TINYINT},
+      </if>
     </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.CostDetailsDO">
+    update cost_details
+    set service_fee = #{service_fee,jdbcType=DECIMAL},
+      apply_license_plate_deposit_fee = #{apply_license_plate_deposit_fee,jdbcType=DECIMAL},
+      performance_fee = #{performance_fee,jdbcType=DECIMAL},
+      install_gps_fee = #{install_gps_fee,jdbcType=DECIMAL},
+      risk_fee = #{risk_fee,jdbcType=DECIMAL},
+      fair_assess_fee = #{fair_assess_fee,jdbcType=DECIMAL},
+      apply_license_plate_out_province_fee = #{apply_license_plate_out_province_fee,jdbcType=DECIMAL},
+      based_margin_fee = #{based_margin_fee,jdbcType=DECIMAL},
+      service_fee_type = #{service_fee_type,jdbcType=TINYINT},
+      apply_license_plate_deposit_fee_type = #{apply_license_plate_deposit_fee_type,jdbcType=TINYINT},
+      performance_fee_type = #{performance_fee_type,jdbcType=TINYINT},
+      install_gps_fee_type = #{install_gps_fee_type,jdbcType=TINYINT},
+      risk_fee_type = #{risk_fee_type,jdbcType=TINYINT},
+      fair_assess_fee_type = #{fair_assess_fee_type,jdbcType=TINYINT},
+      apply_license_plate_out_province_fee_type = #{apply_license_plate_out_province_fee_type,jdbcType=TINYINT},
+      based_margin_fee_type = #{based_margin_fee_type,jdbcType=TINYINT},
+      extra_fee = #{extra_fee,jdbcType=DECIMAL},
+      extra_fee_type = #{extra_fee_type,jdbcType=TINYINT},
+      other_fee = #{other_fee,jdbcType=DECIMAL},
+      other_fee_type = #{other_fee_type,jdbcType=TINYINT},
+      status = #{status,jdbcType=TINYINT},
+      feature = #{feature,jdbcType=VARCHAR},
+      order_id = #{order_id,jdbcType=BIGINT},
+      rebate_not_deducted = #{rebate_not_deducted,jdbcType=DECIMAL},
+      listrule = #{listrule,jdbcType=VARCHAR},
+      rebateFirst = #{rebateFirst,jdbcType=VARCHAR},
+      rebateSecond = #{rebateSecond,jdbcType=VARCHAR},
+      partner_rebate_amount = #{partner_rebate_amount,jdbcType=DECIMAL},
+      key_risk_premium_type = #{key_risk_premium_type,jdbcType=TINYINT}
     where id = #{id,jdbcType=BIGINT}
   </update>
 </mapper>

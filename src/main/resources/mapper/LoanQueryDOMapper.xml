@@ -497,7 +497,7 @@
             from loan_financial_plan_temp_his his
             left join financial_product product on his.financial_product_id = product.prod_id
 			left join loan_order main_order on his.order_id = main_order.id
-            left join financial_product product on his.financial_product_id = product.prod_id
+
 			left join loan_base_info loan on main_order.loan_base_info_id = loan.id
 			left join loan_customer customer on main_order.loan_customer_id = customer.id
 			left join employee salesman on loan.salesman_id = salesman.id
@@ -619,7 +619,7 @@
             car.car_key                                                                             AS car_key,
             car.info                                                                                AS car_info,
             car.pay_month                                                                           AS pay_month,
-            car.distributor_name                                                                    AS distributor_name,
+            car.distributor_name                                                                    AS car_distributor_name,
             partner.pay_month                                                                       AS partner_pay_month,
             vehicle.color                                                                           AS vehicle_color,
             vehicle.now_driving_license_owner                                                       AS vehicle_now_driving_license_owner,
@@ -762,6 +762,7 @@
         car.car_key                                                                             AS car_key,
         car.info                                                                                AS car_info,
         car.pay_month                                                                                AS pay_month,
+        car.distributor_name                                                                    AS car_distributor_name,
         vehicle.color                                                                           AS vehicle_color,
         vehicle.now_driving_license_owner                                                       AS vehicle_now_driving_license_owner,
         vehicle.old_driving_license_owner                                                       AS vehicle_old_driving_license_owner,
@@ -1100,6 +1101,7 @@
             remit.remit_status                                                              AS remit_status,
             DATE_FORMAT(remit.application_date,'%Y-%m-%d %H:%i:%S')                                 AS remit_application_date,
             remit.remit_business_id                                                              AS remit_business_id,
+            remit.car_dealer_rebate                                                              AS car_dealer_rebate,
             remit.remark
 
       from (select * from loan_order where id = #{orderId,jdbcType=BIGINT}) main_order
@@ -1119,6 +1121,7 @@
             remit.return_rate_amount                                                                AS remit_return_rate_amount,
             remit.insurance_situation                                                               AS remit_insurance_situation,
             remit.payment_organization                                                              AS remit_payment_organization,
+            remit.car_dealer_rebate                                                                 AS car_dealer_rebate,
             DATE_FORMAT(remit.application_date,'%Y-%m-%d')                                          AS remit_application_date,
             remit.remark
 
@@ -1131,6 +1134,8 @@
     <select id="selectUniversalCostDetails" parameterType="java.lang.Long"
             resultType="com.yunche.loan.domain.vo.UniversalCostDetailsVO">
       select
+      (loan_telephone_verify.key_risk_premium * loan_financial_plan.loan_amount/100) AS key_risk_premium_fee,
+      cost.key_risk_premium_type                                AS key_risk_premium_type,
              cost.service_fee                                AS cost_service_fee,
              cost.apply_license_plate_deposit_fee            AS cost_apply_license_plate_deposit_fee,
              cost.performance_fee                            AS cost_performance_fee,
@@ -1159,6 +1164,8 @@
       from (select * from loan_order where id = #{orderId,jdbcType=BIGINT}) main_order
       left join cost_details cost on main_order.cost_details_id = cost.id
       left join remit_details remit on main_order.remit_details_id = remit.id
+      LEFT JOIN loan_financial_plan ON main_order.loan_financial_plan_id = loan_financial_plan.id
+	  LEFT JOIN loan_telephone_verify ON main_order.id = loan_telephone_verify.order_id
 
     </select>
 
@@ -2628,6 +2635,7 @@
                 c.name                                     AS    customer_name,
                 c.id_card                                  AS    customer_id_card,
                 c.mobile                                   AS    customer_mobile,
+                c.signature_type                           AS    customer_signature_type,
                 e.id                                       AS    salesman_id,
                 e.name                                     AS    salesman_name,
                 p.id                                       AS    partner_id,

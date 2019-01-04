@@ -46,6 +46,7 @@ public class UniversalBaseInfoVO {
 
     private String car_detail_id;
     private String car_detail_name;
+    private String customer_signature_type;
 
 //    private String remit_application_date;
 

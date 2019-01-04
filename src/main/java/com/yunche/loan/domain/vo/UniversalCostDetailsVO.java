@@ -3,7 +3,12 @@ package com.yunche.loan.domain.vo;
 import lombok.Data;
 
 @Data
-public class UniversalCostDetailsVO {
+public class UniversalCostDetailsVO
+{
+
+    private String key_risk_premium_fee;
+
+    private String key_risk_premium_type;
 
     //服务费
     private String cost_service_fee;

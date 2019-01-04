@@ -127,6 +127,7 @@ public class BusinessReviewServiceImpl implements BusinessReviewService {
             param.setYear(universalInfoVO.getFinancial_loan_time());
             param.setCarGpsNum(universalInfoVO.getCar_gps_num());
             param.setBankAreaId(universalInfoVO.getBank_id());
+            param.setBankRate(universalInfoVO.getFinancial_bank_rate());
 
             //加收保证金
             param.setBail(universalInfoVO.getFinancial_cash_deposit());
