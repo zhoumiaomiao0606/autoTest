@@ -805,6 +805,9 @@
                       <when test="taskDefinitionKey == 'usertask_material_manage'">
                           deputy.material_manage                       AS taskStatus
                       </when>
+                <when test="taskDefinitionKey == 'usertask_commit_key'">
+                    (join_ltv.key_risk_premium + join_p.risk_bear_rate)                    AS orderRisk
+                </when>
 
                       <when test="taskDefinitionKey == 'usertask_bridge_handle'
                                   || taskDefinitionKey == 'usertask_bridge_repay_record'
@@ -854,6 +857,9 @@
               <if test="taskDefinitionKey == 'usertask_info_supplement'">
               left join loan_info_supplement join_s        on main.id               = join_s.order_id
               </if>
+            <if test="taskDefinitionKey == 'usertask_commit_key'">
+                left join loan_telephone_verify join_ltv        on main.id               = join_ltv.order_id
+            </if>
               <if test="taskDefinitionKey == 'usertask_financial_scheme_modify_apply'">
               left join loan_financial_plan_temp_his join_his   on main.id          = join_his.order_id
               </if>
@@ -1053,6 +1059,13 @@
                   <when test="taskDefinitionKey == 'usertask_commit_key'">
                       AND case when #{taskStatus} = 0 then deputy.commit_key != 0                       else deputy.commit_key                       = #{taskStatus} end
                       AND join_i.car_key = 1
+                      <if test="keyCollected !=null and keyCollected !=''">
+                          and case
+                          when #{keyCollected} = 1 then main.key_collected = 1
+                          when #{keyCollected} = 2 then main.key_collected = 2
+                          else 1=1
+                          end
+                      </if>
                   </when>
                   <when test="taskDefinitionKey == 'usertask_material_review'">
                       AND case when #{taskStatus} = 0 then deputy.material_review != 0                  else deputy.material_review                  = #{taskStatus} end

@@ -63,4 +63,6 @@ public class LoanOrderDO {
     private   Byte rebateEntry;
     private   Integer  rebatePeriods;
 
+    private Byte keyCollected;
+
 }

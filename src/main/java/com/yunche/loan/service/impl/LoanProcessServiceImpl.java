@@ -242,6 +242,14 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
         ////////////////////////////////////////// ↓↓↓↓↓ 特殊处理  ↓↓↓↓↓ ////////////////////////////////////////////////
 
+
+        // 【待收钥匙】
+        if (isCommitKeyTask(approval.getTaskDefinitionKey(), approval.getAction()))
+        {
+            loanOrderDO.setKeyCollected(approval.getKeyCollected());
+            loanOrderDOMapper.updateByPrimaryKeySelective(loanOrderDO);
+        }
+
         // 【征信增补】
         if (isCreditSupplementTask(approval.getTaskDefinitionKey(), approval.getAction())) {
             execCreditSupplementTask(approval, loanOrderDO.getProcessInstId(), loanProcessDO);
@@ -1464,6 +1472,19 @@ public class LoanProcessServiceImpl implements LoanProcessService {
     private boolean isCreditSupplementTask(String taskDefinitionKey, Byte action) {
         boolean isCreditSupplementTask = CREDIT_SUPPLEMENT.getCode().equals(taskDefinitionKey) && ACTION_PASS.equals(action);
         return isCreditSupplementTask;
+    }
+
+
+    /**
+     * 是否【待收钥匙】
+     *
+     * @param taskDefinitionKey
+     * @param action
+     * @return
+     */
+    private boolean isCommitKeyTask(String taskDefinitionKey, Byte action) {
+        boolean isCommitKeyTask = COMMIT_KEY.getCode().equals(taskDefinitionKey) && ACTION_PASS.equals(action);
+        return isCommitKeyTask;
     }
 
     /**

@@ -41,6 +41,8 @@ public class TaskListQuery {
 
     Long materialSupplementLevel;
 
+    private Byte keyCollected;
+
     Set<String> juniorIds = Sets.newHashSet();
 
     @NotEmpty

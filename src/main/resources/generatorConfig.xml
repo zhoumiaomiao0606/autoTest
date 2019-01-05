@@ -384,10 +384,9 @@
 -->
 
 
-        <table tableName="cost_details" domainObjectName="CostDetailsDO"
+        <table tableName="loan_order" domainObjectName="LoanOrderDO"
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
-            <property name="useActualColumnNames" value="true"/>
         </table>
 
         <!-- 忽略列，不生成bean 字段

@@ -2,10 +2,12 @@ package com.yunche.loan.service.impl;
 
 import com.google.common.base.Preconditions;
 import com.yunche.loan.config.result.ResultBean;
+import com.yunche.loan.domain.entity.LoanOrderDO;
 import com.yunche.loan.domain.entity.LoanTelephoneVerifyDO;
 import com.yunche.loan.domain.entity.PartnerDO;
 import com.yunche.loan.domain.param.ApprovalParam;
 import com.yunche.loan.domain.param.LoanTelephoneVerifyParam;
+import com.yunche.loan.mapper.LoanOrderDOMapper;
 import com.yunche.loan.mapper.PartnerDOMapper;
 import com.yunche.loan.service.LoanCommitKeyService;
 import com.yunche.loan.service.LoanProcessService;
@@ -24,7 +26,12 @@ import static com.yunche.loan.config.constant.ProcessApprovalConst.ACTION_PASS;
  * @date 2018/11/7
  */
 @Service
-public class LoanCommitKeyServiceImpl implements LoanCommitKeyService {
+public class LoanCommitKeyServiceImpl implements LoanCommitKeyService
+{
+
+    private static final Byte UNCOLLECTEDKEY = 2;
+
+    private static final Byte HASCOLLECTEDKEY = 1;
 
 
     @Autowired
@@ -49,6 +56,7 @@ public class LoanCommitKeyServiceImpl implements LoanCommitKeyService {
         approvalParam.setOrderId(orderId);
         approvalParam.setTaskDefinitionKey(COMMIT_KEY.getCode());
         approvalParam.setAction(ACTION_PASS);
+        approvalParam.setKeyCollected(UNCOLLECTEDKEY);
         ResultBean<Void> approvalResult = loanProcessService.approval(approvalParam);
         Preconditions.checkArgument(approvalResult.getSuccess(), approvalResult.getSuccess());
 
@@ -72,8 +80,6 @@ public class LoanCommitKeyServiceImpl implements LoanCommitKeyService {
         ResultBean<Void> riskResult = loanTelephoneVerifyService.save(loanTelephoneVerifyDO);
         Preconditions.checkArgument(riskResult.getSuccess(), riskResult.getMsg());
 
-
-        //状态--不收钥匙
 
         return ResultBean.ofSuccess(null, "成功");
     }

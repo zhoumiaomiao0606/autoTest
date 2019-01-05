@@ -131,6 +131,11 @@ public class ApprovalParam {
     private String serial_no;
     /////////////////////////////////////////////////////// 请求财务操作--序列号 ////////////////////////////////////////////////////////
 
+
+    //////////////////////////////////////////待收钥匙状态////////////
+    private Byte keyCollected;
+
+
     private Date bankLendDate;
     public String getOriginalTaskDefinitionKey() {
         if (null != originalTaskDefinitionKey) {

@@ -173,6 +173,9 @@ public class TaskListVO {
     private String roleChangeHisCreateTime;
     private String roleChangeHisUserId;
     private String roleChangeHisUserName;
+
+
+    private String orderRisk;
 }
 
 
