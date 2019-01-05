@@ -21,6 +21,7 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -32,11 +33,12 @@ import static com.yunche.loan.config.constant.BaseExceptionEnum.EL00000003;
 public class BusinessReviewManager {
     private static final Logger LOG = LoggerFactory.getLogger(BusinessReviewManager.class);
 
-    private static final String HOST = "http://47.96.78.20:8012";//财务打款单，计算，账户类
 
-    private static final String HOST2 = "http://47.97.122.31:8888";//二手车
+    //private  static final String HOST = "http://47.96.78.20:8012";//财务打款单，计算，账户类
 
-    private static final String HOST3 = "http://47.96.78.20:8019";//临时测试--金福猫支付
+    //private static final String HOST2 = "http://47.97.122.31:8888";//二手车
+
+    //private static final String HOST3 = "http://47.96.78.20:8019";//临时测试--金福猫支付
 
    /* private static final String HOST2 = "http://192.168.0.140:8888";*/
 
@@ -60,11 +62,11 @@ public class BusinessReviewManager {
 
 
    //通用
-    public static <T> String financeUnisal(T param,String PATH)
+    public static <T> String financeUnisal(T param,String host,String PATH)
     {
         String result = null;
         try {
-            result = HttpUtils.doPost(HOST, PATH, null, param.toString());
+            result = HttpUtils.doPost(host, PATH, null, param.toString());
             System.out.println("请求参数"+param.toString());
             System.out.println("请求结果"+result);
 
@@ -83,11 +85,11 @@ public class BusinessReviewManager {
     }
 
     //通用
-    public static <T> String getFinanceUnisal(String PATH)
+    public static <T> String getFinanceUnisal(String PATH,String host)
     {
         String result =null;
         try {
-            HttpResponse httpResponse = HttpUtils.doGet(HOST, PATH, null,null,null);
+            HttpResponse httpResponse = HttpUtils.doGet(host, PATH, null,null,null);
 
 
             if(httpResponse!=null && httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK){
@@ -111,11 +113,11 @@ public class BusinessReviewManager {
     }
 
     //通用
-    public static <T> String financeUnisal2(T param,String PATH)
+    public static <T> String financeUnisal2(T param,String host,String PATH)
     {
         String result = null;
         try {
-            result = HttpUtils.doPost(HOST2, PATH,null, param.toString());
+            result = HttpUtils.doPost(host, PATH,null, param.toString());
             /*LOG.info("请求参数"+param.toString());*/
             LOG.info("请求结果"+result);
 
@@ -134,11 +136,11 @@ public class BusinessReviewManager {
     }
 
     //通用
-    public static <T> String financeUnisal3(T param,String PATH)
+    public static <T> String financeUnisal3(T param,String host, String PATH)
     {
         String result = null;
         try {
-            result = HttpUtils.doPost(HOST3, PATH,null, param.toString());
+            result = HttpUtils.doPost(host, PATH,null, param.toString());
             /*LOG.info("请求参数"+param.toString());*/
             LOG.info("请求结果"+result);
 
@@ -158,7 +160,7 @@ public class BusinessReviewManager {
 
 
     //通用
-    public static <T> String getFinanceUnisal(String PATH, Map<String, String> querys)
+    /*public static <T> String getFinanceUnisal(String PATH, Map<String, String> querys)
     {
         String result =null;
         try {
@@ -185,14 +187,14 @@ public class BusinessReviewManager {
         }
 
         return result;
-    }
+    }*/
 
     //通用
-    public static <T> String getFinanceUnisal2(String PATH, Map<String, String> querys)
+    public static <T> String getFinanceUnisal2(String PATH,String host, Map<String, String> querys)
     {
         String result =null;
         try {
-            HttpResponse httpResponse = HttpUtils.doGet2(HOST2, PATH, null,null,querys);
+            HttpResponse httpResponse = HttpUtils.doGet2(host, PATH, null,null,querys);
 
 
             if(httpResponse!=null && httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK){

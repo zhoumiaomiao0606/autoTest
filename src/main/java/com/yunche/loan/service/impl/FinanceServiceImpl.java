@@ -26,6 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.lang.reflect.Type;
@@ -36,6 +37,7 @@ import static com.yunche.loan.config.constant.LoanProcessEnum.*;
 import static com.yunche.loan.config.constant.ProcessApprovalConst.ACTION_PASS;
 
 @Service
+@Transactional
 public class FinanceServiceImpl implements FinanceService
 {
     private static final Logger LOG = LoggerFactory.getLogger(FinanceServiceImpl.class);
@@ -66,6 +68,8 @@ public class FinanceServiceImpl implements FinanceService
     @Autowired
     private RemitDetailsDOMapper remitDetailsDOMapper;
 
+
+    @Autowired
     private LoanProcessService loanProcessService;
 
 
@@ -215,11 +219,11 @@ public class FinanceServiceImpl implements FinanceService
         }
 
         //生成该回调序列号
-        String execute = GeneratorIDUtil.execute();
+        Long execute = GeneratorIDUtil.getFixId();
 
         SerialNoDO serialNoDO = new SerialNoDO();
         serialNoDO.setOrderId(orderId);
-        serialNoDO.setSerialNo(Long.valueOf(execute));
+        serialNoDO.setSerialNo(execute);
         serialNoDO.setOperation(1);//1表示打款操作
         serialNoDO.setGmtCreate(new Date());
 
@@ -229,7 +233,7 @@ public class FinanceServiceImpl implements FinanceService
 
         paymentParam.setBank_code(remitDetailsDO.getBank_code());
         paymentParam.setAmount(remitDetailsDO.getRemit_amount());
-        paymentParam.setAccount_name(remitDetailsDO.getBeneficiary_bank());
+        paymentParam.setAccount_name(remitDetailsDO.getBeneficiary_account());
         paymentParam.setAccount_number(remitDetailsDO.getBeneficiary_account_number());
 
         Map<String,String> map = new HashMap<>();
@@ -248,11 +252,11 @@ public class FinanceServiceImpl implements FinanceService
 
         //设置回调接口
         paymentParam.setCall_back_url(financeConfig.getCallBackUrl());
-        paymentParam.setSerial_no(execute);
+        paymentParam.setSerial_no(String.valueOf(execute));
 
         LOG.info("支付参数："+paymentParam.toString());
 
-        String financeResult = businessReviewManager.financeUnisal3(paymentParam,"/payment");
+        String financeResult = businessReviewManager.financeUnisal3(paymentParam,financeConfig.getPaymentHost(),"/payment");
 
         CommonFinanceResult Result = new CommonFinanceResult();
         if (financeResult !=null && !"".equals(financeResult))
@@ -266,6 +270,10 @@ public class FinanceServiceImpl implements FinanceService
         {
             return ResultBean.ofError("打款失败:"+Result.getMessage());
         }
+
+
+        //插入打款行id，打款会计凭证需要
+        remitDetailsDO.setRemit_business_id("10029905");
 
         //更新打款单打款状态---待讨论
 
@@ -310,6 +318,7 @@ public class FinanceServiceImpl implements FinanceService
             approvalParam.setOrderId(remitSatusParam.getOrderId());
             approvalParam.setTaskDefinitionKey(REMIT_REVIEW.getCode());
             approvalParam.setAction(ACTION_PASS);
+            approvalParam.setCheckPermission(false);
 
             ResultBean<Void> approval = loanProcessService.approval(approvalParam);
             Preconditions.checkArgument(approval.getSuccess(), approval.getMsg());
@@ -321,7 +330,7 @@ public class FinanceServiceImpl implements FinanceService
 
         serialNoDO.setExMessage(remitSatusParam.getMessage());
 
-        serialNoDO.setStatus(new Byte("1"));
+        serialNoDO.setStatus(INVALID_STATUS);
 
         serialNoDOMapper.updateByPrimaryKeySelective(serialNoDO);
 
@@ -339,7 +348,7 @@ public class FinanceServiceImpl implements FinanceService
     @Override
     public ResultBean getAccount()
     {
-        String financeResult = businessReviewManager.getFinanceUnisal("/costcalculation/finance/account");
+        String financeResult = businessReviewManager.getFinanceUnisal("/costcalculation/finance/account",financeConfig.getHOST());
 
         System.out.println("====="+financeResult);
 

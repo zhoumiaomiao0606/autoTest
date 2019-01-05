@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Preconditions;
 import com.google.common.eventbus.Subscribe;
+import com.yunche.loan.config.common.FinanceConfig;
 import com.yunche.loan.config.constant.IDict;
 import com.yunche.loan.config.feign.client.TenantFeignClient;
 import com.yunche.loan.config.util.DateUtil;
@@ -38,9 +39,12 @@ import static com.yunche.loan.config.constant.ProcessApprovalConst.ACTION_PASS;
 public class AsyncFinanceApI {
     private static final Logger LOG = LoggerFactory.getLogger(AsyncFinanceApI.class);
 
-    private static final String HOST = "http://47.96.78.20:8012";
+    //private static final String HOST = "http://47.96.78.20:8012";
 
     private static final String PATH = "/costcalculation/insert";
+
+    @Autowired
+    private FinanceConfig financeConfig;
 
     @Autowired
     private LoanBaseInfoDOMapper loanBaseInfoDOMapper;
@@ -115,6 +119,8 @@ public class AsyncFinanceApI {
     @Async
     public void postFinanceData(ApprovalParam approvalParam) {
 
+        //进行推送
+        try {
         PostFinanceData postFinanceData = new PostFinanceData();
 
         //根据orderid查询合伙人id
@@ -182,11 +188,13 @@ public class AsyncFinanceApI {
         //--002 银行放款
         if(approvalParam.getTaskDefinitionKey().equals(BANK_LEND_RECORD.getCode()) && ACTION_PASS.equals(approvalParam.getAction()))
         {
-            LoanRefundApplyDO loanRefundApplyDO = loanRefundApplyDOMapper.lastByOrderId(approvalParam.getOrderId());
+            /*LoanRefundApplyDO loanRefundApplyDO = loanRefundApplyDOMapper.lastByOrderId(approvalParam.getOrderId());
             Preconditions.checkNotNull(loanRefundApplyDO, "退款单为空");
             postFinanceData.setAdvancesInterest(String.valueOf(loanRefundApplyDO.getAdvances_interest()));//垫款利息收入
             postFinanceData.setOtherInterest(String.valueOf(loanRefundApplyDO.getOther_interest()));//其他利息收入
-            postFinanceData.setPenaltyInterest(String.valueOf(loanRefundApplyDO.getPenalty_interest()));//罚息收入
+            postFinanceData.setPenaltyInterest(String.valueOf(loanRefundApplyDO.getPenalty_interest()));//罚息收入*/
+
+            postFinanceData.setCompanyId(remitDetailsDO.getRemit_business_id());
 
             LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(approvalParam.getOrderId());
             //查询金融方案
@@ -225,10 +233,9 @@ public class AsyncFinanceApI {
 
         }
 
-        //进行推送
-        try {
+
             LOG.info("准备异步发送数据！！！" + postFinanceData.toString());
-            String retJson = HttpUtils.doPost(HOST, PATH, null, postFinanceData.toString());
+            String retJson = HttpUtils.doPost(financeConfig.getAccountingVoucherHost(), PATH, null, postFinanceData.toString());
             //记录流水信息
             errSerialRecord(retJson,approvalParam);
 
@@ -325,7 +332,10 @@ public class AsyncFinanceApI {
     //一旦-垫款提交-退款提交-偿款提交-则执行
     @Subscribe
     public void listernApproval(ApprovalParam approvalParam) {
-        if ((approvalParam.getTaskDefinitionKey().equals(REMIT_REVIEW.getCode()) && ACTION_PASS.equals(approvalParam.getAction())) || (approvalParam.getTaskDefinitionKey().equals(FINANCE_INSTEAD_PAY_REVIEW.getCode()) && ACTION_PASS.equals(approvalParam.getAction())) || (approvalParam.getTaskDefinitionKey().equals(REFUND_APPLY_REVIEW.getCode()) && ACTION_PASS.equals(approvalParam.getAction()))|| (approvalParam.getTaskDefinitionKey().equals(BANK_LEND_RECORD.getCode()) && ACTION_PASS.equals(approvalParam.getAction()))) {
+        if ((approvalParam.getTaskDefinitionKey().equals(REMIT_REVIEW.getCode()) && ACTION_PASS.equals(approvalParam.getAction()))
+                || (approvalParam.getTaskDefinitionKey().equals(FINANCE_INSTEAD_PAY_REVIEW.getCode()) && ACTION_PASS.equals(approvalParam.getAction()))
+                || (approvalParam.getTaskDefinitionKey().equals(REFUND_APPLY_REVIEW.getCode()) && ACTION_PASS.equals(approvalParam.getAction()))
+                || (approvalParam.getTaskDefinitionKey().equals(BANK_LEND_RECORD.getCode()) && ACTION_PASS.equals(approvalParam.getAction()))) {
             postFinanceData(approvalParam);
         }
 

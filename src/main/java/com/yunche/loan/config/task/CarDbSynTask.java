@@ -3,6 +3,7 @@ package com.yunche.loan.config.task;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.yunche.loan.config.anno.DistributedLock;
+import com.yunche.loan.config.common.FinanceConfig;
 import com.yunche.loan.domain.entity.*;
 import com.yunche.loan.domain.param.ModelsPara;
 import com.yunche.loan.domain.param.SeriesPara;
@@ -33,6 +34,9 @@ import java.util.List;
 public class CarDbSynTask
 {
 
+    @Autowired
+    private FinanceConfig financeConfig;
+
     @Resource
     private BusinessReviewManager businessReviewManager;
 
@@ -59,7 +63,7 @@ public class CarDbSynTask
     public  void changeDb() {
         try {
 
-        String brandsResult = businessReviewManager.getFinanceUnisal2("/api/car/brand", null);
+        String brandsResult = businessReviewManager.getFinanceUnisal2("/api/car/brand",financeConfig.getSecondCarHost(), null);
 
         CommonFinanceResult<List<BaseBrandInitial>> brandsResult1 = new CommonFinanceResult<List<BaseBrandInitial>>();
         if (brandsResult != null && !"".equals(brandsResult)) {
@@ -116,7 +120,7 @@ public class CarDbSynTask
                                                                 //根据品牌id继续查车系
                                                                 SeriesPara seriesPara = new SeriesPara();
                                                                 seriesPara.setBrand(e.getCode());
-                                                                String seriesesResult = businessReviewManager.financeUnisal2(seriesPara, "/api/car/series");
+                                                                String seriesesResult = businessReviewManager.financeUnisal2(seriesPara,financeConfig.getSecondCarHost(), "/api/car/series");
 
                                                                 CommonFinanceResult<List<BaseSeriesDO>> seriesesResult1 = new CommonFinanceResult<List<BaseSeriesDO>>();
                                                                 if (seriesesResult != null && !"".equals(seriesesResult)) {
@@ -147,7 +151,7 @@ public class CarDbSynTask
 
                                                                                         ModelsPara modelsPara = new ModelsPara();
                                                                                         modelsPara.setSeries(f.getCode());
-                                                                                        String modelsResult = businessReviewManager.financeUnisal2(modelsPara, "/api/car/model");
+                                                                                        String modelsResult = businessReviewManager.financeUnisal2(modelsPara, financeConfig.getSecondCarHost(),"/api/car/model");
 
                                                                                         CommonFinanceResult<List<BaseModelDO>> modelsResult1 = new CommonFinanceResult<List<BaseModelDO>>();
                                                                                         if (modelsResult != null && !"".equals(modelsResult)) {
