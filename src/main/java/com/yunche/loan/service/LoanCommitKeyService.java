@@ -1,6 +1,7 @@
 package com.yunche.loan.service;
 
 import com.yunche.loan.config.result.ResultBean;
+import com.yunche.loan.domain.param.RiskCommitmentPara;
 
 /**
  * @author liuzhe
@@ -9,4 +10,8 @@ import com.yunche.loan.config.result.ResultBean;
 public interface LoanCommitKeyService {
 
     ResultBean<Void> riskUncollected(Long orderId);
+
+    ResultBean letterOfRiskCommitment(RiskCommitmentPara riskCommitmentPara);
+
+    ResultBean detail(Long orderId);
 }
