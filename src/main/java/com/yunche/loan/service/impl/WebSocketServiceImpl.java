@@ -25,6 +25,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 
 import static com.yunche.loan.config.constant.BankConst.*;
 import static com.yunche.loan.config.constant.CarConst.CAR_DETAIL;
@@ -122,7 +123,7 @@ public class WebSocketServiceImpl implements WebSocketService {
         Preconditions.checkNotNull(webSocketParam.getPcAnyChatUserId(), "pcAnyChatUserId不能为空");
 
         // 生成roomId     -> 9位随机数
-        int roomId = new Random().nextInt(1000000000);
+        int roomId = ThreadLocalRandom.current().nextInt(1000000000);
 
         // 消息对象
         WebSocketMsgVO webSocketMsgVO = new WebSocketMsgVO();
