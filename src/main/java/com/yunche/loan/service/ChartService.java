@@ -42,4 +42,6 @@ public interface ChartService
     ResultBean creditPrescription(MaterialReviewParam param);
 
     ResultBean examineEarlyWarning(MaterialReviewParam param);
+
+    ResultBean afterLoanCusInfo(ExportOrdersParam exportOrdersParam);
 }
