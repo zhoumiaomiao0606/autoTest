@@ -1,6 +1,7 @@
 package com.yunche.loan.web.controller;
 
 import com.yunche.loan.config.result.ResultBean;
+import com.yunche.loan.domain.param.RiskCommitmentPara;
 import com.yunche.loan.service.LoanCommitKeyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -28,5 +29,15 @@ public class LoanCommitKeyController {
     @GetMapping("/riskUncollected")
     public ResultBean<Void> riskUncollected(@RequestParam Long orderId) {
         return loanCommitKeyService.riskUncollected(orderId);
+    }
+
+    @PostMapping("/letterOfRiskCommitment")
+    public ResultBean letterOfRiskCommitment(@RequestBody RiskCommitmentPara riskCommitmentPara) {
+        return loanCommitKeyService.letterOfRiskCommitment(riskCommitmentPara);
+    }
+
+    @GetMapping("/detail")
+    public ResultBean detail(@RequestParam Long orderId) {
+        return loanCommitKeyService.detail(orderId);
     }
 }

@@ -162,7 +162,9 @@ public enum LoanFileEnum {
     //上门借记卡号
     VISIT_DOOR_CARD((byte)97,"借记卡号"),
 
-    LETTER_COMMITMENT_SIGNED_PARTNERS((byte) 98, "合伙人签字承诺函");
+    LETTER_COMMITMENT_SIGNED_PARTNERS((byte) 98, "合伙人签字承诺函"),
+
+    LETTER_OF_RISK_COMMITMENT((byte) 101, "风险承诺函");
 
 
 

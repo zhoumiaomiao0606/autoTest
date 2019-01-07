@@ -1,11 +1,13 @@
 package com.yunche.loan.config.result;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.github.pagehelper.PageInfo;
 import com.yunche.loan.config.constant.BaseExceptionEnum;
 import lombok.Data;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * @author liuzhe
@@ -39,6 +41,11 @@ public class ResultBean<T> implements Serializable {
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private Integer totalPage;
+
+
+    public static <T> ResultBean<T> ofSuccess() {
+        return of(null, true, BaseExceptionEnum.EC00000200);
+    }
 
     public static <T> ResultBean<T> ofSuccess(T data) {
         return of(data, true, BaseExceptionEnum.EC00000200);
@@ -123,4 +130,8 @@ public class ResultBean<T> implements Serializable {
         resultBean.setData(null);
         return resultBean;
     }
+
+//    public static <T> ResultBean<List<T>> ofSuccess(PageInfo<T> pageInfo) {
+//        return ofSuccess(pageInfo.getList(), (int) pageInfo.getTotal(), pageInfo.getPageNum(), pageInfo.getPageSize());
+//    }
 }
