@@ -9,7 +9,8 @@ import com.yunche.loan.domain.entity.ConfVideoFaceBankPartnerDO;
 import com.yunche.loan.domain.entity.PartnerDO;
 import com.yunche.loan.domain.query.ConfVideoFaceBankPartnerQuery;
 import com.yunche.loan.domain.query.PartnerQuery;
-import com.yunche.loan.domain.vo.ConfVideoFaceBankPartnerVO;
+import com.yunche.loan.domain.vo.MachineVideoFaceVO;
+import com.yunche.loan.domain.vo.ConfVideoFaceVO;
 import com.yunche.loan.mapper.ConfVideoFaceBankDOMapper;
 import com.yunche.loan.mapper.ConfVideoFaceBankPartnerDOMapper;
 import com.yunche.loan.mapper.PartnerDOMapper;
@@ -64,7 +65,16 @@ public class ConfVideoFaceServiceImpl implements ConfVideoFaceService {
     public ConfVideoFaceBankDO artificialDetail(Long bankId) {
         Preconditions.checkNotNull(bankId, "bankId不能为空");
 
-        ConfVideoFaceBankDO confVideoFaceBankDO = confVideoFaceBankDOMapper.selectByPrimaryKey(bankId);
+        ConfVideoFaceBankDO exist = confVideoFaceBankDOMapper.selectByPrimaryKey(bankId);
+
+        if (null != exist) {
+            return exist;
+        }
+
+        ConfVideoFaceBankDO confVideoFaceBankDO = new ConfVideoFaceBankDO();
+        confVideoFaceBankDO.setBankId(bankId);
+        confVideoFaceBankDO.setArtificialVideoFace(ConfVideoFaceConst.ARTIFICIAL_VIDEO_FACE_STATUS_CLOSE);
+        confVideoFaceBankDO.setNeedLocation(ConfVideoFaceConst.ARTIFICIAL_VIDEO_FACE_NEED_LOCATION_TRUE);
 
         return confVideoFaceBankDO;
     }
@@ -94,7 +104,7 @@ public class ConfVideoFaceServiceImpl implements ConfVideoFaceService {
     }
 
     @Override
-    public PageInfo<ConfVideoFaceBankPartnerVO> listMachine(ConfVideoFaceBankPartnerQuery query) {
+    public PageInfo<MachineVideoFaceVO> listMachine(ConfVideoFaceBankPartnerQuery query) {
 
         // 合伙人分页展示
         PageHelper.startPage(query.getPageIndex(), query.getPageSize(), true);
@@ -129,35 +139,35 @@ public class ConfVideoFaceServiceImpl implements ConfVideoFaceService {
                     .map(ConfVideoFaceBankPartnerDO::getPartnerId)
                     .collect(Collectors.toList());
 
-            List<ConfVideoFaceBankPartnerVO> confVideoFaceBankPartnerVOList = partnerDOList.stream()
+            List<MachineVideoFaceVO> machineVideoFaceVOList = partnerDOList.stream()
                     .filter(Objects::nonNull)
                     .map(e -> {
 
                         Long partnerId = e.getId();
 
-                        ConfVideoFaceBankPartnerVO confVideoFaceBankPartnerVO = new ConfVideoFaceBankPartnerVO();
+                        MachineVideoFaceVO machineVideoFaceVO = new MachineVideoFaceVO();
 
-                        confVideoFaceBankPartnerVO.setPartnerId(partnerId);
-                        confVideoFaceBankPartnerVO.setPartnerName(e.getName());
-                        confVideoFaceBankPartnerVO.setPartnerLeaderName(e.getLeaderName());
+                        machineVideoFaceVO.setPartnerId(partnerId);
+                        machineVideoFaceVO.setPartnerName(e.getName());
+                        machineVideoFaceVO.setPartnerLeaderName(e.getLeaderName());
 
                         if (close_partnerIdList.contains(partnerId)) {
                             // CLOSE
-                            confVideoFaceBankPartnerVO.setMachineVideoFaceStatus(ConfVideoFaceConst.MACHINE_VIDEO_FACE_STATUS_CLOSE);
+                            machineVideoFaceVO.setMachineVideoFaceStatus(ConfVideoFaceConst.MACHINE_VIDEO_FACE_STATUS_CLOSE);
                         } else {
                             // OPEN
-                            confVideoFaceBankPartnerVO.setMachineVideoFaceStatus(ConfVideoFaceConst.MACHINE_VIDEO_FACE_STATUS_OPEN);
+                            machineVideoFaceVO.setMachineVideoFaceStatus(ConfVideoFaceConst.MACHINE_VIDEO_FACE_STATUS_OPEN);
                         }
 
-                        return confVideoFaceBankPartnerVO;
+                        return machineVideoFaceVO;
                     })
                     .collect(Collectors.toList());
 
 
-            PageInfo<ConfVideoFaceBankPartnerVO> pageInfo_ = PageInfo.of(confVideoFaceBankPartnerVOList);
+            PageInfo<MachineVideoFaceVO> pageInfo_ = PageInfo.of(machineVideoFaceVOList);
             BeanUtils.copyProperties(pageInfo, pageInfo_);
 
-            pageInfo_.setList(confVideoFaceBankPartnerVOList);
+            pageInfo_.setList(machineVideoFaceVOList);
 
             return pageInfo_;
 
@@ -165,30 +175,59 @@ public class ConfVideoFaceServiceImpl implements ConfVideoFaceService {
 
             // 全OPEN
 
-            List<ConfVideoFaceBankPartnerVO> confVideoFaceBankPartnerVOList = partnerDOList.stream()
+            List<MachineVideoFaceVO> machineVideoFaceVOList = partnerDOList.stream()
                     .filter(Objects::nonNull)
                     .map(e -> {
 
                         Long partnerId = e.getId();
 
-                        ConfVideoFaceBankPartnerVO confVideoFaceBankPartnerVO = new ConfVideoFaceBankPartnerVO();
+                        MachineVideoFaceVO machineVideoFaceVO = new MachineVideoFaceVO();
 
-                        confVideoFaceBankPartnerVO.setPartnerId(partnerId);
-                        confVideoFaceBankPartnerVO.setPartnerName(e.getName());
-                        confVideoFaceBankPartnerVO.setPartnerLeaderName(e.getLeaderName());
-                        confVideoFaceBankPartnerVO.setMachineVideoFaceStatus(ConfVideoFaceConst.MACHINE_VIDEO_FACE_STATUS_OPEN);
+                        machineVideoFaceVO.setPartnerId(partnerId);
+                        machineVideoFaceVO.setPartnerName(e.getName());
+                        machineVideoFaceVO.setPartnerLeaderName(e.getLeaderName());
+                        machineVideoFaceVO.setMachineVideoFaceStatus(ConfVideoFaceConst.MACHINE_VIDEO_FACE_STATUS_OPEN);
 
-                        return confVideoFaceBankPartnerVO;
+                        return machineVideoFaceVO;
                     })
                     .collect(Collectors.toList());
 
 
-            PageInfo<ConfVideoFaceBankPartnerVO> pageInfo_ = PageInfo.of(confVideoFaceBankPartnerVOList);
+            PageInfo<MachineVideoFaceVO> pageInfo_ = PageInfo.of(machineVideoFaceVOList);
             BeanUtils.copyProperties(pageInfo, pageInfo_);
 
-            pageInfo_.setList(confVideoFaceBankPartnerVOList);
+            pageInfo_.setList(machineVideoFaceVOList);
 
             return pageInfo_;
         }
+    }
+
+    @Override
+    public ConfVideoFaceVO detail(Long bankId, Long partnerId) {
+        Preconditions.checkNotNull(bankId, "bankId不能为空");
+        Preconditions.checkNotNull(partnerId, "partnerId不能为空");
+
+        ConfVideoFaceVO confVideoFaceVO = new ConfVideoFaceVO();
+
+        // 人工
+        ConfVideoFaceBankDO confVideoFaceBankDO = artificialDetail(bankId);
+
+        confVideoFaceVO.setArtificialVideoFaceStatus(confVideoFaceBankDO.getArtificialVideoFace());
+        confVideoFaceVO.setNeedLocation(confVideoFaceBankDO.getNeedLocation());
+
+
+        // 机器
+        ConfVideoFaceBankPartnerDO key = new ConfVideoFaceBankPartnerDO();
+        key.setBankId(bankId);
+        key.setPartnerId(partnerId);
+        ConfVideoFaceBankPartnerDO exist = confVideoFaceBankPartnerDOMapper.selectByPrimaryKey(key);
+
+        if (null != exist) {
+            confVideoFaceVO.setMachineVideoFaceStatus(ConfVideoFaceConst.MACHINE_VIDEO_FACE_STATUS_CLOSE);
+        } else {
+            confVideoFaceVO.setMachineVideoFaceStatus(ConfVideoFaceConst.MACHINE_VIDEO_FACE_STATUS_OPEN);
+        }
+
+        return confVideoFaceVO;
     }
 }
