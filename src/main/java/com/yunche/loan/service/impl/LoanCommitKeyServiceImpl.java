@@ -2,14 +2,18 @@ package com.yunche.loan.service.impl;
 
 import com.google.common.base.Preconditions;
 import com.yunche.loan.config.result.ResultBean;
+import com.yunche.loan.domain.entity.LoanFileDO;
 import com.yunche.loan.domain.entity.LoanOrderDO;
 import com.yunche.loan.domain.entity.LoanTelephoneVerifyDO;
 import com.yunche.loan.domain.entity.PartnerDO;
 import com.yunche.loan.domain.param.ApprovalParam;
 import com.yunche.loan.domain.param.LoanTelephoneVerifyParam;
+import com.yunche.loan.domain.param.RiskCommitmentPara;
+import com.yunche.loan.mapper.LoanFileDOMapper;
 import com.yunche.loan.mapper.LoanOrderDOMapper;
 import com.yunche.loan.mapper.PartnerDOMapper;
 import com.yunche.loan.service.LoanCommitKeyService;
+import com.yunche.loan.service.LoanFileService;
 import com.yunche.loan.service.LoanProcessService;
 import com.yunche.loan.service.LoanTelephoneVerifyService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +21,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.List;
 
+import static com.yunche.loan.config.constant.LoanFileConst.UPLOAD_TYPE_NORMAL;
+import static com.yunche.loan.config.constant.LoanFileEnum.LETTER_OF_RISK_COMMITMENT;
 import static com.yunche.loan.config.constant.LoanProcessEnum.COMMIT_KEY;
 import static com.yunche.loan.config.constant.ProcessApprovalConst.ACTION_PASS;
 
@@ -42,6 +49,16 @@ public class LoanCommitKeyServiceImpl implements LoanCommitKeyService
 
     @Autowired
     private LoanTelephoneVerifyService loanTelephoneVerifyService;
+
+    @Autowired
+    private LoanFileService loanFileService;
+
+    @Autowired
+    private LoanOrderDOMapper loanOrderDOMapper;
+
+    @Autowired
+    private LoanFileDOMapper loanFileDOMapper;
+
 
 
     @Override
@@ -82,5 +99,33 @@ public class LoanCommitKeyServiceImpl implements LoanCommitKeyService
 
 
         return ResultBean.ofSuccess(null, "成功");
+    }
+
+    @Override
+    public ResultBean letterOfRiskCommitment(RiskCommitmentPara riskCommitmentPara)
+    {
+
+        Preconditions.checkNotNull(riskCommitmentPara, "订单号不能为空");
+        Preconditions.checkNotNull(riskCommitmentPara.getOrderId(), "订单不能为空");
+
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(riskCommitmentPara.getOrderId());
+
+        //保存图片
+        ResultBean<Void> resultBean = loanFileService.updateOrInsertByCustomerIdAndUploadType(loanOrderDO.getLoanCustomerId(), riskCommitmentPara.getFiles(), UPLOAD_TYPE_NORMAL);
+        Preconditions.checkArgument(resultBean.getSuccess(), "风险承诺函");
+        return ResultBean.ofSuccess("保存成功！");
+    }
+
+    @Override
+    public ResultBean detail(Long orderId)
+    {
+        Preconditions.checkNotNull(orderId, "orderId不能为空");
+
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
+
+        List<LoanFileDO> loanFileDOS = loanFileDOMapper.listByCustomerIdAndType(loanOrderDO.getLoanCustomerId(), LETTER_OF_RISK_COMMITMENT.getType(), UPLOAD_TYPE_NORMAL);
+
+
+        return ResultBean.ofSuccess(loanFileDOS);
     }
 }
