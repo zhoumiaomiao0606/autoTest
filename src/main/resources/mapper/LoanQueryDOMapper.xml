@@ -2815,4 +2815,63 @@ SELECT
     </select>
 
 
+    <select id="selectHasRimitOrder" resultType="com.yunche.loan.domain.vo.NeedSendMesOrders">
+
+        SELECT
+        partner.leader_mobile as leaderMobile,
+        loan_customer.`name` as customerName
+        FROM
+        (
+        SELECT
+        floor(
+        ( UNIX_TIMESTAMP( DATE_FORMAT( now( ), '%Y-%m-%d' )) - UNIX_TIMESTAMP( DATE_FORMAT( MAX(create_time), '%Y-%m-%d' ) ) ) / ( 24 * 60 * 60 )
+        ) AS hasRimitDays,
+        order_id
+        FROM
+        loan_process_log
+        WHERE loan_process_log.task_definition_key = 'usertask_remit_review' and loan_process_log.action =1
+        GROUP BY order_id
+        HAVING hasRimitDays &gt; 15 AND hasRimitDays &lt; 21
+        ) t
+        LEFT JOIN loan_process ON t.order_id = loan_process.order_id
+        LEFT JOIN loan_order ON t.order_id = loan_order.id
+        LEFT JOIN loan_base_info ON loan_order.loan_base_info_id = loan_base_info.id
+        LEFT JOIN partner ON loan_base_info.partner_id = partner.id
+        LEFT JOIN loan_customer ON loan_order.loan_customer_id = loan_customer.id
+        WHERE loan_process.commit_key = 2
+    </select>
+
+    <select id="selectShutDownQueryCreditOrder" resultType="com.yunche.loan.domain.vo.SDCOrders">
+
+        SELECT
+        loan_base_info.partner_id as partnerId,
+        loan_order.id as orderId
+        FROM
+        (
+        SELECT
+        floor(
+        ( UNIX_TIMESTAMP( DATE_FORMAT( now( ), '%Y-%m-%d' )) - UNIX_TIMESTAMP( DATE_FORMAT( MAX(create_time), '%Y-%m-%d' ) ) ) / ( 24 * 60 * 60 )
+        ) AS hasRimitDays,
+        order_id
+        FROM
+        loan_process_log
+        WHERE loan_process_log.task_definition_key = 'usertask_remit_review' and loan_process_log.action =1
+        GROUP BY order_id
+        HAVING hasRimitDays &gt;= 21
+        ) t
+        LEFT JOIN loan_process ON t.order_id = loan_process.order_id
+        LEFT JOIN loan_order ON t.order_id = loan_order.id
+        LEFT JOIN loan_base_info ON loan_order.loan_base_info_id = loan_base_info.id
+        WHERE loan_process.commit_key = 2
+    </select>
+
+    <update id="updateByPrimaryKey" parameterType="java.util.List">
+    update partner
+    set can_query_credit = 2
+    where id in
+        <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+            #{item,jdbcType=BIGINT}
+        </foreach>
+  </update>
+
 </mapper>

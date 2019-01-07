@@ -362,4 +362,10 @@ public interface LoanQueryDOMapper {
     List<ContractOverDueVO> contractOverDueList(ContractOverDueParam param);
 
     ContractOverDueCustomerInfoVO selectContractOverDueCustomerInfoInfo(Long orderId);
+
+    List<NeedSendMesOrders> selectHasRimitOrder();
+
+    List<SDCOrders> selectShutDownQueryCreditOrder();
+
+    int shutDownQueryCredit(List<Long> partners);
 }

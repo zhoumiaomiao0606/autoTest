@@ -9,6 +9,7 @@ import com.yunche.loan.config.constant.IDict;
 import com.yunche.loan.config.constant.LoanProcessEnum;
 import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.result.ResultBean;
+import com.yunche.loan.config.task.KeyCommitTask;
 import com.yunche.loan.config.util.DateTimeFormatUtils;
 import com.yunche.loan.config.util.DateUtil;
 import com.yunche.loan.config.util.EventBusCenter;
@@ -198,6 +199,9 @@ public class LoanProcessServiceImpl implements LoanProcessService {
     @Autowired
     private VideoFaceNumDOMapper videoFaceNumDOMapper;
 
+    @Autowired
+    private KeyCommitTask keyCommitTask;
+
     @Override
     @Transactional(rollbackFor = Exception.class)
     public ResultBean<Void> approval(ApprovalParam approval) {
@@ -242,12 +246,25 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
         ////////////////////////////////////////// ↓↓↓↓↓ 特殊处理  ↓↓↓↓↓ ////////////////////////////////////////////////
 
+        // 【征信申请】
+        if (isCreditApplyTask(approval.getTaskDefinitionKey(), approval.getAction()))
+        {
+            //判断合伙人没有被禁止进件
+            List<Long> shutdownQuerycreditPartners = keyCommitTask.getShutdownQuerycreditPartners();
+            if (!CollectionUtils.isEmpty(shutdownQuerycreditPartners))
+            {
+
+                Preconditions.checkArgument(!shutdownQuerycreditPartners.contains(loanBaseInfoDO.getPartnerId()),"该合伙人不能进行征信申请");
+
+            }
+        }
 
         // 【待收钥匙】
         if (isCommitKeyTask(approval.getTaskDefinitionKey(), approval.getAction()))
         {
             loanOrderDO.setKeyCollected(approval.getKeyCollected());
             loanOrderDOMapper.updateByPrimaryKeySelective(loanOrderDO);
+            keyCommitTask.refreshShutdownQuerycredit(approval.getOrderId());
         }
 
         // 【征信增补】
@@ -1472,6 +1489,18 @@ public class LoanProcessServiceImpl implements LoanProcessService {
     private boolean isCreditSupplementTask(String taskDefinitionKey, Byte action) {
         boolean isCreditSupplementTask = CREDIT_SUPPLEMENT.getCode().equals(taskDefinitionKey) && ACTION_PASS.equals(action);
         return isCreditSupplementTask;
+    }
+
+    /**
+     * 是否【征信申请】
+     *
+     * @param taskDefinitionKey
+     * @param action
+     * @return
+     */
+    private boolean isCreditApplyTask(String taskDefinitionKey, Byte action) {
+        boolean isCreditApplyTask = CREDIT_APPLY.getCode().equals(taskDefinitionKey) && ACTION_PASS.equals(action);
+        return isCreditApplyTask;
     }
 
 
