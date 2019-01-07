@@ -42,6 +42,9 @@ public class ShiroConfig {
     private String password;
     @Value("${spring.shiro.anno}")
     private Boolean anno;
+    @Value("${spring.profiles.active}")
+    private String active;
+
 
     /**
      * session过期时间：30天（单位：秒）
@@ -112,7 +115,17 @@ public class ShiroConfig {
             filterChainDefinitionMap.put("/api/v1/bank/areaListByBankName**", "anon");
             filterChainDefinitionMap.put("/api/v1/insurance/query**", "anon");
             filterChainDefinitionMap.put("/api/v1/loanorder/finance/remitInfo", "anon");
+
+            // dev环境：放开swagger文档
+            if ("dev".equals(active)) {
+                filterChainDefinitionMap.put("/swagger-ui.html", "anon");
+                filterChainDefinitionMap.put("/webjars/**", "anon");
+                filterChainDefinitionMap.put("/v2/**", "anon");
+                filterChainDefinitionMap.put("/swagger-resources/**", "anon");
+            }
+
             filterChainDefinitionMap.put("/**", "authc");
+
 //            filterChainDefinitionMap.put("/**", "authc,perms");
         }
 

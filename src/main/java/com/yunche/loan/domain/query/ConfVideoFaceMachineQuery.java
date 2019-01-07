@@ -9,7 +9,7 @@ import java.util.List;
  * @date 2019/1/4
  */
 @Data
-public class ConfVideoFaceBankPartnerQuery extends BaseQuery {
+public class ConfVideoFaceMachineQuery extends BaseQuery {
 
     private Long partnerId;
 

@@ -382,12 +382,12 @@
 -->
 
 
-        <table tableName="conf_video_face_bank" domainObjectName="ConfVideoFaceBankDO"
+        <table tableName="conf_video_face_artificial" domainObjectName="ConfVideoFaceArtificialDO"
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
         </table>
 
-        <table tableName="conf_video_face_bank_partner" domainObjectName="ConfVideoFaceBankPartnerDO"
+        <table tableName="conf_video_face_machine" domainObjectName="ConfVideoFaceMachineDO"
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
         </table>

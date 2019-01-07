@@ -1,8 +1,8 @@
 package com.yunche.loan.service;
 
 import com.github.pagehelper.PageInfo;
-import com.yunche.loan.domain.entity.ConfVideoFaceBankDO;
-import com.yunche.loan.domain.query.ConfVideoFaceBankPartnerQuery;
+import com.yunche.loan.domain.entity.ConfVideoFaceArtificialDO;
+import com.yunche.loan.domain.query.ConfVideoFaceMachineQuery;
 import com.yunche.loan.domain.vo.MachineVideoFaceVO;
 import com.yunche.loan.domain.vo.ConfVideoFaceVO;
 
@@ -12,13 +12,13 @@ import com.yunche.loan.domain.vo.ConfVideoFaceVO;
  */
 public interface ConfVideoFaceService {
 
-    void artificialUpdate(ConfVideoFaceBankDO confVideoFaceBankDO);
+    void artificialUpdate(ConfVideoFaceArtificialDO confVideoFaceArtificialDO);
 
-    ConfVideoFaceBankDO artificialDetail(Long bankId);
+    ConfVideoFaceArtificialDO artificialDetail(Long bankId);
 
     void machineUpdate(Long bankId, Long partnerId, Byte status);
 
-    PageInfo<MachineVideoFaceVO> listMachine(ConfVideoFaceBankPartnerQuery query);
+    PageInfo<MachineVideoFaceVO> listMachine(ConfVideoFaceMachineQuery query);
 
     ConfVideoFaceVO detail(Long bankId, Long partnerId);
 }

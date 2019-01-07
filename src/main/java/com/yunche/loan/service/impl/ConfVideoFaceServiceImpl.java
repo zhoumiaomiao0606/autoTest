@@ -4,16 +4,12 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.common.base.Preconditions;
 import com.yunche.loan.config.constant.ConfVideoFaceConst;
-import com.yunche.loan.domain.entity.ConfVideoFaceBankDO;
-import com.yunche.loan.domain.entity.ConfVideoFaceBankPartnerDO;
-import com.yunche.loan.domain.entity.PartnerDO;
-import com.yunche.loan.domain.query.ConfVideoFaceBankPartnerQuery;
+import com.yunche.loan.domain.entity.*;
+import com.yunche.loan.domain.query.ConfVideoFaceMachineQuery;
 import com.yunche.loan.domain.query.PartnerQuery;
 import com.yunche.loan.domain.vo.MachineVideoFaceVO;
 import com.yunche.loan.domain.vo.ConfVideoFaceVO;
-import com.yunche.loan.mapper.ConfVideoFaceBankDOMapper;
-import com.yunche.loan.mapper.ConfVideoFaceBankPartnerDOMapper;
-import com.yunche.loan.mapper.PartnerDOMapper;
+import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.ConfVideoFaceService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,10 +30,10 @@ import java.util.stream.Collectors;
 public class ConfVideoFaceServiceImpl implements ConfVideoFaceService {
 
     @Autowired
-    private ConfVideoFaceBankDOMapper confVideoFaceBankDOMapper;
+    private ConfVideoFaceArtificialDOMapper confVideoFaceArtificialDOMapper;
 
     @Autowired
-    private ConfVideoFaceBankPartnerDOMapper confVideoFaceBankPartnerDOMapper;
+    private ConfVideoFaceMachineDOMapper confVideoFaceMachineDOMapper;
 
     @Autowired
     private PartnerDOMapper partnerDOMapper;
@@ -45,38 +41,38 @@ public class ConfVideoFaceServiceImpl implements ConfVideoFaceService {
 
     @Override
     @Transactional
-    public void artificialUpdate(ConfVideoFaceBankDO confVideoFaceBankDO) {
+    public void artificialUpdate(ConfVideoFaceArtificialDO confVideoFaceArtificialDO) {
 
-        ConfVideoFaceBankDO exist = confVideoFaceBankDOMapper.selectByPrimaryKey(confVideoFaceBankDO.getBankId());
+        ConfVideoFaceArtificialDO exist = confVideoFaceArtificialDOMapper.selectByPrimaryKey(confVideoFaceArtificialDO.getBankId());
 
         if (null == exist) {
 
-            int count = confVideoFaceBankDOMapper.insertSelective(confVideoFaceBankDO);
+            int count = confVideoFaceArtificialDOMapper.insertSelective(confVideoFaceArtificialDO);
             Preconditions.checkArgument(count > 0, "保存失败");
 
         } else {
 
-            int count = confVideoFaceBankDOMapper.updateByPrimaryKeySelective(confVideoFaceBankDO);
+            int count = confVideoFaceArtificialDOMapper.updateByPrimaryKeySelective(confVideoFaceArtificialDO);
             Preconditions.checkArgument(count > 0, "保存失败");
         }
     }
 
     @Override
-    public ConfVideoFaceBankDO artificialDetail(Long bankId) {
+    public ConfVideoFaceArtificialDO artificialDetail(Long bankId) {
         Preconditions.checkNotNull(bankId, "bankId不能为空");
 
-        ConfVideoFaceBankDO exist = confVideoFaceBankDOMapper.selectByPrimaryKey(bankId);
+        ConfVideoFaceArtificialDO exist = confVideoFaceArtificialDOMapper.selectByPrimaryKey(bankId);
 
         if (null != exist) {
             return exist;
         }
 
-        ConfVideoFaceBankDO confVideoFaceBankDO = new ConfVideoFaceBankDO();
-        confVideoFaceBankDO.setBankId(bankId);
-        confVideoFaceBankDO.setArtificialVideoFace(ConfVideoFaceConst.ARTIFICIAL_VIDEO_FACE_STATUS_CLOSE);
-        confVideoFaceBankDO.setNeedLocation(ConfVideoFaceConst.ARTIFICIAL_VIDEO_FACE_NEED_LOCATION_TRUE);
+        ConfVideoFaceArtificialDO confVideoFaceArtificialDO = new ConfVideoFaceArtificialDO();
+        confVideoFaceArtificialDO.setBankId(bankId);
+        confVideoFaceArtificialDO.setArtificialVideoFaceStatus(ConfVideoFaceConst.ARTIFICIAL_VIDEO_FACE_STATUS_CLOSE);
+        confVideoFaceArtificialDO.setNeedLocation(ConfVideoFaceConst.ARTIFICIAL_VIDEO_FACE_NEED_LOCATION_TRUE);
 
-        return confVideoFaceBankDO;
+        return confVideoFaceArtificialDO;
     }
 
     @Override
@@ -86,25 +82,25 @@ public class ConfVideoFaceServiceImpl implements ConfVideoFaceService {
         Preconditions.checkNotNull(partnerId, "partnerId不能为空");
         Preconditions.checkNotNull(status, "status不能为空");
 
-        ConfVideoFaceBankPartnerDO confVideoFaceBankPartnerDO = new ConfVideoFaceBankPartnerDO();
-        confVideoFaceBankPartnerDO.setBankId(bankId);
-        confVideoFaceBankPartnerDO.setPartnerId(partnerId);
+        ConfVideoFaceMachineDO confVideoFaceMachineDO = new ConfVideoFaceMachineDO();
+        confVideoFaceMachineDO.setBankId(bankId);
+        confVideoFaceMachineDO.setPartnerId(partnerId);
 
         if (new Byte("0").equals(status)) {
 
             // 0-关闭  insert
-            int count = confVideoFaceBankPartnerDOMapper.insertSelective(confVideoFaceBankPartnerDO);
+            int count = confVideoFaceMachineDOMapper.insertSelective(confVideoFaceMachineDO);
             Preconditions.checkArgument(count > 0, "失败");
 
         } else if (new Byte("1").equals(status)) {
 
             // 1-开启  del
-            confVideoFaceBankPartnerDOMapper.deleteByPrimaryKey(confVideoFaceBankPartnerDO);
+            confVideoFaceMachineDOMapper.deleteByPrimaryKey(confVideoFaceMachineDO);
         }
     }
 
     @Override
-    public PageInfo<MachineVideoFaceVO> listMachine(ConfVideoFaceBankPartnerQuery query) {
+    public PageInfo<MachineVideoFaceVO> listMachine(ConfVideoFaceMachineQuery query) {
 
         // 合伙人分页展示
         PageHelper.startPage(query.getPageIndex(), query.getPageSize(), true);
@@ -128,15 +124,15 @@ public class ConfVideoFaceServiceImpl implements ConfVideoFaceService {
                 .collect(Collectors.toList());
 
         query.setPartnerIdList(partnerIdList);
-        List<ConfVideoFaceBankPartnerDO> confVideoFaceBankPartnerDOS = confVideoFaceBankPartnerDOMapper.query(query);
+        List<ConfVideoFaceMachineDO> confVideoFaceMachineDOS = confVideoFaceMachineDOMapper.query(query);
 
 
-        if (!CollectionUtils.isEmpty(confVideoFaceBankPartnerDOS)) {
+        if (!CollectionUtils.isEmpty(confVideoFaceMachineDOS)) {
 
             // 被禁partnerIdList
-            List<Long> close_partnerIdList = confVideoFaceBankPartnerDOS.stream()
+            List<Long> close_partnerIdList = confVideoFaceMachineDOS.stream()
                     .filter(Objects::nonNull)
-                    .map(ConfVideoFaceBankPartnerDO::getPartnerId)
+                    .map(ConfVideoFaceMachineDO::getPartnerId)
                     .collect(Collectors.toList());
 
             List<MachineVideoFaceVO> machineVideoFaceVOList = partnerDOList.stream()
@@ -210,17 +206,17 @@ public class ConfVideoFaceServiceImpl implements ConfVideoFaceService {
         ConfVideoFaceVO confVideoFaceVO = new ConfVideoFaceVO();
 
         // 人工
-        ConfVideoFaceBankDO confVideoFaceBankDO = artificialDetail(bankId);
+        ConfVideoFaceArtificialDO confVideoFaceArtificialDO = artificialDetail(bankId);
 
-        confVideoFaceVO.setArtificialVideoFaceStatus(confVideoFaceBankDO.getArtificialVideoFace());
-        confVideoFaceVO.setNeedLocation(confVideoFaceBankDO.getNeedLocation());
+        confVideoFaceVO.setArtificialVideoFaceStatus(confVideoFaceArtificialDO.getArtificialVideoFaceStatus());
+        confVideoFaceVO.setNeedLocation(confVideoFaceArtificialDO.getNeedLocation());
 
 
         // 机器
-        ConfVideoFaceBankPartnerDO key = new ConfVideoFaceBankPartnerDO();
+        ConfVideoFaceMachineDO key = new ConfVideoFaceMachineDO();
         key.setBankId(bankId);
         key.setPartnerId(partnerId);
-        ConfVideoFaceBankPartnerDO exist = confVideoFaceBankPartnerDOMapper.selectByPrimaryKey(key);
+        ConfVideoFaceMachineDO exist = confVideoFaceMachineDOMapper.selectByPrimaryKey(key);
 
         if (null != exist) {
             confVideoFaceVO.setMachineVideoFaceStatus(ConfVideoFaceConst.MACHINE_VIDEO_FACE_STATUS_CLOSE);

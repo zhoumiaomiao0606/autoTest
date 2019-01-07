@@ -1,34 +1,34 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.yunche.loan.mapper.ConfVideoFaceBankDOMapper">
-    <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.ConfVideoFaceBankDO">
+<mapper namespace="com.yunche.loan.mapper.ConfVideoFaceArtificialDOMapper">
+    <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.ConfVideoFaceArtificialDO">
         <id column="bank_id" property="bankId" jdbcType="BIGINT"/>
         <result column="need_location" property="needLocation" jdbcType="TINYINT"/>
-        <result column="artificial_video_face" property="artificialVideoFace" jdbcType="TINYINT"/>
+        <result column="artificial_video_face_status" property="artificialVideoFaceStatus" jdbcType="TINYINT"/>
         <result column="gmt_create" property="gmtCreate" jdbcType="TIMESTAMP"/>
         <result column="gmt_modify" property="gmtModify" jdbcType="TIMESTAMP"/>
     </resultMap>
     <sql id="Base_Column_List">
-    bank_id, need_location, artificial_video_face, gmt_create, gmt_modify
+    bank_id, need_location, artificial_video_face_status, gmt_create, gmt_modify
   </sql>
     <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
         select
         <include refid="Base_Column_List"/>
-        from conf_video_face_bank
+        from conf_video_face_artificial
         where bank_id = #{bankId,jdbcType=BIGINT}
     </select>
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
-    delete from conf_video_face_bank
+    delete from conf_video_face_artificial
     where bank_id = #{bankId,jdbcType=BIGINT}
   </delete>
-    <insert id="insert" parameterType="com.yunche.loan.domain.entity.ConfVideoFaceBankDO">
-    insert into conf_video_face_bank (bank_id, need_location, artificial_video_face, 
+    <insert id="insert" parameterType="com.yunche.loan.domain.entity.ConfVideoFaceArtificialDO">
+    insert into conf_video_face_artificial (bank_id, need_location, artificial_video_face_status, 
       gmt_create, gmt_modify)
-    values (#{bankId,jdbcType=BIGINT}, #{needLocation,jdbcType=TINYINT}, #{artificialVideoFace,jdbcType=TINYINT}, 
+    values (#{bankId,jdbcType=BIGINT}, #{needLocation,jdbcType=TINYINT}, #{artificialVideoFaceStatus,jdbcType=TINYINT}, 
       #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModify,jdbcType=TIMESTAMP})
   </insert>
-    <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.ConfVideoFaceBankDO">
-        insert into conf_video_face_bank
+    <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.ConfVideoFaceArtificialDO">
+        insert into conf_video_face_artificial
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="bankId != null">
                 bank_id,
@@ -36,8 +36,8 @@
             <if test="needLocation != null">
                 need_location,
             </if>
-            <if test="artificialVideoFace != null">
-                artificial_video_face,
+            <if test="artificialVideoFaceStatus != null">
+                artificial_video_face_status,
             </if>
             <if test="gmtCreate != null">
                 gmt_create,
@@ -53,8 +53,8 @@
             <if test="needLocation != null">
                 #{needLocation,jdbcType=TINYINT},
             </if>
-            <if test="artificialVideoFace != null">
-                #{artificialVideoFace,jdbcType=TINYINT},
+            <if test="artificialVideoFaceStatus != null">
+                #{artificialVideoFaceStatus,jdbcType=TINYINT},
             </if>
             <if test="gmtCreate != null">
                 #{gmtCreate,jdbcType=TIMESTAMP},
@@ -64,14 +64,14 @@
             </if>
         </trim>
     </insert>
-    <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.ConfVideoFaceBankDO">
-        update conf_video_face_bank
+    <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.ConfVideoFaceArtificialDO">
+        update conf_video_face_artificial
         <set>
             <if test="needLocation != null">
                 need_location = #{needLocation,jdbcType=TINYINT},
             </if>
-            <if test="artificialVideoFace != null">
-                artificial_video_face = #{artificialVideoFace,jdbcType=TINYINT},
+            <if test="artificialVideoFaceStatus != null">
+                artificial_video_face_status = #{artificialVideoFaceStatus,jdbcType=TINYINT},
             </if>
             <if test="gmtCreate != null">
                 gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
@@ -82,10 +82,10 @@
         </set>
         where bank_id = #{bankId,jdbcType=BIGINT}
     </update>
-    <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.ConfVideoFaceBankDO">
-    update conf_video_face_bank
+    <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.ConfVideoFaceArtificialDO">
+    update conf_video_face_artificial
     set need_location = #{needLocation,jdbcType=TINYINT},
-      artificial_video_face = #{artificialVideoFace,jdbcType=TINYINT},
+      artificial_video_face_status = #{artificialVideoFaceStatus,jdbcType=TINYINT},
       gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
       gmt_modify = #{gmtModify,jdbcType=TIMESTAMP}
     where bank_id = #{bankId,jdbcType=BIGINT}
