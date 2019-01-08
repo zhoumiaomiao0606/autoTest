@@ -35,11 +35,13 @@ public class DistributorParam {
     private String creditOperatorName;
     private String partnerName;
     private Date createDate;
+    private Date loanTime;
     private String orderStatus;
     private String carDetail;
     private String carModel;
     private String carBrand;
-    private String catPrice;
+    private String carPrice;
     private String tenantRebate;
+    private String tenantId;
     private String partnerId;
 }

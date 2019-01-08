@@ -1978,7 +1978,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         // 自动执行【金融方案】任务
         autoCompleteTask(task.getProcessInstanceId(), approval.getOrderId(), FINANCIAL_SCHEME.getCode());
         // 自动执行【待收钥匙】任务
-        completeCommitKeyTask(task.getProcessInstanceId(), approval.getOrderId());
+        //completeCommitKeyTask(task.getProcessInstanceId(), approval.getOrderId());
         //自动提交其中的一个审批审核（南京工行提交线上视频，其他提交线下视频）
         authCommitVideoAuditTask(loanOrderDO, task.getProcessInstanceId(), approval.getOrderId());
         // 更新状态
@@ -2975,12 +2975,18 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         }
 
         // 【电审】
-        else if (TELEPHONE_VERIFY.getCode().equals(taskDefinitionKey)) {
+        else if (TELEPHONE_VERIFY.getCode().equals(taskDefinitionKey))
+        {
 
             // PASS
-            if (ACTION_PASS.equals(action)) {
+            if (ACTION_PASS.equals(action))
+            {
+                //设置留备钥匙
+                LoanCarInfoDO loanCarInfoDO = loanCarInfoDOMapper.selectByPrimaryKey(loanOrderDO.getLoanCarInfoId());
+                variables.put(CAR_KEY,loanCarInfoDO.getCarKey());
                 // 如果为打回
-                if (TASK_PROCESS_REJECT.equals(loanProcessDO.getLoanApply())) {
+                if (TASK_PROCESS_REJECT.equals(loanProcessDO.getLoanApply()))
+                {
                     LoanRejectLogDO loanRejectLogDO = loanRejectLogDOMapper.lastByOrderIdAndTaskDefinitionKey(approval.getOrderId(), TELEPHONE_VERIFY.getCode());
                     if (null != loanRejectLogDO) {
                         // 【金融方案申请】(自动)打回
