@@ -2975,12 +2975,18 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         }
 
         // 【电审】
-        else if (TELEPHONE_VERIFY.getCode().equals(taskDefinitionKey)) {
+        else if (TELEPHONE_VERIFY.getCode().equals(taskDefinitionKey))
+        {
 
             // PASS
-            if (ACTION_PASS.equals(action)) {
+            if (ACTION_PASS.equals(action))
+            {
+                //设置留备钥匙
+                LoanCarInfoDO loanCarInfoDO = loanCarInfoDOMapper.selectByPrimaryKey(loanOrderDO.getLoanCarInfoId());
+                variables.put(CAR_KEY,loanCarInfoDO.getCarKey());
                 // 如果为打回
-                if (TASK_PROCESS_REJECT.equals(loanProcessDO.getLoanApply())) {
+                if (TASK_PROCESS_REJECT.equals(loanProcessDO.getLoanApply()))
+                {
                     LoanRejectLogDO loanRejectLogDO = loanRejectLogDOMapper.lastByOrderIdAndTaskDefinitionKey(approval.getOrderId(), TELEPHONE_VERIFY.getCode());
                     if (null != loanRejectLogDO) {
                         // 【金融方案申请】(自动)打回
