@@ -548,7 +548,8 @@
                           deputy.install_gps                      AS taskStatus
                       </when>
                       <when test="taskDefinitionKey == 'usertask_commit_key'">
-                          deputy.commit_key                       AS taskStatus
+                          deputy.commit_key                       AS taskStatus,
+                          (IFNULL(join_ltv.key_risk_premium,0)  + IFNULL(join_p.risk_bear_rate,0))                    AS orderRisk
                       </when>
                       <when test="taskDefinitionKey == 'usertask_material_review'">
                           deputy.material_review                  AS taskStatus
@@ -805,9 +806,7 @@
                       <when test="taskDefinitionKey == 'usertask_material_manage'">
                           deputy.material_manage                       AS taskStatus
                       </when>
-                <when test="taskDefinitionKey == 'usertask_commit_key'">
-                    (join_ltv.key_risk_premium + join_p.risk_bear_rate)                    AS orderRisk
-                </when>
+
 
                       <when test="taskDefinitionKey == 'usertask_bridge_handle'
                                   || taskDefinitionKey == 'usertask_bridge_repay_record'

@@ -32,6 +32,8 @@ public class WebSocketParam {
     private Long bankId;
 
     private String bankName;
+
+    private Long partnerId;
     /**
      * 贷款金额
      */

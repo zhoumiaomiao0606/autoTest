@@ -25,7 +25,6 @@
     <result column="other_fee_type" jdbcType="TINYINT" property="other_fee_type" />
     <result column="status" jdbcType="TINYINT" property="status" />
     <result column="feature" jdbcType="VARCHAR" property="feature" />
-    <result column="order_id" jdbcType="BIGINT" property="order_id" />
     <result column="rebate_not_deducted" jdbcType="DECIMAL" property="rebate_not_deducted" />
     <result column="listrule" jdbcType="VARCHAR" property="listrule" />
     <result column="rebateFirst" jdbcType="VARCHAR" property="rebateFirst" />
@@ -38,7 +37,7 @@
     risk_fee, fair_assess_fee, apply_license_plate_out_province_fee, based_margin_fee, 
     service_fee_type, apply_license_plate_deposit_fee_type, performance_fee_type, install_gps_fee_type, 
     risk_fee_type, fair_assess_fee_type, apply_license_plate_out_province_fee_type, based_margin_fee_type, 
-    extra_fee, extra_fee_type, other_fee, other_fee_type, status, feature, order_id, 
+    extra_fee, extra_fee_type, other_fee, other_fee_type, status, feature,
     rebate_not_deducted, listrule, rebateFirst, rebateSecond, partner_rebate_amount, 
     key_risk_premium_type
   </sql>
@@ -61,7 +60,7 @@
       risk_fee_type, fair_assess_fee_type, apply_license_plate_out_province_fee_type, 
       based_margin_fee_type, extra_fee, extra_fee_type, 
       other_fee, other_fee_type, status, 
-      feature, order_id, rebate_not_deducted, 
+      feature, rebate_not_deducted,
       listrule, rebateFirst, rebateSecond, 
       partner_rebate_amount, key_risk_premium_type
       )
@@ -73,7 +72,7 @@
       #{risk_fee_type,jdbcType=TINYINT}, #{fair_assess_fee_type,jdbcType=TINYINT}, #{apply_license_plate_out_province_fee_type,jdbcType=TINYINT}, 
       #{based_margin_fee_type,jdbcType=TINYINT}, #{extra_fee,jdbcType=DECIMAL}, #{extra_fee_type,jdbcType=TINYINT}, 
       #{other_fee,jdbcType=DECIMAL}, #{other_fee_type,jdbcType=TINYINT}, #{status,jdbcType=TINYINT}, 
-      #{feature,jdbcType=VARCHAR}, #{order_id,jdbcType=BIGINT}, #{rebate_not_deducted,jdbcType=DECIMAL}, 
+      #{feature,jdbcType=VARCHAR}, #{rebate_not_deducted,jdbcType=DECIMAL},
       #{listrule,jdbcType=VARCHAR}, #{rebateFirst,jdbcType=VARCHAR}, #{rebateSecond,jdbcType=VARCHAR}, 
       #{partner_rebate_amount,jdbcType=DECIMAL}, #{key_risk_premium_type,jdbcType=TINYINT}
       )
@@ -149,9 +148,6 @@
       </if>
       <if test="feature != null">
         feature,
-      </if>
-      <if test="order_id != null">
-        order_id,
       </if>
       <if test="rebate_not_deducted != null">
         rebate_not_deducted,
@@ -242,9 +238,6 @@
       <if test="feature != null">
         #{feature,jdbcType=VARCHAR},
       </if>
-      <if test="order_id != null">
-        #{order_id,jdbcType=BIGINT},
-      </if>
       <if test="rebate_not_deducted != null">
         #{rebate_not_deducted,jdbcType=DECIMAL},
       </if>
@@ -334,9 +327,6 @@
       <if test="feature != null">
         feature = #{feature,jdbcType=VARCHAR},
       </if>
-      <if test="order_id != null">
-        order_id = #{order_id,jdbcType=BIGINT},
-      </if>
       <if test="rebate_not_deducted != null">
         rebate_not_deducted = #{rebate_not_deducted,jdbcType=DECIMAL},
       </if>
@@ -382,7 +372,6 @@
       other_fee_type = #{other_fee_type,jdbcType=TINYINT},
       status = #{status,jdbcType=TINYINT},
       feature = #{feature,jdbcType=VARCHAR},
-      order_id = #{order_id,jdbcType=BIGINT},
       rebate_not_deducted = #{rebate_not_deducted,jdbcType=DECIMAL},
       listrule = #{listrule,jdbcType=VARCHAR},
       rebateFirst = #{rebateFirst,jdbcType=VARCHAR},

@@ -1092,7 +1092,9 @@
         current.usertask_material_manage_create_time as usertask_material_manage_create_time,
         lend.lend_date as usertask_bank_lend_record_create_time,
         send.express_send_date as usertask_bank_card_send_create_time,
-        flow.express_receive_date   as express_receive_date_time
+        flow.express_receive_date   as express_receive_date_time,
+        partner.partner_code   as partner_code,
+        plan.each_month_repay  as  each_month_repay
 
         FROM
         loan_order orders

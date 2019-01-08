@@ -38,8 +38,6 @@ public class LoanCommitKeyServiceImpl implements LoanCommitKeyService
 
     private static final Byte UNCOLLECTEDKEY = 2;
 
-    private static final Byte HASCOLLECTEDKEY = 1;
-
 
     @Autowired
     private LoanProcessService loanProcessService;

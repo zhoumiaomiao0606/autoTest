@@ -115,12 +115,14 @@
             <include refid="Base_Query_List"/>
         </where>
     </select>
+
     <!-- queryByPartnerName -->
     <select id="queryByPartnerName" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
         from partner where name LIKE CONCAT('%',#{name},'%')
     </select>
+
     <!-- query -->
     <select id="query" parameterType="com.yunche.loan.domain.query.PartnerQuery"
             resultMap="BaseResultMap">
@@ -131,7 +133,6 @@
             <include refid="Base_Query_List"/>
         </where>
         ORDER BY gmt_create DESC
-        limit #{startRow}, #{pageSize}
     </select>
 
     <!--getAll-->
@@ -201,7 +202,9 @@
         #{sign,jdbcType=TINYINT}, #{cooperationScale,jdbcType=VARCHAR}, #{execRate,jdbcType=DECIMAL},
         #{cooperationInsuranceCompany,jdbcType=VARCHAR}, #{payMonth,jdbcType=TINYINT},
         #{riskBearRate,jdbcType=DECIMAL}, #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModify,jdbcType=TIMESTAMP},
-        #{status,jdbcType=TINYINT}, #{feature,jdbcType=VARCHAR}, #{disableBankList,jdbcType=VARCHAR},#{gpsCompany,jdbcType=VARCHAR}, #{gpsAccount,jdbcType=VARCHAR}, #{partnerCode,jdbcType=VARCHAR}, #{partnerGroup,jdbcType=BIGINT}
+        #{status,jdbcType=TINYINT}, #{feature,jdbcType=VARCHAR},
+        #{disableBankList,jdbcType=VARCHAR},#{gpsCompany,jdbcType=VARCHAR}, #{gpsAccount,jdbcType=VARCHAR},
+        #{partnerCode,jdbcType=VARCHAR}, #{partnerGroup,jdbcType=BIGINT}
         )
     </insert>
 

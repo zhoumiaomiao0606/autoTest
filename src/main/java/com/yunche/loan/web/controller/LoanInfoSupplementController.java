@@ -1,9 +1,11 @@
 package com.yunche.loan.web.controller;
 
 import com.yunche.loan.config.result.ResultBean;
+import com.yunche.loan.domain.param.AddMoneyConfirm;
 import com.yunche.loan.domain.param.InfoSupplementParam;
 import com.yunche.loan.domain.vo.InfoSupplementVO;
 import com.yunche.loan.domain.vo.UniversalInfoSupplementVO;
+import com.yunche.loan.service.AppLoanOrderService;
 import com.yunche.loan.service.LoanInfoSupplementService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -23,6 +25,8 @@ public class LoanInfoSupplementController {
 
     @Autowired
     private LoanInfoSupplementService loanInfoSupplementService;
+    @Autowired
+    private AppLoanOrderService appLoanOrderService;
 
 
 //    /**
@@ -69,6 +73,18 @@ public class LoanInfoSupplementController {
     @GetMapping(value = "/detail")
     public ResultBean<UniversalInfoSupplementVO> detail(@RequestParam Long supplementOrderId) {
         return loanInfoSupplementService.detail(supplementOrderId);
+    }
+
+    /**
+     * 资料增补详情页--确认按钮
+     *
+     * @param addMoneyConfirm
+     * @return
+     */
+    @PostMapping(value = "/addMoneyConfirm", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResultBean addMoneyConfirm(@RequestBody AddMoneyConfirm addMoneyConfirm)
+    {
+        return appLoanOrderService.addMoneyConfirm(addMoneyConfirm);
     }
 
     /**

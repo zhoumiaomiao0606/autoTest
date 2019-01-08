@@ -12,6 +12,7 @@ import com.yunche.loan.domain.param.*;
 import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.mapper.BizAreaDOMapper;
 import com.yunche.loan.mapper.ChartDOMapper;
+import com.yunche.loan.mapper.LoanStatementDOMapper;
 import com.yunche.loan.mapper.TaskSchedulingDOMapper;
 import com.yunche.loan.service.ChartService;
 import com.yunche.loan.service.EmployeeService;
@@ -53,6 +54,9 @@ public class ChartServiceImpl implements ChartService
 
     @Resource
     private TaskSchedulingDOMapper taskSchedulingDOMapper;
+
+    @Autowired
+    private LoanStatementDOMapper loanStatementDOMapper;
 
     @Override
     public ResultBean getSocialCreditChart(SocialCreditChartParam param)
@@ -482,6 +486,20 @@ public class ChartServiceImpl implements ChartService
         List<PaperQuestionWarningVO> list = chartDOMapper.paperQuestionWarning(param);
         // 取分页信息
         PageInfo<PaperQuestionWarningVO> pageInfo = new PageInfo<>(list);
+        return ResultBean.ofSuccess(pageInfo);
+    }
+
+    @Override
+    public ResultBean afterLoanCusInfo(ExportOrdersParam exportOrdersParam) {
+        Long loginUserId = SessionUtils.getLoginUser().getId();
+
+        exportOrdersParam.setJuniorIds(employeeService.getSelfAndCascadeChildIdList(loginUserId));
+        exportOrdersParam.setMaxGroupLevel(taskSchedulingDOMapper.selectMaxGroupLevel(loginUserId));
+        PageHelper.startPage(exportOrdersParam.getPageIndex(), exportOrdersParam.getPageSize(), true);
+        List<ExportOrdersVO> list = loanStatementDOMapper.exportOrders(exportOrdersParam);
+        // 取分页信息
+        PageInfo<ExportOrdersVO> pageInfo = new PageInfo<>(list);
+
         return ResultBean.ofSuccess(pageInfo);
     }
 

@@ -279,7 +279,7 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
 
         if (loanAmount!=null)
         {
-            BigDecimal addMoney = loanAmount.multiply(new BigDecimal(loanTelephoneVerifyDO.getKeyRiskPremium()));
+            BigDecimal addMoney = loanAmount.multiply(new BigDecimal(loanTelephoneVerifyDO.getKeyRiskPremium())).divide(new BigDecimal("100"));
 
             appInfoSupplementVO.setAddMoney(addMoney);
         }

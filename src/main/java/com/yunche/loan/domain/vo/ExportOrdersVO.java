@@ -10,6 +10,7 @@ public class ExportOrdersVO {
     private String customer_id_card;//身份证
     private String customer_mobile;//手机号
     private String saleman;//业务员
+    private String partner_code;//合伙人编号
     private String partner_name;//合伙人
     private String car_price;//车价
     private String plan_bank;//贷款银行
@@ -18,6 +19,7 @@ public class ExportOrdersVO {
     private String plan_bank_period_principal;//银行分期本金
     private String remit_amount;//打款金额
     private String plan_loan_time;//期数
+    private String each_month_repay;//每月还款
     private String car_name;//车型
     private String car_type;//车辆类型
     private String vehicle_license_plate_number;//车牌号
