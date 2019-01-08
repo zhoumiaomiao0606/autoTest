@@ -108,6 +108,7 @@ public class ConfVideoFaceServiceImpl implements ConfVideoFaceService {
         PartnerQuery partnerQuery = new PartnerQuery();
         partnerQuery.setId(query.getPartnerId());
         partnerQuery.setName(query.getPartnerName());
+        partnerQuery.setLeaderName(query.getPartnerLeaderName());
         List<PartnerDO> partnerDOList = partnerDOMapper.query(partnerQuery);
 
         if (CollectionUtils.isEmpty(partnerDOList)) {

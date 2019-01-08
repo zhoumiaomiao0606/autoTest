@@ -17,5 +17,7 @@ public class ConfVideoFaceMachineQuery extends BaseQuery {
 
     private String partnerName;
 
+    private String partnerLeaderName;
+
     private Long bankId;
 }
