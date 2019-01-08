@@ -34,19 +34,19 @@ public class BaseConst {
      */
     public static final Byte K_YORN_NO = 0;
 
-
-    /**
-     * 有效
-     */
-    public static final Byte REMIT_STATUS_ZERO = 0;
-    /**
-     * 无效
-     */
-    public static final Byte REMIT_STATUS_ONE = 1;
-    /**
-     * 已删除
-     */
-    public static final Byte REMIT_STATUS_TWO = 2;
-
-    public static final Byte REMIT_STATUS_THREE = 3;
+//   IDict.K_DKZT
+//    /**
+//     * 有效
+//     */
+//    public static final Byte REMIT_STATUS_ZERO = 0;
+//    /**
+//     * 无效
+//     */
+//    public static final Byte REMIT_STATUS_ONE = 1;
+//    /**
+//     * 已删除
+//     */
+//    public static final Byte REMIT_STATUS_TWO = 2;
+//
+//    public static final Byte REMIT_STATUS_THREE = 3;
 }
