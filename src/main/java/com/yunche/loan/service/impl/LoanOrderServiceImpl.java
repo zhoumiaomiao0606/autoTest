@@ -901,12 +901,23 @@ public class LoanOrderServiceImpl implements LoanOrderService {
                 BaseAreaDO county = baseAreaDOMapper.selectByPrimaryKey(area_id, null);
                 if(county.getLevel().toString().equals("3")){
                     BaseAreaDO city = baseAreaDOMapper.selectByPrimaryKey(county.getParentAreaId(), null);
+                    //区
                     secondCityArea.setCountyId(county.getAreaId());
+                    secondCityArea.setCountyName(county.getAreaName());
+
+                    //市
                     secondCityArea.setCityId(city.getAreaId());
+                    secondCityArea.setCityName(city.getAreaName());
+
+                    //省
                     secondCityArea.setProvinceId(city.getParentAreaId());
+                    secondCityArea.setProvinceName(city.getParentAreaName());
                 }else if(county.getLevel().toString().equals("2")){
+
                     secondCityArea.setCityId(county.getAreaId());
+                    secondCityArea.setCountyName(county.getAreaName());
                     secondCityArea.setProvinceId(county.getParentAreaId());
+                    secondCityArea.setProvinceName(county.getParentAreaName());
                 }
                 loanCarInfoVO.setSecondCityArea(secondCityArea);
             }

@@ -91,8 +91,11 @@ public class LoanCarInfoVO {
     @Data
     public static class SecondCityArea{
        private Long provinceId;
+       private String provinceName;
        private Long cityId;
+       private String cityName;
        private Long  countyId;
+       private String  countyName;
 
     }
 

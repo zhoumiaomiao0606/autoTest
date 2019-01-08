@@ -1335,7 +1335,7 @@
             resultType="com.yunche.loan.domain.vo.ExportRemitDetailQueryForRemitOrderVO">
 
         SELECT
-        (loan_telephone_verify.key_risk_premium * loan_financial_plan.loan_amount/100) AS keyRiskPremiumFee,
+        (IFNULL(loan_telephone_verify.key_risk_premium,0) * IFNULL(loan_financial_plan.loan_amount,0)/100) AS keyRiskPremiumFee,
         base_area.area_name,
         customer. NAME AS customer_name,
         customer.id_card AS customer_id_card,

@@ -1,5 +1,7 @@
 package com.yunche.loan.service.impl;
 
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -145,13 +147,11 @@ public class PartnerServiceImpl implements PartnerService {
         EmployeeDO employeeDO = new EmployeeDO();
 
         //判断partner——code不能重复
-        if (partnerParam.getPartnerCode()!=null && !partnerParam.getPartnerCode().equals(""))
-        {
+        if (partnerParam.getPartnerCode() != null && !partnerParam.getPartnerCode().equals("")) {
             PartnerDO partnerCode = partnerDOMapper.selectByPartnerCode(partnerParam.getPartnerCode());
 
-            if (partnerCode!=null)
-            {
-                throw  new BizException("合伙人编码不能重复");
+            if (partnerCode != null) {
+                throw new BizException("合伙人编码不能重复");
             }
         }
 
@@ -275,16 +275,14 @@ public class PartnerServiceImpl implements PartnerService {
         partnerParam.setGmtModify(new Date());
 
         //判断partner——code不能重复
-        if (partnerParam.getPartnerCode()!=null && !partnerParam.getPartnerCode().equals(""))
-        {
+        if (partnerParam.getPartnerCode() != null && !partnerParam.getPartnerCode().equals("")) {
             PartnerDO partnerCode = partnerDOMapper.selectByPartnerCode(partnerParam.getPartnerCode());
 
             PartnerDO oldP = partnerDOMapper.selectByPrimaryKey(partnerParam.getId(), null);
 
 
-            if ((partnerCode!=null && oldP.getPartnerCode()!=null && !partnerParam.getPartnerCode().equals(oldP.getPartnerCode()))||(partnerCode!=null && oldP.getPartnerCode()==null))
-            {
-                throw  new BizException("合伙人编码不能重复");
+            if ((partnerCode != null && oldP.getPartnerCode() != null && !partnerParam.getPartnerCode().equals(oldP.getPartnerCode())) || (partnerCode != null && oldP.getPartnerCode() == null)) {
+                throw new BizException("合伙人编码不能重复");
             }
         }
 
@@ -419,30 +417,53 @@ public class PartnerServiceImpl implements PartnerService {
         // 根据areaId填充所有子级areaId(含自身)
         getAndSetCascadeChildAreaIdList(query);
 
-        int totalNum = partnerDOMapper.count(query);
-        if (totalNum > 0) {
+        PageHelper.startPage(query.getPageIndex(), query.getPageSize(), true);
+        List<PartnerDO> partnerDOS = partnerDOMapper.query(query);
+        PageInfo<PartnerDO> pageInfo = PageInfo.of(partnerDOS);
 
-            List<PartnerDO> partnerDOS = partnerDOMapper.query(query);
-            if (!CollectionUtils.isEmpty(partnerDOS)) {
+        if (!CollectionUtils.isEmpty(partnerDOS)) {
 
-                List<PartnerVO> partnerVOS = partnerDOS.stream()
-                        .filter(Objects::nonNull)
-                        .map(e -> {
-                            PartnerVO partnerVO = new PartnerVO();
-                            BeanUtils.copyProperties(e, partnerVO);
+            List<PartnerVO> partnerVOS = partnerDOS.stream()
+                    .filter(Objects::nonNull)
+                    .map(e -> {
+                        PartnerVO partnerVO = new PartnerVO();
+                        BeanUtils.copyProperties(e, partnerVO);
 
-                            // fillMsg
-                            fillMsg(e, partnerVO);
+                        // fillMsg
+                        fillMsg(e, partnerVO);
 
-                            return partnerVO;
-                        })
-                        .sorted(Comparator.comparing(PartnerVO::getId))
-                        .collect(Collectors.toList());
+                        return partnerVO;
+                    })
+                    .sorted(Comparator.comparing(PartnerVO::getId))
+                    .collect(Collectors.toList());
 
-                return ResultBean.ofSuccess(partnerVOS, totalNum, query.getPageIndex(), query.getPageSize());
-            }
+            return ResultBean.ofSuccess(partnerVOS, (int) pageInfo.getTotal(), query.getPageIndex(), query.getPageSize());
         }
-        return ResultBean.ofSuccess(Collections.EMPTY_LIST, totalNum, query.getPageIndex(), query.getPageSize());
+
+//        int totalNum = partnerDOMapper.count(query);
+//        if (totalNum > 0) {
+//
+//            List<PartnerDO> partnerDOS = partnerDOMapper.query(query);
+//            if (!CollectionUtils.isEmpty(partnerDOS)) {
+//
+//                List<PartnerVO> partnerVOS = partnerDOS.stream()
+//                        .filter(Objects::nonNull)
+//                        .map(e -> {
+//                            PartnerVO partnerVO = new PartnerVO();
+//                            BeanUtils.copyProperties(e, partnerVO);
+//
+//                            // fillMsg
+//                            fillMsg(e, partnerVO);
+//
+//                            return partnerVO;
+//                        })
+//                        .sorted(Comparator.comparing(PartnerVO::getId))
+//                        .collect(Collectors.toList());
+//
+//                return ResultBean.ofSuccess(partnerVOS, totalNum, query.getPageIndex(), query.getPageSize());
+//            }
+//        }
+        return ResultBean.ofSuccess(Collections.EMPTY_LIST, (int) pageInfo.getTotal(), query.getPageIndex(), query.getPageSize());
     }
 
     @Override
@@ -562,15 +583,16 @@ public class PartnerServiceImpl implements PartnerService {
     public List<List<Long>> listBizArea(Long id) {
         List<EmployeeRelaBizAreaVO> ids = employeeRelaBizAreaDOMapper.selectByEmployeeId(id);
         List<Long> result = Lists.newArrayList();
-        for(EmployeeRelaBizAreaVO employeeRelaBizAreaVO : ids){
-            if(ids != null){
-                if(StringUtils.isNotBlank(employeeRelaBizAreaVO.getBizAreaId())){
+        for (EmployeeRelaBizAreaVO employeeRelaBizAreaVO : ids) {
+            if (ids != null) {
+                if (StringUtils.isNotBlank(employeeRelaBizAreaVO.getBizAreaId())) {
                     result.add(Long.valueOf(employeeRelaBizAreaVO.getBizAreaId()));
                 }
             }
         }
         return bizAreaService.selectedList(result);
     }
+
     @Override
     @Transactional
     public ResultBean<Void> bindEmployee(Long id, String employeeIds) {
@@ -808,8 +830,7 @@ public class PartnerServiceImpl implements PartnerService {
     private void fillMsg(PartnerDO partnerDO, PartnerVO partnerVO) {
         fillDepartment(partnerDO.getDepartmentId(), partnerVO);
         fillArea(partnerDO.getAreaId(), partnerVO);
-        if (partnerDO.getPartnerGroup()!=null)
-        {
+        if (partnerDO.getPartnerGroup() != null) {
             partnerVO.setPartnerGroup(String.valueOf(partnerDO.getPartnerGroup()));
         }
 
@@ -1290,8 +1311,7 @@ public class PartnerServiceImpl implements PartnerService {
         }
     }
 
-    public List<BankCodeDO> selectAllBankName(String bankName)
-    {
+    public List<BankCodeDO> selectAllBankName(String bankName) {
         List<BankCodeDO> bankCodeDOS = bankCodeDOMapper.selectByBankName(bankName);
 
         return bankCodeDOS;

@@ -134,6 +134,8 @@ public class BusinessReviewServiceImpl implements BusinessReviewService
             param.setBankAreaId(universalInfoVO.getBank_id());
             param.setBankRate(universalInfoVO.getFinancial_bank_rate());
 
+            //设置车商返利
+
             //加收保证金
             param.setBail(universalInfoVO.getFinancial_cash_deposit());
             //上牌地城市id

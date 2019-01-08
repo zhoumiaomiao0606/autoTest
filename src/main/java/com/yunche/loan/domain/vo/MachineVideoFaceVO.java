@@ -7,7 +7,7 @@ import lombok.Data;
  * @date 2019/1/4
  */
 @Data
-public class ConfVideoFaceBankPartnerVO {
+public class MachineVideoFaceVO {
 
     private Long partnerId;
 

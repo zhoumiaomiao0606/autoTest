@@ -5,6 +5,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.yunche.loan.config.cache.BankCache;
+import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.MapSortUtils;
 import com.yunche.loan.config.util.SessionUtils;
@@ -30,6 +31,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import static com.yunche.loan.config.constant.BankConst.*;
 import static com.yunche.loan.config.constant.CarConst.CAR_DETAIL;
 import static com.yunche.loan.config.constant.CarConst.CAR_MODEL;
+import static com.yunche.loan.config.constant.ConfVideoFaceConst.*;
 import static com.yunche.loan.config.constant.FaceSignConst.FACE_SIGN_MACHINE;
 import static com.yunche.loan.config.constant.VideoFaceConst.*;
 import static com.yunche.loan.service.impl.VideoFaceQueue.SEPARATOR;
@@ -61,6 +63,9 @@ public class WebSocketServiceImpl implements WebSocketService {
 
     @Autowired
     private DictService dictService;
+
+    @Autowired
+    private ConfVideoFaceService confVideoFaceService;
 
 
     @Override
@@ -103,6 +108,7 @@ public class WebSocketServiceImpl implements WebSocketService {
         Preconditions.checkNotNull(webSocketParam.getAnyChatUserId(), "anyChatUserId不能为空");
         if (TYPE_APP.equals(webSocketParam.getType())) {
             Preconditions.checkNotNull(webSocketParam.getOrderId(), "orderId不能为空");
+            Preconditions.checkNotNull(webSocketParam.getPartnerId(), "partnerId不能为空");
             Preconditions.checkNotNull(webSocketParam.getBankPeriodPrincipal(), "bankPeriodPrincipal不能为空");
         }
 
@@ -188,7 +194,7 @@ public class WebSocketServiceImpl implements WebSocketService {
     }
 
     /**
-     * 是否需要排队
+     * 是否需要排队   -> 排队：即进入人工面签队列
      *
      * @param webSocketParam
      * @param wsSessionId
@@ -201,7 +207,52 @@ public class WebSocketServiceImpl implements WebSocketService {
             return true;
         }
 
-        return doWaitTeam_ICBC(webSocketParam, wsSessionId);
+        // 视频面签配置详情
+        ConfVideoFaceVO confVideoFaceVO = confVideoFaceService.detail(webSocketParam.getBankId(), webSocketParam.getPartnerId());
+
+        Byte machineVideoFaceStatus = confVideoFaceVO.getMachineVideoFaceStatus();
+        Byte artificialVideoFaceStatus = confVideoFaceVO.getArtificialVideoFaceStatus();
+
+        // ①若当前合伙人机器面签关闭了，且当前银行不允许进行人工面签，则提示【当前暂无坐席，请稍后重试】
+        boolean videoFaceStatus_machineIsClose_artificialIsClose = MACHINE_VIDEO_FACE_STATUS_CLOSE.equals(machineVideoFaceStatus)
+                && ARTIFICIAL_VIDEO_FACE_STATUS_CLOSE.equals(artificialVideoFaceStatus);
+
+        // ②若当前合伙人机器面签关闭了，但当前银行允许进行人工面签，则排队后，不会走视频面签配置，必须强制走人工面签
+        boolean videoFaceStatus_machineIsClose_artificialIsOpen = MACHINE_VIDEO_FACE_STATUS_CLOSE.equals(machineVideoFaceStatus)
+                && ARTIFICIAL_VIDEO_FACE_STATUS_OPEN.equals(artificialVideoFaceStatus);
+
+        // ③若当前合伙人机器面签开启了，但当前银行不允许进行人工面签，则排队后，不等待  --> 直接进入机器面签
+        boolean videoFaceStatus_machineIsOpen_artificialIsClose = MACHINE_VIDEO_FACE_STATUS_OPEN.equals(machineVideoFaceStatus)
+                && ARTIFICIAL_VIDEO_FACE_STATUS_CLOSE.equals(artificialVideoFaceStatus);
+
+        // ④若当前合伙人机器面签开启了，且当前银行允许进行人工面签，则排队候后，走现有视频面签配置
+        boolean videoFaceStatus_machineIsOpen_artificialIsOpen = MACHINE_VIDEO_FACE_STATUS_OPEN.equals(machineVideoFaceStatus)
+                && ARTIFICIAL_VIDEO_FACE_STATUS_OPEN.equals(artificialVideoFaceStatus);
+
+        if (videoFaceStatus_machineIsClose_artificialIsClose) {
+
+            // ① 错误提示
+            throw new BizException("当前暂无坐席，请稍后重试");
+
+        } else if (videoFaceStatus_machineIsClose_artificialIsOpen) {
+
+            // ② 强制走人工面签
+            return true;
+
+        } else if (videoFaceStatus_machineIsOpen_artificialIsClose) {
+
+            // ③ 强制走机器面签
+            return false;
+
+        } else if (videoFaceStatus_machineIsOpen_artificialIsOpen) {
+
+            // ④ 走视频面签配置（时间配置）
+            return doWaitTeam_ICBC(webSocketParam, wsSessionId);
+
+        } else {
+
+            throw new BizException("排队异常");
+        }
     }
 
     /**

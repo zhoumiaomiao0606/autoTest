@@ -4,15 +4,12 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.common.base.Preconditions;
 import com.yunche.loan.config.constant.ConfVideoFaceConst;
-import com.yunche.loan.domain.entity.ConfVideoFaceBankDO;
-import com.yunche.loan.domain.entity.ConfVideoFaceBankPartnerDO;
-import com.yunche.loan.domain.entity.PartnerDO;
-import com.yunche.loan.domain.query.ConfVideoFaceBankPartnerQuery;
+import com.yunche.loan.domain.entity.*;
+import com.yunche.loan.domain.query.ConfVideoFaceMachineQuery;
 import com.yunche.loan.domain.query.PartnerQuery;
-import com.yunche.loan.domain.vo.ConfVideoFaceBankPartnerVO;
-import com.yunche.loan.mapper.ConfVideoFaceBankDOMapper;
-import com.yunche.loan.mapper.ConfVideoFaceBankPartnerDOMapper;
-import com.yunche.loan.mapper.PartnerDOMapper;
+import com.yunche.loan.domain.vo.MachineVideoFaceVO;
+import com.yunche.loan.domain.vo.ConfVideoFaceVO;
+import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.ConfVideoFaceService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,10 +30,10 @@ import java.util.stream.Collectors;
 public class ConfVideoFaceServiceImpl implements ConfVideoFaceService {
 
     @Autowired
-    private ConfVideoFaceBankDOMapper confVideoFaceBankDOMapper;
+    private ConfVideoFaceArtificialDOMapper confVideoFaceArtificialDOMapper;
 
     @Autowired
-    private ConfVideoFaceBankPartnerDOMapper confVideoFaceBankPartnerDOMapper;
+    private ConfVideoFaceMachineDOMapper confVideoFaceMachineDOMapper;
 
     @Autowired
     private PartnerDOMapper partnerDOMapper;
@@ -44,29 +41,38 @@ public class ConfVideoFaceServiceImpl implements ConfVideoFaceService {
 
     @Override
     @Transactional
-    public void artificialUpdate(ConfVideoFaceBankDO confVideoFaceBankDO) {
+    public void artificialUpdate(ConfVideoFaceArtificialDO confVideoFaceArtificialDO) {
 
-        ConfVideoFaceBankDO exist = confVideoFaceBankDOMapper.selectByPrimaryKey(confVideoFaceBankDO.getBankId());
+        ConfVideoFaceArtificialDO exist = confVideoFaceArtificialDOMapper.selectByPrimaryKey(confVideoFaceArtificialDO.getBankId());
 
         if (null == exist) {
 
-            int count = confVideoFaceBankDOMapper.insertSelective(confVideoFaceBankDO);
+            int count = confVideoFaceArtificialDOMapper.insertSelective(confVideoFaceArtificialDO);
             Preconditions.checkArgument(count > 0, "保存失败");
 
         } else {
 
-            int count = confVideoFaceBankDOMapper.updateByPrimaryKeySelective(confVideoFaceBankDO);
+            int count = confVideoFaceArtificialDOMapper.updateByPrimaryKeySelective(confVideoFaceArtificialDO);
             Preconditions.checkArgument(count > 0, "保存失败");
         }
     }
 
     @Override
-    public ConfVideoFaceBankDO artificialDetail(Long bankId) {
+    public ConfVideoFaceArtificialDO artificialDetail(Long bankId) {
         Preconditions.checkNotNull(bankId, "bankId不能为空");
 
-        ConfVideoFaceBankDO confVideoFaceBankDO = confVideoFaceBankDOMapper.selectByPrimaryKey(bankId);
+        ConfVideoFaceArtificialDO exist = confVideoFaceArtificialDOMapper.selectByPrimaryKey(bankId);
 
-        return confVideoFaceBankDO;
+        if (null != exist) {
+            return exist;
+        }
+
+        ConfVideoFaceArtificialDO confVideoFaceArtificialDO = new ConfVideoFaceArtificialDO();
+        confVideoFaceArtificialDO.setBankId(bankId);
+        confVideoFaceArtificialDO.setArtificialVideoFaceStatus(ConfVideoFaceConst.ARTIFICIAL_VIDEO_FACE_STATUS_CLOSE);
+        confVideoFaceArtificialDO.setNeedLocation(ConfVideoFaceConst.ARTIFICIAL_VIDEO_FACE_NEED_LOCATION_TRUE);
+
+        return confVideoFaceArtificialDO;
     }
 
     @Override
@@ -76,25 +82,25 @@ public class ConfVideoFaceServiceImpl implements ConfVideoFaceService {
         Preconditions.checkNotNull(partnerId, "partnerId不能为空");
         Preconditions.checkNotNull(status, "status不能为空");
 
-        ConfVideoFaceBankPartnerDO confVideoFaceBankPartnerDO = new ConfVideoFaceBankPartnerDO();
-        confVideoFaceBankPartnerDO.setBankId(bankId);
-        confVideoFaceBankPartnerDO.setPartnerId(partnerId);
+        ConfVideoFaceMachineDO confVideoFaceMachineDO = new ConfVideoFaceMachineDO();
+        confVideoFaceMachineDO.setBankId(bankId);
+        confVideoFaceMachineDO.setPartnerId(partnerId);
 
         if (new Byte("0").equals(status)) {
 
             // 0-关闭  insert
-            int count = confVideoFaceBankPartnerDOMapper.insertSelective(confVideoFaceBankPartnerDO);
+            int count = confVideoFaceMachineDOMapper.insertSelective(confVideoFaceMachineDO);
             Preconditions.checkArgument(count > 0, "失败");
 
         } else if (new Byte("1").equals(status)) {
 
             // 1-开启  del
-            confVideoFaceBankPartnerDOMapper.deleteByPrimaryKey(confVideoFaceBankPartnerDO);
+            confVideoFaceMachineDOMapper.deleteByPrimaryKey(confVideoFaceMachineDO);
         }
     }
 
     @Override
-    public PageInfo<ConfVideoFaceBankPartnerVO> listMachine(ConfVideoFaceBankPartnerQuery query) {
+    public PageInfo<MachineVideoFaceVO> listMachine(ConfVideoFaceMachineQuery query) {
 
         // 合伙人分页展示
         PageHelper.startPage(query.getPageIndex(), query.getPageSize(), true);
@@ -102,6 +108,7 @@ public class ConfVideoFaceServiceImpl implements ConfVideoFaceService {
         PartnerQuery partnerQuery = new PartnerQuery();
         partnerQuery.setId(query.getPartnerId());
         partnerQuery.setName(query.getPartnerName());
+        partnerQuery.setLeaderName(query.getPartnerLeaderName());
         List<PartnerDO> partnerDOList = partnerDOMapper.query(partnerQuery);
 
         if (CollectionUtils.isEmpty(partnerDOList)) {
@@ -118,46 +125,46 @@ public class ConfVideoFaceServiceImpl implements ConfVideoFaceService {
                 .collect(Collectors.toList());
 
         query.setPartnerIdList(partnerIdList);
-        List<ConfVideoFaceBankPartnerDO> confVideoFaceBankPartnerDOS = confVideoFaceBankPartnerDOMapper.query(query);
+        List<ConfVideoFaceMachineDO> confVideoFaceMachineDOS = confVideoFaceMachineDOMapper.query(query);
 
 
-        if (!CollectionUtils.isEmpty(confVideoFaceBankPartnerDOS)) {
+        if (!CollectionUtils.isEmpty(confVideoFaceMachineDOS)) {
 
             // 被禁partnerIdList
-            List<Long> close_partnerIdList = confVideoFaceBankPartnerDOS.stream()
+            List<Long> close_partnerIdList = confVideoFaceMachineDOS.stream()
                     .filter(Objects::nonNull)
-                    .map(ConfVideoFaceBankPartnerDO::getPartnerId)
+                    .map(ConfVideoFaceMachineDO::getPartnerId)
                     .collect(Collectors.toList());
 
-            List<ConfVideoFaceBankPartnerVO> confVideoFaceBankPartnerVOList = partnerDOList.stream()
+            List<MachineVideoFaceVO> machineVideoFaceVOList = partnerDOList.stream()
                     .filter(Objects::nonNull)
                     .map(e -> {
 
                         Long partnerId = e.getId();
 
-                        ConfVideoFaceBankPartnerVO confVideoFaceBankPartnerVO = new ConfVideoFaceBankPartnerVO();
+                        MachineVideoFaceVO machineVideoFaceVO = new MachineVideoFaceVO();
 
-                        confVideoFaceBankPartnerVO.setPartnerId(partnerId);
-                        confVideoFaceBankPartnerVO.setPartnerName(e.getName());
-                        confVideoFaceBankPartnerVO.setPartnerLeaderName(e.getLeaderName());
+                        machineVideoFaceVO.setPartnerId(partnerId);
+                        machineVideoFaceVO.setPartnerName(e.getName());
+                        machineVideoFaceVO.setPartnerLeaderName(e.getLeaderName());
 
                         if (close_partnerIdList.contains(partnerId)) {
                             // CLOSE
-                            confVideoFaceBankPartnerVO.setMachineVideoFaceStatus(ConfVideoFaceConst.MACHINE_VIDEO_FACE_STATUS_CLOSE);
+                            machineVideoFaceVO.setMachineVideoFaceStatus(ConfVideoFaceConst.MACHINE_VIDEO_FACE_STATUS_CLOSE);
                         } else {
                             // OPEN
-                            confVideoFaceBankPartnerVO.setMachineVideoFaceStatus(ConfVideoFaceConst.MACHINE_VIDEO_FACE_STATUS_OPEN);
+                            machineVideoFaceVO.setMachineVideoFaceStatus(ConfVideoFaceConst.MACHINE_VIDEO_FACE_STATUS_OPEN);
                         }
 
-                        return confVideoFaceBankPartnerVO;
+                        return machineVideoFaceVO;
                     })
                     .collect(Collectors.toList());
 
 
-            PageInfo<ConfVideoFaceBankPartnerVO> pageInfo_ = PageInfo.of(confVideoFaceBankPartnerVOList);
+            PageInfo<MachineVideoFaceVO> pageInfo_ = PageInfo.of(machineVideoFaceVOList);
             BeanUtils.copyProperties(pageInfo, pageInfo_);
 
-            pageInfo_.setList(confVideoFaceBankPartnerVOList);
+            pageInfo_.setList(machineVideoFaceVOList);
 
             return pageInfo_;
 
@@ -165,30 +172,59 @@ public class ConfVideoFaceServiceImpl implements ConfVideoFaceService {
 
             // 全OPEN
 
-            List<ConfVideoFaceBankPartnerVO> confVideoFaceBankPartnerVOList = partnerDOList.stream()
+            List<MachineVideoFaceVO> machineVideoFaceVOList = partnerDOList.stream()
                     .filter(Objects::nonNull)
                     .map(e -> {
 
                         Long partnerId = e.getId();
 
-                        ConfVideoFaceBankPartnerVO confVideoFaceBankPartnerVO = new ConfVideoFaceBankPartnerVO();
+                        MachineVideoFaceVO machineVideoFaceVO = new MachineVideoFaceVO();
 
-                        confVideoFaceBankPartnerVO.setPartnerId(partnerId);
-                        confVideoFaceBankPartnerVO.setPartnerName(e.getName());
-                        confVideoFaceBankPartnerVO.setPartnerLeaderName(e.getLeaderName());
-                        confVideoFaceBankPartnerVO.setMachineVideoFaceStatus(ConfVideoFaceConst.MACHINE_VIDEO_FACE_STATUS_OPEN);
+                        machineVideoFaceVO.setPartnerId(partnerId);
+                        machineVideoFaceVO.setPartnerName(e.getName());
+                        machineVideoFaceVO.setPartnerLeaderName(e.getLeaderName());
+                        machineVideoFaceVO.setMachineVideoFaceStatus(ConfVideoFaceConst.MACHINE_VIDEO_FACE_STATUS_OPEN);
 
-                        return confVideoFaceBankPartnerVO;
+                        return machineVideoFaceVO;
                     })
                     .collect(Collectors.toList());
 
 
-            PageInfo<ConfVideoFaceBankPartnerVO> pageInfo_ = PageInfo.of(confVideoFaceBankPartnerVOList);
+            PageInfo<MachineVideoFaceVO> pageInfo_ = PageInfo.of(machineVideoFaceVOList);
             BeanUtils.copyProperties(pageInfo, pageInfo_);
 
-            pageInfo_.setList(confVideoFaceBankPartnerVOList);
+            pageInfo_.setList(machineVideoFaceVOList);
 
             return pageInfo_;
         }
+    }
+
+    @Override
+    public ConfVideoFaceVO detail(Long bankId, Long partnerId) {
+        Preconditions.checkNotNull(bankId, "bankId不能为空");
+        Preconditions.checkNotNull(partnerId, "partnerId不能为空");
+
+        ConfVideoFaceVO confVideoFaceVO = new ConfVideoFaceVO();
+
+        // 人工
+        ConfVideoFaceArtificialDO confVideoFaceArtificialDO = artificialDetail(bankId);
+
+        confVideoFaceVO.setArtificialVideoFaceStatus(confVideoFaceArtificialDO.getArtificialVideoFaceStatus());
+        confVideoFaceVO.setNeedLocation(confVideoFaceArtificialDO.getNeedLocation());
+
+
+        // 机器
+        ConfVideoFaceMachineDO key = new ConfVideoFaceMachineDO();
+        key.setBankId(bankId);
+        key.setPartnerId(partnerId);
+        ConfVideoFaceMachineDO exist = confVideoFaceMachineDOMapper.selectByPrimaryKey(key);
+
+        if (null != exist) {
+            confVideoFaceVO.setMachineVideoFaceStatus(ConfVideoFaceConst.MACHINE_VIDEO_FACE_STATUS_CLOSE);
+        } else {
+            confVideoFaceVO.setMachineVideoFaceStatus(ConfVideoFaceConst.MACHINE_VIDEO_FACE_STATUS_OPEN);
+        }
+
+        return confVideoFaceVO;
     }
 }

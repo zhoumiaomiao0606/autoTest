@@ -9,13 +9,15 @@ import java.util.List;
  * @date 2019/1/4
  */
 @Data
-public class ConfVideoFaceBankPartnerQuery extends BaseQuery {
+public class ConfVideoFaceMachineQuery extends BaseQuery {
 
     private Long partnerId;
 
     private List<Long> partnerIdList;
 
     private String partnerName;
+
+    private String partnerLeaderName;
 
     private Long bankId;
 }
