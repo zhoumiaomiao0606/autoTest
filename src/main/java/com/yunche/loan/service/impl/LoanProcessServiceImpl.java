@@ -72,6 +72,8 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      */
     public static final String NEW_LINE = System.getProperty("line.separator");
 
+    private static final Byte HASCOLLECTEDKEY = 1;
+
 
     @Autowired
     private LoanOrderDOMapper loanOrderDOMapper;
@@ -259,10 +261,27 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             }
         }
 
+        // 【电审】
+        if (isTelephoneVerifyTask(approval.getTaskDefinitionKey(), approval.getAction()))
+        {
+            LoanTelephoneVerifyDO loanTelephoneVerifyDO = loanTelephoneVerifyDOMapper.selectByPrimaryKey(approval.getOrderId());
+            if (loanTelephoneVerifyDO!=null && loanTelephoneVerifyDO.getKeyRiskPremium()>0 && !"1".equals(loanTelephoneVerifyDO.getKeyRiskPremiumConfirm()))
+            {
+                throw new BizException("钥匙风险金--没有确认");
+            }
+        }
+
         // 【待收钥匙】
         if (isCommitKeyTask(approval.getTaskDefinitionKey(), approval.getAction()))
         {
-            loanOrderDO.setKeyCollected(approval.getKeyCollected());
+            if (approval.getKeyCollected()==null ||"".equals(approval.getKeyCollected()))
+            {
+                loanOrderDO.setKeyCollected(HASCOLLECTEDKEY);
+            }else
+                {
+                    loanOrderDO.setKeyCollected(approval.getKeyCollected());
+                }
+
             loanOrderDOMapper.updateByPrimaryKeySelective(loanOrderDO);
             keyCommitTask.refreshShutdownQuerycredit(approval.getOrderId());
         }
@@ -1501,6 +1520,19 @@ public class LoanProcessServiceImpl implements LoanProcessService {
     private boolean isCreditApplyTask(String taskDefinitionKey, Byte action) {
         boolean isCreditApplyTask = CREDIT_APPLY.getCode().equals(taskDefinitionKey) && ACTION_PASS.equals(action);
         return isCreditApplyTask;
+    }
+
+
+    /**
+     * 是否【电审】
+     *
+     * @param taskDefinitionKey
+     * @param action
+     * @return
+     */
+    private boolean isTelephoneVerifyTask(String taskDefinitionKey, Byte action) {
+        boolean isTelephoneVerifyTask = TELEPHONE_VERIFY.getCode().equals(taskDefinitionKey) && ACTION_PASS.equals(action);
+        return isTelephoneVerifyTask;
     }
 
 

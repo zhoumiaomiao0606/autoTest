@@ -154,4 +154,17 @@ public class UniversalInfoSupplementVO {
      * 文件路径列表
      */
     private List<FileVO2> files;
+
+
+    /**
+     * 钥匙风险金
+     */
+    private Integer keyRiskPremium;
+
+    /**
+     * 钥匙风险金-确认
+     */
+    private Byte keyRiskPremiumConfirm;
+
+    private BigDecimal addMoney;
 }

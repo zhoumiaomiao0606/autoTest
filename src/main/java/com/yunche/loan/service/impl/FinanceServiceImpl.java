@@ -256,6 +256,16 @@ public class FinanceServiceImpl implements FinanceService
 
         LOG.info("支付参数："+paymentParam.toString());
 
+        remitDetailsDO.setRemit_status(REMIT_STATUS_ONE);
+        int i = remitDetailsDOMapper.updateByPrimaryKeySelective(remitDetailsDO);
+
+        if (i!=1)
+        {
+            throw new BizException("打款信息错误！");
+        }
+
+
+
         String financeResult = businessReviewManager.financeUnisal3(paymentParam,financeConfig.getPaymentHost(),"/payment");
 
         CommonFinanceResult Result = new CommonFinanceResult();
@@ -278,16 +288,8 @@ public class FinanceServiceImpl implements FinanceService
         //更新打款单打款状态---待讨论
 
 
-        remitDetailsDO.setRemit_status(REMIT_STATUS_ONE);
-        int i = remitDetailsDOMapper.updateByPrimaryKeySelective(remitDetailsDO);
 
-        if (i == 1)
-        {
             return ResultBean.ofSuccess("打款中！");
-        }else
-        {
-            return ResultBean.ofError("打款信息错误！");
-        }
 
 
     }

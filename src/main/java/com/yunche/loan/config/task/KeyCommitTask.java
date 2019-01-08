@@ -1,12 +1,14 @@
 package com.yunche.loan.config.task;
 
 import com.alibaba.fastjson.JSON;
+import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.yunche.loan.config.anno.DistributedLock;
 import com.yunche.loan.config.common.FinanceConfig;
 import com.yunche.loan.domain.entity.*;
 import com.yunche.loan.domain.param.ModelsPara;
+import com.yunche.loan.domain.param.RenewInsuranceParam;
 import com.yunche.loan.domain.param.SeriesPara;
 import com.yunche.loan.domain.vo.BaseBrandInitial;
 import com.yunche.loan.domain.vo.CommonFinanceResult;
@@ -17,6 +19,7 @@ import com.yunche.loan.mapper.CarBrandDOMapper;
 import com.yunche.loan.mapper.CarDetailDOMapper;
 import com.yunche.loan.mapper.CarModelDOMapper;
 import com.yunche.loan.mapper.LoanQueryDOMapper;
+import com.yunche.loan.service.InsuranceUrgeService;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,10 +59,15 @@ public class KeyCommitTask
     @Resource
     private StringRedisTemplate stringRedisTemplate;
 
-    @Scheduled(cron = "0 0 1 * * ?")
+    @Resource
+    private InsuranceUrgeService insuranceUrgeService;
+
+    @Scheduled(cron = "0 07 10 * * ?")
     @DistributedLock(200)
     public void setNeedSendMessageOrder()
     {
+
+        LOG.info("开始取出15<（today-垫款日）<21&& 收钥匙状态=待收的订单");
 
         //取出15<（today-垫款日）<21&& 收钥匙状态=待收的订单
         List<NeedSendMesOrders> list = loanQueryDOMapper.selectHasRimitOrder();
@@ -72,17 +80,22 @@ public class KeyCommitTask
             boundValueOps.set(JSON.toJSONString(list));
         }
 
+        LOG.info("结束取出15<（today-垫款日）<21&& 收钥匙状态=待收的订单");
+
     }
 
-    @Scheduled(cron = "0 0 0 * * ?")
+    @Scheduled(cron = "0 53 10 * * ?")
     @DistributedLock(200)
     public void setShutDownQueryCreditOrder()
     {
+
+        LOG.info("开始取出距离垫款日21日，并且收钥匙状态=“待收” 的订单");
         //距离垫款日21日，并且收钥匙状态=“待收” 的订单
         List<SDCOrders> sdOrders = loanQueryDOMapper.selectShutDownQueryCreditOrder();
 
         refreshPartnerAndOrders(sdOrders);
 
+        LOG.info("结束取出距离垫款日21日，并且收钥匙状态=“待收” 的订单");
     }
 
 
@@ -151,7 +164,7 @@ public class KeyCommitTask
 
 
 
-    @Scheduled(cron = "0 0 9 * * ?")
+    @Scheduled(cron = "0 10 10 * * ?")
     @DistributedLock(200)
     public void sendMessage()
     {
@@ -164,7 +177,69 @@ public class KeyCommitTask
             List<NeedSendMesOrders> list =  JSON.parseObject(result, type);
             if (!CollectionUtils.isEmpty(list))
             {
+                //取出不同的号码
+                List<String> mobiles = Lists.newArrayList();
+                list
+                        .stream()
+                        .forEach(e ->
+                        {
+                            if (!mobiles.contains(e.getLeaderMobile()))
+                            {
+                                mobiles.add(e.getLeaderMobile());
+                            }
+                        });
+
+                //对每个号码进行发送提示
+                LOG.info("开始发送短信！");
                 //发送消息
+                mobiles
+                        .forEach(
+                                e ->
+                                {
+                                    StringBuilder message = new StringBuilder();
+                                    list.forEach(
+                                            f ->
+                                            {
+                                                if (f.getLeaderMobile().equals(e))
+                                                {
+                                                    message.append(f.getCustomerName()).append("、");
+                                                }
+
+                                            }
+                                    );
+
+                                    message.deleteCharAt(message.length()-1);
+
+
+                                    RenewInsuranceParam renewInsuranceParam = new RenewInsuranceParam();
+                                    renewInsuranceParam.setTelphone(e);
+
+                                    renewInsuranceParam.setMessage("您的客户:"+message+"尚未上缴车钥匙，逾期后将触发停止进件，请及时处理。【云车金融】");
+                                    insuranceUrgeService.sendSms(renewInsuranceParam);
+
+                                    LOG.info("发送短信！号码："+e+"====客户名："+message);
+                                }
+                        );
+
+                LOG.info("结束发送短信！");
+
+                /*LOG.info("开始发送短信！");
+                //发送消息
+                list
+                        .stream()
+                        .forEach(e ->
+                        {
+                            RenewInsuranceParam renewInsuranceParam = new RenewInsuranceParam();
+                            renewInsuranceParam.setTelphone(e.getLeaderMobile());
+
+                            renewInsuranceParam.setMessage("您的客户:"+e.getCustomerName()+"尚未上缴车钥匙，逾期后将触发停止进件，请及时处理。【云车金融】");
+                            insuranceUrgeService.sendSms(renewInsuranceParam);
+
+                            LOG.info("发送短信！号码："+e.getLeaderMobile()+"====客户名："+e.getCustomerName());
+
+                        });
+
+                LOG.info("结束发送短信！");*/
             }
 
         }
