@@ -7,11 +7,8 @@ import com.google.common.eventbus.Subscribe;
 import com.yunche.loan.config.common.FinanceConfig;
 import com.yunche.loan.config.constant.IDict;
 import com.yunche.loan.config.feign.client.TenantFeignClient;
-import com.yunche.loan.config.util.DateUtil;
+import com.yunche.loan.config.util.*;
 import com.yunche.loan.config.exception.BizException;
-import com.yunche.loan.config.util.EventBusCenter;
-import com.yunche.loan.config.util.GeneratorIDUtil;
-import com.yunche.loan.config.util.HttpUtils;
 import com.yunche.loan.domain.entity.*;
 import com.yunche.loan.domain.param.ApprovalParam;
 import com.yunche.loan.domain.param.DistributorParam;
@@ -364,6 +361,7 @@ public class AsyncFinanceApI {
         LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(approvalParam.getOrderId());
         LoanCustomerDO loanCustomerDO = loanCustomerDOMapper.selectByPrimaryKey(loanOrderDO.getLoanCustomerId(), null);
         LoanProcessLogDO loanProcessLog = loanProcessLogService.getLoanProcessLog(approvalParam.getOrderId(), CREDIT_APPLY.getCode());
+        LoanProcessLogDO remitloanProcessLog = loanProcessLogService.getLoanProcessLog(approvalParam.getOrderId(), CREDIT_APPLY.getCode());
         LoanBaseInfoDO loanBaseInfoDO = loanBaseInfoDOMapper.selectByPrimaryKey(loanOrderDO.getLoanBaseInfoId());
         PartnerDO partnerDO = partnerDOMapper.selectByPrimaryKey(loanBaseInfoDO.getPartnerId(), null);
         LoanCarInfoDO loanCarInfoDO = loanCarInfoDOMapper.selectByPrimaryKey(loanOrderDO.getLoanCarInfoId());
@@ -376,9 +374,15 @@ public class AsyncFinanceApI {
         distributorParam.setCreateDate(DateUtil.getDateTo10(loanProcessLog.getCreateTime()));
         distributorParam.setPartnerId(loanBaseInfoDO.getPartnerId().toString());
         distributorParam.setPartnerName(partnerDO.getName());
+        distributorParam.setLoanTime(DateUtil.getDateTo10(remitloanProcessLog.getCreateTime()));
 
 
-
+        if(loanOrderDO.getLoanFinancialPlanId()!=null){
+            LoanFinancialPlanDO loanFinancialPlanDO = loanFinancialPlanDOMapper.selectByPrimaryKey(loanOrderDO.getLoanFinancialPlanId());
+            if(loanFinancialPlanDO!=null){
+                distributorParam.setCarPrice(BigDecimalUtil.format(loanFinancialPlanDO.getCarPrice(),2));
+            }
+        }
 
         if(loanCarInfoDO!=null){
             CarDetailDO carDetailDO = carDetailDOMapper.selectByPrimaryKey(loanCarInfoDO.getCarDetailId(), null);
@@ -387,11 +391,11 @@ public class AsyncFinanceApI {
             distributorParam.setCarDetail(String.valueOf(loanCarInfoDO.getCarDetailId()));
             distributorParam.setCarModel(String.valueOf(carDetailDO.getModelId()));
             distributorParam.setCarBrand(String.valueOf(carModelDO.getBrandId()));
+            distributorParam.setTenantId(loanCarInfoDO.getDistributorId());
         }
 
         RemitDetailsDO remitDetailsDO = remitDetailsDOMapper.selectByPrimaryKey(loanOrderDO.getRemitDetailsId());
         if(remitDetailsDO!=null){
-
             distributorParam.setTenantRebate(remitDetailsDO.getCar_dealer_rebate().toString());
 
         }

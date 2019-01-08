@@ -61,4 +61,6 @@ public class LoanCarInfoDO {
     private Long cityId;
 
     private String vin;
+
+    private String distributorId;
 }
