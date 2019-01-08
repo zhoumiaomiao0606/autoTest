@@ -337,7 +337,7 @@ public class AsyncFinanceApI {
         }
 
 
-        //通知财务系统信心
+        //通知财务系统信息
         if(approvalParam.getTaskDefinitionKey().equals(CREDIT_APPLY.getCode())
                 || approvalParam.getTaskDefinitionKey().equals(LOAN_APPLY.getCode())
                 || approvalParam.getTaskDefinitionKey().equals(REFUND_APPLY_REVIEW.getCode())
@@ -347,6 +347,24 @@ public class AsyncFinanceApI {
             orderInfoPush(approvalParam);
         }
 
+        //交易后处理
+        if(approvalParam.getTaskDefinitionKey().equals(REMIT_REVIEW.getCode())){
+
+            afterProcess(approvalParam);
+        }
+    }
+
+    /**
+     * 交易后处理
+     * @param approvalParam
+     */
+    private void afterProcess(ApprovalParam approvalParam) {
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(approvalParam.getOrderId());
+        if(approvalParam.getTaskDefinitionKey().equals(REMIT_REVIEW.getCode().trim()) && approvalParam.getAction().equals(ACTION_PASS)){
+            RemitDetailsDO remitDetailsDO = remitDetailsDOMapper.selectByPrimaryKey(loanOrderDO.getRemitDetailsId());
+            remitDetailsDO.setRemit_status(IDict.K_DKZT.PAY_SUCC);
+            remitDetailsDOMapper.updateByPrimaryKeySelective(remitDetailsDO);
+        }
     }
 
     /**
