@@ -327,9 +327,7 @@
         loaninfo.bank,
         partner. NAME AS partner_name,
         employee. NAME AS salesman_name,
-        case when car.car_type = 0 then '新车'
-        when car.car_type = 1 then '二手车'
-        else '其他' end as car_type,
+        useGetCarName(car.car_detail_id) as car_type,
         loan_financial_plan.car_price AS price,
         loan_financial_plan.sign_rate,
         loan_financial_plan.loan_amount,
@@ -807,7 +805,8 @@
         ORDER BY
         create_time DESC
         LIMIT 1
-        ) as dotime
+        ) as dotime,
+        (SELECT biz_area.name FROM biz_area_rela_partner LEFT JOIN biz_area ON biz_area_rela_partner.biz_area_id = biz_area.id WHERE biz_area_rela_partner.partner_id = partner.id ORDER BY biz_area_rela_partner.gmt_create limit 1 ) AS biz_area
         FROM
         loan_order orders
         LEFT JOIN loan_customer customer ON orders.loan_customer_id = customer.id
