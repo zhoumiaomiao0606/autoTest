@@ -251,6 +251,7 @@ public class AuthServiceImpl implements AuthService {
         total.add("channel_dep");
         total.add("finance_dep");
         total.add("mortgage_dep");
+        total.add("after_loan");
         if(loginUserHasUserGroups == null){
             for(String s:total){
                 taskAuthMap.put(s,false);

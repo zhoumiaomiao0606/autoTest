@@ -1,13 +1,14 @@
 package com.yunche.loan.domain.param;
 
 import com.google.common.collect.Sets;
+import com.yunche.loan.domain.query.BaseQuery;
 import lombok.Data;
 
 import java.util.List;
 import java.util.Set;
 
 @Data
-public class ExportOrdersParam {
+public class ExportOrdersParam extends BaseQuery {
     private String order_id;//业务编号
     private String customer_name;//客户编号
     private String customer_id_card;//身份证
@@ -86,5 +87,7 @@ public class ExportOrdersParam {
     private Long maxGroupLevel;
 
     private Set<String> juniorIds = Sets.newHashSet();
+
+
 
 }

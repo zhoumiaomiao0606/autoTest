@@ -271,4 +271,21 @@ public class ChartController
     {
         return chartService.examineEarlyWarning(param);
     }
+
+    /**
+     * 贷后部门客户信息
+     */
+    @PostMapping(value = "/afterLoanCusInfo", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResultBean afterLoanCusInfo(@RequestBody ExportOrdersParam param)
+    {
+        return chartService.afterLoanCusInfo(param);
+    }
+    /**
+     * 贷后部门客户信息导出
+     */
+    @PostMapping(value = "/afterLoanCusInfoExport", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResultBean afterLoanCusInfoExport(@RequestBody ExportOrdersParam param)
+    {
+        return ResultBean.ofSuccess(exportQueryService.exportOrders(param));
+    }
 }

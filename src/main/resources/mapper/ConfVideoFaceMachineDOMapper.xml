@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yunche.loan.mapper.ConfVideoFaceMachineDOMapper">
+    <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.ConfVideoFaceMachineDO">
+        <id column="bank_id" property="bankId" jdbcType="BIGINT"/>
+        <id column="partner_id" property="partnerId" jdbcType="BIGINT"/>
+        <result column="gmt_create" property="gmtCreate" jdbcType="TIMESTAMP"/>
+        <result column="gmt_modify" property="gmtModify" jdbcType="TIMESTAMP"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+    bank_id, partner_id, gmt_create, gmt_modify
+  </sql>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap"
+            parameterType="com.yunche.loan.domain.entity.ConfVideoFaceMachineDO">
+        select
+        <include refid="Base_Column_List"/>
+        from conf_video_face_machine
+        where bank_id = #{bankId,jdbcType=BIGINT}
+        and partner_id = #{partnerId,jdbcType=BIGINT}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="com.yunche.loan.domain.entity.ConfVideoFaceMachineDO">
+    delete from conf_video_face_machine
+    where bank_id = #{bankId,jdbcType=BIGINT}
+      and partner_id = #{partnerId,jdbcType=BIGINT}
+  </delete>
+    <insert id="insert" parameterType="com.yunche.loan.domain.entity.ConfVideoFaceMachineDO">
+    insert into conf_video_face_machine (bank_id, partner_id, gmt_create, 
+      gmt_modify)
+    values (#{bankId,jdbcType=BIGINT}, #{partnerId,jdbcType=BIGINT}, #{gmtCreate,jdbcType=TIMESTAMP}, 
+      #{gmtModify,jdbcType=TIMESTAMP})
+  </insert>
+    <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.ConfVideoFaceMachineDO">
+        insert into conf_video_face_machine
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="bankId != null">
+                bank_id,
+            </if>
+            <if test="partnerId != null">
+                partner_id,
+            </if>
+            <if test="gmtCreate != null">
+                gmt_create,
+            </if>
+            <if test="gmtModify != null">
+                gmt_modify,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="bankId != null">
+                #{bankId,jdbcType=BIGINT},
+            </if>
+            <if test="partnerId != null">
+                #{partnerId,jdbcType=BIGINT},
+            </if>
+            <if test="gmtCreate != null">
+                #{gmtCreate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="gmtModify != null">
+                #{gmtModify,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.ConfVideoFaceMachineDO">
+        update conf_video_face_machine
+        <set>
+            <if test="gmtCreate != null">
+                gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="gmtModify != null">
+                gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where bank_id = #{bankId,jdbcType=BIGINT}
+        and partner_id = #{partnerId,jdbcType=BIGINT}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.ConfVideoFaceMachineDO">
+    update conf_video_face_machine
+    set gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+      gmt_modify = #{gmtModify,jdbcType=TIMESTAMP}
+    where bank_id = #{bankId,jdbcType=BIGINT}
+      and partner_id = #{partnerId,jdbcType=BIGINT}
+  </update>
+
+    <!-- query -->
+    <select id="query" parameterType="com.yunche.loan.domain.query.ConfVideoFaceMachineQuery"
+            resultType="com.yunche.loan.domain.entity.ConfVideoFaceMachineDO">
+
+        SELECT *
+
+        FROM conf_video_face_machine
+
+        <where>
+            <if test="bankId != null">
+                AND bank_id = #{bankId}
+            </if>
+            <if test="partnerId != null">
+                AND partner_id = #{partnerId}
+            </if>
+            <if test="partnerIdList != null and partnerIdList.size() > 0">
+                AND partner_id IN
+                <foreach collection="partnerIdList" item="item" open="(" close=")">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
+    </select>
+
+</mapper>
