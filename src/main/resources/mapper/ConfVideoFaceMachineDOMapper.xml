@@ -98,7 +98,7 @@
             </if>
             <if test="partnerIdList != null and partnerIdList.size() > 0">
                 AND partner_id IN
-                <foreach collection="partnerIdList" item="item" open="(" close=")">
+                <foreach collection="partnerIdList" item="item" open="(" close=")" separator=",">
                     #{item}
                 </foreach>
             </if>
