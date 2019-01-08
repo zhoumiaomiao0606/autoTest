@@ -759,9 +759,7 @@
         loaninfo.bank,
         partner. NAME AS partner_name,
         employee. NAME AS salesman_name,
-        case when car.car_type = 0 then '新车'
-        when car.car_type = 1 then '二手车'
-        else '其他' end as car_type,
+        useGetCarName(car.car_detail_id) as car_type,
         loan_financial_plan.car_price AS price,
         loan_financial_plan.sign_rate,
         loan_financial_plan.loan_amount,
