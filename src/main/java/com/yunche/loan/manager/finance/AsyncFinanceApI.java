@@ -361,7 +361,7 @@ public class AsyncFinanceApI {
         LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(approvalParam.getOrderId());
         LoanCustomerDO loanCustomerDO = loanCustomerDOMapper.selectByPrimaryKey(loanOrderDO.getLoanCustomerId(), null);
         LoanProcessLogDO loanProcessLog = loanProcessLogService.getLoanProcessLog(approvalParam.getOrderId(), CREDIT_APPLY.getCode());
-        LoanProcessLogDO remitloanProcessLog = loanProcessLogService.getLoanProcessLog(approvalParam.getOrderId(), CREDIT_APPLY.getCode());
+        LoanProcessLogDO remitloanProcessLog = loanProcessLogService.getLoanProcessLog(approvalParam.getOrderId(), REMIT_REVIEW.getCode());
         LoanBaseInfoDO loanBaseInfoDO = loanBaseInfoDOMapper.selectByPrimaryKey(loanOrderDO.getLoanBaseInfoId());
         PartnerDO partnerDO = partnerDOMapper.selectByPrimaryKey(loanBaseInfoDO.getPartnerId(), null);
         LoanCarInfoDO loanCarInfoDO = loanCarInfoDOMapper.selectByPrimaryKey(loanOrderDO.getLoanCarInfoId());
