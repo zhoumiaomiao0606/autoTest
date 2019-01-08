@@ -137,7 +137,7 @@ public class AsyncFinanceApI {
         //打款确认
         RemitDetailsDO remitDetailsDO = remit2FinanceVoucher(approvalParam.getOrderId());
         if (approvalParam.getTaskDefinitionKey().equals(REMIT_REVIEW.getCode()) && ACTION_PASS.equals(approvalParam.getAction())) {
-            postFinanceData.setAmountMoney(String.valueOf(remitDetailsDO.getRemit_amount()));//打款金额
+            postFinanceData.setCarLoanMoney(String.valueOf(remitDetailsDO.getRemit_amount()));//打款金额
 
             postFinanceData.setType(IDict.K_VOUCHER.K_VOUCHER_1);
 
@@ -151,7 +151,7 @@ public class AsyncFinanceApI {
             LoanRefundApplyDO loanRefundApplyDO = loanRefundApplyDOMapper.lastByOrderId(approvalParam.getOrderId());
             Preconditions.checkNotNull(loanRefundApplyDO, "退款单为空");
 
-            postFinanceData.setAmountMoney(String.valueOf(remitDetailsDO.getRemit_amount()));//打款金额
+            postFinanceData.setCarLoanMoney(String.valueOf(remitDetailsDO.getRemit_amount()));//打款金额
             postFinanceData.setAdvancesInterest(String.valueOf(loanRefundApplyDO.getAdvances_interest()));//垫款利息收入
             postFinanceData.setOtherInterest(String.valueOf(loanRefundApplyDO.getOther_interest()));//其他利息收入
             postFinanceData.setPenaltyInterest(String.valueOf(loanRefundApplyDO.getPenalty_interest()));//罚息收入
