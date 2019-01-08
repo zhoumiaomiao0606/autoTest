@@ -1134,7 +1134,7 @@
     <select id="selectUniversalCostDetails" parameterType="java.lang.Long"
             resultType="com.yunche.loan.domain.vo.UniversalCostDetailsVO">
       select
-      (loan_telephone_verify.key_risk_premium * loan_financial_plan.loan_amount/100) AS key_risk_premium_fee,
+      (IFNULL(loan_telephone_verify.key_risk_premium,0) * IFNULL(loan_financial_plan.loan_amount,0)/100) AS key_risk_premium_fee,
       cost.key_risk_premium_type                                AS key_risk_premium_type,
              cost.service_fee                                AS cost_service_fee,
              cost.apply_license_plate_deposit_fee            AS cost_apply_license_plate_deposit_fee,

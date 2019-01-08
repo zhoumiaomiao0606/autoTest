@@ -4,16 +4,19 @@ import com.google.common.base.Preconditions;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.entity.LoanInfoSupplementDO;
 import com.yunche.loan.domain.entity.LoanOrderDO;
+import com.yunche.loan.domain.entity.LoanTelephoneVerifyDO;
 import com.yunche.loan.domain.param.InfoSupplementParam;
 import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.mapper.LoanInfoSupplementDOMapper;
 import com.yunche.loan.mapper.LoanOrderDOMapper;
+import com.yunche.loan.mapper.LoanTelephoneVerifyDOMapper;
 import com.yunche.loan.service.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import java.math.BigDecimal;
 import java.util.*;
 
 import static com.yunche.loan.config.constant.LoanFileConst.UPLOAD_TYPE_SUPPLEMENT;
@@ -45,6 +48,9 @@ public class LoanInfoSupplementServiceImpl implements LoanInfoSupplementService 
 
     @Autowired
     private LoanQueryService loanQueryService;
+
+    @Autowired
+    private LoanTelephoneVerifyDOMapper loanTelephoneVerifyDOMapper;
 
 
     @Override
@@ -175,9 +181,24 @@ public class LoanInfoSupplementServiceImpl implements LoanInfoSupplementService 
     }
 
     @Override
-    public ResultBean<UniversalInfoSupplementVO> detail(Long infoSupplementId) {
+    public ResultBean<UniversalInfoSupplementVO> detail(Long infoSupplementId)
+    {
 
         UniversalInfoSupplementVO detail = loanQueryService.selectUniversalInfoSupplementDetail(infoSupplementId);
+
+        //钥匙风险金信息
+        LoanTelephoneVerifyDO loanTelephoneVerifyDO = loanTelephoneVerifyDOMapper.selectByPrimaryKey(Long.valueOf(detail.getOrderId()));
+        //取出钥匙风险金--计算加收金额
+        BigDecimal loanAmount = detail.getLoanAmount();
+
+        if (loanAmount!=null)
+        {
+            BigDecimal addMoney = loanAmount.multiply(new BigDecimal(loanTelephoneVerifyDO.getKeyRiskPremium())).divide(new BigDecimal("100"));
+
+            detail.setAddMoney(addMoney);
+        }
+        detail.setKeyRiskPremium(loanTelephoneVerifyDO.getKeyRiskPremium());
+        detail.setKeyRiskPremiumConfirm(loanTelephoneVerifyDO.getKeyRiskPremiumConfirm());
 
         return ResultBean.ofSuccess(detail);
     }
