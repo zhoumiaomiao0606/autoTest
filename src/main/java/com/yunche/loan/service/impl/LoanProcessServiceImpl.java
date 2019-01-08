@@ -1978,7 +1978,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         // 自动执行【金融方案】任务
         autoCompleteTask(task.getProcessInstanceId(), approval.getOrderId(), FINANCIAL_SCHEME.getCode());
         // 自动执行【待收钥匙】任务
-        completeCommitKeyTask(task.getProcessInstanceId(), approval.getOrderId());
+        //completeCommitKeyTask(task.getProcessInstanceId(), approval.getOrderId());
         //自动提交其中的一个审批审核（南京工行提交线上视频，其他提交线下视频）
         authCommitVideoAuditTask(loanOrderDO, task.getProcessInstanceId(), approval.getOrderId());
         // 更新状态
