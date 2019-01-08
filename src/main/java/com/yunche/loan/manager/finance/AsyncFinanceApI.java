@@ -392,9 +392,9 @@ public class AsyncFinanceApI {
         distributorParam.setCreateDate(DateUtil.getDateTo10(loanProcessLog.getCreateTime()));
         distributorParam.setPartnerId(loanBaseInfoDO.getPartnerId().toString());
         distributorParam.setPartnerName(partnerDO.getName());
-        distributorParam.setLoanTime(DateUtil.getDateTo10(remitloanProcessLog.getCreateTime()));
-
-
+        if(remitloanProcessLog!=null){
+            distributorParam.setLoanTime(DateUtil.getDateTo10(remitloanProcessLog.getCreateTime()));
+        }
         if(loanOrderDO.getLoanFinancialPlanId()!=null){
             LoanFinancialPlanDO loanFinancialPlanDO = loanFinancialPlanDOMapper.selectByPrimaryKey(loanOrderDO.getLoanFinancialPlanId());
             if(loanFinancialPlanDO!=null){
