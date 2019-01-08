@@ -28,6 +28,7 @@ public class LoanCarInfoVO {
     private Byte carKey;
 
     private String distributorName;
+    private String distributorId;
     /**
      * 车型信息
      * 父车型   ID层级列表

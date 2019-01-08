@@ -30,12 +30,13 @@
         <result column="mileage" jdbcType="VARCHAR" property="mileage" />
         <result column="city_id" jdbcType="BIGINT" property="cityId" />
         <result column="vin" jdbcType="VARCHAR" property="vin" />
+        <result column="distributor_id" jdbcType="VARCHAR" property="distributorId" />
     </resultMap>
     <sql id="Base_Column_List">
         id, car_detail_id, car_detail_name, evaluation_type, car_type, gps_num, car_key,
         partner_id, partner_name, open_bank, account_name, bank_account, pay_month, info,
         status, gmt_create, gmt_modify, feature, first_register_date, business_source, cooperation_dealer,
-        vehicle_property, order_id, car_category, distributor_name, mileage, city_id,vin
+        vehicle_property, order_id, car_category, distributor_name, mileage, city_id,vin,distributor_id
     </sql>
     <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
         select
@@ -56,7 +57,7 @@
         gmt_create, gmt_modify, feature,
         first_register_date, business_source, cooperation_dealer,
         vehicle_property, order_id, car_category,
-        distributor_name, mileage, city_id,vin
+        distributor_name, mileage, city_id,vin,distributor_id
         )
         values (#{id,jdbcType=BIGINT}, #{carDetailId,jdbcType=BIGINT}, #{carDetailName,jdbcType=VARCHAR},
         #{evaluationType,jdbcType=TINYINT}, #{carType,jdbcType=TINYINT}, #{gpsNum,jdbcType=INTEGER},
@@ -66,7 +67,7 @@
         #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModify,jdbcType=TIMESTAMP}, #{feature,jdbcType=VARCHAR},
         #{firstRegisterDate,jdbcType=DATE}, #{businessSource,jdbcType=TINYINT}, #{cooperationDealer,jdbcType=TINYINT},
         #{vehicleProperty,jdbcType=TINYINT}, #{orderId,jdbcType=BIGINT}, #{carCategory,jdbcType=VARCHAR},
-        #{distributorName,jdbcType=VARCHAR}, #{mileage,jdbcType=VARCHAR}, #{cityId,jdbcType=BIGINT}, #{vin,jdbcType=VARCHAR}
+        #{distributorName,jdbcType=VARCHAR}, #{mileage,jdbcType=VARCHAR}, #{cityId,jdbcType=BIGINT}, #{vin,jdbcType=VARCHAR},#{distributorId,jdbcType=VARCHAR}
         )
     </insert>
     <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.LoanCarInfoDO" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
@@ -156,6 +157,10 @@
             <if test="vin != null">
                 vin,
             </if>
+            <if test="distributorId != null">
+                distributor_id,
+            </if>
+
 
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
@@ -243,6 +248,10 @@
             <if test="vin != null">
                 #{vin,jdbcType=VARCHAR},
             </if>
+            <if test="distributorId != null">
+                #{distributorId,jdbcType=VARCHAR},
+            </if>
+
 
         </trim>
     </insert>
@@ -330,6 +339,10 @@
             <if test="vin != null">
                 vin = #{vin,jdbcType=VARCHAR},
             </if>
+            <if test="distributorId != null">
+                distributor_id = #{distributorId,jdbcType=VARCHAR},
+            </if>
+
 
         </set>
         where id = #{id,jdbcType=BIGINT}
@@ -362,7 +375,8 @@
         distributor_name = #{distributorName,jdbcType=VARCHAR},
         mileage = #{mileage,jdbcType=VARCHAR},
         city_id = #{cityId,jdbcType=BIGINT},
-        vin = #{vin,jdbcType=VARCHAR}
+        vin = #{vin,jdbcType=VARCHAR}，
+        distributor_id = #{distributord,jdbcType=VARCHAR}
         where id = #{id,jdbcType=BIGINT}
     </update>
 
