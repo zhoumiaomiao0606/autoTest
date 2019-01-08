@@ -2835,10 +2835,11 @@ SELECT
         ) t
         LEFT JOIN loan_process ON t.order_id = loan_process.order_id
         LEFT JOIN loan_order ON t.order_id = loan_order.id
+        left join loan_car_info on loan_order.loan_car_info_id = loan_car_info.id
         LEFT JOIN loan_base_info ON loan_order.loan_base_info_id = loan_base_info.id
         LEFT JOIN partner ON loan_base_info.partner_id = partner.id
         LEFT JOIN loan_customer ON loan_order.loan_customer_id = loan_customer.id
-        WHERE loan_process.commit_key = 2
+        WHERE loan_process.commit_key = 2 and loan_car_info.car_key = 1
     </select>
 
     <select id="selectShutDownQueryCreditOrder" resultType="com.yunche.loan.domain.vo.SDCOrders">
@@ -2861,8 +2862,9 @@ SELECT
         ) t
         LEFT JOIN loan_process ON t.order_id = loan_process.order_id
         LEFT JOIN loan_order ON t.order_id = loan_order.id
+        left join loan_car_info on loan_order.loan_car_info_id = loan_car_info.id
         LEFT JOIN loan_base_info ON loan_order.loan_base_info_id = loan_base_info.id
-        WHERE loan_process.commit_key = 2
+        WHERE loan_process.commit_key = 2 and loan_car_info.car_key = 1
     </select>
 
     <update id="updateByPrimaryKey" parameterType="java.util.List">
