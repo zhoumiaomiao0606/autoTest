@@ -212,7 +212,7 @@ public class AsyncFinanceApI {
 
 
             postFinanceData.setBankDeposits(loanFinancialPlanDO.getBankPeriodPrincipal());
-            postFinanceData.setCarLoanMoney(remitDetailsDO.getRemit_amount());
+            postFinanceData.setCarLoanMoney(remitDetailsDO.getRemit_amount().toString());
             postFinanceData.setPartnerRebates(remitDetailsDO.getReturn_rate_amount());
             postFinanceData.setMortgageDeposit(costDetailsDO.getApply_license_plate_deposit_fee());
             postFinanceData.setRiskFee(costDetailsDO.getRisk_fee());
@@ -428,7 +428,7 @@ public class AsyncFinanceApI {
                        弃单/退款 调用 修改方法   orderStatus=3
                      */
 
-            LOG.info("准备异步发送数据！！！" + JSONObject.toJSON(distributorParam).toString());
+
 
 
 
@@ -440,6 +440,7 @@ public class AsyncFinanceApI {
 
                     distributorParam.setOrderStatus("3");
                 }
+                LOG.info("准备异步发送数据！！！" + JSONObject.toJSON(distributorParam).toString());
                 distributorVO = tenantFeignClient.saveOrder(distributorParam);
             }else {
                 //打款确认
@@ -453,6 +454,7 @@ public class AsyncFinanceApI {
                 if(approvalParam.getAction().equals(ORDER_STATUS_CANCEL)){
                     distributorParam.setOrderStatus("3");
                 }
+                LOG.info("准备异步发送数据！！！" + JSONObject.toJSON(distributorParam).toString());
                 distributorVO = tenantFeignClient.modifyOrder(distributorParam.getOrderId(), distributorParam);
             }
 
