@@ -147,7 +147,8 @@ public class AsyncFinanceApI {
         }
 
         //退款申请
-        if (approvalParam.getTaskDefinitionKey().equals(REFUND_APPLY_REVIEW.getCode()) && ACTION_PASS.equals(approvalParam.getAction())) {
+        if (approvalParam.getTaskDefinitionKey().equals(REFUND_APPLY_REVIEW.getCode()) && ACTION_PASS.equals(approvalParam.getAction()))
+        {
             LoanRefundApplyDO loanRefundApplyDO = loanRefundApplyDOMapper.lastByOrderId(approvalParam.getOrderId());
             Preconditions.checkNotNull(loanRefundApplyDO, "退款单为空");
 
@@ -212,7 +213,7 @@ public class AsyncFinanceApI {
 
 
             postFinanceData.setBankDeposits(loanFinancialPlanDO.getBankPeriodPrincipal());
-            postFinanceData.setCarLoanMoney(remitDetailsDO.getRemit_amount());
+            postFinanceData.setCarLoanMoney(String.valueOf(remitDetailsDO.getRemit_amount()));
             postFinanceData.setPartnerRebates(remitDetailsDO.getReturn_rate_amount());
             postFinanceData.setMortgageDeposit(costDetailsDO.getApply_license_plate_deposit_fee());
             postFinanceData.setRiskFee(costDetailsDO.getRisk_fee());
