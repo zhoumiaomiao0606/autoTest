@@ -15,10 +15,20 @@ public class FtpTest {
     private static final String fileName = "20180627085149135470.docx";
 
 //    private static final String  fileName="20180625173629979759.jpg";
-    @Test
+    //@Test
     public void hdajhsak(){
        String s = "云车-3123123";
        System.out.println(s.substring(3));
+    }
+    @Test
+    public void kjasjkdhkas(){
+        try {
+            String tmp = "/Users/admin/Movies/rn2knDHf5z.jpg";
+            com.lowagie.text.Image img = com.lowagie.text.Image.getInstance(tmp);
+        }catch(Exception e){
+            System.out.println(e);
+        }
+
     }
 
     //@Test

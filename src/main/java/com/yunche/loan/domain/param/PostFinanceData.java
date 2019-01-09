@@ -55,7 +55,7 @@ public class PostFinanceData
 
     private BigDecimal customerDeposit;//客户保证金  1
 
-
+    //private BigDecimal carLoanMoney;//车贷业务代垫款 1
 
 
     private String otherDeposit;//其他押金
