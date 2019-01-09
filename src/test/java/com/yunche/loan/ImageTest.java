@@ -53,11 +53,11 @@ public class ImageTest {
 //        ImageUtil.mergeImage2Pic(fileKey);
 //        ImageUtil.mergeImage2Doc(fileKey);
         ArrayList<String> image = Lists.newArrayList();
-//        image.add("img/2019/201901/20190108/xZ3BnEzkTW.jpg");
+        image.add("img/2019/201901/20190108/xZ3BnEzkTW.jpg");
         image.add("img/2019/201901/20190108/YzSirD6Qc3.jpg");
-//        image.add("img/2019/201901/20190108/rn2knDHf5z.jpg");
-        image.add("img/2019/201901/20190108/hXEhA4SXwJ.jpg");
-
+        image.add("img/2019/201901/20190108/rn2knDHf5z.jpg");
+            image.add("img/2019/201901/20190108/hXEhA4SXwJ.jpg");
+//        ImageUtil.mergetImage2PicByConvert("/tmp/",GeneratorIDUtil.execute()+".jpg",image);
         ImageUtil.mergeImage2Doc(image);
     }
     @Test

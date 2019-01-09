@@ -104,7 +104,6 @@ public class ImageUtil {
 
             LOG.info("convert 合成图片结束【"+localPath+name+"】");
             FileUtils.copyFile(new File(localPath+tmpName),new File(localPath+name));
-            new File(localPath+tmpName);
         } catch (IOException e) {
             throw new BizException(e);
         } catch (InterruptedException e) {
@@ -458,8 +457,9 @@ public class ImageUtil {
             document.open();
 
             List<String> aa = imageList.parallelStream().map(e->{
-                String singleFile = ImageUtil.getSingleFile(GeneratorIDUtil.execute() + ".jpg", e, null);
-                return singleFile;
+                String singlePic = ImageUtil.getSinglePic(e);
+//                String singleFile = ImageUtil.getSingleFile(GeneratorIDUtil.execute() + ".jpg", e, null);
+                return singlePic;
             }).collect(Collectors.toList());
 
             int tmpHeight =0 ;
@@ -560,6 +560,16 @@ public class ImageUtil {
         return returnKey;
     }
 
+    /**
+     * 获取视频文件
+     * @param key
+     * @return
+     */
+    public static final String  getSinglePic(String key) {
+        String fileName=GeneratorIDUtil.execute()+".jpg";
+        ImageUtil.mergetImage2PicByConvert(downLoadBasepath+File.separator,fileName,Lists.newArrayList(key));
+        return downLoadBasepath+File.separator+fileName;
+    }
 
 
     /**
