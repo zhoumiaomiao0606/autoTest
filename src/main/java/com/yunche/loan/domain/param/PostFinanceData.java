@@ -28,7 +28,7 @@ public class PostFinanceData
     //private String amountMoney ;//打款金额
 
     //--003
-    private String amountMoney ;//打款金额
+    private String carLoanMoney ;//打款金额
     private String advancesInterest ;//垫款利息收入
     private String otherInterest ;//其他利息收入
     private String penaltyInterest ;//罚息收入

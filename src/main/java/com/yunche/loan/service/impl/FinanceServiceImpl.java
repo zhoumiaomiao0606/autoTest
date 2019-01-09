@@ -2,10 +2,9 @@ package com.yunche.loan.service.impl;
 
 import com.google.common.base.Preconditions;
 import com.google.gson.Gson;
-import com.yunche.loan.config.exception.BizException;
-import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.yunche.loan.config.common.FinanceConfig;
+import com.yunche.loan.config.constant.IDict;
 import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.GeneratorIDUtil;
@@ -18,7 +17,6 @@ import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.manager.finance.BusinessReviewManager;
 import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.FinanceService;
-import com.yunche.loan.service.LoanProcessLogService;
 import com.yunche.loan.service.LoanProcessService;
 import com.yunche.loan.service.LoanQueryService;
 import org.apache.commons.lang3.StringUtils;
@@ -32,7 +30,8 @@ import javax.annotation.Resource;
 import java.lang.reflect.Type;
 import java.util.*;
 
-import static com.yunche.loan.config.constant.BaseConst.*;
+import static com.yunche.loan.config.constant.BaseConst.INVALID_STATUS;
+import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
 import static com.yunche.loan.config.constant.LoanProcessEnum.*;
 import static com.yunche.loan.config.constant.ProcessApprovalConst.ACTION_PASS;
 
@@ -194,15 +193,15 @@ public class FinanceServiceImpl implements FinanceService
         {
             throw  new BizException("打款信息有误！！！");
         }
-        if (remitDetailsDO.getRemit_status().equals(REMIT_STATUS_ONE))
+        if (remitDetailsDO.getRemit_status().equals(IDict.K_DKZT.PAYING))
         {
             throw  new BizException("该订单已处于打款中！！！");
         }
-        if (remitDetailsDO.getRemit_status().equals(REMIT_STATUS_TWO))
+        if (remitDetailsDO.getRemit_status().equals(IDict.K_DKZT.PAY_SUCC))
         {
             throw  new BizException("该订单已打款成功！！！");
         }
-        if (remitDetailsDO.getRemit_status().equals(REMIT_STATUS_THREE))
+        if (remitDetailsDO.getRemit_status().equals(IDict.K_DKZT.PAY_FAIL))
         {
             throw  new BizException("该订单已打款失败！！！");
         }
@@ -256,7 +255,7 @@ public class FinanceServiceImpl implements FinanceService
 
         LOG.info("支付参数："+paymentParam.toString());
 
-        remitDetailsDO.setRemit_status(REMIT_STATUS_ONE);
+        remitDetailsDO.setRemit_status(IDict.K_DKZT.PAYING);
         int i = remitDetailsDOMapper.updateByPrimaryKeySelective(remitDetailsDO);
 
         if (i!=1)
@@ -312,7 +311,7 @@ public class FinanceServiceImpl implements FinanceService
         }
 
         //
-        if (remitSatusParam.getRemitSatus().equals(REMIT_STATUS_TWO))
+        if (remitSatusParam.getRemitSatus().equals(IDict.K_DKZT.PAY_SUCC))
         {
             //提交订单
             ApprovalParam approvalParam = new ApprovalParam();

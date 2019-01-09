@@ -137,7 +137,7 @@ public class AsyncFinanceApI {
         //打款确认
         RemitDetailsDO remitDetailsDO = remit2FinanceVoucher(approvalParam.getOrderId());
         if (approvalParam.getTaskDefinitionKey().equals(REMIT_REVIEW.getCode()) && ACTION_PASS.equals(approvalParam.getAction())) {
-            postFinanceData.setClientAdvance(remitDetailsDO.getRemit_amount());
+            postFinanceData.setCarLoanMoney(String.valueOf(remitDetailsDO.getRemit_amount()));//打款金额
 
             postFinanceData.setType(IDict.K_VOUCHER.K_VOUCHER_1);
 
@@ -151,7 +151,7 @@ public class AsyncFinanceApI {
             LoanRefundApplyDO loanRefundApplyDO = loanRefundApplyDOMapper.lastByOrderId(approvalParam.getOrderId());
             Preconditions.checkNotNull(loanRefundApplyDO, "退款单为空");
 
-            postFinanceData.setAmountMoney(String.valueOf(loanRefundApplyDO.getRefund_amount()));//打款金额
+            postFinanceData.setCarLoanMoney(String.valueOf(remitDetailsDO.getRemit_amount()));//打款金额
             postFinanceData.setAdvancesInterest(String.valueOf(loanRefundApplyDO.getAdvances_interest()));//垫款利息收入
             postFinanceData.setOtherInterest(String.valueOf(loanRefundApplyDO.getOther_interest()));//其他利息收入
             postFinanceData.setPenaltyInterest(String.valueOf(loanRefundApplyDO.getPenalty_interest()));//罚息收入
@@ -337,7 +337,7 @@ public class AsyncFinanceApI {
         }
 
 
-        //通知财务系统信心
+        //通知财务系统信息
         if(approvalParam.getTaskDefinitionKey().equals(CREDIT_APPLY.getCode())
                 || approvalParam.getTaskDefinitionKey().equals(LOAN_APPLY.getCode())
                 || approvalParam.getTaskDefinitionKey().equals(REFUND_APPLY_REVIEW.getCode())
@@ -347,6 +347,24 @@ public class AsyncFinanceApI {
             orderInfoPush(approvalParam);
         }
 
+        //交易后处理
+        if(approvalParam.getTaskDefinitionKey().equals(REMIT_REVIEW.getCode())){
+
+            afterProcess(approvalParam);
+        }
+    }
+
+    /**
+     * 交易后处理
+     * @param approvalParam
+     */
+    private void afterProcess(ApprovalParam approvalParam) {
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(approvalParam.getOrderId());
+        if(approvalParam.getTaskDefinitionKey().equals(REMIT_REVIEW.getCode().trim()) && approvalParam.getAction().equals(ACTION_PASS)){
+            RemitDetailsDO remitDetailsDO = remitDetailsDOMapper.selectByPrimaryKey(loanOrderDO.getRemitDetailsId());
+            remitDetailsDO.setRemit_status(IDict.K_DKZT.PAY_SUCC);
+            remitDetailsDOMapper.updateByPrimaryKeySelective(remitDetailsDO);
+        }
     }
 
     /**
@@ -374,9 +392,9 @@ public class AsyncFinanceApI {
         distributorParam.setCreateDate(DateUtil.getDateTo10(loanProcessLog.getCreateTime()));
         distributorParam.setPartnerId(loanBaseInfoDO.getPartnerId().toString());
         distributorParam.setPartnerName(partnerDO.getName());
-        distributorParam.setLoanTime(DateUtil.getDateTo10(remitloanProcessLog.getCreateTime()));
-
-
+        if(remitloanProcessLog!=null){
+            distributorParam.setLoanTime(DateUtil.getDateTo10(remitloanProcessLog.getCreateTime()));
+        }
         if(loanOrderDO.getLoanFinancialPlanId()!=null){
             LoanFinancialPlanDO loanFinancialPlanDO = loanFinancialPlanDOMapper.selectByPrimaryKey(loanOrderDO.getLoanFinancialPlanId());
             if(loanFinancialPlanDO!=null){

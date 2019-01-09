@@ -516,5 +516,32 @@ public class IDict {
         public static final Byte ARTIFICIAL=2;
 
     }
+
+    /**
+     * 打款状态(打款状态--默认为-0-未打款----1-打款中---2-打款成功---3--打款失败)
+     */
+    public static abstract interface K_DKZT{
+        /**
+         * 未打款
+         */
+        public static final Byte NO_PAY=0;
+
+        /**
+         * 打款中
+         */
+        public static final Byte PAYING=1;
+
+
+        /**
+         * 打款成功
+         */
+        public static final Byte PAY_SUCC=2;
+
+        /**
+         * 打款成功
+         */
+        public static final Byte PAY_FAIL=3;
+
+    }
 }
 
