@@ -83,7 +83,7 @@
 
     <!-- query -->
     <select id="query" parameterType="com.yunche.loan.domain.query.ConfVideoFaceMachineQuery"
-            resultType="com.yunche.loan.domain.entity.ConfVideoFaceMachineDO">
+            resultMap="BaseResultMap">
 
         SELECT *
 
