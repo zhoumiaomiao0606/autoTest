@@ -30,6 +30,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
@@ -62,7 +63,7 @@ public class KeyCommitTask
     @Resource
     private InsuranceUrgeService insuranceUrgeService;
 
-    @Scheduled(cron = "0 07 10 * * ?")
+    @Scheduled(cron = "0 0 1 * * ?")
     @DistributedLock(200)
     public void setNeedSendMessageOrder()
     {
@@ -84,7 +85,7 @@ public class KeyCommitTask
 
     }
 
-    @Scheduled(cron = "0 53 10 * * ?")
+    @Scheduled(cron = "1 0 0 * * ?")
     @DistributedLock(200)
     public void setShutDownQueryCreditOrder()
     {
@@ -96,6 +97,12 @@ public class KeyCommitTask
         refreshPartnerAndOrders(sdOrders);
 
         LOG.info("结束取出距离垫款日21日，并且收钥匙状态=“待收” 的订单");
+    }
+
+    @PostConstruct
+    public void refreshShutdown()
+    {
+        setShutDownQueryCreditOrder();
     }
 
 
@@ -164,7 +171,7 @@ public class KeyCommitTask
 
 
 
-    @Scheduled(cron = "0 10 10 * * ?")
+    @Scheduled(cron = "0 0 9 * * ?")
     @DistributedLock(200)
     public void sendMessage()
     {

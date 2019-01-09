@@ -34,6 +34,9 @@ public class ParternerRuleParam
 
     private String bail;
 
+    //返利金额
+    private String partnerRebateAmount;
+
     @Override
     public String toString() {
         return JSON.toJSONString(this, new SerializerFeature[]{SerializerFeature.WriteMapNullValue, SerializerFeature.WriteNullListAsEmpty,
