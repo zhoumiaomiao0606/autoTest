@@ -899,12 +899,12 @@
             </if>
 
         </where>
-        ) t where remitdate between #{startDate} and #{endDate}
+        ) t where t.express_receive_date  between #{startDate} and #{endDate}
         <if test="startDate1 != null">
-            AND TO_DAYS(t.express_receive_date) &lt;= TO_DAYS(#{startDate1})
+            AND TO_DAYS(t.remitdate) &lt;= TO_DAYS(#{startDate1})
         </if>
         <if test="endDate1 != null">
-            AND TO_DAYS(t.express_receive_date) &lt;= TO_DAYS(#{endDate1})
+            AND TO_DAYS(t.remitdate) &lt;= TO_DAYS(#{endDate1})
         </if>
         <if test="startDate2 != null">
             AND TO_DAYS(t.materialReviewSubmit) &lt;= TO_DAYS(#{startDate2})
