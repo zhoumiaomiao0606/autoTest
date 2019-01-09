@@ -61,8 +61,9 @@ public class Vediotest
         //System.out.println("====="+(null==2));
 
 
-        String aaa = "32222222222222222222";
-        System.out.println(Long.parseLong(aaa));
+
+        Byte aa = new Byte("1");
+        System.out.println(aa.equals(new Byte("1")));
 
     }
 

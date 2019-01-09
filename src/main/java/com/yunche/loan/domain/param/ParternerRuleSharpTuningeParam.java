@@ -42,6 +42,9 @@ public class ParternerRuleSharpTuningeParam
 
     private String bail;
 
+    //合伙人返利金额
+    private String partnerRebateAmount;
+
     @Override
     public String toString() {
         return JSON.toJSONString(this, new SerializerFeature[]{SerializerFeature.WriteMapNullValue, SerializerFeature.WriteNullListAsEmpty,
