@@ -424,6 +424,12 @@ public class POIUtil {
                             cell.setCellValue( ((BigDecimal)getMethods.get(j).invoke(data)).toString());
 
                         }
+                    else if (getMethods.get(j).invoke(data) instanceof Integer)
+                    {
+
+                        cell.setCellValue( ((Integer)getMethods.get(j).invoke(data)).toString());
+
+                    }
                     else{
                         cell.setCellValue((String) getMethods.get(j).invoke(data));
                     }
