@@ -11,7 +11,6 @@ import org.junit.Test;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -34,30 +33,32 @@ public class ImageTest {
         fileKey.add("img/2018/201805/20180504/WNf4THHX8M.jpg");
 //        fileKey.add("img/2018/201805/20180504/k6FY5XC2J5.jpg");
 //        fileKey.add("img/2018/201805/20180504/WNf4THHX8M.jpg");
-        System.out.println("开始时间："+System.currentTimeMillis());
-        Long startTime =System.currentTimeMillis();
-        try {
-            Runtime.getRuntime().exec("mkdir /tmp/fdfd");
-        } catch (IOException e) {
-            System.out.println("创建路径 /tmp/aaa 失败");
-        }
-        ImageUtil.mergetImage2PicByConvert("/tmp/fdfd/","787878.jpg",fileKey);
+//        System.out.println("开始时间："+System.currentTimeMillis());
+//        Long startTime =System.currentTimeMillis();
+//        try {
+//            Runtime.getRuntime().exec("mkdir /tmp/fdfd");
+//        } catch (IOException e) {
+//            System.out.println("创建路径 /tmp/aaa 失败");
+//        }
+//        ImageUtil.mergetImage2PicByConvert("/tmp/fdfd/","787878.jpg",fileKey);
 //        ImageUtil.mergeImage2Pic("/tmp/aaa","hahha.jpg",fileKey);
 //        ImageUtil.mergeImage2Pic("/tmp/aaa","bbbbb.jpg",fileKey);
 //        ImageUtil.mergeImage2Pic_NO_COMPROCESS("77779.jpg",fileKey);
 
 
 
-        Long endTime =System.currentTimeMillis();
-        System.out.println("结束时间："+System.currentTimeMillis());
-        System.out.println("用时："+(endTime-startTime)/1000);
+//        Long endTime =System.currentTimeMillis();
+//        System.out.println("结束时间："+System.currentTimeMillis());
+//        System.out.println("用时："+(endTime-startTime)/1000);
 //        ImageUtil.mergeImage2Pic(fileKey);
 //        ImageUtil.mergeImage2Doc(fileKey);
-//        ArrayList<String> image = Lists.newArrayList();
-//        image.add("img/2018/201807/20180716/3D5rCiMtZB.jpg");
-//        image.add("img/2018/201807/20180716/ANd6tRAxFe.jpg");
-//        image.add("img/2018/201807/20180716/xhmYjt8tbe.jpg");
-//        ImageUtil.mergeImage2Doc(image);
+        ArrayList<String> image = Lists.newArrayList();
+//        image.add("img/2019/201901/20190108/xZ3BnEzkTW.jpg");
+        image.add("img/2019/201901/20190108/YzSirD6Qc3.jpg");
+//        image.add("img/2019/201901/20190108/rn2knDHf5z.jpg");
+        image.add("img/2019/201901/20190108/hXEhA4SXwJ.jpg");
+
+        ImageUtil.mergeImage2Doc(image);
     }
     @Test
     public void func2(){
