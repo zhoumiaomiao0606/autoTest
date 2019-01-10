@@ -118,7 +118,7 @@ public class BusinessReviewServiceImpl implements BusinessReviewService
         }
 
 
-        if (costDetailsId == null || costDetailsDO.getListrule()==null)
+        if (costDetailsId == null)
         {
 
             //请求财务系统初始数据

@@ -2867,13 +2867,48 @@ SELECT
         WHERE loan_process.commit_key = 2 and loan_car_info.car_key = 1
     </select>
 
-    <update id="updateByPrimaryKey" parameterType="java.util.List">
-    update partner
-    set can_query_credit = 2
-    where id in
-        <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
-            #{item,jdbcType=BIGINT}
-        </foreach>
-  </update>
+    <select id="queryCreditApplyrList" parameterType="com.yunche.loan.domain.param.CreditApplyListQuery" resultType="com.yunche.loan.domain.vo.CreditApplyListVO">
+
+                 SELECT
+         orders.`id`  AS orderId,
+         loan_customer.`name` AS customerName,
+         loan_customer.`id_card`  AS idCard,
+         loan_customer.`mobile` AS customerMobile,
+				 employee.`name` AS saleMan,
+				 partner.`name` AS partnerName,
+				 orders.gmt_create AS orderCreateTime,
+				 CASE
+        WHEN loan_process.credit_apply  = 1 THEN
+        '已提交'
+        WHEN loan_process.credit_apply  = 2 THEN
+        '未提交'
+        ELSE
+        NULL
+        END                                                           AS creditApplyStatus
+         FROM
+         `loan_order`  orders
+         LEFT JOIN `loan_customer`  ON  orders.`loan_customer_id`  = loan_customer.`id`
+         LEFT JOIN `loan_base_info`  ON  orders.`loan_base_info_id`  = loan_base_info.`id`
+         LEFT JOIN `employee`  ON loan_base_info.`salesman_id`  = `employee` .`id`
+         LEFT JOIN `partner`  ON  `loan_base_info` .`partner_id`  = partner.`id`
+				 LEFT JOIN loan_process ON orders.id = loan_process.order_id
+				 <where>
+                     <if test="bizAreaIdList != null and bizAreaIdList.size() > 0">
+                         and
+                         partner.id in
+                         <foreach item="item" index="index" collection="bizAreaIdList" open="(" separator="," close=")">
+                             #{item}
+                         </foreach>
+                     </if>
+                     <if test="bankList != null and bankList.size() > 0">
+                         and
+                         loan_base_info.bank in
+                         <foreach item="item" index="index" collection="bankList" open="(" separator="," close=")">
+                             #{item}
+                         </foreach>
+                     </if>
+                 </where>
+				 order by orders.gmt_create desc
+    </select>
 
 </mapper>
