@@ -979,6 +979,8 @@
             car.car_type                                                            AS car_type,
             car.evaluation_type                                                            AS evaluation_type,
             car.car_key                                                            AS car_key,
+            car.distributor_name                                                    AS car_distributor_name,
+            car.distributor_id                                                      AS car_distributor_id,
             CASE
         WHEN car.car_key  = 0 THEN
         '不收'
