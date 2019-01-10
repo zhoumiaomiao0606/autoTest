@@ -96,7 +96,8 @@ public class BusinessReviewServiceImpl implements BusinessReviewService
 
         RecombinationVO recombinationVO = new RecombinationVO();
         recombinationVO.setInfo(universalInfoVO);
-        recombinationVO.setCost(loanQueryDOMapper.selectUniversalCostDetails(orderId));
+        UniversalCostDetailsVO universalCostDetailsVO = loanQueryDOMapper.selectUniversalCostDetails(orderId);
+        recombinationVO.setCost(universalCostDetailsVO);
         recombinationVO.setRemit(loanQueryDOMapper.selectUniversalRemitDetails(orderId));
         recombinationVO.setCurrent_msg(loanQueryDOMapper.selectUniversalApprovalInfo(BUSINESS_REVIEW.getCode(), orderId));
         recombinationVO.setTelephone_msg(loanQueryDOMapper.selectUniversalApprovalInfo(TELEPHONE_VERIFY.getCode(), orderId));
@@ -133,6 +134,13 @@ public class BusinessReviewServiceImpl implements BusinessReviewService
             param.setCarGpsNum(universalInfoVO.getCar_gps_num());
             param.setBankAreaId(universalInfoVO.getBank_id());
             param.setBankRate(universalInfoVO.getFinancial_bank_rate());
+
+            //设置钥匙风险金
+            //钥匙风险金信息
+            param.setKeyRiskPremiumFee(universalCostDetailsVO.getKey_risk_premium_fee());
+
+            //设置额外费用
+            param.setCostExtraFee(universalCostDetailsVO.getCost_extra_fee());
 
             //设置车商返利
 
