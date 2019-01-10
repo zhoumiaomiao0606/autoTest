@@ -457,9 +457,9 @@ public class ImageUtil {
             document.open();
 
             List<String> aa = imageList.parallelStream().map(e->{
-                String singlePic = ImageUtil.getSinglePic(e);
-//                String singleFile = ImageUtil.getSingleFile(GeneratorIDUtil.execute() + ".jpg", e, null);
-                return singlePic;
+//                String singleFile = ImageUtil.getSinglePic(e);
+                String singleFile = ImageUtil.getSingleFile(GeneratorIDUtil.execute() + ".jpg", e, null);
+                return singleFile;
             }).collect(Collectors.toList());
 
             int tmpHeight =0 ;
