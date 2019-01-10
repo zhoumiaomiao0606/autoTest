@@ -98,7 +98,8 @@ public class BusinessReviewServiceImpl implements BusinessReviewService
         recombinationVO.setInfo(universalInfoVO);
         UniversalCostDetailsVO universalCostDetailsVO = loanQueryDOMapper.selectUniversalCostDetails(orderId);
         recombinationVO.setCost(universalCostDetailsVO);
-        recombinationVO.setRemit(loanQueryDOMapper.selectUniversalRemitDetails(orderId));
+        UniversalRemitDetails universalRemitDetails = loanQueryDOMapper.selectUniversalRemitDetails(orderId);
+        recombinationVO.setRemit(universalRemitDetails);
         recombinationVO.setCurrent_msg(loanQueryDOMapper.selectUniversalApprovalInfo(BUSINESS_REVIEW.getCode(), orderId));
         recombinationVO.setTelephone_msg(loanQueryDOMapper.selectUniversalApprovalInfo(TELEPHONE_VERIFY.getCode(), orderId));
         recombinationVO.setTelephone_des(loanTelephoneVerifyDOMapper.selectByPrimaryKey(orderId));
@@ -143,6 +144,11 @@ public class BusinessReviewServiceImpl implements BusinessReviewService
             param.setCostExtraFee(universalCostDetailsVO.getCost_extra_fee());
 
             //设置车商返利
+            if (universalRemitDetails!=null)
+            {
+                param.setRebateTeant(universalRemitDetails.getCar_dealer_rebate());
+            }
+
 
             //加收保证金
             param.setBail(universalInfoVO.getFinancial_cash_deposit());
@@ -367,6 +373,7 @@ public class BusinessReviewServiceImpl implements BusinessReviewService
         //请求财务系统初始数据
         UniversalInfoVO universalInfoVO = loanQueryDOMapper.selectUniversalInfo(param.getOrderId());
         LoanBaseInfoDO loanBaseInfoDO = loanBaseInfoDOMapper.getTotalInfoByOrderId(param.getOrderId());
+        UniversalRemitDetails universalRemitDetails = loanQueryDOMapper.selectUniversalRemitDetails(param.getOrderId());
 
         param.setPartnerId(loanBaseInfoDO.getPartnerId());
         param.setPayMonth(universalInfoVO.getPartner_pay_month());
@@ -376,6 +383,12 @@ public class BusinessReviewServiceImpl implements BusinessReviewService
         param.setRate(universalInfoVO.getFinancial_sign_rate());
         param.setYear(universalInfoVO.getFinancial_loan_time());
         param.setCarGpsNum(universalInfoVO.getCar_gps_num());
+
+        //设置车商返利
+        if (universalRemitDetails!=null)
+        {
+            param.setRebateTeant(universalRemitDetails.getCar_dealer_rebate());
+        }
         //加收保证金
         param.setBail(universalInfoVO.getFinancial_cash_deposit());
 
