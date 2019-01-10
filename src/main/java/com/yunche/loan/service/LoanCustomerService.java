@@ -3,6 +3,7 @@ package com.yunche.loan.service;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.entity.LoanCustomerDO;
 import com.yunche.loan.domain.param.AllCustDetailParam;
+import com.yunche.loan.domain.param.CreditApplyListQuery;
 import com.yunche.loan.domain.param.CustomerListQuery;
 import com.yunche.loan.domain.param.CustomerParam;
 import com.yunche.loan.domain.vo.*;
@@ -48,4 +49,5 @@ public interface LoanCustomerService {
     void updateCustomerEnable(Long principalId);
 
     ResultBean<List<CustomerListVO>> queryCustomerList(CustomerListQuery customerListQuery);
+
 }

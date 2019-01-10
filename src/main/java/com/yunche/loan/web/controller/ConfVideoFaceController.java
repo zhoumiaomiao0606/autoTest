@@ -54,7 +54,7 @@ public class ConfVideoFaceController {
     @PostMapping(value = "/machine/list", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean<List<MachineVideoFaceVO>> listMachine(@RequestBody ConfVideoFaceMachineQuery query) {
         PageInfo<MachineVideoFaceVO> pageInfo = confVideoFaceService.listMachine(query);
-        return ResultBean.ofSuccess(pageInfo.getList(), (int) pageInfo.getTotal(), pageInfo.getPageNum(), pageInfo.getPageSize());
+        return ResultBean.ofPageInfo(pageInfo);
     }
 
     @ApiOperation(value = "总面签设置详情", notes = "包含机器/人工面签设置详情")

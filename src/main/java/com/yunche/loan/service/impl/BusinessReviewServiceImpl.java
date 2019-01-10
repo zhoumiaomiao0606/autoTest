@@ -96,8 +96,10 @@ public class BusinessReviewServiceImpl implements BusinessReviewService
 
         RecombinationVO recombinationVO = new RecombinationVO();
         recombinationVO.setInfo(universalInfoVO);
-        recombinationVO.setCost(loanQueryDOMapper.selectUniversalCostDetails(orderId));
-        recombinationVO.setRemit(loanQueryDOMapper.selectUniversalRemitDetails(orderId));
+        UniversalCostDetailsVO universalCostDetailsVO = loanQueryDOMapper.selectUniversalCostDetails(orderId);
+        recombinationVO.setCost(universalCostDetailsVO);
+        UniversalRemitDetails universalRemitDetails = loanQueryDOMapper.selectUniversalRemitDetails(orderId);
+        recombinationVO.setRemit(universalRemitDetails);
         recombinationVO.setCurrent_msg(loanQueryDOMapper.selectUniversalApprovalInfo(BUSINESS_REVIEW.getCode(), orderId));
         recombinationVO.setTelephone_msg(loanQueryDOMapper.selectUniversalApprovalInfo(TELEPHONE_VERIFY.getCode(), orderId));
         recombinationVO.setTelephone_des(loanTelephoneVerifyDOMapper.selectByPrimaryKey(orderId));
@@ -118,7 +120,7 @@ public class BusinessReviewServiceImpl implements BusinessReviewService
         }
 
 
-        if (costDetailsId == null || costDetailsDO.getListrule()==null)
+        if (costDetailsId == null)
         {
 
             //请求财务系统初始数据
@@ -134,7 +136,19 @@ public class BusinessReviewServiceImpl implements BusinessReviewService
             param.setBankAreaId(universalInfoVO.getBank_id());
             param.setBankRate(universalInfoVO.getFinancial_bank_rate());
 
+            //设置钥匙风险金
+            //钥匙风险金信息
+            param.setKeyRiskPremiumFee(universalCostDetailsVO.getKey_risk_premium_fee());
+
+            //设置额外费用
+            param.setCostExtraFee(universalCostDetailsVO.getCost_extra_fee());
+
             //设置车商返利
+            if (universalRemitDetails!=null)
+            {
+                param.setRebateTeant(universalRemitDetails.getCar_dealer_rebate());
+            }
+
 
             //加收保证金
             param.setBail(universalInfoVO.getFinancial_cash_deposit());
@@ -359,6 +373,7 @@ public class BusinessReviewServiceImpl implements BusinessReviewService
         //请求财务系统初始数据
         UniversalInfoVO universalInfoVO = loanQueryDOMapper.selectUniversalInfo(param.getOrderId());
         LoanBaseInfoDO loanBaseInfoDO = loanBaseInfoDOMapper.getTotalInfoByOrderId(param.getOrderId());
+        UniversalRemitDetails universalRemitDetails = loanQueryDOMapper.selectUniversalRemitDetails(param.getOrderId());
 
         param.setPartnerId(loanBaseInfoDO.getPartnerId());
         param.setPayMonth(universalInfoVO.getPartner_pay_month());
@@ -368,6 +383,12 @@ public class BusinessReviewServiceImpl implements BusinessReviewService
         param.setRate(universalInfoVO.getFinancial_sign_rate());
         param.setYear(universalInfoVO.getFinancial_loan_time());
         param.setCarGpsNum(universalInfoVO.getCar_gps_num());
+
+        //设置车商返利
+        if (universalRemitDetails!=null)
+        {
+            param.setRebateTeant(universalRemitDetails.getCar_dealer_rebate());
+        }
         //加收保证金
         param.setBail(universalInfoVO.getFinancial_cash_deposit());
 
