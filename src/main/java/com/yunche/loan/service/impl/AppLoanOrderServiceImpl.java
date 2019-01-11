@@ -1777,7 +1777,8 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
         LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
         VehicleInformationDO vehicleInformationDO = vehicleInformationDOMapper.selectByPrimaryKey(vid);
 
-        if (loanOrderDO.getSecond_hand_car_evaluate_id()!=null && !"".equals(loanOrderDO.getSecond_hand_car_evaluate_id()))
+        if (loanOrderDO.getSecond_hand_car_evaluate_id()!=null && !"".equals(loanOrderDO.getSecond_hand_car_evaluate_id())
+        && loanCarInfoDO!=null && loanCarInfoDO.getEvaluationType().equals(new Byte("1")))
         {
             SecondHandCarEvaluateDO secondHandCarEvaluateDO = secondHandCarEvaluateDOMapper.selectByPrimaryKey(loanOrderDO.getSecond_hand_car_evaluate_id());
             if (secondHandCarEvaluateDO!=null)
