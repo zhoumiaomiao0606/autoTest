@@ -249,38 +249,31 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         ////////////////////////////////////////// ↓↓↓↓↓ 特殊处理  ↓↓↓↓↓ ////////////////////////////////////////////////
 
         // 【征信申请】
-        if (isCreditApplyTask(approval.getTaskDefinitionKey(), approval.getAction()))
-        {
+        if (isCreditApplyTask(approval.getTaskDefinitionKey(), approval.getAction())) {
             //判断合伙人没有被禁止进件
             List<Long> shutdownQuerycreditPartners = keyCommitTask.getShutdownQuerycreditPartners();
-            if (!CollectionUtils.isEmpty(shutdownQuerycreditPartners))
-            {
+            if (!CollectionUtils.isEmpty(shutdownQuerycreditPartners)) {
 
-                Preconditions.checkArgument(!shutdownQuerycreditPartners.contains(loanBaseInfoDO.getPartnerId()),"该合伙人有距离垫款日21日，并且收钥匙状态为“待收” 的订单，不能进行征信申请");
+                Preconditions.checkArgument(!shutdownQuerycreditPartners.contains(loanBaseInfoDO.getPartnerId()), "该合伙人有距离垫款日21日，并且收钥匙状态为“待收” 的订单，不能进行征信申请");
 
             }
         }
 
         // 【电审】
-        if (isTelephoneVerifyTask(approval.getTaskDefinitionKey(), approval.getAction()))
-        {
+        if (isTelephoneVerifyTask(approval.getTaskDefinitionKey(), approval.getAction())) {
             LoanTelephoneVerifyDO loanTelephoneVerifyDO = loanTelephoneVerifyDOMapper.selectByPrimaryKey(approval.getOrderId());
-            if (loanTelephoneVerifyDO!=null && loanTelephoneVerifyDO.getKeyRiskPremium()>0 && !K_YORN_YES.equals(loanTelephoneVerifyDO.getKeyRiskPremiumConfirm()))
-            {
+            if (loanTelephoneVerifyDO != null && loanTelephoneVerifyDO.getKeyRiskPremium() > 0 && !K_YORN_YES.equals(loanTelephoneVerifyDO.getKeyRiskPremiumConfirm())) {
                 throw new BizException("钥匙风险金--没有确认");
             }
         }
 
         // 【待收钥匙】
-        if (isCommitKeyTask(approval.getTaskDefinitionKey(), approval.getAction()))
-        {
-            if (approval.getKeyCollected()==null ||"".equals(approval.getKeyCollected()))
-            {
+        if (isCommitKeyTask(approval.getTaskDefinitionKey(), approval.getAction())) {
+            if (approval.getKeyCollected() == null) {
                 loanOrderDO.setKeyCollected(HASCOLLECTEDKEY);
-            }else
-                {
-                    loanOrderDO.setKeyCollected(approval.getKeyCollected());
-                }
+            } else {
+                loanOrderDO.setKeyCollected(approval.getKeyCollected());
+            }
 
             loanOrderDOMapper.updateByPrimaryKeySelective(loanOrderDO);
             keyCommitTask.refreshShutdownQuerycredit(approval.getOrderId());
@@ -958,20 +951,17 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
                 // 退款原因(类型)：3-业务审批重审     ===>   自动打回 ->【业务付款】
                 LoanRefundApplyDO loanRefundApplyDO = getLoanRefundApply(approval.getOrderId());
-                if (REFUND_REASON_3.equals(loanRefundApplyDO.getRefund_reason()))
-                {
+                if (REFUND_REASON_3.equals(loanRefundApplyDO.getRefund_reason())) {
 
                     // 自动打回   [退款申请-已提交] ->【业务付款】 （重走【业务付款】）
-                    if (TASK_PROCESS_DONE.equals(loanProcessDO.getRemitReview()))
-                    {
+                    if (TASK_PROCESS_DONE.equals(loanProcessDO.getRemitReview())) {
 
                         // 能发起[退款申请]的节点：[打款确认]-已提交
                         autoReject2BusinessPay(loanProcessDO.getOrderId(), REMIT_REVIEW_FILTER.getCode(), loanProcessDO);
                     }
                 }
 
-                if (REFUND_REASON_2.equals(loanRefundApplyDO.getRefund_reason()))
-                {
+                if (REFUND_REASON_2.equals(loanRefundApplyDO.getRefund_reason())) {
                     loanProcessDO.setOrderStatus(ORDER_STATUS_CANCEL);
 
                 }
@@ -1270,15 +1260,14 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      * @param loanOrderDO
      * @param loanProcessDO
      */
-    private void checkPreCondition(String taskDefinitionKey, Byte action, LoanOrderDO loanOrderDO, LoanProcessDO loanProcessDO)
-    {
+    private void checkPreCondition(String taskDefinitionKey, Byte action, LoanOrderDO loanOrderDO, LoanProcessDO loanProcessDO) {
         //如果是退单且退单理由为退款不做and节点为合同归档===正常走流程
         LoanRefundApplyDO loanRefundApplyDO = loanRefundApplyDOMapper.lastByOrderId(loanOrderDO.getId());
-        Preconditions.checkArgument(ORDER_STATUS_DOING.equals(loanProcessDO.getOrderStatus())||(ORDER_STATUS_CANCEL.equals(loanProcessDO.getOrderStatus()) && MATERIAL_MANAGE.getCode().equals(taskDefinitionKey)  && loanRefundApplyDO!=null && REFUND_REASON_2.equals(loanRefundApplyDO.getRefund_reason()) ), "当前订单" + getOrderStatusText(loanProcessDO));
-        if((BUSINESS_PAY.getCode().equals(taskDefinitionKey)) && ACTION_PASS.equals(action)){
+        Preconditions.checkArgument(ORDER_STATUS_DOING.equals(loanProcessDO.getOrderStatus()) || (ORDER_STATUS_CANCEL.equals(loanProcessDO.getOrderStatus()) && MATERIAL_MANAGE.getCode().equals(taskDefinitionKey) && loanRefundApplyDO != null && REFUND_REASON_2.equals(loanRefundApplyDO.getRefund_reason())), "当前订单" + getOrderStatusText(loanProcessDO));
+        if ((BUSINESS_PAY.getCode().equals(taskDefinitionKey)) && ACTION_PASS.equals(action)) {
             LoanBaseInfoDO baseInfoDO = loanBaseInfoDOMapper.selectByPrimaryKey(loanOrderDO.getLoanBaseInfoId());
-            if(BANK_NAME_ICBC_Harbin_GuXiang_Branch.equals(baseInfoDO.getBank())){
-                    Preconditions.checkArgument(ACTION_PASS == loanProcessDO.getVideoReview(),"视频审核尚未完成，请稍后重试!");
+            if (BANK_NAME_ICBC_Harbin_GuXiang_Branch.equals(baseInfoDO.getBank())) {
+                Preconditions.checkArgument(ACTION_PASS == loanProcessDO.getVideoReview(), "视频审核尚未完成，请稍后重试!");
             }
         }
         // 【征信申请】时，若身份证有效期<=（today+7），不允许提交，提示“身份证已过期，不允许申请贷款”
@@ -2050,8 +2039,8 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         variables.put(PROCESS_VARIABLE_ACTION, ACTION_PASS);
 
 
-        List<Task> list =loanProcessApprovalCommonService.getCurrentTaskList(processInstanceId);
-        logger.info("节点数目:"+list.size());
+        List<Task> list = loanProcessApprovalCommonService.getCurrentTaskList(processInstanceId);
+        logger.info("节点数目:" + list.size());
         Task task = taskService.createTaskQuery()
                 .processInstanceId(processInstanceId)
                 .taskDefinitionKey(taskDefinitionKey)
@@ -2975,18 +2964,15 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         }
 
         // 【电审】
-        else if (TELEPHONE_VERIFY.getCode().equals(taskDefinitionKey))
-        {
+        else if (TELEPHONE_VERIFY.getCode().equals(taskDefinitionKey)) {
 
             // PASS
-            if (ACTION_PASS.equals(action))
-            {
+            if (ACTION_PASS.equals(action)) {
                 //设置留备钥匙
                 LoanCarInfoDO loanCarInfoDO = loanCarInfoDOMapper.selectByPrimaryKey(loanOrderDO.getLoanCarInfoId());
-                variables.put(CAR_KEY,loanCarInfoDO.getCarKey());
+                variables.put(CAR_KEY, loanCarInfoDO.getCarKey());
                 // 如果为打回
-                if (TASK_PROCESS_REJECT.equals(loanProcessDO.getLoanApply()))
-                {
+                if (TASK_PROCESS_REJECT.equals(loanProcessDO.getLoanApply())) {
                     LoanRejectLogDO loanRejectLogDO = loanRejectLogDOMapper.lastByOrderIdAndTaskDefinitionKey(approval.getOrderId(), TELEPHONE_VERIFY.getCode());
                     if (null != loanRejectLogDO) {
                         // 【金融方案申请】(自动)打回
@@ -3402,7 +3388,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         doAttachTask_RemitReview(approval, loanOrderDO);
 
         // 附带任务-[金融方案修改-审核]
-        doAttachTask_FinancialSchemeModifyApplyReview(approval, loanProcessDO,loanOrderDO);
+        doAttachTask_FinancialSchemeModifyApplyReview(approval, loanProcessDO, loanOrderDO);
 
         // 附带任务-[银行放款记录]
         doAttachTask_BankLendRecord(approval, loanOrderDO);
@@ -3466,10 +3452,9 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         LoanTelephoneVerifyDO loanTelephoneVerifyDO = loanTelephoneVerifyDOMapper.selectByPrimaryKey(orderId);
         Preconditions.checkNotNull(loanTelephoneVerifyDO, "风险分担加成记录丢失");
         BigDecimal riskSharingAddition = loanTelephoneVerifyDO.getRiskSharingAddition();
-       if (riskSharingAddition ==null)
-       {
-           riskSharingAddition = new BigDecimal("0");
-       }
+        if (riskSharingAddition == null) {
+            riskSharingAddition = new BigDecimal("0");
+        }
 
         // 总风险分担比例
         double total_risk_rate = riskBearRate.doubleValue() + riskSharingAddition.doubleValue();
@@ -3815,7 +3800,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
      * @param approval
      * @param loanProcessDO
      */
-    private void doAttachTask_FinancialSchemeModifyApplyReview(ApprovalParam approval, LoanProcessDO loanProcessDO,LoanOrderDO loanOrderDO) {
+    private void doAttachTask_FinancialSchemeModifyApplyReview(ApprovalParam approval, LoanProcessDO loanProcessDO, LoanOrderDO loanOrderDO) {
         LoanBaseInfoDO loanBaseInfoDO = loanBaseInfoDOMapper.selectByPrimaryKey(loanOrderDO.getLoanBaseInfoId());
         String bankName = loanBaseInfoDO.getBank();
         if (FINANCIAL_SCHEME_MODIFY_APPLY_REVIEW.getCode().equals(approval.getTaskDefinitionKey())
@@ -3839,7 +3824,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
                 ResultBean<Void> approvalResult = approval(param);
                 Preconditions.checkArgument(approvalResult.getSuccess(), approvalResult.getMsg());
             }
-            if(BANK_NAME_ICBC_TaiZhou_LuQiao_Branch.equals(bankName)&&ACTION_PASS.equals(loanProcessDO.getUnderLineVideoReview())){
+            if (BANK_NAME_ICBC_TaiZhou_LuQiao_Branch.equals(bankName) && ACTION_PASS.equals(loanProcessDO.getUnderLineVideoReview())) {
                 ApprovalParam param = new ApprovalParam();
 
                 param.setOrderId(approval.getOrderId());
