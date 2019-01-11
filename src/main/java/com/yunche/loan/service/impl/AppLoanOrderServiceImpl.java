@@ -772,10 +772,22 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
                 else if (loanCarInfoDO.getCarKey() == 1)
                 {
                     //查询是否已收钥匙
-                    LoanProcessLogDO loanProcessLogDO = loanCarInfoDOMapper.selectNeedCollectKey(orderId);
+                    LoanProcessLogDO loanProcessLogDO = loanProcessLogDOMapper.selectNeedCollectKey(orderId);
                     if (loanProcessLogDO != null && loanProcessLogDO.getAction() == 1 )
                     {
-                        businessInfoVO.setNeedCollectKey("已收");
+                        //判断已收还是不收
+                        if (loanOrderDO.getKeyCollected() == 1)
+                        {
+                            businessInfoVO.setNeedCollectKey("已收");
+                        }else if (loanOrderDO.getKeyCollected() == 2)
+                        {
+                            businessInfoVO.setNeedCollectKey("不收");
+                        }else
+                            {
+                                businessInfoVO.setNeedCollectKey("未知");
+                            }
+
+
                     }else
                     {
                         businessInfoVO.setNeedCollectKey("待收");
