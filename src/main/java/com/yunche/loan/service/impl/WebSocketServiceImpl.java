@@ -219,7 +219,7 @@ public class WebSocketServiceImpl implements WebSocketService {
 
 
         // 视频面签配置详情
-        ConfVideoFaceVO confVideoFaceVO = confVideoFaceService.detail(webSocketParam.getBankId(), webSocketParam.getPartnerId());
+        ConfVideoFaceVO confVideoFaceVO = confVideoFaceService.detail(webSocketParam.getBankId(), partnerId);
 
         Byte machineVideoFaceStatus = confVideoFaceVO.getMachineVideoFaceStatus();
         Byte artificialVideoFaceStatus = confVideoFaceVO.getArtificialVideoFaceStatus();
