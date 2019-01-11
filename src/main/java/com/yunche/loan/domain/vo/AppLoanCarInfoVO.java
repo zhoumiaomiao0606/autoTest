@@ -76,6 +76,7 @@ public class AppLoanCarInfoVO {
     private String cityName;
 
 
+
     @Data
     public static class PartnerAccountInfo {
         private Long partnerId;
