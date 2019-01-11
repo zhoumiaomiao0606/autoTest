@@ -67,13 +67,13 @@ public class VideoReviewServiceImpl implements VideoReviewService {
             List<UniversalCustomerFileVO> files = loanQueryService.selectUniversalCustomerFile(Long.valueOf(universalCustomerVO.getCustomer_id()));
             universalCustomerVO.setFiles(files);
         }
-           recombinationVO.setCustomers(customers);
+        recombinationVO.setCustomers(customers);
         recombinationVO.setInfo(loanQueryDOMapper.selectUniversalBaseInfo(orderId));
         recombinationVO.setCar(loanQueryDOMapper.selectUniversalCarInfo(orderId));
         recombinationVO.setFinancial(loanQueryDOMapper.selectFinancialScheme(orderId));
 
-        // 视频面签视频
-        recombinationVO.setPath(loanQueryService.selectVideoFacePath(orderId));
+        // 视频面签
+        recombinationVO.setVideoFace(loanQueryService.selectVideoFaceLog(orderId));
 
         // 55-签字视频; 56-问话视频;
         Set<Byte> fileTypes = Sets.newHashSet(SIGNATURE_VIDEO.getType(), INTERROGATION_VIDEO.getType());
@@ -95,12 +95,13 @@ public class VideoReviewServiceImpl implements VideoReviewService {
 
     /**
      * 填充面签问题
+     *
      * @param list
      */
     private void fillVideoInfo(List<VideoFaceExportVO> list) {
-        
-        
-        list.stream().filter(java.util.Objects::nonNull).forEach(e->{
+
+
+        list.stream().filter(java.util.Objects::nonNull).forEach(e -> {
             String orderId = e.getTaskId();//订单号
 
 
@@ -111,7 +112,7 @@ public class VideoReviewServiceImpl implements VideoReviewService {
     private String videoFaceExcelFile(List<VideoFaceExportVO> list) {
         String timestamp = new SimpleDateFormat("yyyyMMdd").format(new Date());
         Long id = SessionUtils.getLoginUser().getId();
-        String fileName = "视频审核"+timestamp + id + ".xlsx";
+        String fileName = "视频审核" + timestamp + id + ".xlsx";
         //创建workbook
         File file = new File(ossConfig.getDownLoadBasepath() + File.separator + fileName);
         FileOutputStream out = null;
@@ -123,7 +124,7 @@ public class VideoReviewServiceImpl implements VideoReviewService {
             XSSFSheet sheet = workbook.createSheet();
 
 
-            ArrayList<String> header = Lists.newArrayList("单号", "领取时间","合伙人编码", "合伙人", "客户姓名",
+            ArrayList<String> header = Lists.newArrayList("单号", "领取时间", "合伙人编码", "合伙人", "客户姓名",
                     "视频问题", "是否通过", "通过时间"
             );
             XSSFRow headRow = sheet.createRow(0);
