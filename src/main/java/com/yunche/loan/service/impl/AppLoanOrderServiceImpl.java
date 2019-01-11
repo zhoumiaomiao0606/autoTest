@@ -1754,7 +1754,6 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
                         loanCarInfoVO.setCityName(provinceName+cityName);
                     }
                     loanCarInfoVO.setMileage(loanCarInfoDO.getMileage());
-                    loanCarInfoVO.setCityName(baseAreaDO.getAreaName());
                 }
 
 
