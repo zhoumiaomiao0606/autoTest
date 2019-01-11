@@ -430,12 +430,9 @@ public class AsyncFinanceApI {
                      */
 
 
-
-
-
+            //默认为"1"
+            distributorParam.setOrderStatus("1");
             if(approvalParam.getTaskDefinitionKey().equals(CREDIT_APPLY.getCode())){
-
-                distributorParam.setOrderStatus("1");
                 //弃单
                 if(approvalParam.getAction().equals(ORDER_STATUS_CANCEL)){
 
