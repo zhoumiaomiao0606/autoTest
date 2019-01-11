@@ -275,16 +275,18 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
         //钥匙风险金信息
         LoanTelephoneVerifyDO loanTelephoneVerifyDO = loanTelephoneVerifyDOMapper.selectByPrimaryKey(Long.valueOf(data.getOrderId()));
         //取出钥匙风险金--计算加收金额
-        BigDecimal loanAmount = data.getLoanAmount();
-
-        if (loanAmount!=null)
+        if (loanTelephoneVerifyDO!=null)
         {
-            BigDecimal addMoney = loanAmount.multiply(new BigDecimal(loanTelephoneVerifyDO.getKeyRiskPremium())).divide(new BigDecimal("100"));
+            BigDecimal loanAmount = data.getLoanAmount();
 
-            appInfoSupplementVO.setAddMoney(addMoney);
+            if (loanAmount != null) {
+                BigDecimal addMoney = loanAmount.multiply(new BigDecimal(loanTelephoneVerifyDO.getKeyRiskPremium())).divide(new BigDecimal("100"));
+
+                appInfoSupplementVO.setAddMoney(addMoney);
+            }
+            appInfoSupplementVO.setKeyRiskPremium(loanTelephoneVerifyDO.getKeyRiskPremium());
+            appInfoSupplementVO.setKeyRiskPremiumConfirm(loanTelephoneVerifyDO.getKeyRiskPremiumConfirm());
         }
-        appInfoSupplementVO.setKeyRiskPremium(loanTelephoneVerifyDO.getKeyRiskPremium());
-        appInfoSupplementVO.setKeyRiskPremiumConfirm(loanTelephoneVerifyDO.getKeyRiskPremiumConfirm());
 
 
         return ResultBean.ofSuccess(appInfoSupplementVO);

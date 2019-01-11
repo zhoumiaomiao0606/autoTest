@@ -90,7 +90,7 @@ public class AppInfoSupplementVO {
     private String remark;
 
     /**
-     * 钥匙风险金
+     * 钥匙风险金-比例
      */
     private Integer keyRiskPremium;
 
@@ -99,5 +99,8 @@ public class AppInfoSupplementVO {
      */
     private Byte keyRiskPremiumConfirm;
 
+    /**
+     * 钥匙风险金-金额
+     */
     private BigDecimal addMoney;
 }
