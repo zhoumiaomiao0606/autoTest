@@ -875,52 +875,50 @@ public class LoanOrderServiceImpl implements LoanOrderService {
             {
                 loanCarInfoVO.setVin(secondHandCarEvaluateDO.getVin());
                 loanCarInfoVO.setSecond_hand_car_evaluate_id(loanOrderDO.getSecond_hand_car_evaluate_id());
+                loanCarInfoVO.setMileage(secondHandCarEvaluateDO.getMileage());
+                loanCarInfoVO.setHasCityName(secondHandCarEvaluateDO.getCity_id());
             }
 
-
-            /*if(universalInfoVO != null)
-            {
-                universalInfoVO.setCar_name(secondHandCarEvaluateDO.getName());
-            }*/
         }
         if(vehicleInformationDO!=null){
             loanCarInfoVO.setVin(vehicleInformationDO.getVehicle_identification_number());
         }
 
-//        if (null != loanCarInfoDO && loanCarInfoDO.getCarType()==1 && loanCarInfoDO.getEvaluationType()!=null && loanCarInfoDO.getEvaluationType()==2 && vehicleInformationDO != null)
-//        {
-//            loanCarInfoVO.setVin(vehicleInformationDO.getVehicle_identification_number());
-//        }else{
-//            loanCarInfoVO.setVin(loanCarInfoDO.getVin());
-//        }
+
 
         if(loanCarInfoDO!=null){
-            Long area_id = loanCarInfoDO.getCityId();
-            if(area_id!=null){
-                LoanCarInfoVO.SecondCityArea secondCityArea = new LoanCarInfoVO.SecondCityArea();
-                BaseAreaDO county = baseAreaDOMapper.selectByPrimaryKey(area_id, null);
-                if(county.getLevel().toString().equals("3")){
-                    BaseAreaDO city = baseAreaDOMapper.selectByPrimaryKey(county.getParentAreaId(), null);
-                    //区
-                    secondCityArea.setCountyId(county.getAreaId());
-                    secondCityArea.setCountyName(county.getAreaName());
+            //人工
+            if(loanCarInfoDO.getEvaluationType().equals(2)){
+                Long area_id = loanCarInfoDO.getCityId();
+                if(area_id!=null){
+                    LoanCarInfoVO.SecondCityArea secondCityArea = new LoanCarInfoVO.SecondCityArea();
+                    BaseAreaDO county = baseAreaDOMapper.selectByPrimaryKey(area_id, null);
+                    if(county.getLevel().toString().equals("3")){
+                        BaseAreaDO city = baseAreaDOMapper.selectByPrimaryKey(county.getParentAreaId(), null);
+                        //区
+                        secondCityArea.setCountyId(county.getAreaId());
+                        secondCityArea.setCountyName(county.getAreaName());
 
-                    //市
-                    secondCityArea.setCityId(city.getAreaId());
-                    secondCityArea.setCityName(city.getAreaName());
+                        //市
+                        secondCityArea.setCityId(city.getAreaId());
+                        secondCityArea.setCityName(city.getAreaName());
 
-                    //省
-                    secondCityArea.setProvinceId(city.getParentAreaId());
-                    secondCityArea.setProvinceName(city.getParentAreaName());
-                }else if(county.getLevel().toString().equals("2")){
+                        //省
+                        secondCityArea.setProvinceId(city.getParentAreaId());
+                        secondCityArea.setProvinceName(city.getParentAreaName());
+                    }else if(county.getLevel().toString().equals("2")){
 
-                    secondCityArea.setCityId(county.getAreaId());
-                    secondCityArea.setCountyName(county.getAreaName());
-                    secondCityArea.setProvinceId(county.getParentAreaId());
-                    secondCityArea.setProvinceName(county.getParentAreaName());
+                        secondCityArea.setCityId(county.getAreaId());
+                        secondCityArea.setCountyName(county.getAreaName());
+                        secondCityArea.setProvinceId(county.getParentAreaId());
+                        secondCityArea.setProvinceName(county.getParentAreaName());
+                    }
+                    loanCarInfoVO.setSecondCityArea(secondCityArea);
+                    loanCarInfoVO.setHasCityName(county.getAreaName());
                 }
-                loanCarInfoVO.setSecondCityArea(secondCityArea);
+
             }
+
 
         }
         if (universalInfoVO != null)
