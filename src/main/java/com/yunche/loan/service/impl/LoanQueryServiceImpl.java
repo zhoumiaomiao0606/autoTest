@@ -9,6 +9,7 @@ import com.yunche.loan.config.util.SessionUtils;
 import com.yunche.loan.domain.entity.LoanCustomerDO;
 import com.yunche.loan.domain.entity.LoanOrderDO;
 import com.yunche.loan.domain.entity.LoanProcessDO;
+import com.yunche.loan.domain.entity.VideoFaceLogDO;
 import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.DictService;
@@ -37,6 +38,9 @@ public class LoanQueryServiceImpl implements LoanQueryService {
 
     @Resource
     private LoanCustomerDOMapper loanCustomerDOMapper;
+
+    @Autowired
+    private VideoFaceLogDOMapper videoFaceLogDOMapper;
 
     @Autowired
     private DictService dictService;
@@ -241,10 +245,33 @@ public class LoanQueryServiceImpl implements LoanQueryService {
         if (StringUtils.isNotBlank(path)) {
             path = path.replace("https://yunche-videosign.oss-cn-hangzhou.aliyuncs.com/", "");
             path = path.replace("http://yunche-videosign.oss-cn-hangzhou.aliyuncs.com/", "");
-            path.trim();
+            path = path.trim();
         }
 
         return path;
+    }
+
+    @Override
+    public UniversalVideoFaceLogVO selectVideoFaceLog(Long orderId) {
+
+        VideoFaceLogDO videoFaceLogDO = videoFaceLogDOMapper.lastVideoFaceLogByOrderId(orderId);
+
+        if (null == videoFaceLogDO) {
+            return null;
+        }
+
+        UniversalVideoFaceLogVO universalVideoFaceLogVO = new UniversalVideoFaceLogVO();
+        BeanUtils.copyProperties(videoFaceLogDO, universalVideoFaceLogVO);
+
+        String path = videoFaceLogDO.getPath();
+        if (StringUtils.isNotBlank(path)) {
+            path = path.replace("https://yunche-videosign.oss-cn-hangzhou.aliyuncs.com/", "");
+            path = path.replace("http://yunche-videosign.oss-cn-hangzhou.aliyuncs.com/", "");
+            path = path.trim();
+            universalVideoFaceLogVO.setPath(path);
+        }
+
+        return universalVideoFaceLogVO;
     }
 
     /**
