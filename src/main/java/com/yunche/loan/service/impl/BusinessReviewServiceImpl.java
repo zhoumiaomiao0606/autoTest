@@ -151,13 +151,7 @@ public class BusinessReviewServiceImpl implements BusinessReviewService
 
 
             //加收保证金---风险金
-            if (universalInfoVO.getFinancial_cash_deposit()!=null && universalInfoVO.getFinancial_loan_amount()!=null)
-            {
-                BigDecimal cashDeposit = new BigDecimal(universalInfoVO.getFinancial_cash_deposit());
-                BigDecimal bail = cashDeposit.multiply(new BigDecimal(universalInfoVO.getFinancial_cash_deposit()));
-                param.setBail(String.valueOf(bail));
-            }
-
+            param.setBail(universalInfoVO.getFinancial_cash_deposit());
             //上牌地城市id
             param.setAreaId(universalInfoVO.getVehicle_apply_license_plate_area_id());
 
