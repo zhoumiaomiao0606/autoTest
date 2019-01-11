@@ -53,4 +53,12 @@ public interface LoanQueryService {
      * @return
      */
     String selectVideoFacePath(Long orderId);
+
+    /**
+     * 视频面签记录
+     *
+     * @param orderId
+     * @return
+     */
+    UniversalVideoFaceLogVO selectVideoFaceLog(Long orderId);
 }
