@@ -1733,7 +1733,7 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
             BeanUtils.copyProperties(loanCarInfoDO, partnerAccountInfo);
             loanCarInfoVO.setPartnerAccountInfo(partnerAccountInfo);
 
-            if(loanCarInfoDO!=null){
+            if(loanCarInfoDO!=null && loanCarInfoDO.getEvaluationType().equals(new Byte("2"))){
                 Long area_id = loanCarInfoDO.getCityId();
                 if(area_id!=null){
                     loanCarInfoVO.setCityId(area_id);
@@ -1753,7 +1753,10 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
                         String provinceName = cityDO.getParentAreaName();
                         loanCarInfoVO.setCityName(provinceName+cityName);
                     }
+                    loanCarInfoVO.setMileage(loanCarInfoDO.getMileage());
+                    loanCarInfoVO.setCityName(baseAreaDO.getAreaName());
                 }
+
 
             }
         }
@@ -1781,6 +1784,8 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
             {
                 loanCarInfoVO.setVin(secondHandCarEvaluateDO.getVin());
                 loanCarInfoVO.setSecond_hand_car_evaluate_id(loanOrderDO.getSecond_hand_car_evaluate_id());
+                loanCarInfoVO.setMileage(secondHandCarEvaluateDO.getMileage());
+                loanCarInfoVO.setCityName(secondHandCarEvaluateDO.getCity_id());
             }
 
         }
