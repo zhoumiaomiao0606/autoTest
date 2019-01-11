@@ -36,4 +36,6 @@ public interface LoanProcessLogDOMapper {
      * @return
      */
     List<LoanProcessLogDO> listByOrderId(@Param("orderId") Long orderId, @Param("limit") Integer limit);
+
+    LoanProcessLogDO selectNeedCollectKey(Long orderId);
 }

@@ -24,7 +24,5 @@ public interface LoanCarInfoDOMapper {
             "(SELECT  `loan_car_info_id` from `loan_order` WHERE `id`  = #{orderId})")
     Byte getCarKeyByOrderId(Long orderId);
 
-    LoanProcessLogDO selectNeedCollectKey(Long orderId);
-
     String selectFullNameById(@Param("loanCarId")Long loanCarId);
 }

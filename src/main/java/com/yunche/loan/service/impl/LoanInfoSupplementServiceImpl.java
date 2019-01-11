@@ -189,16 +189,18 @@ public class LoanInfoSupplementServiceImpl implements LoanInfoSupplementService 
         //钥匙风险金信息
         LoanTelephoneVerifyDO loanTelephoneVerifyDO = loanTelephoneVerifyDOMapper.selectByPrimaryKey(Long.valueOf(detail.getOrderId()));
         //取出钥匙风险金--计算加收金额
-        BigDecimal loanAmount = detail.getLoanAmount();
-
-        if (loanAmount!=null)
+        if (loanTelephoneVerifyDO!=null)
         {
-            BigDecimal addMoney = loanAmount.multiply(new BigDecimal(loanTelephoneVerifyDO.getKeyRiskPremium())).divide(new BigDecimal("100"));
+            BigDecimal loanAmount = detail.getLoanAmount();
 
-            detail.setAddMoney(addMoney);
+            if (loanAmount != null) {
+                BigDecimal addMoney = loanAmount.multiply(new BigDecimal(loanTelephoneVerifyDO.getKeyRiskPremium())).divide(new BigDecimal("100"));
+
+                detail.setAddMoney(addMoney);
+            }
+            detail.setKeyRiskPremium(loanTelephoneVerifyDO.getKeyRiskPremium());
+            detail.setKeyRiskPremiumConfirm(loanTelephoneVerifyDO.getKeyRiskPremiumConfirm());
         }
-        detail.setKeyRiskPremium(loanTelephoneVerifyDO.getKeyRiskPremium());
-        detail.setKeyRiskPremiumConfirm(loanTelephoneVerifyDO.getKeyRiskPremiumConfirm());
 
         return ResultBean.ofSuccess(detail);
     }

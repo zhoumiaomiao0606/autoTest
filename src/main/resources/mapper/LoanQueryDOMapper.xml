@@ -1146,7 +1146,7 @@
              cost.fair_assess_fee                            AS cost_fair_assess_fee,
              cost.apply_license_plate_out_province_fee       AS cost_apply_license_plate_out_province_fee,
              cost.based_margin_fee                           AS cost_based_margin_fee,
-             cost.extra_fee                                  AS cost_extra_fee,
+             loan_financial_plan.extra_fee                                  AS cost_extra_fee,
              cost.other_fee                                  AS cost_other_fee,
              cost.service_fee_type                           AS cost_service_fee_type,
              cost.apply_license_plate_deposit_fee_type       AS cost_apply_license_plate_deposit_fee_type,
