@@ -16,9 +16,8 @@ public class RecombinationVO<T> {
     private String jsonString;
 
     /**
-     * 视频面签path
+     * 视频面签
      */
-    private String path;
     private UniversalVideoFaceLogVO videoFace;
 
     private UniversalLoanFinancialPlanTempHisVO diff;
