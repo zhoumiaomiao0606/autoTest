@@ -256,18 +256,19 @@ public class LoanQueryServiceImpl implements LoanQueryService {
 
         VideoFaceLogDO videoFaceLogDO = videoFaceLogDOMapper.lastVideoFaceLogByOrderId(orderId);
 
+        if (null == videoFaceLogDO) {
+            return null;
+        }
+
         UniversalVideoFaceLogVO universalVideoFaceLogVO = new UniversalVideoFaceLogVO();
-        if (null != videoFaceLogDO) {
+        BeanUtils.copyProperties(videoFaceLogDO, universalVideoFaceLogVO);
 
-            BeanUtils.copyProperties(videoFaceLogDO, universalVideoFaceLogVO);
-
-            String path = videoFaceLogDO.getPath();
-            if (StringUtils.isNotBlank(path)) {
-                path = path.replace("https://yunche-videosign.oss-cn-hangzhou.aliyuncs.com/", "");
-                path = path.replace("http://yunche-videosign.oss-cn-hangzhou.aliyuncs.com/", "");
-                path = path.trim();
-                universalVideoFaceLogVO.setPath(path);
-            }
+        String path = videoFaceLogDO.getPath();
+        if (StringUtils.isNotBlank(path)) {
+            path = path.replace("https://yunche-videosign.oss-cn-hangzhou.aliyuncs.com/", "");
+            path = path.replace("http://yunche-videosign.oss-cn-hangzhou.aliyuncs.com/", "");
+            path = path.trim();
+            universalVideoFaceLogVO.setPath(path);
         }
 
         return universalVideoFaceLogVO;

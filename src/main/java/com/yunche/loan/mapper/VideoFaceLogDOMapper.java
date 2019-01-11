@@ -28,6 +28,4 @@ public interface VideoFaceLogDOMapper {
      * @return
      */
     VideoFaceLogDO lastVideoFaceLogByOrderId(Long orderId);
-
-
 }
