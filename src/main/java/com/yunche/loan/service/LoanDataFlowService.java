@@ -16,7 +16,7 @@ import java.util.List;
  */
 public interface LoanDataFlowService {
 
-    LoanDataFlowDO getLastByOrderIdAndType(Long orderId, Byte oldType);
+    LoanDataFlowDO getLastByOrderIdAndType(Long orderId, Byte type);
 
     ResultBean<UniversalDataFlowDetailVO> detail(Long id);
 

@@ -150,7 +150,7 @@ public class BusinessReviewServiceImpl implements BusinessReviewService
             }
 
 
-            //加收保证金
+            //加收保证金---风险金
             param.setBail(universalInfoVO.getFinancial_cash_deposit());
             //上牌地城市id
             param.setAreaId(universalInfoVO.getVehicle_apply_license_plate_area_id());
