@@ -254,7 +254,7 @@ public class LoanQueryServiceImpl implements LoanQueryService {
     @Override
     public UniversalVideoFaceLogVO selectVideoFaceLog(Long orderId) {
 
-        VideoFaceLogDO videoFaceLogDO = videoFaceLogDOMapper.selectByPrimaryKey(orderId);
+        VideoFaceLogDO videoFaceLogDO = videoFaceLogDOMapper.lastVideoFaceLogByOrderId(orderId);
 
         UniversalVideoFaceLogVO universalVideoFaceLogVO = new UniversalVideoFaceLogVO();
         if (null != videoFaceLogDO) {
