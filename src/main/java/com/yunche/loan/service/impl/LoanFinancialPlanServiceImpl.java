@@ -218,7 +218,7 @@ public class LoanFinancialPlanServiceImpl implements LoanFinancialPlanService {
     public ResultBean<Long> createOrUpdateLoanFinancialPlan(LoanFinancialPlanParam loanFinancialPlanParam) {
         Preconditions.checkNotNull(loanFinancialPlanParam, "贷款金融方案不能为空");
 
-        loanFinancialPlanParam.setPlayCompany(loanFinancialPlanParam.getPaddingCompany());
+        loanFinancialPlanParam.setPlayCompany(loanFinancialPlanParam.getPlayCompany());
 
         if (null == loanFinancialPlanParam.getId()) {
             // 创建
