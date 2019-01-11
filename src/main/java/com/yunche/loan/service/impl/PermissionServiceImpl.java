@@ -43,6 +43,9 @@ public class PermissionServiceImpl implements PermissionService {
 
         Set<String> userGroupNameSet = getLoginUserHasUserGroups();
 
+        Preconditions.checkArgument(!CollectionUtils.isEmpty(userGroupNameSet),
+                "您无权操作[" + LoanProcessEnum.getNameByCode(taskDefinitionKey) + "]");
+
         if (!CollectionUtils.isEmpty(userGroupNameSet) && userGroupNameSet.contains(USER_GROUP_ADMIN)) {
             return;
         }

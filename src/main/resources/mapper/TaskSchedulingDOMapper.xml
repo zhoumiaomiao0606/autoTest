@@ -549,7 +549,7 @@
                       </when>
                       <when test="taskDefinitionKey == 'usertask_commit_key'">
                           deputy.commit_key                       AS taskStatus,
-                          (IFNULL(join_ltv.key_risk_premium,0)  + IFNULL(join_p.risk_bear_rate,0))                    AS orderRisk
+                          (IFNULL(join_ltv.risk_sharing_addition,0)  + IFNULL(join_p.risk_bear_rate,0))                    AS orderRisk
                       </when>
                       <when test="taskDefinitionKey == 'usertask_material_review'">
                           deputy.material_review                  AS taskStatus

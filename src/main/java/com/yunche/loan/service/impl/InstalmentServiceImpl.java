@@ -65,6 +65,7 @@ public class InstalmentServiceImpl implements InstalmentService {
         recombinationVO.setInfo(loanQueryDOMapper.selectApplyDiviGeneralInfo(orderId));
         recombinationVO.setMaterials(loanQueryDOMapper.selectUniversalCustomerFileByTypes(orderId, types));
         recombinationVO.setPath(loanQueryService.selectVideoFacePath(orderId));
+        recombinationVO.setVideoFace(loanQueryService.selectVideoFaceLog(orderId));
         return recombinationVO;
     }
 

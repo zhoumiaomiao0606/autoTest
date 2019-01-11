@@ -45,6 +45,8 @@ public class ParternerRuleSharpTuningeParam
     //合伙人返利金额
     private String partnerRebateAmount;
 
+    private String rebateTeant;
+
     @Override
     public String toString() {
         return JSON.toJSONString(this, new SerializerFeature[]{SerializerFeature.WriteMapNullValue, SerializerFeature.WriteNullListAsEmpty,

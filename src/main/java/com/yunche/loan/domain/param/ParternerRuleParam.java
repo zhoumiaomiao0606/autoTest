@@ -37,6 +37,14 @@ public class ParternerRuleParam
     //返利金额
     private String partnerRebateAmount;
 
+
+    private String keyRiskPremiumFee;
+
+
+    private String costExtraFee;
+
+    private String rebateTeant;
+
     @Override
     public String toString() {
         return JSON.toJSONString(this, new SerializerFeature[]{SerializerFeature.WriteMapNullValue, SerializerFeature.WriteNullListAsEmpty,

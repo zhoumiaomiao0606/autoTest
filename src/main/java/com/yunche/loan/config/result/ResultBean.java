@@ -131,7 +131,7 @@ public class ResultBean<T> implements Serializable {
         return resultBean;
     }
 
-//    public static <T> ResultBean<List<T>> ofSuccess(PageInfo<T> pageInfo) {
-//        return ofSuccess(pageInfo.getList(), (int) pageInfo.getTotal(), pageInfo.getPageNum(), pageInfo.getPageSize());
-//    }
+    public static <T> ResultBean<List<T>> ofPageInfo(PageInfo<T> pageInfo) {
+        return ofSuccess(pageInfo.getList(), (int) pageInfo.getTotal(), pageInfo.getPageNum(), pageInfo.getPageSize());
+    }
 }
