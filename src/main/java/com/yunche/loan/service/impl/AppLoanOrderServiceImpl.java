@@ -788,6 +788,8 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
                 businessInfoVO.setFirstRegisterDate(loanCarInfoDO.getFirstRegisterDate());
                 //备注
                 businessInfoVO.setInfo(loanCarInfoDO.getInfo());
+                //经销商
+                businessInfoVO.setDistributorName(loanCarInfoDO.getDistributorName());
             }
 
             if (null != loanOrderDO.getLoanFinancialPlanId()) {
