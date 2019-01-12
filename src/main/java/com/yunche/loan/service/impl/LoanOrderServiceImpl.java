@@ -889,7 +889,7 @@ public class LoanOrderServiceImpl implements LoanOrderService {
 
         if(loanCarInfoDO!=null){
             //人工
-            if(loanCarInfoDO.getEvaluationType().equals(new Byte("2"))){
+            if(new Byte("2").equals(loanCarInfoDO.getEvaluationType())){
                 Long area_id = loanCarInfoDO.getCityId();
                 if(area_id!=null){
                     LoanCarInfoVO.SecondCityArea secondCityArea = new LoanCarInfoVO.SecondCityArea();
