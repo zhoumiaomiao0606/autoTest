@@ -212,6 +212,11 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             Preconditions.checkNotNull(approval.getOrderId(), "业务单号不能为空");
         }
 
+        // convert          银行征信录入B || 银行征信录入A     ==>    银行征信录入A
+        if (BANK_CREDIT_RECORD_B.getCode().equals(approval.getTaskDefinitionKey())) {
+            approval.setTaskDefinitionKey(BANK_CREDIT_RECORD.getCode());
+        }
+
         // APP通过OrderId弃单
         if (isAppCancelByOrderId(approval)) {
             return execAppCancelByOrderId(approval);

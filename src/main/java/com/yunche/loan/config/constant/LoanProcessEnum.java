@@ -14,7 +14,8 @@ public enum LoanProcessEnum {
     // 电审前
     CREDIT_APPLY("usertask_credit_apply", "征信申请"),
 
-    BANK_CREDIT_RECORD("usertask_bank_credit_record", "银行征信录入"),
+    BANK_CREDIT_RECORD("usertask_bank_credit_record", "银行征信录入A"),
+    BANK_CREDIT_RECORD_B("usertask_bank_credit_record_B", "银行征信录入B"),
     SOCIAL_CREDIT_RECORD("usertask_social_credit_record", "社会征信录入"),
     LOAN_INFO_RECORD("usertask_loan_info_record", "视频面签登记"),
 
@@ -90,7 +91,7 @@ public enum LoanProcessEnum {
 
     ROLE_CHANGE("usertask_role_change", "角色变更"),
 
-    USERTASK_CONTRACT_OVERDUE("usertask_contract_overdue","合同超期"),
+    USERTASK_CONTRACT_OVERDUE("usertask_contract_overdue", "合同超期"),
     /////////////////////////////////////////// ↑↑↑↑↑--流程外的节点--↑↑↑↑↑ //////////////////////////////////////////////
 
 
