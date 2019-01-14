@@ -947,7 +947,11 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         else if (REFUND_APPLY_REVIEW.getCode().equals(taskDefinitionKey)) {
 
             // 通过/打回
-            if (ACTION_PASS.equals(approval.getAction())) {
+            if (ACTION_PASS.equals(approval.getAction()))
+            {
+                RemitDetailsDO remitDetailsDO = remitDetailsDOMapper.selectByPrimaryKey(loanOrderDO.getRemitDetailsId());
+                remitDetailsDO.setRemit_status(IDict.K_DKZT.NO_PAY);
+                remitDetailsDOMapper.updateByPrimaryKeySelective(remitDetailsDO);
 
                 // 退款原因(类型)：3-业务审批重审     ===>   自动打回 ->【业务付款】
                 LoanRefundApplyDO loanRefundApplyDO = getLoanRefundApply(approval.getOrderId());
