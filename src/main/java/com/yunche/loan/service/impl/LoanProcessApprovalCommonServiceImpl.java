@@ -120,6 +120,7 @@ public class LoanProcessApprovalCommonServiceImpl implements LoanProcessApproval
 
         LoanProcessLogDO loanProcessLogDO = new LoanProcessLogDO();
         BeanUtils.copyProperties(approval, loanProcessLogDO);
+        loanProcessLogDO.setTaskDefinitionKey(approval.getOriginalTaskDefinitionKey());
 
         EmployeeDO loginUser = null;
 
