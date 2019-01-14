@@ -2939,7 +2939,7 @@ SELECT
         FROM
             bank_interface_serial serial
             INNER JOIN ( SELECT SUBSTRING_INDEX( GROUP_CONCAT( serial_no ORDER BY request_time DESC SEPARATOR ',' ), ',', 1 ) AS serial_no FROM bank_interface_serial GROUP BY trans_code, customer_id ) orderdata ON orderdata.serial_no = serial.serial_no
-            AND serial.trans_code = 'creditcardapply' and serial.api_status =200 )tal on tal.customer_id = cus.id
+            AND serial.trans_code = 'creditcardapply' )tal on tal.customer_id = cus.id
         where process.bank_open_card !=0 and process.`order_status`  = 1 and tal.request_time &gt;= #{startDate}
         and tal.request_time &lt;= #{endDate}
         <if test="partnerList != null and partnerList.size() > 0">
