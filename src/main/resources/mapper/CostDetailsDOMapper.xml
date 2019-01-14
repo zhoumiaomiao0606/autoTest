@@ -51,7 +51,7 @@
     delete from cost_details
     where id = #{id,jdbcType=BIGINT}
   </delete>
-  <insert id="insert" parameterType="com.yunche.loan.domain.entity.CostDetailsDO">
+  <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="com.yunche.loan.domain.entity.CostDetailsDO">
     insert into cost_details (id, service_fee, apply_license_plate_deposit_fee, 
       performance_fee, install_gps_fee, risk_fee, 
       fair_assess_fee, apply_license_plate_out_province_fee, 
@@ -77,7 +77,7 @@
       #{partner_rebate_amount,jdbcType=DECIMAL}, #{key_risk_premium_type,jdbcType=TINYINT}
       )
   </insert>
-  <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.CostDetailsDO">
+  <insert id="insertSelective" useGeneratedKeys="true" keyProperty="id" parameterType="com.yunche.loan.domain.entity.CostDetailsDO">
     insert into cost_details
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="id != null">

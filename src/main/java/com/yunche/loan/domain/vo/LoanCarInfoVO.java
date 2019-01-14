@@ -77,6 +77,7 @@ public class LoanCarInfoVO {
 
     private SecondCityArea secondCityArea;
     private String mileage;
+    private String hasCityName;
     @Data
     public static class BaseArea{
         private Long provAreaId;

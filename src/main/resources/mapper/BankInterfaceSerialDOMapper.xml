@@ -246,7 +246,7 @@
 
         LEFT JOIN 	    loan_process           p      ON bis.order_id = p.order_id
 
-        WHERE		    p.order_status = 1
+        WHERE		    p.order_status = 1 and bis.trans_code='applyCredit'
 
         AND 			( p.bank_credit_record = 2 OR p.bank_credit_record = 3 )
 

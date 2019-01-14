@@ -380,6 +380,12 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
     @Override
     public ResultBean<List<AppTaskVO>> queryAppTaskList(AppTaskListQuery appTaskListQuery) {
 
+        // 节点校验
+        /*if (!LoanProcessEnum.havingCode(appTaskListQuery.getTaskDefinitionKey())) {
+            throw new BizException("错误的任务节点key");
+        }
+        // 节点权限校验
+        permissionService.checkTaskPermission(appTaskListQuery.getTaskDefinitionKey());*/
         EmployeeDO loginUser = SessionUtils.getLoginUser();
         Set<String> juniorIds = employeeService.getSelfAndCascadeChildIdList(loginUser.getId());
         Long telephoneVerifyLevel = taskSchedulingDOMapper.selectTelephoneVerifyLevel(loginUser.getId());

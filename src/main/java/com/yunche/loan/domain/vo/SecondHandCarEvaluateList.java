@@ -34,6 +34,12 @@ public class SecondHandCarEvaluateList
 
     private BigDecimal evaluate_price;
 
+    private String mileage;
+
+    private String city_name;
+
+    private String area_id;
+
     private String  query_time;
 
 }

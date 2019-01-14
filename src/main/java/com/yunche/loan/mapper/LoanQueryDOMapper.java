@@ -2,6 +2,7 @@ package com.yunche.loan.mapper;
 
 import com.yunche.loan.config.anno.FunctionTime;
 import com.yunche.loan.domain.param.ContractOverDueParam;
+import com.yunche.loan.domain.param.CreditApplyListQuery;
 import com.yunche.loan.domain.vo.*;
 import org.apache.ibatis.annotations.Param;
 
@@ -367,5 +368,5 @@ public interface LoanQueryDOMapper {
 
     List<SDCOrders> selectShutDownQueryCreditOrder();
 
-    int shutDownQueryCredit(List<Long> partners);
+    List<CreditApplyListVO> queryCreditApplyrList(CreditApplyListQuery param);
 }

@@ -1051,13 +1051,24 @@ public class LoanProcessApprovalCommonServiceImpl implements LoanProcessApproval
             return;
         }
 
-        LoanDataFlowParam loanDataFlowParam = new LoanDataFlowParam();
+        // 是否已存在
+        LoanDataFlowDO exist = loanDataFlowService.getLastByOrderIdAndType(orderId, sendType);
+        if (null != exist) {
 
-        loanDataFlowParam.setOrderId(orderId);
-        loanDataFlowParam.setType(sendType);
+            // 存在  -> nothing
 
-        ResultBean result = loanDataFlowService.create(loanDataFlowParam);
-        Preconditions.checkArgument(result.getSuccess(), result.getMsg());
+        } else {
+
+            // 不存在 -> create
+
+            LoanDataFlowParam loanDataFlowParam = new LoanDataFlowParam();
+
+            loanDataFlowParam.setOrderId(orderId);
+            loanDataFlowParam.setType(sendType);
+
+            ResultBean result = loanDataFlowService.create(loanDataFlowParam);
+            Preconditions.checkArgument(result.getSuccess(), result.getMsg());
+        }
     }
 
     /**

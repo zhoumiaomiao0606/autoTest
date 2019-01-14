@@ -23,6 +23,7 @@
     anyChatUserId：<textarea rows="2" cols="15" name="anyChatUserId"></textarea>
     bankPeriodPrincipal：<textarea rows="2" cols="15" name="bankPeriodPrincipal"></textarea>
     orderId：<textarea rows="2" cols="15" name="orderId"></textarea>
+    partnerId：<textarea rows="2" cols="15" name="partnerId"></textarea>
 
     <input type="submit" value="加入排队"/>
 </form>
@@ -68,7 +69,8 @@
         var anyChatUserId = $('#wiselyForm').find('textarea[name="anyChatUserId"]').val();
         var bankPeriodPrincipal = $('#wiselyForm').find('textarea[name="bankPeriodPrincipal"]').val();
         var orderId = $('#wiselyForm').find('textarea[name="orderId"]').val();
-        wait(bankId, bankName, userId, type, anyChatUserId, bankPeriodPrincipal, orderId);
+        var partnerId = $('#wiselyForm').find('textarea[name="partnerId"]').val();
+        wait(bankId, bankName, userId, type, anyChatUserId, bankPeriodPrincipal, orderId, partnerId);
     })
     ;
 
@@ -139,7 +141,7 @@
         }));//3
     };
 
-    function wait(bankId, bankName, userId, type, anyChatUserId, bankPeriodPrincipal, orderId) {
+    function wait(bankId, bankName, userId, type, anyChatUserId, bankPeriodPrincipal, orderId, partnerId) {
         stomp.send("/api/v1/ws/team/wait", {}, JSON.stringify({
             'bankId': bankId,
             'bankName': bankName,
@@ -147,7 +149,8 @@
             'type': type,
             'anyChatUserId': anyChatUserId,
             'bankPeriodPrincipal': bankPeriodPrincipal,
-            'orderId': orderId
+            'orderId': orderId,
+            'partnerId': partnerId
         }));//3
     };
 

@@ -275,16 +275,18 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
         //钥匙风险金信息
         LoanTelephoneVerifyDO loanTelephoneVerifyDO = loanTelephoneVerifyDOMapper.selectByPrimaryKey(Long.valueOf(data.getOrderId()));
         //取出钥匙风险金--计算加收金额
-        BigDecimal loanAmount = data.getLoanAmount();
-
-        if (loanAmount!=null)
+        if (loanTelephoneVerifyDO!=null)
         {
-            BigDecimal addMoney = loanAmount.multiply(new BigDecimal(loanTelephoneVerifyDO.getKeyRiskPremium())).divide(new BigDecimal("100"));
+            BigDecimal loanAmount = data.getLoanAmount();
 
-            appInfoSupplementVO.setAddMoney(addMoney);
+            if (loanAmount != null) {
+                BigDecimal addMoney = loanAmount.multiply(new BigDecimal(loanTelephoneVerifyDO.getKeyRiskPremium())).divide(new BigDecimal("100"));
+
+                appInfoSupplementVO.setAddMoney(addMoney);
+            }
+            appInfoSupplementVO.setKeyRiskPremium(loanTelephoneVerifyDO.getKeyRiskPremium());
+            appInfoSupplementVO.setKeyRiskPremiumConfirm(loanTelephoneVerifyDO.getKeyRiskPremiumConfirm());
         }
-        appInfoSupplementVO.setKeyRiskPremium(loanTelephoneVerifyDO.getKeyRiskPremium());
-        appInfoSupplementVO.setKeyRiskPremiumConfirm(loanTelephoneVerifyDO.getKeyRiskPremiumConfirm());
 
 
         return ResultBean.ofSuccess(appInfoSupplementVO);
@@ -770,10 +772,22 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
                 else if (loanCarInfoDO.getCarKey() == 1)
                 {
                     //查询是否已收钥匙
-                    LoanProcessLogDO loanProcessLogDO = loanCarInfoDOMapper.selectNeedCollectKey(orderId);
+                    LoanProcessLogDO loanProcessLogDO = loanProcessLogDOMapper.selectNeedCollectKey(orderId);
                     if (loanProcessLogDO != null && loanProcessLogDO.getAction() == 1 )
                     {
-                        businessInfoVO.setNeedCollectKey("已收");
+                        //判断已收还是不收
+                        if (loanOrderDO.getKeyCollected() == 1)
+                        {
+                            businessInfoVO.setNeedCollectKey("已收");
+                        }else if (loanOrderDO.getKeyCollected() == 2)
+                        {
+                            businessInfoVO.setNeedCollectKey("不收");
+                        }else
+                            {
+                                businessInfoVO.setNeedCollectKey("未知");
+                            }
+
+
                     }else
                     {
                         businessInfoVO.setNeedCollectKey("待收");
@@ -788,6 +802,8 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
                 businessInfoVO.setFirstRegisterDate(loanCarInfoDO.getFirstRegisterDate());
                 //备注
                 businessInfoVO.setInfo(loanCarInfoDO.getInfo());
+                //经销商
+                businessInfoVO.setDistributorName(loanCarInfoDO.getDistributorName());
             }
 
             if (null != loanOrderDO.getLoanFinancialPlanId()) {
@@ -1717,7 +1733,7 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
             BeanUtils.copyProperties(loanCarInfoDO, partnerAccountInfo);
             loanCarInfoVO.setPartnerAccountInfo(partnerAccountInfo);
 
-            if(loanCarInfoDO!=null){
+            if(loanCarInfoDO!=null && loanCarInfoDO.getEvaluationType().equals(new Byte("2"))){
                 Long area_id = loanCarInfoDO.getCityId();
                 if(area_id!=null){
                     loanCarInfoVO.setCityId(area_id);
@@ -1737,7 +1753,9 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
                         String provinceName = cityDO.getParentAreaName();
                         loanCarInfoVO.setCityName(provinceName+cityName);
                     }
+                    loanCarInfoVO.setMileage(loanCarInfoDO.getMileage());
                 }
+
 
             }
         }
@@ -1758,13 +1776,16 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
         LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
         VehicleInformationDO vehicleInformationDO = vehicleInformationDOMapper.selectByPrimaryKey(vid);
 
-        if (loanOrderDO.getSecond_hand_car_evaluate_id()!=null && !"".equals(loanOrderDO.getSecond_hand_car_evaluate_id()))
+        if (loanOrderDO.getSecond_hand_car_evaluate_id()!=null && !"".equals(loanOrderDO.getSecond_hand_car_evaluate_id())
+        && loanCarInfoDO!=null && loanCarInfoDO.getEvaluationType().equals(new Byte("1")))
         {
             SecondHandCarEvaluateDO secondHandCarEvaluateDO = secondHandCarEvaluateDOMapper.selectByPrimaryKey(loanOrderDO.getSecond_hand_car_evaluate_id());
             if (secondHandCarEvaluateDO!=null)
             {
                 loanCarInfoVO.setVin(secondHandCarEvaluateDO.getVin());
                 loanCarInfoVO.setSecond_hand_car_evaluate_id(loanOrderDO.getSecond_hand_car_evaluate_id());
+                loanCarInfoVO.setMileage(secondHandCarEvaluateDO.getMileage());
+                loanCarInfoVO.setCityName(secondHandCarEvaluateDO.getCity_id());
             }
 
         }

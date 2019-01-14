@@ -2,8 +2,6 @@ package com.yunche.loan.web.aspect;
 
 import com.alibaba.fastjson.JSONPathException;
 import com.fasterxml.jackson.core.JsonParseException;
-import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException;
-import com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException;
 import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.result.ResultBean;
 import feign.codec.DecodeException;
@@ -21,6 +19,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 import javax.validation.ConstraintViolationException;
+import java.sql.SQLException;
 
 /**
  * 统一异常处理
@@ -80,9 +79,7 @@ public class GlobalExceptionHandler {
             return ResultBean.ofError("类型转换异常");
         } else if (e instanceof BadSqlGrammarException) {
             return ResultBean.ofError("出错啦,请稍后再试!");
-        } else if (e instanceof MySQLSyntaxErrorException) {
-            return ResultBean.ofError("出错啦,请稍后再试!");
-        } else if (e instanceof MySQLIntegrityConstraintViolationException) {
+        } else if (e instanceof SQLException) {
             return ResultBean.ofError("出错啦,请稍后再试!");
         } else if (e instanceof RuntimeException) {
             return ResultBean.ofError("出错啦,请稍后再试!");

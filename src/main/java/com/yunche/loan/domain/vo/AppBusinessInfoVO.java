@@ -230,4 +230,7 @@ public class AppBusinessInfoVO {
     private String socialCreditInfo;
 
 
+    private  String  distributorName;
+
+
 }

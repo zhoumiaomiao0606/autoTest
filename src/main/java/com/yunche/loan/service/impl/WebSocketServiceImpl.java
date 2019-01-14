@@ -76,6 +76,7 @@ public class WebSocketServiceImpl implements WebSocketService {
         Preconditions.checkNotNull(webSocketParam.getAnyChatUserId(), "anyChatUserId不能为空");
         if (TYPE_APP.equals(webSocketParam.getType())) {
             Preconditions.checkNotNull(webSocketParam.getOrderId(), "orderId不能为空");
+//            Preconditions.checkNotNull(webSocketParam.getPartnerId(), "partnerId不能为空");
             Preconditions.checkNotNull(webSocketParam.getBankPeriodPrincipal(), "bankPeriodPrincipal不能为空");
         }
 
@@ -207,8 +208,18 @@ public class WebSocketServiceImpl implements WebSocketService {
             return true;
         }
 
+        // partnerId
+        Long partnerId = webSocketParam.getPartnerId();
+        if (null == partnerId) {
+            UniversalInfoVO universalInfoVO = loanQueryDOMapper.selectUniversalInfo(webSocketParam.getOrderId());
+            String partnerId_ = universalInfoVO.getPartner_id();
+            Preconditions.checkArgument(StringUtils.isNotBlank(partnerId_), "当前订单合伙人不存在");
+            partnerId = Long.valueOf(partnerId_);
+        }
+
+
         // 视频面签配置详情
-        ConfVideoFaceVO confVideoFaceVO = confVideoFaceService.detail(webSocketParam.getBankId(), webSocketParam.getPartnerId());
+        ConfVideoFaceVO confVideoFaceVO = confVideoFaceService.detail(webSocketParam.getBankId(), partnerId);
 
         Byte machineVideoFaceStatus = confVideoFaceVO.getMachineVideoFaceStatus();
         Byte artificialVideoFaceStatus = confVideoFaceVO.getArtificialVideoFaceStatus();

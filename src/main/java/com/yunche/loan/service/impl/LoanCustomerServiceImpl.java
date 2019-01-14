@@ -1,6 +1,8 @@
 package com.yunche.loan.service.impl;
 
 import com.aliyun.oss.OSSClient;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.yunche.loan.config.common.OSSConfig;
@@ -8,8 +10,10 @@ import com.yunche.loan.config.constant.BaseConst;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.ImageUtil;
 import com.yunche.loan.config.util.OSSUnit;
+import com.yunche.loan.config.util.SessionUtils;
 import com.yunche.loan.domain.entity.*;
 import com.yunche.loan.domain.param.AllCustDetailParam;
+import com.yunche.loan.domain.param.CreditApplyListQuery;
 import com.yunche.loan.domain.param.CustomerListQuery;
 import com.yunche.loan.domain.param.CustomerParam;
 import com.yunche.loan.domain.vo.*;
@@ -816,4 +820,5 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
     {
         return null;
     }
+
 }

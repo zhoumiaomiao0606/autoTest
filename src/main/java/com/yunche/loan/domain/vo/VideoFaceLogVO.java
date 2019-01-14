@@ -107,11 +107,16 @@ public class VideoFaceLogVO {
 
         Date gmtCreate = getGmtCreate();
 
-        LocalDateTime localDateTime = convertDateToLocalDateTime(gmtCreate);
+        if (null != gmtCreate) {
 
-        String gmtCreateStr = localDateTime.format(formatter_yyyyMMdd_HHmmss);
+            LocalDateTime localDateTime = convertDateToLocalDateTime(gmtCreate);
 
-        return gmtCreateStr;
+            String gmtCreateStr = localDateTime.format(formatter_yyyyMMdd_HHmmss);
+
+            return gmtCreateStr;
+        }
+
+        return null;
     }
 
 }
