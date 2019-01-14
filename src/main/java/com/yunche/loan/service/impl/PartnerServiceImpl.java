@@ -1311,10 +1311,65 @@ public class PartnerServiceImpl implements PartnerService {
         }
     }
 
-    public List<BankCodeDO> selectAllBankName(String bankName) {
-        List<BankCodeDO> bankCodeDOS = bankCodeDOMapper.selectByBankName(bankName);
+    public List<BankCodeDO> selectAllBankName(String bankName,Byte level) {
+        List<BankCodeDO> bankCodeDOS = bankCodeDOMapper.selectByBankName(bankName,level);
 
         return bankCodeDOS;
+    }
+
+    @Override
+    public List<BankCodeDO> selectBankNameByParentId(Integer bankId)
+    {
+        List<BankCodeDO> bankCodeDOS = bankCodeDOMapper.selectBankNameByParentId(bankId);
+        return bankCodeDOS;
+    }
+
+    @Override
+    public ResultBean insertBankName(BankCodeDO bankCodeDO)
+    {
+        BankCodeDO existBankCodeDO = bankCodeDOMapper.selectByBankNameIsExist(bankCodeDO.getName());
+        if (existBankCodeDO!=null)
+        {
+            throw new BizException("该银行已经存在");
+        }
+
+        int i = bankCodeDOMapper.insertSelective(bankCodeDO);
+
+        Preconditions.checkArgument(i > 0, "创建收款银行银行失败");
+
+        return ResultBean.ofSuccess("创建成功！！");
+    }
+
+    @Override
+    public ResultBean deleteByBankId(Integer bankId)
+    {
+        BankCodeDO bankCodeDO = bankCodeDOMapper.selectByPrimaryKey(bankId);
+        Preconditions.checkNotNull(bankCodeDO,"无此银行");
+        //如果是第一级--级别删除第二级
+        if (bankCodeDO.getLevel() == 1)
+        {
+            List<BankCodeDO> bankCodeDOS = bankCodeDOMapper.selectBankNameByParentId(bankCodeDO.getId());
+            if (!CollectionUtils.isEmpty(bankCodeDOS))
+            {
+                bankCodeDOS
+                        .stream()
+                        .forEach(
+                                e ->
+                                {
+                                    e.setStatus(INVALID_STATUS);
+                                    bankCodeDOMapper.updateByPrimaryKeySelective(e);
+                                }
+                        );
+            }
+
+            bankCodeDO.setStatus(INVALID_STATUS);
+            bankCodeDOMapper.updateByPrimaryKeySelective(bankCodeDO);
+        }else
+            {
+                bankCodeDO.setStatus(INVALID_STATUS);
+                bankCodeDOMapper.updateByPrimaryKeySelective(bankCodeDO);
+            }
+        return ResultBean.ofSuccess("删除成功！！！");
     }
 
 }

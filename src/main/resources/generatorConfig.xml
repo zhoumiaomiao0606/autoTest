@@ -382,15 +382,15 @@
 -->
 
 
-        <table tableName="conf_video_face_artificial" domainObjectName="ConfVideoFaceArtificialDO"
+        <table tableName="bank_code" domainObjectName="BankCodeDO"
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
         </table>
 
-        <table tableName="conf_video_face_machine" domainObjectName="ConfVideoFaceMachineDO"
+        <!--<table tableName="conf_video_face_machine" domainObjectName="ConfVideoFaceMachineDO"
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
-        </table>
+        </table>-->
 
         <!-- 忽略列，不生成bean 字段
         <ignoreColumn column="FRED" />-->

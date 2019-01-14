@@ -13,6 +13,7 @@ import com.yunche.loan.domain.vo.PartnerVO;
 import com.yunche.loan.service.PartnerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -55,9 +56,27 @@ public class PartnerController {
     }
 
     @GetMapping(value = "/selectAllBankName")
-    public ResultBean selectAllBankName(@RequestParam("bankName") String bankName)
+    public ResultBean selectAllBankName(@RequestParam("bankName") String bankName,@RequestParam("level") Byte level)
     {
-        return ResultBean.ofSuccess(partnerService.selectAllBankName(bankName));
+        return ResultBean.ofSuccess(partnerService.selectAllBankName(bankName,level));
+    }
+
+    @GetMapping(value = "/selectBankNameByParentId")
+    public ResultBean selectBankNameByParentId(@RequestParam("bankId") Integer bankId)
+    {
+        return ResultBean.ofSuccess(partnerService.selectBankNameByParentId(bankId));
+    }
+
+    @PostMapping(value = "/insertBankName")
+    public ResultBean insertBankName(@RequestBody @Validated BankCodeDO bankCodeDO)
+    {
+        return partnerService.insertBankName(bankCodeDO);
+    }
+
+    @PostMapping(value = "/deleteByBankId")
+    public ResultBean deleteByBankId(@RequestParam("bankId") Integer bankId)
+    {
+        return partnerService.deleteByBankId(bankId);
     }
 
     /**
