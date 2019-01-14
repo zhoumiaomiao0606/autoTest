@@ -2912,5 +2912,51 @@ SELECT
                  </where>
 				 order by orders.gmt_create desc
     </select>
+    <select id="openCardExport" parameterType="com.yunche.loan.domain.param.BankOpenCardExportParam" resultType="com.yunche.loan.domain.vo.BankOpenCardExportVO">
+        select loan.id  as id ,
+        par.partner_code  as partnerCode,
+        par.`name`  as parName,
+        cus.`name`  as cusName,
+        cus.id_card  as idCard,
+        base.bank,
+        plan.loan_amount as loanAmount,
+        plan.bank_period_principal as bankPeriodPrincipal,
+        plan.loan_time  as loanTime,
+        tal.request_time as requestTime,
+        case when tal.status =1 then '开卡成功'
+        when tal.status =2 then '处理中'
+        when tal.status =3 then '银行退回'
+        when tal.status =6 then '推送失败'
+        end as result
+        from loan_order loan
+        left join loan_process process on process.order_id = loan.id
+        left join loan_base_info base on base.id = loan.loan_base_info_id
+        left join partner par on par.id = base.partner_id
+        left join loan_customer cus on cus.id = loan.loan_customer_id
+        left join loan_financial_plan plan on plan.id = loan.loan_financial_plan_id
+        left join (SELECT DISTINCT
+            serial.`customer_id`  ,serial.`request_time` ,serial.`status`
+        FROM
+            bank_interface_serial serial
+            INNER JOIN ( SELECT SUBSTRING_INDEX( GROUP_CONCAT( serial_no ORDER BY request_time DESC SEPARATOR ',' ), ',', 1 ) AS serial_no FROM bank_interface_serial GROUP BY trans_code, customer_id ) orderdata ON orderdata.serial_no = serial.serial_no
+            AND serial.trans_code = 'creditcardapply' and serial.api_status =200 )tal on tal.customer_id = cus.id
+        where process.bank_open_card !=0 and process.`order_status`  = 1 and tal.request_time &gt;= #{startDate}
+        and tal.request_time &lt;= #{endDate}
+        <if test="partnerList != null and partnerList.size() > 0">
+            and
+            base.partner_id in
+            <foreach item="item" index="index" collection="partnerList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="bankList != null and bankList.size() > 0">
+            and
+            base.bank in
+            <foreach item="item" index="index" collection="bankList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+
+    </select>
 
 </mapper>
