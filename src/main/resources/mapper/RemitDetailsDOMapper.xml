@@ -269,7 +269,7 @@
         remit_business_id = #{remit_business_id,jdbcType=VARCHAR},
       </if>
     </set>
-    where id = #{id,jdbcType=BIGINT} and remit_status !=1
+    where id = #{id,jdbcType=BIGINT}
   </update>
   <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.RemitDetailsDO">
     update remit_details
