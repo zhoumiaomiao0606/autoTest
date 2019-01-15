@@ -15,4 +15,6 @@ public interface RemitDetailsDOMapper {
     int updateByPrimaryKeySelective(RemitDetailsDO record);
 
     int updateByPrimaryKey(RemitDetailsDO record);
+
+    int updateByPrimaryKeyAndVersion(RemitDetailsDO record);
 }

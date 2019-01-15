@@ -256,7 +256,7 @@ public class FinanceServiceImpl implements FinanceService
         LOG.info("支付参数："+paymentParam.toString());
 
         remitDetailsDO.setRemit_status(IDict.K_DKZT.PAYING);
-        int i = remitDetailsDOMapper.updateByPrimaryKeySelective(remitDetailsDO);
+        int i = remitDetailsDOMapper.updateByPrimaryKeyAndVersion(remitDetailsDO);
 
         if (i!=1)
         {
