@@ -256,6 +256,10 @@ public class FinanceServiceImpl implements FinanceService
         LOG.info("支付参数："+paymentParam.toString());
 
         remitDetailsDO.setRemit_status(IDict.K_DKZT.PAYING);
+
+        //插入打款行id，打款会计凭证需要
+        remitDetailsDO.setRemit_business_id("10029905");
+
         int i = remitDetailsDOMapper.updateByPrimaryKeyAndVersion(remitDetailsDO);
 
         if (i!=1)
@@ -281,12 +285,7 @@ public class FinanceServiceImpl implements FinanceService
         }
 
 
-        //插入打款行id，打款会计凭证需要
-        remitDetailsDO.setRemit_business_id("10029905");
-
         //更新打款单打款状态---待讨论
-
-
 
             return ResultBean.ofSuccess("打款中！");
 
