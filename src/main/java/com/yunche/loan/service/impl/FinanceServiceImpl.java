@@ -277,7 +277,7 @@ public class FinanceServiceImpl implements FinanceService
 
         if (!Result.getResultCode().trim().equals("200"))
         {
-            return ResultBean.ofError("打款失败:"+Result.getMessage());
+            throw  new BizException("打款失败:"+Result.getMessage());
         }
 
 
