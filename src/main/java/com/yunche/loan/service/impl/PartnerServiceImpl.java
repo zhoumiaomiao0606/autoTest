@@ -10,6 +10,7 @@ import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.MD5Utils;
 import com.yunche.loan.domain.entity.*;
+import com.yunche.loan.domain.param.BankCodeParam;
 import com.yunche.loan.domain.param.PartnerParam;
 import com.yunche.loan.domain.query.BizModelQuery;
 import com.yunche.loan.domain.query.EmployeeQuery;
@@ -1370,6 +1371,29 @@ public class PartnerServiceImpl implements PartnerService {
                 bankCodeDOMapper.updateByPrimaryKeySelective(bankCodeDO);
             }
         return ResultBean.ofSuccess("删除成功！！！");
+    }
+
+    @Override
+    public ResultBean bankNameList(BankCodeParam param)
+    {
+        PageHelper.startPage(param.getPageIndex(), param.getPageSize(), true);
+        List<BankCodeVO> list = bankCodeDOMapper.bankNameList(param);
+        PageInfo<SecondHandCarEvaluateList> pageInfo = new PageInfo(list);
+        if (!CollectionUtils.isEmpty(list))
+        {
+            list
+                    .stream()
+                    .forEach(
+                            e ->
+                            {
+                                List<BankCodeDO> bankCodeDOS = bankCodeDOMapper.selectBankNameByParentId(e.getId());
+                                e.setList(bankCodeDOS);
+                            }
+                    );
+
+        }
+
+        return ResultBean.ofSuccess(list, new Long(pageInfo.getTotal()).intValue(), pageInfo.getPageNum(), pageInfo.getPageSize());
     }
 
 }
