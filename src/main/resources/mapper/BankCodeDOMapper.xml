@@ -131,6 +131,6 @@
     code,
     name
     from bank_code
-    where name like concat('%',#{name},'%')  status = 0 and level = 1
+    where name like concat('%',#{name},'%') and  status = 0 and level = 1
   </select>
 </mapper>
