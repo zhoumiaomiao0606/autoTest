@@ -1328,6 +1328,7 @@ public class PartnerServiceImpl implements PartnerService {
     @Override
     public ResultBean insertBankName(BankCodeDO bankCodeDO)
     {
+        Preconditions.checkNotNull(bankCodeDO.getName(),"银行名称不能为空！！");
         BankCodeDO existBankCodeDO = bankCodeDOMapper.selectByBankNameIsExist(bankCodeDO.getName());
         if (existBankCodeDO!=null)
         {
