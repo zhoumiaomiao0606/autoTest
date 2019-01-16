@@ -1,0 +1,555 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yunche.loan.mapper.TotalQueryListDOMapper" >
+  <select id="selectTotalCusInfo" resultType="com.yunche.loan.domain.vo.TaskListVO" parameterType="com.yunche.loan.domain.query.TaskListQuery">
+
+  SELECT
+    loan.id                                 as id,
+    par.partner_code                        as partnerCode,
+    par.NAME                                as partner,
+    cus.`name`                              as customer,
+    cus.id_card                             as idCard,
+    cus.mobile                              as mobile,
+    base.bank                               as bank,
+    plan.loan_amount                        as loanAmount,
+    plan.bank_period_principal              as bankPeriodPrincipal,
+    remit.remit_amount                      as remitAmount,
+    node.usertask_remit_review_create_time  as remitTime
+    FROM
+    loan_order loan
+    LEFT JOIN loan_base_info base ON base.id = loan.loan_base_info_id
+    LEFT JOIN loan_customer cus ON cus.id = loan.loan_customer_id
+    LEFT JOIN partner par ON par.id = base.partner_id
+    LEFT JOIN loan_financial_plan plan ON plan.id = loan.loan_financial_plan_id
+    LEFT JOIN current_node_manager node ON node.order_id = loan.id
+    LEFT JOIN loan_process process ON process.order_id = loan.id
+    left join remit_details remit on remit.id = loan.remit_details_id
+    WHERE
+    process.financial_scheme = 1
+      AND CASE WHEN #{maxGroupLevel}  = 0 THEN false
+      when #{maxGroupLevel} = 1 then 1 = 1
+      <if test="juniorIds != null and juniorIds.size() > 0">
+          and base.salesman_id in
+          <foreach item="item" index="index" collection="juniorIds" open="(" separator="," close=")">
+              #{item}
+          </foreach>
+      </if>
+      <if test="bizAreaIdList != null and bizAreaIdList.size() > 0">
+          and par.id in
+          <foreach item="item" index="index" collection="bizAreaIdList" open="(" separator="," close=")">
+              #{item}
+          </foreach>
+      </if>
+      <if test="bankList != null and bankList.size() > 0">
+          and base.bank in
+          <foreach item="item" index="index" collection="bankList" open="(" separator="," close=")">
+              #{item}
+          </foreach>
+      </if>
+      else true end
+    <if test="orderId != null">
+      AND loan.id = #{orderId}
+    </if>
+    <if test="customer != null and customer != ''">
+      AND cus.name LIKE CONCAT('%', #{customer} ,'%')
+    </if>
+    <if test="idCard != null">
+      AND cus.id_card = #{idCard}
+    </if>
+    <if test="partnerId != null">
+      AND par.id = #{partnerId}
+    </if>
+    <if test="salesmanId != null">
+      AND base.salesman_id = #{salesmanId}
+    </if>
+    <if test="bizAreaId != null">
+      AND
+      case
+      when (select level from base_area where area_id = #{bizAreaId}) = 0 then 1=1
+      when (select level from base_area where area_id = #{bizAreaId}) = 1 then base.area_id in (select area_id from base_area where parent_area_id = #{bizAreaId})
+      when (select level from base_area where area_id = #{bizAreaId}) = 2 then base.area_id = #{bizAreaId}
+      else 1=2
+      end
+    </if>
+    <if test="loanAmountType != null">
+      <if test="loanAmountType == 1">
+        AND base.loan_amount &lt;= 100000
+      </if>
+      <if test="loanAmountType == 2">
+        AND base.loan_amount &gt; 100000 AND base.loan_amount &lt;= 300000
+      </if>
+      <if test="loanAmountType == 3">
+        AND base.loan_amount &gt; 300000
+      </if>
+    </if>
+    <if test="minRemitAmount != null">
+      AND remit.remit_amount &gt;=  #{minRemitAmount}
+    </if>
+    <if test="maxRemitAmount != null">
+      AND remit.remit_amount &lt;= #{maxRemitAmount}
+    </if>
+    <if test="startRemitGmtCreate != null">
+      AND TO_DAYS(node.usertask_remit_review_create_time) &gt;= TO_DAYS(#{startRemitGmtCreate})
+    </if>
+    <if test="endRemitGmtCreate != null">
+      AND TO_DAYS(node.usertask_remit_review_create_time) &lt;= TO_DAYS(#{endRemitGmtCreate})
+    </if>
+  </select>
+  <select id="selectBankCreditPend" resultType="com.yunche.loan.domain.vo.TaskListVO" parameterType="com.yunche.loan.domain.query.TaskListQuery">
+    SELECT
+		loan.id           as id,
+		cus.NAME          as customer,
+		cus.id_card       as idCard,
+		emp.name          as salesman,
+		par.`name`        as partner,
+		DATE_FORMAT(loan.gmt_create,'%Y-%m-%d %H:%i:%S')      AS orderGmtCreate,
+        jbds.cat                                              as creditDate,
+		task.sendee_name                                      as receiveManName,
+        useGetTaskTypeText(#{taskDefinitionKey},process.bank_credit_record,process.order_status) AS taskTypeText
+	FROM
+		loan_order loan
+		LEFT JOIN loan_process process ON process.order_id = loan.id
+		LEFT JOIN `task_distribution` task ON task.`task_id` = loan.id and task.task_key = 'usertask_bank_credit_record'
+		LEFT JOIN `loan_customer` cus ON cus.id = loan.`loan_customer_id`
+		LEFT JOIN loan_base_info base ON base.id = loan.loan_base_info_id
+		LEFT JOIN employee emp ON emp.id = base.salesman_id
+		LEFT JOIN partner par ON par.id = base.partner_id
+		left join current_node_manager node on node.order_id = loan.id
+      left join (SELECT principal_cust_id, MAX(credit_apply_time) cat
+      FROM
+      (SELECT  allhis.customer_id,allhis.credit_apply_time,loan_customer.principal_cust_id FROM
+      (select customer_id,max(credit_apply_time) AS credit_apply_time FROM loan_credit_info_bank_his GROUP BY customer_id) allhis
+      LEFT JOIN loan_customer ON allhis.customer_id = loan_customer.id) qnmd GROUP BY principal_cust_id) jbds
+      ON jbds.principal_cust_id= loan.loan_customer_id
+	    WHERE
+		process.credit_apply = 1
+		AND process.bank_credit_record = 2
+		AND process.order_status = 1
+		AND 0 =
+	    IF
+		( ( SELECT count( 0 ) FROM bank_interface_serial WHERE trans_code = 'applyCredit' AND order_id = loan.id ) > 0, 1, 0 )
+	    AND IF
+		(
+			( SELECT count( 1 ) FROM loan_customer WHERE principal_cust_id = loan.loan_customer_id AND cust_type IN ( 1, 2, 3 ) AND credit_exp_flag = 1 ) > 0,
+			true,false)
+      AND CASE WHEN #{maxGroupLevel}  = 0 THEN false
+      when #{maxGroupLevel} = 1 then 1 = 1
+      <if test="juniorIds != null and juniorIds.size() > 0">
+          and base.salesman_id in
+          <foreach item="item" index="index" collection="juniorIds" open="(" separator="," close=")">
+              #{item}
+          </foreach>
+      </if>
+      <if test="bizAreaIdList != null and bizAreaIdList.size() > 0">
+          and par.id in
+          <foreach item="item" index="index" collection="bizAreaIdList" open="(" separator="," close=")">
+              #{item}
+          </foreach>
+      </if>
+      <if test="bankList != null and bankList.size() > 0">
+          and base.bank in
+          <foreach item="item" index="index" collection="bankList" open="(" separator="," close=")">
+              #{item}
+          </foreach>
+      </if>
+      else true end
+        <if test="orderId != null">
+          AND loan.id = #{orderId}
+        </if>
+        <if test="customer != null and customer != ''">
+          AND cus.name LIKE CONCAT('%', #{customer} ,'%')
+        </if>
+        <if test="loanBank != null">
+          AND base.bank = #{loanBank}
+        </if>
+        <if test="idCard != null">
+          AND cus.id_card = #{idCard}
+        </if>
+        <if test="salesmanId != null">
+          AND base.salesman_id = #{salesmanId}
+        </if>
+        <if test="partnerId != null">
+          AND par.id = #{partnerId}
+        </if>
+        <if test="bizAreaId != null">
+          AND
+          case
+          when (select level from base_area where area_id = #{bizAreaId}) = 0 then 1=1
+          when (select level from base_area where area_id = #{bizAreaId}) = 1 then base.area_id in (select area_id from base_area where parent_area_id = #{bizAreaId})
+          when (select level from base_area where area_id = #{bizAreaId}) = 2 then base.area_id = #{bizAreaId}
+          else 1=2
+          end
+        </if>
+        <if test="startCreditGmtCreate != null">
+          AND TO_DAYS(node.usertask_credit_apply_create_time) &gt;= TO_DAYS(#{startCreditGmtCreate})
+        </if>
+        <if test="endCreditGmtCreate != null">
+          AND TO_DAYS(node.usertask_credit_apply_create_time) &lt;= TO_DAYS(#{endCreditGmtCreate})
+        </if>
+        <if test="relevanceCustomerName != null">
+          AND
+          loan.id in
+          (
+            (select id from loan_order where loan_customer_id
+            in (select principal_cust_id from loan_customer where name = #{relevanceCustomerName})
+            and loan_customer_id not in (select id from loan_customer where name = #{relevanceCustomerName})
+            )
+          )
+        </if>
+      order by jbds.cat ASC
+  </select>
+  <select id="selectBankCreditExport" resultType="com.yunche.loan.domain.vo.TaskListVO" parameterType="com.yunche.loan.domain.query.TaskListQuery">
+    SELECT
+		loan.id           as id,
+		cus.NAME          as customer,
+		cus.id_card       as idCard,
+		emp.name          as salesman,
+		par.`name`        as partner,
+		DATE_FORMAT(loan.gmt_create,'%Y-%m-%d %H:%i:%S')      AS orderGmtCreate,
+        jbds.cat                                              as creditDate,
+		task.sendee_name                                      as receiveManName,
+        useGetTaskTypeText(#{taskDefinitionKey},process.bank_credit_record,process.order_status) AS taskTypeText
+	FROM
+		loan_order loan
+		LEFT JOIN loan_process process ON process.order_id = loan.id
+		LEFT JOIN `task_distribution` task ON task.`task_id` = loan.id and task.task_key = 'usertask_bank_credit_record'
+		LEFT JOIN `loan_customer` cus ON cus.id = loan.`loan_customer_id`
+		LEFT JOIN loan_base_info base ON base.id = loan.loan_base_info_id
+		LEFT JOIN employee emp ON emp.id = base.salesman_id
+		LEFT JOIN partner par ON par.id = base.partner_id
+		left join current_node_manager node on node.order_id = loan.id
+      left join (SELECT principal_cust_id, MAX(credit_apply_time) cat
+      FROM
+      (SELECT  allhis.customer_id,allhis.credit_apply_time,loan_customer.principal_cust_id FROM
+      (select customer_id,max(credit_apply_time) AS credit_apply_time FROM loan_credit_info_bank_his GROUP BY customer_id) allhis
+      LEFT JOIN loan_customer ON allhis.customer_id = loan_customer.id) qnmd GROUP BY principal_cust_id) jbds
+      ON jbds.principal_cust_id= loan.loan_customer_id
+	WHERE
+		process.credit_apply = 1
+		AND process.bank_credit_record = 2
+		AND process.order_status = 1
+		AND 0 =
+	    IF
+		( ( SELECT count( 0 ) FROM bank_interface_serial WHERE trans_code = 'applyCredit' AND order_id = loan.id ) > 0, 1, 0 )
+	    AND
+	    IF
+		(
+			( SELECT count( 1 ) FROM loan_customer WHERE principal_cust_id = loan.loan_customer_id AND cust_type IN ( 1, 2, 3 ) AND credit_exp_flag = 1 ) > 0,
+			false,
+	    true
+	    )
+        AND CASE WHEN #{maxGroupLevel}  = 0 THEN false
+        when #{maxGroupLevel} = 1 then 1 = 1
+        <if test="juniorIds != null and juniorIds.size() > 0">
+        and base.salesman_id in
+        <foreach item="item" index="index" collection="juniorIds" open="(" separator="," close=")">
+          #{item}
+        </foreach>
+        </if>
+        <if test="bizAreaIdList != null and bizAreaIdList.size() > 0">
+          and par.id in
+          <foreach item="item" index="index" collection="bizAreaIdList" open="(" separator="," close=")">
+            #{item}
+          </foreach>
+        </if>
+        <if test="bankList != null and bankList.size() > 0">
+          and base.bank in
+          <foreach item="item" index="index" collection="bankList" open="(" separator="," close=")">
+            #{item}
+          </foreach>
+        </if>
+      else true end
+        <if test="orderId != null">
+          AND loan.id = #{orderId}
+        </if>
+        <if test="customer != null and customer != ''">
+          AND cus.name LIKE CONCAT('%', #{customer} ,'%')
+        </if>
+        <if test="loanBank != null">
+          AND base.bank = #{loanBank}
+        </if>
+        <if test="idCard != null">
+          AND cus.id_card = #{idCard}
+        </if>
+        <if test="salesmanId != null">
+          AND base.salesman_id = #{salesmanId}
+        </if>
+        <if test="partnerId != null">
+          AND par.id = #{partnerId}
+        </if>
+        <if test="bizAreaId != null">
+          AND
+          case
+          when (select level from base_area where area_id = #{bizAreaId}) = 0 then 1=1
+          when (select level from base_area where area_id = #{bizAreaId}) = 1 then base.area_id in (select area_id from base_area where parent_area_id = #{bizAreaId})
+          when (select level from base_area where area_id = #{bizAreaId}) = 2 then base.area_id = #{bizAreaId}
+          else 1=2
+          end
+        </if>
+        <if test="startCreditGmtCreate != null">
+          AND TO_DAYS(node.usertask_credit_apply_create_time) &gt;= TO_DAYS(#{startCreditGmtCreate})
+        </if>
+        <if test="endCreditGmtCreate != null">
+          AND TO_DAYS(node.usertask_credit_apply_create_time) &lt;= TO_DAYS(#{endCreditGmtCreate})
+        </if>
+        <if test="relevanceCustomerName != null">
+          AND
+          loan.id in
+          (
+          (select id from loan_order where loan_customer_id
+          in (select principal_cust_id from loan_customer where name = #{relevanceCustomerName})
+          and loan_customer_id not in (select id from loan_customer where name = #{relevanceCustomerName})
+          )
+          )
+        </if>
+      order by jbds.cat ASC
+  </select>
+  <select id="selectBankCreditSuccess" resultType="com.yunche.loan.domain.vo.TaskListVO" parameterType="com.yunche.loan.domain.query.TaskListQuery">
+       SELECT
+		loan.id           as id,
+		cus.NAME          as customer,
+		cus.id_card       as idCard,
+		emp.name          as salesman,
+		par.`name`        as partner,
+		DATE_FORMAT(loan.gmt_create,'%Y-%m-%d %H:%i:%S')      AS orderGmtCreate,
+        jbds.cat                                              as creditDate,
+		task.sendee_name                                      as receiveManName,
+        useGetTaskTypeText(#{taskDefinitionKey},process.bank_credit_record,process.order_status) AS taskTypeText
+	    FROM
+		loan_order loan
+		LEFT JOIN loan_process process ON process.order_id = loan.id
+		LEFT JOIN `task_distribution` task ON task.`task_id` = loan.id and task.task_key = 'usertask_bank_credit_record'
+		LEFT JOIN `loan_customer` cus ON cus.id = loan.`loan_customer_id`
+		LEFT JOIN loan_base_info base ON base.id = loan.loan_base_info_id
+		LEFT JOIN employee emp ON emp.id = base.salesman_id
+		LEFT JOIN partner par ON par.id = base.partner_id
+		left join current_node_manager node on node.order_id = loan.id
+      left join (SELECT principal_cust_id, MAX(credit_apply_time) cat
+      FROM
+      (SELECT  allhis.customer_id,allhis.credit_apply_time,loan_customer.principal_cust_id FROM
+      (select customer_id,max(credit_apply_time) AS credit_apply_time FROM loan_credit_info_bank_his GROUP BY customer_id) allhis
+      LEFT JOIN loan_customer ON allhis.customer_id = loan_customer.id) qnmd GROUP BY principal_cust_id) jbds
+      ON jbds.principal_cust_id= loan.loan_customer_id
+	    WHERE
+		process.credit_apply = 1
+		AND process.bank_credit_record = 2
+		AND process.order_status = 1
+        <if test="bankInterfaceSerialOrderidList != null and bankInterfaceSerialOrderidList.size() > 0">
+          AND loan.id in  <!--  出现一次就判定为除外 -->
+              <foreach item="item" index="index" collection="bankInterfaceSerialOrderidList" open="(" separator="," close=")">
+                  #{item}
+              </foreach>
+        </if>
+      AND CASE WHEN #{maxGroupLevel}  = 0 THEN false
+      when #{maxGroupLevel} = 1 then 1 = 1
+      <if test="juniorIds != null and juniorIds.size() > 0">
+          and base.salesman_id in
+          <foreach item="item" index="index" collection="juniorIds" open="(" separator="," close=")">
+              #{item}
+          </foreach>
+      </if>
+      <if test="bizAreaIdList != null and bizAreaIdList.size() > 0">
+          and par.id in
+          <foreach item="item" index="index" collection="bizAreaIdList" open="(" separator="," close=")">
+              #{item}
+          </foreach>
+      </if>
+      <if test="bankList != null and bankList.size() > 0">
+          and base.bank in
+          <foreach item="item" index="index" collection="bankList" open="(" separator="," close=")">
+              #{item}
+          </foreach>
+      </if>
+      else true end
+      <if test="orderId != null">
+          AND loan.id = #{orderId}
+      </if>
+      <if test="customer != null and customer != ''">
+          AND cus.name LIKE CONCAT('%', #{customer} ,'%')
+      </if>
+      <if test="loanBank != null">
+          AND base.bank = #{loanBank}
+      </if>
+      <if test="idCard != null">
+          AND cus.id_card = #{idCard}
+      </if>
+      <if test="salesmanId != null">
+          AND base.salesman_id = #{salesmanId}
+      </if>
+      <if test="partnerId != null">
+          AND par.id = #{partnerId}
+      </if>
+      <if test="bizAreaId != null">
+          AND
+          case
+          when (select level from base_area where area_id = #{bizAreaId}) = 0 then 1=1
+          when (select level from base_area where area_id = #{bizAreaId}) = 1 then base.area_id in (select area_id from base_area where parent_area_id = #{bizAreaId})
+          when (select level from base_area where area_id = #{bizAreaId}) = 2 then base.area_id = #{bizAreaId}
+          else 1=2
+          end
+      </if>
+      <if test="startCreditGmtCreate != null">
+          AND TO_DAYS(node.usertask_credit_apply_create_time) &gt;= TO_DAYS(#{startCreditGmtCreate})
+      </if>
+      <if test="endCreditGmtCreate != null">
+          AND TO_DAYS(node.usertask_credit_apply_create_time) &lt;= TO_DAYS(#{endCreditGmtCreate})
+      </if>
+      <if test="relevanceCustomerName != null">
+          AND
+          loan.id in
+          (
+          (select id from loan_order where loan_customer_id
+          in (select principal_cust_id from loan_customer where name = #{relevanceCustomerName})
+          and loan_customer_id not in (select id from loan_customer where name = #{relevanceCustomerName})
+          )
+          )
+      </if>
+      order by jbds.cat ASC
+  </select>
+    <select id="selectBankCreditAll" resultType="com.yunche.loan.domain.vo.TaskListVO" parameterType="com.yunche.loan.domain.query.TaskListQuery">
+        SELECT
+		loan.id           as id,
+		cus.NAME          as customer,
+		cus.id_card       as idCard,
+		emp.name          as salesman,
+		par.`name`        as partner,
+		DATE_FORMAT(loan.gmt_create,'%Y-%m-%d %H:%i:%S')      AS orderGmtCreate,
+		jbds.cat                                              as creditDate,
+		task.sendee_name                                      as receiveManName,
+        useGetTaskTypeText(#{taskDefinitionKey},process.bank_credit_record,process.order_status) AS taskTypeText
+	    FROM
+		loan_order loan
+		LEFT JOIN loan_process process ON process.order_id = loan.id
+		LEFT JOIN `task_distribution` task ON task.`task_id` = loan.id and task.task_key = 'usertask_bank_credit_record'
+		LEFT JOIN `loan_customer` cus ON cus.id = loan.`loan_customer_id`
+		LEFT JOIN loan_base_info base ON base.id = loan.loan_base_info_id
+		LEFT JOIN employee emp ON emp.id = base.salesman_id
+		LEFT JOIN partner par ON par.id = base.partner_id
+		left join current_node_manager node on node.order_id = loan.id
+        left join (SELECT principal_cust_id, MAX(credit_apply_time) cat
+        FROM
+        (SELECT  allhis.customer_id,allhis.credit_apply_time,loan_customer.principal_cust_id FROM
+        (select customer_id,max(credit_apply_time) AS credit_apply_time FROM loan_credit_info_bank_his GROUP BY customer_id) allhis
+        LEFT JOIN loan_customer ON allhis.customer_id = loan_customer.id) qnmd GROUP BY principal_cust_id) jbds
+        ON jbds.principal_cust_id= loan.loan_customer_id
+	    WHERE
+		process.credit_apply = 1
+		AND process.bank_credit_record != 0
+        AND CASE WHEN #{maxGroupLevel}  = 0 THEN false
+        when #{maxGroupLevel} = 1 then 1 = 1
+        <if test="juniorIds != null and juniorIds.size() > 0">
+            and base.salesman_id in
+            <foreach item="item" index="index" collection="juniorIds" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="bizAreaIdList != null and bizAreaIdList.size() > 0">
+            and par.id in
+            <foreach item="item" index="index" collection="bizAreaIdList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="bankList != null and bankList.size() > 0">
+            and base.bank in
+            <foreach item="item" index="index" collection="bankList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        else true end
+        <if test="orderId != null">
+            AND loan.id = #{orderId}
+        </if>
+        <if test="customer != null and customer != ''">
+            AND cus.name LIKE CONCAT('%', #{customer} ,'%')
+        </if>
+        <if test="loanBank != null">
+            AND base.bank = #{loanBank}
+        </if>
+        <if test="idCard != null">
+            AND cus.id_card = #{idCard}
+        </if>
+        <if test="salesmanId != null">
+            AND base.salesman_id = #{salesmanId}
+        </if>
+        <if test="partnerId != null">
+            AND par.id = #{partnerId}
+        </if>
+        <if test="bizAreaId != null">
+            AND
+            case
+            when (select level from base_area where area_id = #{bizAreaId}) = 0 then 1=1
+            when (select level from base_area where area_id = #{bizAreaId}) = 1 then base.area_id in (select area_id from base_area where parent_area_id = #{bizAreaId})
+            when (select level from base_area where area_id = #{bizAreaId}) = 2 then base.area_id = #{bizAreaId}
+            else 1=2
+            end
+        </if>
+        <if test="startCreditGmtCreate != null">
+            AND TO_DAYS(node.usertask_credit_apply_create_time) &gt;= TO_DAYS(#{startCreditGmtCreate})
+        </if>
+        <if test="endCreditGmtCreate != null">
+            AND TO_DAYS(node.usertask_credit_apply_create_time) &lt;= TO_DAYS(#{endCreditGmtCreate})
+        </if>
+        <if test="relevanceCustomerName != null">
+            AND
+            loan.id in
+            (
+            (select id from loan_order where loan_customer_id
+            in (select principal_cust_id from loan_customer where name = #{relevanceCustomerName})
+            and loan_customer_id not in (select id from loan_customer where name = #{relevanceCustomerName})
+            )
+            )
+        </if>
+        order by jbds.cat DESC ,process.bank_credit_record ASC
+    </select>
+    <select id="selectSuccessBankOrder" parameterType="java.lang.String" resultType="java.lang.Long">
+    select DISTINCT serial.order_id from bank_interface_serial serial
+                        inner join
+                        (
+                          select SUBSTRING_INDEX(GROUP_CONCAT(serial_no order by request_time desc separator
+                          ','),',',1)
+                          as serial_no
+                          from bank_interface_serial GROUP BY trans_code,customer_id
+                        ) orderdata on orderdata.serial_no = serial.serial_no and serial.trans_code = #{transCode}
+                        left join loan_process process on process.order_id = serial.order_id
+                        where serial.api_status = 200 and serial.status in (0,1) and process.bank_credit_record =2 and serial.order_id not in
+                        (
+                          select DISTINCT serial.order_id from bank_interface_serial serial
+                          inner join
+                          (
+                            select SUBSTRING_INDEX(GROUP_CONCAT(serial_no order by request_time desc separator
+                            ','),',',1)
+                            as serial_no
+                            from bank_interface_serial GROUP BY trans_code,customer_id
+                          ) orderdata on orderdata.serial_no = serial.serial_no and serial.trans_code = #{transCode}
+                          left join loan_process process on process.order_id = serial.order_id
+                        where serial.api_status != 200 or serial.status not in (0,1) and process.bank_credit_record =2
+                        )
+
+  </select>
+    <select id="selectProcessBankOrder" parameterType="java.lang.String" resultType="java.lang.Long">
+    select DISTINCT serial.order_id from bank_interface_serial serial
+    inner join
+    (
+    select SUBSTRING_INDEX(GROUP_CONCAT(serial_no order by request_time desc separator
+    ','),',',1)
+    as serial_no
+    from bank_interface_serial GROUP BY trans_code,customer_id
+    ) orderdata on orderdata.serial_no = serial.serial_no and serial.trans_code = #{transCode}
+    left join loan_process process on process.order_id = serial.order_id
+    where serial.api_status = 200 and serial.status = 2 and and process.bank_credit_record =2 serial.order_id not in
+    (
+    select DISTINCT serial.order_id from bank_interface_serial serial
+    inner join
+    (
+    select SUBSTRING_INDEX(GROUP_CONCAT(serial_no order by request_time desc separator
+    ','),',',1)
+    as serial_no
+    from bank_interface_serial GROUP BY trans_code,customer_id
+    ) orderdata on orderdata.serial_no = serial.serial_no and serial.trans_code = #{transCode}
+    left join loan_process process on process.order_id = serial.order_id
+    where serial.api_status != 200 or serial.status not in (0,1,2,3) and process.bank_credit_record =2
+    )
+
+  </select>
+
+</mapper>
