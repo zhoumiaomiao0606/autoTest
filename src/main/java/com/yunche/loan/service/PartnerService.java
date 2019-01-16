@@ -49,5 +49,11 @@ public interface PartnerService {
 
     ResultBean updatePartnerArea(PartnerParam partnerParam);
 
-    List<BankCodeDO> selectAllBankName(String bankName);
+    List<BankCodeDO> selectAllBankName(String bankName,Byte level);
+
+    List<BankCodeDO> selectBankNameByParentId(Integer bankId);
+
+    ResultBean insertBankName(BankCodeDO bankCodeDO);
+
+    ResultBean deleteByBankId(Integer bankId);
 }
