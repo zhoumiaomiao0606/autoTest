@@ -1,6 +1,7 @@
 package com.yunche.loan.mapper;
 
 import com.yunche.loan.domain.entity.BankCodeDO;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -17,5 +18,9 @@ public interface BankCodeDOMapper {
 
     int updateByPrimaryKey(BankCodeDO record);
 
-    List<BankCodeDO> selectByBankName(String bankName);
+    List<BankCodeDO> selectByBankName(@Param("bankName") String bankName,@Param("level") Byte level);
+
+    List<BankCodeDO> selectBankNameByParentId(Integer bankId);
+
+    BankCodeDO selectByBankNameIsExist(String name);
 }

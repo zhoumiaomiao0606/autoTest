@@ -1,33 +1,22 @@
 package com.yunche.loan.domain.entity;
 
+import lombok.Data;
+
+import javax.validation.constraints.NotBlank;
+
+@Data
 public class BankCodeDO {
     private Integer id;
 
     private String code;
 
+    @NotBlank
     private String name;
 
-    public Integer getId() {
-        return id;
-    }
+    private Byte level;
 
-    public void setId(Integer id) {
-        this.id = id;
-    }
+    private Integer parentId;
 
-    public String getCode() {
-        return code;
-    }
+    private Byte status;
 
-    public void setCode(String code) {
-        this.code = code == null ? null : code.trim();
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name == null ? null : name.trim();
-    }
 }
