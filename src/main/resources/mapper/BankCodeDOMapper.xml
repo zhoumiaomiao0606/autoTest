@@ -117,4 +117,20 @@
     from bank_code
     where parent_id =  #{bankId,jdbcType=INTEGER} and status = 0
   </select>
+
+    <select id="selectByBankNameIsExist" parameterType="String" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from bank_code
+        where name = #{name,jdbcType=VARCHAR} and status = 0
+    </select>
+
+  <select id="bankNameList" parameterType="com.yunche.loan.domain.param.BankCodeParam" resultType="com.yunche.loan.domain.vo.BankCodeVO">
+    select
+    id,
+    code,
+    name
+    from bank_code
+    where name like concat('%',#{name},'%') and  status = 0 and level = 1
+  </select>
 </mapper>

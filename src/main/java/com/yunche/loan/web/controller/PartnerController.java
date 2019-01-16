@@ -2,6 +2,7 @@ package com.yunche.loan.web.controller;
 
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.entity.BankCodeDO;
+import com.yunche.loan.domain.param.BankCodeParam;
 import com.yunche.loan.domain.query.BizModelQuery;
 import com.yunche.loan.domain.query.PartnerQuery;
 import com.yunche.loan.domain.query.RelaQuery;
@@ -73,7 +74,13 @@ public class PartnerController {
         return partnerService.insertBankName(bankCodeDO);
     }
 
-    @PostMapping(value = "/deleteByBankId")
+    @PostMapping(value = "/bankNameList")
+    public ResultBean bankNameList(@RequestBody @Validated BankCodeParam param)
+    {
+        return partnerService.bankNameList(param);
+    }
+
+    @GetMapping(value = "/deleteByBankId")
     public ResultBean deleteByBankId(@RequestParam("bankId") Integer bankId)
     {
         return partnerService.deleteByBankId(bankId);

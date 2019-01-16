@@ -10,7 +10,6 @@ public class BankCodeDO {
 
     private String code;
 
-    @NotBlank
     private String name;
 
     private Byte level;
