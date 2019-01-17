@@ -43,7 +43,7 @@ public class MaterialTask {
 
 
     @Scheduled(cron = "0 0/1 * * * ?")
-    @DistributedLock(60)
+    @DistributedLock(180)
     public void fileDownload() {
         List<MaterialDownHisDO> all = Lists.newArrayList();
         List<MaterialDownHisDO> materialDownHisSUCC = materialDownHisDOMapper.listByStatus(IDict.K_JYZT.PRE_TRANSACTION);
