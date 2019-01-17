@@ -31,6 +31,10 @@
       )
   </insert>
   <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.BankCodeDO">
+    <selectKey  resultType="Integer" keyProperty="id"
+                order="AFTER">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
     insert into bank_code
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="id != null">
@@ -104,11 +108,19 @@
     where id = #{id,jdbcType=INTEGER}
   </update>
 
-  <select id="selectByBankName"  resultMap="BaseResultMap">
+  <select id="selectByBankId"  resultMap="BaseResultMap">
     select
     <include refid="Base_Column_List" />
     from bank_code
-    where name like CONCAT('%', #{bankName,jdbcType=VARCHAR} ,'%') and status = 0
+    <where>
+      <if test="bankId !=null and bankId !=''">
+        and id = #{bankId,jdbcType=INTEGER}
+      </if>
+      <if test="level !=null and level !=''">
+        and level = #{level,jdbcType=TINYINT}
+      </if>
+      and status = 0
+    </where>
   </select>
 
   <select id="selectBankNameByParentId" parameterType="Integer" resultMap="BaseResultMap">
@@ -131,6 +143,17 @@
     code,
     name
     from bank_code
-    where name like concat('%',#{name},'%') and  status = 0 and level = 1
+    <where>
+      <if test="name !=null" >
+        name like concat('%',#{name},'%')
+      </if>
+      and  status = 0 and level = 1
+    </where>
+
   </select>
+
+  <delete id="deleteBankByParentId" parameterType="java.lang.Integer">
+    delete from bank_code
+    where parent_id =  #{bankId,jdbcType=INTEGER} and status = 0
+  </delete>
 </mapper>

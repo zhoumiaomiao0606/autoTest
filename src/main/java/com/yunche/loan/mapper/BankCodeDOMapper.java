@@ -20,11 +20,13 @@ public interface BankCodeDOMapper {
 
     int updateByPrimaryKey(BankCodeDO record);
 
-    List<BankCodeDO> selectByBankName(@Param("bankName") String bankName,@Param("level") Byte level);
+    List<BankCodeDO> selectByBankId(@Param("bankId") Integer bankId,@Param("level") Byte level);
 
     List<BankCodeDO> selectBankNameByParentId(Integer bankId);
 
     BankCodeDO selectByBankNameIsExist(String name);
 
     List<BankCodeVO> bankNameList(BankCodeParam param);
+
+    int deleteBankByParentId(Integer parentId);
 }

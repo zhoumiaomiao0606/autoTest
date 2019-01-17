@@ -11,6 +11,7 @@ import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.MD5Utils;
 import com.yunche.loan.domain.entity.*;
 import com.yunche.loan.domain.param.BankCodeParam;
+import com.yunche.loan.domain.param.InsOrUpBankListParam;
 import com.yunche.loan.domain.param.PartnerParam;
 import com.yunche.loan.domain.query.BizModelQuery;
 import com.yunche.loan.domain.query.EmployeeQuery;
@@ -1312,8 +1313,8 @@ public class PartnerServiceImpl implements PartnerService {
         }
     }
 
-    public List<BankCodeDO> selectAllBankName(String bankName,Byte level) {
-        List<BankCodeDO> bankCodeDOS = bankCodeDOMapper.selectByBankName(bankName,level);
+    public List<BankCodeDO> selectAllBankId(Integer bankId,Byte level) {
+        List<BankCodeDO> bankCodeDOS = bankCodeDOMapper.selectByBankId(bankId,level);
 
         return bankCodeDOS;
     }
@@ -1395,6 +1396,99 @@ public class PartnerServiceImpl implements PartnerService {
         }
 
         return ResultBean.ofSuccess(list, new Long(pageInfo.getTotal()).intValue(), pageInfo.getPageNum(), pageInfo.getPageSize());
+    }
+
+    @Override
+    public ResultBean insertOrUpdateBankList(InsOrUpBankListParam insOrUpBankListParam)
+    {
+        Preconditions.checkNotNull(insOrUpBankListParam.getName(), "银行名称不能为空");
+
+        if (insOrUpBankListParam.getParentId()!=null)
+        {
+            BankCodeDO existBankCodeDO = bankCodeDOMapper.selectByPrimaryKey(insOrUpBankListParam.getParentId());
+            Preconditions.checkNotNull(existBankCodeDO, "银行id错误");
+
+            //更新总行
+            existBankCodeDO.setName(insOrUpBankListParam.getName());
+            bankCodeDOMapper.updateByPrimaryKeySelective(existBankCodeDO);
+
+            //先清再加
+            bankCodeDOMapper.deleteBankByParentId(insOrUpBankListParam.getParentId());
+
+            if (!CollectionUtils.isEmpty(insOrUpBankListParam.getChildList()))
+            {
+                insOrUpBankListParam.getChildList()
+                        .stream()
+                        .forEach(
+                                e ->
+                                {
+                                    Preconditions.checkNotNull(e.getName(), "银行名称不能为空");
+                                    BankCodeDO bank = bankCodeDOMapper.selectByBankNameIsExist(e.getName());
+                                    if (bank!=null)
+                                    {
+                                        throw new BizException("该银行存在");
+                                    }
+                                    //绑定
+                                    e.setParentId(insOrUpBankListParam.getParentId());
+                                    e.setLevel(new Byte("2"));
+
+                                    //插入
+                                    int i = bankCodeDOMapper.insertSelective(e);
+                                    Preconditions.checkArgument(i > 0, "创建银行失败");
+                                }
+                        );
+
+
+            }
+
+
+        }else
+            {
+                BankCodeDO bankCodeDO = bankCodeDOMapper.selectByBankNameIsExist(insOrUpBankListParam.getName());
+                if (bankCodeDO!=null)
+                {
+                    throw new BizException("该银行存在");
+                }
+
+
+                BankCodeDO insertBank = new BankCodeDO();
+                insertBank.setName(insOrUpBankListParam.getName());
+                insertBank.setLevel(new Byte("1"));
+                insertBank.setCode(insOrUpBankListParam.getCode());
+
+
+                //插入总行
+                int j = bankCodeDOMapper.insertSelective(insertBank);
+                Preconditions.checkArgument(j > 0, "创建总行失败");
+
+                if (!CollectionUtils.isEmpty(insOrUpBankListParam.getChildList()))
+                {
+                    insOrUpBankListParam.getChildList()
+                            .stream()
+                            .forEach(
+                                    e ->
+                                    {
+                                        Preconditions.checkNotNull(e.getName(), "银行名称不能为空");
+                                        BankCodeDO bank = bankCodeDOMapper.selectByBankNameIsExist(e.getName());
+                                        if (bank!=null)
+                                        {
+                                            throw new BizException("有银行存在");
+                                        }
+                                        //绑定
+                                        e.setParentId(insertBank.getId());
+                                        e.setLevel(new Byte("2"));
+
+                                        //插入
+                                        int i = bankCodeDOMapper.insertSelective(e);
+                                        Preconditions.checkArgument(i > 0, "创建银行失败");
+                                    }
+                            );
+
+
+                }
+
+            }
+        return ResultBean.ofSuccess("创建银行成功！！！");
     }
 
 }
