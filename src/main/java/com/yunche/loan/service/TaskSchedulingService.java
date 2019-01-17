@@ -35,4 +35,7 @@ public interface TaskSchedulingService {
     ResultBean<Long> countScheduletasklist();
 
     ResultBean<List<TaskListVO>> queryRoleChangeHisTaskList(TaskListQuery taskListQuery);
+
+
+    ResultBean<List<TaskListVO>> creditApplyList(TaskListQuery taskListQuery);
 }
