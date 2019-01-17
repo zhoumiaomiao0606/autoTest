@@ -17,11 +17,13 @@ import com.yunche.loan.domain.entity.LoanCustomerDO;
 import com.yunche.loan.domain.entity.PartnerDO;
 import com.yunche.loan.domain.param.ApprovalParam;
 import com.yunche.loan.domain.query.LoanCreditExportQuery;
+import com.yunche.loan.domain.query.TaskListQuery;
 import com.yunche.loan.domain.vo.CreditPicExportVO;
 import com.yunche.loan.domain.vo.UniversalMaterialRecordVO;
 import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.LoanQueryService;
 import com.yunche.loan.service.MaterialService;
+import com.yunche.loan.service.TaskSchedulingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -230,5 +232,13 @@ public class UniversalController {
 
         return ResultBean.ofSuccess(ossConfig.getDownLoadDiskName()+File.separator+resultName);
 
+    }
+
+
+    @Autowired
+    private TaskSchedulingService taskSchedulingService;
+    @PostMapping("/creditApplyList")
+    public ResultBean creditApplyList(@RequestBody TaskListQuery query){
+        return taskSchedulingService.creditApplyList(query);
     }
 }

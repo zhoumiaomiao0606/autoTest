@@ -1,8 +1,10 @@
 package com.yunche.loan;
 
 import com.aliyun.oss.model.OSSObject;
+import com.google.common.collect.Lists;
 import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.util.OSSUnit;
+import com.yunche.loan.domain.vo.BankCodeVO;
 import net.bramp.ffmpeg.FFmpeg;
 import net.bramp.ffmpeg.FFmpegExecutor;
 import net.bramp.ffmpeg.FFmpegUtils;
@@ -21,6 +23,7 @@ import java.io.*;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -62,8 +65,19 @@ public class Vediotest
 
 
 
-        Byte aa = new Byte("1");
-        System.out.println(aa.equals(new Byte("1")));
+        List<BankCodeVO> list = Lists.newArrayList();
+        List<BankCodeVO> list2 = Lists.newArrayList();
+        BankCodeVO bankCodeVO = new BankCodeVO();
+        list.add(bankCodeVO);
+        bankCodeVO.setId(1);
+
+        list
+                .stream()
+                .forEach(e ->{
+                    e.setCode("3333");
+                    list2.add(e);
+                });
+        System.out.println(list2);
 
     }
 

@@ -119,4 +119,6 @@ public class RecombinationVO<T> {
     private ThirdPartyFundBusinessDO partyFundBusinessVO;
 
     private FinanceResult financeResult1;
+
+    private List<InsuranceRelevanceInfoVO> insuranceInfo = Lists.newArrayList();
 }

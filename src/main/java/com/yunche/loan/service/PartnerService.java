@@ -2,6 +2,7 @@ package com.yunche.loan.service;
 
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.entity.BankCodeDO;
+import com.yunche.loan.domain.param.BankCodeParam;
 import com.yunche.loan.domain.param.PartnerParam;
 import com.yunche.loan.domain.query.BizModelQuery;
 import com.yunche.loan.domain.query.PartnerQuery;
@@ -56,4 +57,6 @@ public interface PartnerService {
     ResultBean insertBankName(BankCodeDO bankCodeDO);
 
     ResultBean deleteByBankId(Integer bankId);
+
+    ResultBean bankNameList(BankCodeParam param);
 }
