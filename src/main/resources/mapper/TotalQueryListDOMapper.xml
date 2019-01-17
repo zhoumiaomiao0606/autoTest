@@ -536,7 +536,7 @@
     from bank_interface_serial GROUP BY trans_code,customer_id
     ) orderdata on orderdata.serial_no = serial.serial_no and serial.trans_code = #{transCode}
     left join loan_process process on process.order_id = serial.order_id
-    where serial.api_status = 200 and serial.status = 2 and and process.bank_credit_record =2 serial.order_id not in
+    where serial.api_status = 200 and serial.status = 2 and process.bank_credit_record =2 and serial.order_id not in
     (
     select DISTINCT serial.order_id from bank_interface_serial serial
     inner join
