@@ -16,4 +16,7 @@ public interface TotalQueryListDOMapper {
     List<Long> selectSuccessBankOrder(@Param("transCode")String transCode);
 
     List<Long> selectProcessBankOrder(@Param("transCode")String transCode);
+
+    //征信申请暂存/全部
+    List<TaskListVO> selectApplyCreditExcept(TaskListQuery taskListQuery);
 }
