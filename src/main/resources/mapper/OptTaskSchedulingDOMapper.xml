@@ -64,7 +64,6 @@
                 AND loan_customer.idCard = #{idCard}
             </if>
         </where>
-        WHERE loan_process.loan_apply = 1 AND loan_process.data_flow_contract_p2c_review !=1
 
     </select>
 
