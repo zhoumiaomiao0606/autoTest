@@ -77,6 +77,8 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
     @Autowired
     private PartnerRelaEmployeeDOMapper partnerRelaEmployeeDOMapper;
 
+    @Autowired
+    private TotalQueryListDOMapper totalQueryListDOMapper;
 
     @Override
     public ResultBean<List<ZhonganListVO>> selectZhonganList(ZhonganListQuery query) {
@@ -265,6 +267,35 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
     }
 
     @Override
+    public ResultBean<List<TaskListVO>> creditApplyList(TaskListQuery taskListQuery) {
+
+        Preconditions.checkNotNull(taskListQuery.getTaskStatus(), "taskStatus不能为空");
+        // 节点校验
+        if (!LoanProcessEnum.havingCode(taskListQuery.getTaskDefinitionKey())) {
+            throw new BizException("错误的任务节点key");
+        }
+        // 节点权限校验
+        permissionService.checkTaskPermission(taskListQuery.getTaskDefinitionKey());
+        EmployeeDO loginUser = SessionUtils.getLoginUser();
+        Set<String> juniorIds = employeeService.getSelfAndCascadeChildIdList(loginUser.getId());
+        Long maxGroupLevel = taskSchedulingDOMapper.selectMaxGroupLevel(loginUser.getId());
+        taskListQuery.setJuniorIds(juniorIds);
+        taskListQuery.setMaxGroupLevel(maxGroupLevel);
+        //获取用户可见的区域
+        taskListQuery.setBizAreaIdList(getUserHaveBizAreaPartnerId(loginUser.getId()));
+        //获取用户可见的银行
+        taskListQuery.setBankList(getUserHaveBank(loginUser.getId()));
+        if("back".equals(taskListQuery.getSerialStatus())){
+            List<Long> bankInterfaceSerialOrderidList = taskSchedulingDOMapper.selectBankInterfaceSerialOrderidList(taskListQuery);
+            taskListQuery.setBankInterfaceSerialOrderidList(bankInterfaceSerialOrderidList);
+        }
+        PageHelper.startPage(taskListQuery.getPageIndex(), taskListQuery.getPageSize(), true);
+        List<TaskListVO> list = totalQueryListDOMapper.selectApplyCreditExcept(taskListQuery);
+        PageInfo<TaskListVO> pageInfo = new PageInfo<>(list);
+        return ResultBean.ofSuccess(list, new Long(pageInfo.getTotal()).intValue(), pageInfo.getPageNum(), pageInfo.getPageSize());
+    }
+
+    @Override
     public ResultBean<List<TaskListVO>> queryCancelTaskList(TaskListQuery taskListQuery) {
 
         // 节点校验
@@ -277,6 +308,53 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
 
         PageHelper.startPage(taskListQuery.getPageIndex(), taskListQuery.getPageSize(), true);
         List<TaskListVO> list = taskSchedulingDOMapper.selectCancelTaskList(taskListQuery);
+        PageInfo<TaskListVO> pageInfo = new PageInfo<>(list);
+
+        return ResultBean.ofSuccess(list, new Long(pageInfo.getTotal()).intValue(), pageInfo.getPageNum(), pageInfo.getPageSize());
+    }
+
+    //新列表
+    public ResultBean<List<TaskListVO>> queryNewTaskList(TaskListQuery taskListQuery) throws BizException {
+
+        Preconditions.checkNotNull(taskListQuery.getTaskStatus(), "taskStatus不能为空");
+
+
+        // 节点校验
+        if (!LoanProcessEnum.havingCode(taskListQuery.getTaskDefinitionKey())) {
+            throw new BizException("错误的任务节点key");
+        }
+
+        // 节点权限校验
+        permissionService.checkTaskPermission(taskListQuery.getTaskDefinitionKey());
+        List<Long> bankInterfaceSerialOrderidList = new ArrayList<>();
+        if(LoanProcessEnum.BANK_CREDIT_RECORD.getCode().equals(taskListQuery.getTaskDefinitionKey())){
+            if("process".equals(taskListQuery.getSerialStatus())){
+                bankInterfaceSerialOrderidList = totalQueryListDOMapper.selectProcessBankOrder("applyCredit");
+            }else if("pending".equals(taskListQuery.getSerialStatus())){
+                bankInterfaceSerialOrderidList = totalQueryListDOMapper.selectSuccessBankOrder("applyCredit");
+            }
+
+            taskListQuery.setBankInterfaceSerialOrderidList(bankInterfaceSerialOrderidList);
+        }
+        EmployeeDO loginUser = SessionUtils.getLoginUser();
+        Set<String> juniorIds = employeeService.getSelfAndCascadeChildIdList(loginUser.getId());
+        Long maxGroupLevel = taskSchedulingDOMapper.selectMaxGroupLevel(loginUser.getId());
+        taskListQuery.setEmployeeId(loginUser.getId());
+        taskListQuery.setJuniorIds(juniorIds);
+        taskListQuery.setMaxGroupLevel(maxGroupLevel);
+        //获取用户可见的区域
+        taskListQuery.setBizAreaIdList(getUserHaveBizAreaPartnerId(loginUser.getId()));
+        //获取用户可见的银行
+        taskListQuery.setBankList(getUserHaveBank(loginUser.getId()));
+        List<TaskListVO> list = new ArrayList<>();
+        PageHelper.startPage(taskListQuery.getPageIndex(), taskListQuery.getPageSize(), true);
+        if(LoanProcessEnum.FINANCIAL_SCHEME.getCode().equals(taskListQuery.getTaskDefinitionKey())){
+            list = totalQueryListDOMapper.selectTotalCusInfo(taskListQuery);
+        }else if(LoanProcessEnum.BANK_CREDIT_RECORD.getCode().equals(taskListQuery.getTaskDefinitionKey())){
+            list = totalQueryListDOMapper.selectBankCreditPend(taskListQuery);
+
+        }
+
         PageInfo<TaskListVO> pageInfo = new PageInfo<>(list);
 
         return ResultBean.ofSuccess(list, new Long(pageInfo.getTotal()).intValue(), pageInfo.getPageNum(), pageInfo.getPageSize());
@@ -329,6 +407,50 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         PageInfo<TaskListVO> pageInfo = new PageInfo<>(list);
 
         return ResultBean.ofSuccess(list, new Long(pageInfo.getTotal()).intValue(), pageInfo.getPageNum(), pageInfo.getPageSize());
+    }
+
+    public ResultBean<Long> countNewQueryTaskList(TaskListQuery taskListQuery) {
+        Preconditions.checkNotNull(taskListQuery.getTaskStatus(), "taskStatus不能为空");
+
+        // 节点校验
+        if (!LoanProcessEnum.havingCode(taskListQuery.getTaskDefinitionKey())) {
+            throw new BizException("错误的任务节点key");
+        }
+
+        // 节点权限校验
+        permissionService.checkTaskPermission(taskListQuery.getTaskDefinitionKey());
+        List<Long> bankInterfaceSerialOrderidList = new ArrayList<>();
+        if(LoanProcessEnum.BANK_CREDIT_RECORD.getCode().equals(taskListQuery.getTaskDefinitionKey())){
+            if("process".equals(taskListQuery.getSerialStatus())){
+                bankInterfaceSerialOrderidList = totalQueryListDOMapper.selectProcessBankOrder("applyCredit");
+            }else if("pending".equals(taskListQuery.getSerialStatus())){
+                bankInterfaceSerialOrderidList = totalQueryListDOMapper.selectSuccessBankOrder("applyCredit");
+            }
+
+            taskListQuery.setBankInterfaceSerialOrderidList(bankInterfaceSerialOrderidList);
+        }
+        EmployeeDO loginUser = SessionUtils.getLoginUser();
+        Set<String> juniorIds = employeeService.getSelfAndCascadeChildIdList(loginUser.getId());
+        Long maxGroupLevel = taskSchedulingDOMapper.selectMaxGroupLevel(loginUser.getId());
+        taskListQuery.setJuniorIds(juniorIds);
+        taskListQuery.setMaxGroupLevel(maxGroupLevel);
+        //获取用户可见的区域
+        taskListQuery.setBizAreaIdList(getUserHaveBizAreaPartnerId(loginUser.getId()));
+        //获取用户可见的银行
+        taskListQuery.setBankList(getUserHaveBank(loginUser.getId()));
+        List<TaskListVO> list = new ArrayList<>();
+        if(LoanProcessEnum.FINANCIAL_SCHEME.getCode().equals(taskListQuery.getTaskDefinitionKey())){
+            list = totalQueryListDOMapper.selectTotalCusInfo(taskListQuery);
+        }else if(LoanProcessEnum.BANK_CREDIT_RECORD.getCode().equals(taskListQuery.getTaskDefinitionKey())){
+            list = totalQueryListDOMapper.selectBankCreditPend(taskListQuery);
+
+        }
+        long count =0;
+        if(list != null){
+            count = list.size();
+        }
+
+        return ResultBean.ofSuccess(count);
     }
 
     @Override
