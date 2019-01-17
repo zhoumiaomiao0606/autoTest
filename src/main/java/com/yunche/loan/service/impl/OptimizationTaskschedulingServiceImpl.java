@@ -6,8 +6,10 @@ import com.google.common.collect.Lists;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.SessionUtils;
 import com.yunche.loan.domain.param.CreditApplyListQuery;
+import com.yunche.loan.domain.param.QueryListParam;
 import com.yunche.loan.domain.vo.ContractOverDueVO;
 import com.yunche.loan.domain.vo.CreditApplyListVO;
+import com.yunche.loan.domain.vo.QueryListVO;
 import com.yunche.loan.mapper.EmployeeRelaUserGroupDOMapper;
 import com.yunche.loan.mapper.LoanQueryDOMapper;
 import com.yunche.loan.mapper.TaskSchedulingDOMapper;
@@ -68,7 +70,11 @@ public class OptimizationTaskschedulingServiceImpl  implements OptimizationTasks
         return ResultBean.ofSuccess(list, new Long(pageInfo.getTotal()).intValue(), pageInfo.getPageNum(), pageInfo.getPageSize());
     }
 
-
+    @Override
+    public ResultBean<List<QueryListVO>> queryList(QueryListParam queryListParam)
+    {
+        return null;
+    }
 
 
     /**
