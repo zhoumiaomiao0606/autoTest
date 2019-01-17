@@ -12,5 +12,5 @@ public interface OptimizationTaskschedulingService
 {
     ResultBean queryCreditApplyrList(CreditApplyListQuery customerListQuery);
 
-    ResultBean<List<QueryListVO>> queryList(QueryListParam queryListParam);
+    ResultBean queryList(QueryListParam queryListParam);
 }

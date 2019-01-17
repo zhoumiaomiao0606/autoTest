@@ -45,7 +45,7 @@ public class OptimizationTaskschedulingController
      */
     @Limiter(3)
     @PostMapping(value = "/queryList")
-    public ResultBean<List<QueryListVO>> queryList(@RequestBody @Validated QueryListParam queryListParam) {
+    public ResultBean queryList(@RequestBody @Validated QueryListParam queryListParam) {
         return optimizationTaskschedulingService.queryList(queryListParam);
     }
 }
