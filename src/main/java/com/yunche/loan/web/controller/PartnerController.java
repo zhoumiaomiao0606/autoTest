@@ -205,7 +205,8 @@ public class PartnerController {
      * @return
      */
     @GetMapping(value = "/listAccount")
-    public ResultBean<PartnerAccountVO> listAccount(@RequestParam("employeeId") Long employeeId) {
+    public ResultBean<PartnerAccountVO> listAccount(@RequestParam("employeeId") Long employeeId)
+    {
         return partnerService.listAccount(employeeId);
     }
 

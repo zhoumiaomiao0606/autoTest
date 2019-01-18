@@ -28,6 +28,10 @@ public class PartnerAccountVO {
 
         private String bankCode;
 
+        private String childBankName;
+
+        private String childBankCode;
+
         private String accountName;
 
         private String bankAccount;
