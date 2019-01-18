@@ -13,12 +13,6 @@ public interface TotalQueryListDOMapper {
 
     List<TaskListVO> selectBankCreditPend(TaskListQuery taskListQuery);
 
-    List<TaskListVO> selectBankCreditExport(TaskListQuery taskListQuery);
-
-    List<TaskListVO> selectBankCreditSuccess(TaskListQuery taskListQuery);
-
-    List<TaskListVO> selectBankCreditAll(TaskListQuery taskListQuery);
-
     List<Long> selectSuccessBankOrder(@Param("transCode")String transCode);
 
     List<Long> selectProcessBankOrder(@Param("transCode")String transCode);
