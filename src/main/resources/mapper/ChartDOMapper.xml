@@ -403,7 +403,7 @@
         <if test="(startDate !=null and  startDate != '')or (endDate !=null and endDate != '')"  >
             having
             <if test="startDate !=null and  startDate != ''" >
-                gmt_create &gt;= #{startDate}
+                submitTime &gt;= #{startDate}
             </if>
 
             <if test="startDate !=null and endDate !=null and endDate != '' and startDate != ''" >
@@ -411,7 +411,7 @@
             </if>
 
             <if test="endDate !=null and endDate != ''" >
-                gmt_create &lt;= #{endDate}
+                submitTime &lt;= #{endDate}
             </if>
 
         </if>
