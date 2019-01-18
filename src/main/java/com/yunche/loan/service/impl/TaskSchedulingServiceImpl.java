@@ -290,7 +290,12 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
             taskListQuery.setBankInterfaceSerialOrderidList(bankInterfaceSerialOrderidList);
         }
         PageHelper.startPage(taskListQuery.getPageIndex(), taskListQuery.getPageSize(), true);
-        List<TaskListVO> list = totalQueryListDOMapper.selectApplyCreditExcept(taskListQuery);
+        List<TaskListVO> list =null;
+        if("except".equals(taskListQuery.getSerialStatus())){
+            list = totalQueryListDOMapper.selectApplyCreditExcept(taskListQuery);
+        }else if("back".equals(taskListQuery.getSerialStatus())){
+            list = totalQueryListDOMapper.selectApplyCreditBack(taskListQuery);
+        }
         PageInfo<TaskListVO> pageInfo = new PageInfo<>(list);
         return ResultBean.ofSuccess(list, new Long(pageInfo.getTotal()).intValue(), pageInfo.getPageNum(), pageInfo.getPageSize());
     }

@@ -3,6 +3,7 @@ package com.yunche.loan.service;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.entity.BankCodeDO;
 import com.yunche.loan.domain.param.BankCodeParam;
+import com.yunche.loan.domain.param.InsOrUpBankListParam;
 import com.yunche.loan.domain.param.PartnerParam;
 import com.yunche.loan.domain.query.BizModelQuery;
 import com.yunche.loan.domain.query.PartnerQuery;
@@ -50,7 +51,7 @@ public interface PartnerService {
 
     ResultBean updatePartnerArea(PartnerParam partnerParam);
 
-    List<BankCodeDO> selectAllBankName(String bankName,Byte level);
+    List<BankCodeDO> selectAllBankId(Integer bankId,Byte level);
 
     List<BankCodeDO> selectBankNameByParentId(Integer bankId);
 
@@ -59,4 +60,6 @@ public interface PartnerService {
     ResultBean deleteByBankId(Integer bankId);
 
     ResultBean bankNameList(BankCodeParam param);
+
+    ResultBean insertOrUpdateBankList(InsOrUpBankListParam insOrUpBankListParam);
 }

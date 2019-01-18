@@ -19,4 +19,6 @@ public interface TotalQueryListDOMapper {
 
     //征信申请暂存/全部
     List<TaskListVO> selectApplyCreditExcept(TaskListQuery taskListQuery);
+    //征信申请退回
+    List<TaskListVO> selectApplyCreditBack(TaskListQuery taskListQuery);
 }

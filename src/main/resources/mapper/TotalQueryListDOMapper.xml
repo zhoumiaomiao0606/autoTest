@@ -397,13 +397,13 @@
 
     <select id="selectApplyCreditBack"  resultType="com.yunche.loan.domain.vo.TaskListVO" parameterType="com.yunche.loan.domain.query.TaskListQuery">
         SELECT
-            main.id,
+            loan.id,
             customer.`name` AS customer,
             customer.id_card AS idCard,
             customer.mobile AS mobile,
             employee.`name` AS salesman,
             partner.`name` AS partner,
-            main.gmt_create AS orderGmtCreate,
+            loan.gmt_create AS orderGmtCreate,
             deputy.order_status AS orderStatus
         FROM
         loan_order loan
@@ -474,7 +474,7 @@
                 #{item}
             </foreach>
         </if>
-        order by main.gmt_create
+        order by loan.gmt_create
     </select>
 
 
