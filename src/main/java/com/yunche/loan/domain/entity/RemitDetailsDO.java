@@ -13,6 +13,10 @@ public class RemitDetailsDO {
 
     private String beneficiary_bank;
 
+    private String child_bank;
+
+    private String child_bank_code;
+
     private String beneficiary_account;
 
     private String beneficiary_account_number;
