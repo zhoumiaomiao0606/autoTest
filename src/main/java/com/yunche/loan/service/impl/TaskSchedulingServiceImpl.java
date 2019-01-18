@@ -291,10 +291,16 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         }
         PageHelper.startPage(taskListQuery.getPageIndex(), taskListQuery.getPageSize(), true);
         List<TaskListVO> list =null;
-        if("except".equals(taskListQuery.getSerialStatus())){
+
+        if("except".equals(taskListQuery.getSerialStatus())//暂存
+                && "2".equals(taskListQuery.getTaskStatus())){
             list = totalQueryListDOMapper.selectApplyCreditExcept(taskListQuery);
-        }else if("back".equals(taskListQuery.getSerialStatus())){
+        }else if("back".equals(taskListQuery.getSerialStatus())//银行退回 || 推送失败
+                || "exception".equals(taskListQuery.getSerialStatus())){
             list = totalQueryListDOMapper.selectApplyCreditBack(taskListQuery);
+        }else  if("except".equals(taskListQuery.getSerialStatus())//已打回
+                && "3".equals(taskListQuery.getTaskStatus())){
+
         }
         PageInfo<TaskListVO> pageInfo = new PageInfo<>(list);
         return ResultBean.ofSuccess(list, new Long(pageInfo.getTotal()).intValue(), pageInfo.getPageNum(), pageInfo.getPageSize());
