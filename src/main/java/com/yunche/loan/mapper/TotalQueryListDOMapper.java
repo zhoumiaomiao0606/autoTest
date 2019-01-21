@@ -28,4 +28,7 @@ public interface TotalQueryListDOMapper {
 
     // 视频面签登记
     List<TaskListVO> selectLoanInfoRecordList(TaskListQuery taskListQuery);
+
+    //提车资料
+    List<TaskListVO>  selectVehicleInformationList(TaskListQuery taskListQuery);
 }
