@@ -9,9 +9,15 @@ import java.util.Date;
 public class RemitDetailsDO {
     private Long id;
 
+    private Integer version;
+
     private String bank_code;
 
     private String beneficiary_bank;
+
+    private String child_bank;
+
+    private String child_bank_code;
 
     private String beneficiary_account;
 

@@ -11,17 +11,21 @@ import com.yunche.loan.config.cache.ParamCache;
 import com.yunche.loan.config.common.OSSConfig;
 import com.yunche.loan.config.constant.IDict;
 import com.yunche.loan.config.exception.BizException;
+import com.yunche.loan.config.feign.client.MultimediauploadClient;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.*;
 import com.yunche.loan.domain.entity.LoanCustomerDO;
 import com.yunche.loan.domain.entity.PartnerDO;
 import com.yunche.loan.domain.param.ApprovalParam;
+import com.yunche.loan.domain.param.MultimediaUploadParam;
 import com.yunche.loan.domain.query.LoanCreditExportQuery;
+import com.yunche.loan.domain.query.TaskListQuery;
 import com.yunche.loan.domain.vo.CreditPicExportVO;
 import com.yunche.loan.domain.vo.UniversalMaterialRecordVO;
 import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.LoanQueryService;
 import com.yunche.loan.service.MaterialService;
+import com.yunche.loan.service.TaskSchedulingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -230,5 +234,35 @@ public class UniversalController {
 
         return ResultBean.ofSuccess(ossConfig.getDownLoadDiskName()+File.separator+resultName);
 
+    }
+
+    @Autowired
+    private BankInterfaceSerialDOMapper bankInterfaceSerialDOMapper;
+
+    @Autowired
+    private MultimediauploadClient multimediauploadClient;
+    @GetMapping("/videopush")
+    public ResultBean videoPush(){
+        List<String> videoPush = bankInterfaceSerialDOMapper.videoPush();
+        for(String orderId:videoPush){
+            MultimediaUploadParam param = new MultimediaUploadParam();
+            param.setOrderId(orderId);
+            LOG.info(param.getOrderId()+":视频推送开始");
+            multimediauploadClient.multimediaUpload(param);
+            try {
+                Thread.sleep(1000*10);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        return ResultBean.ofSuccess("推送完成");
+    }
+
+
+    @Autowired
+    private TaskSchedulingService taskSchedulingService;
+    @PostMapping("/creditApplyList")
+    public ResultBean creditApplyList(@RequestBody TaskListQuery query){
+        return taskSchedulingService.creditApplyList(query);
     }
 }

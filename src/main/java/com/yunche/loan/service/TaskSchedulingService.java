@@ -28,6 +28,10 @@ public interface TaskSchedulingService {
 
     ResultBean<List<TaskListVO>> queryTaskList(TaskListQuery taskListQuery);
 
+    ResultBean<List<TaskListVO>> queryNewTaskList(TaskListQuery taskListQuery);
+
+    ResultBean<Long> countNewQueryTaskList(TaskListQuery taskListQuery);
+
     ResultBean<Long> countQueryTaskList(TaskListQuery taskListQuery);
 
     ResultBean<List<AppTaskVO>> queryAppTaskList(AppTaskListQuery appTaskListQuery);
@@ -35,4 +39,7 @@ public interface TaskSchedulingService {
     ResultBean<Long> countScheduletasklist();
 
     ResultBean<List<TaskListVO>> queryRoleChangeHisTaskList(TaskListQuery taskListQuery);
+
+
+    ResultBean<List<TaskListVO>> creditApplyList(TaskListQuery taskListQuery);
 }

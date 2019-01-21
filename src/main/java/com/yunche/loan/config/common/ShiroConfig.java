@@ -115,6 +115,7 @@ public class ShiroConfig {
             filterChainDefinitionMap.put("/api/v1/bank/areaListByBankName**", "anon");
             filterChainDefinitionMap.put("/api/v1/insurance/query**", "anon");
             filterChainDefinitionMap.put("/api/v1/loanorder/finance/remitInfo", "anon");
+            filterChainDefinitionMap.put("/api/v1/loanorder/universal/videopush", "anon");
 
             // dev环境：放开swagger文档
             if ("dev".equals(active)) {

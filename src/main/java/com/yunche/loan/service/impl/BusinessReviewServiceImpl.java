@@ -256,7 +256,8 @@ public class BusinessReviewServiceImpl implements BusinessReviewService
                 //进行更新
                 RemitDetailsDO V = BeanPlasticityUtills.copy(RemitDetailsDO.class, param);
                 V.setId(remitDetailsId);
-                remitDetailsDOMapper.updateByPrimaryKeySelective(V);
+                int i = remitDetailsDOMapper.updateByPrimaryKeySelective(V);
+                Preconditions.checkArgument(i==1,"更新失败！！！");
 
             }
         }

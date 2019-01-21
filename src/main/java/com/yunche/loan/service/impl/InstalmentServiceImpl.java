@@ -25,6 +25,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static com.yunche.loan.config.constant.LoanFileEnum.CAR_INVOICE;
+import static com.yunche.loan.config.constant.LoanFileEnum.S9016;
+
 @Service
 @Transactional
 public class InstalmentServiceImpl implements InstalmentService {
@@ -56,15 +59,23 @@ public class InstalmentServiceImpl implements InstalmentService {
             throw new BizException("此订单不存在");
         }
 
+//        set.add(S9016.getType());
+//        set.add(CAR_INVOICE.getType());
+//        List list = loanQueryDOMapper.selectUniversalCustomerFileByTypes(orderId, set);
+
         Set<Byte> types = new HashSet<>();
         for (TermFileEnum e : TermFileEnum.values()) {
             types.add(e.getKey());
         }
 
+
         RecombinationVO<ApplyDiviGeneralInfoVO> recombinationVO = new RecombinationVO<>();
         recombinationVO.setInfo(loanQueryDOMapper.selectApplyDiviGeneralInfo(orderId));
         recombinationVO.setMaterials(loanQueryDOMapper.selectUniversalCustomerFileByTypes(orderId, types));
         recombinationVO.setVideoFace(loanQueryService.selectVideoFaceLog(orderId));
+
+        //
+
         return recombinationVO;
     }
 
