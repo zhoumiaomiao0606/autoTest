@@ -421,9 +421,9 @@
           left join loan_car_info car on car.id = loan.loan_car_info_id
           LEFT JOIN vehicle_information vehicle ON vehicle.id = loan.vehicle_information_id
           left join loan_process process on process.order_id = loan.id
-        where process.order_status = 1
+        where
         and case when #{taskStatus} = 0 then process.install_gps != 0
-        else process.install_gps = #{taskStatus} end
+        else process.install_gps = #{taskStatus} and process.order_status = 1 end
                       AND car.gps_num &gt; 0
         AND CASE WHEN #{maxGroupLevel}  = 0 THEN false
         when #{maxGroupLevel} = 1 then 1 = 1
@@ -529,9 +529,8 @@
         left join loan_base_info base on base.id = loan.loan_base_info_id
         left join partner par on par.id = base.partner_id
         left join loan_customer cus on cus.id = loan.loan_customer_id
-        where process.order_status = 1
-        and case when #{taskStatus} = 0 then process.visit_verify != 0
-        else process.visit_verify = #{taskStatus} end
+        where  case when #{taskStatus} = 0 then process.visit_verify != 0
+        else process.visit_verify = #{taskStatus} and process.order_status = 1 end
         AND CASE WHEN #{maxGroupLevel}  = 0 THEN false
         when #{maxGroupLevel} = 1 then 1 = 1
         <if test="juniorIds != null and juniorIds.size() > 0">
@@ -592,9 +591,8 @@
         left join loan_base_info base on base.id = loan.loan_base_info_id
         left join partner par on par.id = base.partner_id
         left join loan_customer cus on cus.id = loan.loan_customer_id
-        where process.order_status = 1
-        and case when #{taskStatus} = 0 then process.car_insurance != 0
-        else process.car_insurance = #{taskStatus} end
+        where case when #{taskStatus} = 0 then process.car_insurance != 0
+        else process.car_insurance = #{taskStatus} and process.order_status = 1 end
         AND CASE WHEN #{maxGroupLevel}  = 0 THEN false
         when #{maxGroupLevel} = 1 then 1 = 1
         <if test="juniorIds != null and juniorIds.size() > 0">
