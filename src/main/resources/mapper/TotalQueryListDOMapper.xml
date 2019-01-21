@@ -113,7 +113,7 @@
 		par.`name`        as partner,
 		DATE_FORMAT(loan.gmt_create,'%Y-%m-%d %H:%i:%S')      AS orderGmtCreate,
         jbds.cat                                              as creditDate,
-        task.task_id                                          as taskId,
+        loan.id                                               as taskId,
 		task.sendee_name                                      as receiveManName,
         useGetTaskTypeText(#{taskDefinitionKey},process.bank_credit_record,process.order_status) AS taskTypeText,
         base.bank                                             as bank
