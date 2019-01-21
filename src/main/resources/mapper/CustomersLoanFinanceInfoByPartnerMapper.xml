@@ -202,6 +202,8 @@ FROM
     <select id="getCustomerInfoByCustomerName" parameterType="com.yunche.loan.domain.param.CustomerInfoByCustomerNameParam" resultType="com.yunche.loan.domain.vo.CustomerInfoForFinanceSys" >
         SELECT
         o.id AS orderId,
+        pt.NAME AS partnerName,
+        pt.partner_code AS partnerCode,
         c.NAME AS customerName,
         c.id_card  AS customerIdCard,
         c.id AS customerId
@@ -210,6 +212,7 @@ FROM
         LEFT JOIN loan_customer c ON c.id = o.loan_customer_id
         LEFT JOIN loan_process p ON o.id = p.order_id
         LEFT JOIN loan_base_info b ON o.loan_base_info_id = b.id
+        LEFT JOIN partner pt ON pt.id = b.partner_id
         <where>
             <if test="customerName!=null">
                  c.name like concat(concat('%',#{customerName}),'%')

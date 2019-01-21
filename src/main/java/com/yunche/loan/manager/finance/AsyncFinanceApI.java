@@ -28,6 +28,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.Map;
 
+import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
 import static com.yunche.loan.config.constant.LoanOrderProcessConst.ORDER_STATUS_CANCEL;
 import static com.yunche.loan.config.constant.LoanProcessEnum.*;
 import static com.yunche.loan.config.constant.ProcessApprovalConst.ACTION_PASS;
@@ -127,8 +128,19 @@ public class AsyncFinanceApI {
         Preconditions.checkNotNull(loanBaseInfoDO.getPartnerId(), "合伙人id不能为空");
         postFinanceData.setPartnerId(loanBaseInfoDO.getPartnerId());
 
+        //设置合伙人和客户信息
+            PartnerDO partnerDO = partnerDOMapper.selectByPrimaryKey(loanBaseInfoDO.getPartnerId(), VALID_STATUS);
+            postFinanceData.setPartnerName(partnerDO.getName());
+            postFinanceData.setPartnerCode(partnerDO.getPartnerCode());
 
-        Long bankId = bankDOMapper.selectIdByName(loanBaseInfoDO.getBank());
+            LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(approvalParam.getOrderId());
+
+            LoanCustomerDO loanCustomerDO = loanCustomerDOMapper.selectByPrimaryKey(loanOrderDO.getLoanCustomerId(), VALID_STATUS);
+            postFinanceData.setCustomerName(loanCustomerDO.getName());
+            postFinanceData.setCustomerIdCard(loanCustomerDO.getIdCard());
+
+
+            Long bankId = bankDOMapper.selectIdByName(loanBaseInfoDO.getBank());
         postFinanceData.setBankId(bankId);
         //判断是-垫款提交-退款提交-偿款提交----查询相关数据
 

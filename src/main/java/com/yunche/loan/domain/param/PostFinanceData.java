@@ -11,6 +11,16 @@ public class PostFinanceData
 {
     private long partnerId;//合伙人ID
 
+    private String partnerCode;//合伙人编码
+
+    private String partnerName;//合伙人编码
+
+    private String customerName;//客户姓名
+
+    private String customerIdCard;
+
+
+
     private Long bankId;//银行编号
 
     private Byte type;//1代客户垫款 2收到银行款项 3客户退款 4公司代客户偿款
