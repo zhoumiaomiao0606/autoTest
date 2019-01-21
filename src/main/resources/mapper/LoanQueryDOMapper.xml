@@ -1089,6 +1089,10 @@
       select
             remit.beneficiary_bank                                                                  AS remit_beneficiary_bank,
             remit.bank_code                                                                  AS remit_bank_code,
+
+            remit.child_bank                                                                  AS remit_child_bank,
+            remit.child_bank_code                                                                  AS remit_child_bank_code,
+
             remit.beneficiary_account                                                               AS remit_beneficiary_account,
             remit.beneficiary_account_number                                                        AS remit_beneficiary_account_number,
 

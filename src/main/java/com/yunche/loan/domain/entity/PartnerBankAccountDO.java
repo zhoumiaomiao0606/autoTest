@@ -14,6 +14,14 @@ public class PartnerBankAccountDO {
 
     private String bankCode;
 
+    private Integer bankId;
+
+    private String childBankName;
+
+    private String childBankCode;
+
+    private Integer childBankId;
+
     private String accountName;
 
     private String bankAccount;

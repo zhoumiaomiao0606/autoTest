@@ -27,4 +27,6 @@ public interface BankInterfaceSerialDOMapper {
      * @return
      */
     List<BankInterfaceSerialDO> listOfBankCreditRecordPushFailed();
+
+    List<String> videoPush();
 }

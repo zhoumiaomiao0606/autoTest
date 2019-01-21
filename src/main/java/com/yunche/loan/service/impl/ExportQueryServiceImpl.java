@@ -236,7 +236,7 @@ public class ExportQueryServiceImpl implements ExportQueryService
         param.setJuniorIds(employeeService.getSelfAndCascadeChildIdList(loginUserId));
         param.setMaxGroupLevel(taskSchedulingDOMapper.selectMaxGroupLevel(loginUserId));
 
-        PageHelper.startPage(0, 10000, false);
+        PageHelper.startPage(0, 100000, false);
         List list = chartDOMapper.selectFinancialDepartmentRemitDetailChartVO(param);
         ArrayList<String> header = Lists.newArrayList("大区","业务区域","客户姓名", "身份证号",
                 "手机号", "贷款银行", "业务团队", "业务员", "车型", "车价", "执行利率", "首付款", "贷款金额", "银行分期本金", "打款金额",

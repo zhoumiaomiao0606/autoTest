@@ -109,5 +109,10 @@
         </set>
         where id = #{id,jdbcType=BIGINT}
     </update>
+    <select id="selectInsuranceByOrderId" parameterType="java.lang.Long" resultType="com.yunche.loan.domain.vo.InsuranceRelevanceInfoVO">
+        select relevance.*,info.insurance_year from insurance_relevance relevance
+        left join insurance_info info on info.id = relevance.insurance_info_id
+        where info.order_id = #{orderId}
+    </select>
 
 </mapper>

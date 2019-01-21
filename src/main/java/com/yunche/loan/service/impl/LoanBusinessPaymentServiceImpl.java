@@ -68,6 +68,10 @@ public class LoanBusinessPaymentServiceImpl implements LoanBusinessPaymentServic
             remitDetailsDO.setBank_code(loanBusinessPaymentParam.getRemit_bank_code());//收款账户code
             remitDetailsDO.setBeneficiary_account_number(loanBusinessPaymentParam.getRemit_beneficiary_account_number());//收款账号
             remitDetailsDO.setBeneficiary_bank(loanBusinessPaymentParam.getRemit_beneficiary_bank());//收款银行
+
+            remitDetailsDO.setChild_bank(loanBusinessPaymentParam.getRemit_child_bank());//支行
+            remitDetailsDO.setChild_bank_code(loanBusinessPaymentParam.getRemit_child_bank_code());//支行code
+
 //            remitDetailsDO.setPayment_organization(loanBusinessPaymentParam.get());//付款组织
             remitDetailsDO.setApplication_date(loanBusinessPaymentParam.getRemit_application_date());//申请日期
             remitDetailsDO.setRemark(loanBusinessPaymentParam.getRemark());
@@ -85,6 +89,10 @@ public class LoanBusinessPaymentServiceImpl implements LoanBusinessPaymentServic
                 remitDetailsDO.setBank_code(loanBusinessPaymentParam.getRemit_bank_code());//收款账户code
                 remitDetailsDO.setBeneficiary_account_number(loanBusinessPaymentParam.getRemit_beneficiary_account_number());//收款账号
                 remitDetailsDO.setBeneficiary_bank(loanBusinessPaymentParam.getRemit_beneficiary_bank());//收款银行
+
+                remitDetailsDO.setChild_bank(loanBusinessPaymentParam.getRemit_child_bank());//支行
+                remitDetailsDO.setChild_bank_code(loanBusinessPaymentParam.getRemit_child_bank_code());//支行code
+
 //            remitDetailsDO.setPayment_organization(loanBusinessPaymentParam.get());//付款组织
                 remitDetailsDO.setApplication_date(loanBusinessPaymentParam.getRemit_application_date());//申请日期
                 remitDetailsDO.setId(remitDetailsId);
@@ -100,6 +108,9 @@ public class LoanBusinessPaymentServiceImpl implements LoanBusinessPaymentServic
                 remitDetailsDO.setBank_code(loanBusinessPaymentParam.getRemit_bank_code());//收款账户code
                 remitDetailsDO.setBeneficiary_account_number(loanBusinessPaymentParam.getRemit_beneficiary_account_number());//收款账号
                 remitDetailsDO.setBeneficiary_bank(loanBusinessPaymentParam.getRemit_beneficiary_bank());//收款银行
+
+                remitDetailsDO.setChild_bank(loanBusinessPaymentParam.getRemit_child_bank());//支行
+                remitDetailsDO.setChild_bank_code(loanBusinessPaymentParam.getRemit_child_bank_code());//支行code
 //            remitDetailsDO.setPayment_organization(loanBusinessPaymentParam.get());//付款组织
                 remitDetailsDO.setApplication_date(loanBusinessPaymentParam.getRemit_application_date());//申请日期
                 remitDetailsDO.setId(remitDetailsId);

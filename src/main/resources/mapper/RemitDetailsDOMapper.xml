@@ -3,8 +3,11 @@
 <mapper namespace="com.yunche.loan.mapper.RemitDetailsDOMapper">
   <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.RemitDetailsDO">
     <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="version" jdbcType="INTEGER" property="version" />
     <result column="bank_code" jdbcType="VARCHAR" property="bank_code" />
     <result column="beneficiary_bank" jdbcType="VARCHAR" property="beneficiary_bank" />
+    <result column="child_bank" jdbcType="VARCHAR" property="child_bank" />
+    <result column="child_bank_code" jdbcType="VARCHAR" property="child_bank_code" />
     <result column="beneficiary_account" jdbcType="VARCHAR" property="beneficiary_account" />
     <result column="beneficiary_account_number" jdbcType="VARCHAR" property="beneficiary_account_number" />
     <result column="remit_amount" jdbcType="DECIMAL" property="remit_amount" />
@@ -21,15 +24,17 @@
     <result column="remit_bank" jdbcType="VARCHAR" property="remit_bank" />
     <result column="remit_account" jdbcType="VARCHAR" property="remit_account" />
     <result column="remit_account_number" jdbcType="VARCHAR" property="remit_account_number" />
+    <result column="enter_account_flag" jdbcType="TINYINT" property="enter_account_flag" />
     <result column="remit_business_id" jdbcType="VARCHAR" property="remit_business_id" />
     <result column="remit_status" jdbcType="TINYINT" property="remit_status" />
     <result column="car_dealer_rebate" jdbcType="DECIMAL" property="car_dealer_rebate" />
   </resultMap>
   <sql id="Base_Column_List">
-    id, bank_code,beneficiary_bank, beneficiary_account, beneficiary_account_number, remit_amount,
-    return_rate_amount, insurance_situation, remark, payment_organization, application_date, 
-    remit_time, gmt_create, gmt_modify, status, feature, remit_bank, remit_account, remit_account_number,remit_business_id,
-    remit_status,car_dealer_rebate
+    id, version, bank_code, beneficiary_bank, child_bank, child_bank_code, beneficiary_account, 
+    beneficiary_account_number, remit_amount, return_rate_amount, insurance_situation, 
+    remark, payment_organization, application_date, remit_time, gmt_create, gmt_modify, 
+    status, feature, remit_bank, remit_account, remit_account_number, enter_account_flag, 
+    remit_business_id, remit_status, car_dealer_rebate
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
     select 
@@ -41,34 +46,48 @@
     delete from remit_details
     where id = #{id,jdbcType=BIGINT}
   </delete>
-  <insert id="insert" parameterType="com.yunche.loan.domain.entity.RemitDetailsDO"  useGeneratedKeys="true" keyColumn="id" keyProperty="id">
-    insert into remit_details (id, bank_code,beneficiary_bank, beneficiary_account,
-      beneficiary_account_number, remit_amount, 
-      return_rate_amount, insurance_situation, 
+  <insert id="insert" parameterType="com.yunche.loan.domain.entity.RemitDetailsDO" useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+    insert into remit_details (id, version, bank_code, 
+      beneficiary_bank, child_bank, child_bank_code, 
+      beneficiary_account, beneficiary_account_number, 
+      remit_amount, return_rate_amount, insurance_situation, 
       remark, payment_organization, application_date, 
       remit_time, gmt_create, gmt_modify, 
       status, feature, remit_bank, 
-      remit_account, remit_account_number,remit_business_id,remit_status,car_dealer_rebate)
-    values (#{id,jdbcType=BIGINT},#{bank_code,jdbcType=VARCHAR}, #{beneficiary_bank,jdbcType=VARCHAR}, #{beneficiary_account,jdbcType=VARCHAR},
-      #{beneficiary_account_number,jdbcType=VARCHAR}, #{remit_amount,jdbcType=DECIMAL},
-      #{return_rate_amount,jdbcType=DECIMAL}, #{insurance_situation,jdbcType=VARCHAR}, 
+      remit_account, remit_account_number, enter_account_flag, 
+      remit_business_id, remit_status, car_dealer_rebate
+      )
+    values (#{id,jdbcType=BIGINT}, #{version,jdbcType=INTEGER}, #{bank_code,jdbcType=VARCHAR}, 
+      #{beneficiary_bank,jdbcType=VARCHAR}, #{child_bank,jdbcType=VARCHAR}, #{child_bank_code,jdbcType=VARCHAR}, 
+      #{beneficiary_account,jdbcType=VARCHAR}, #{beneficiary_account_number,jdbcType=VARCHAR}, 
+      #{remit_amount,jdbcType=DECIMAL}, #{return_rate_amount,jdbcType=DECIMAL}, #{insurance_situation,jdbcType=VARCHAR}, 
       #{remark,jdbcType=VARCHAR}, #{payment_organization,jdbcType=VARCHAR}, #{application_date,jdbcType=TIMESTAMP}, 
       #{remit_time,jdbcType=TIMESTAMP}, #{gmt_create,jdbcType=TIMESTAMP}, #{gmt_modify,jdbcType=TIMESTAMP}, 
       #{status,jdbcType=TINYINT}, #{feature,jdbcType=VARCHAR}, #{remit_bank,jdbcType=VARCHAR}, 
-      #{remit_account,jdbcType=VARCHAR}, #{remit_account_number,jdbcType=VARCHAR}, #{remit_business_id,jdbcType=VARCHAR},
-      #{remit_status,jdbcType=TINYINT}, #{car_dealer_rebate,jdbcType=DECIMAL})
+      #{remit_account,jdbcType=VARCHAR}, #{remit_account_number,jdbcType=VARCHAR}, #{enter_account_flag,jdbcType=TINYINT}, 
+      #{remit_business_id,jdbcType=VARCHAR}, #{remit_status,jdbcType=TINYINT}, #{car_dealer_rebate,jdbcType=DECIMAL}
+      )
   </insert>
-  <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.RemitDetailsDO"  useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+  <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.RemitDetailsDO" useGeneratedKeys="true" keyColumn="id" keyProperty="id">
     insert into remit_details
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="id != null">
         id,
+      </if>
+      <if test="version != null">
+        version,
       </if>
       <if test="bank_code != null">
         bank_code,
       </if>
       <if test="beneficiary_bank != null">
         beneficiary_bank,
+      </if>
+      <if test="child_bank != null">
+        child_bank,
+      </if>
+      <if test="child_bank_code != null">
+        child_bank_code,
       </if>
       <if test="beneficiary_account != null">
         beneficiary_account,
@@ -118,6 +137,9 @@
       <if test="remit_account_number != null">
         remit_account_number,
       </if>
+      <if test="enter_account_flag != null">
+        enter_account_flag,
+      </if>
       <if test="remit_business_id != null">
         remit_business_id,
       </if>
@@ -127,17 +149,25 @@
       <if test="car_dealer_rebate != null">
         car_dealer_rebate,
       </if>
-
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="id != null">
         #{id,jdbcType=BIGINT},
+      </if>
+      <if test="version != null">
+        #{version,jdbcType=INTEGER},
       </if>
       <if test="bank_code != null">
         #{bank_code,jdbcType=VARCHAR},
       </if>
       <if test="beneficiary_bank != null">
         #{beneficiary_bank,jdbcType=VARCHAR},
+      </if>
+      <if test="child_bank != null">
+        #{child_bank,jdbcType=VARCHAR},
+      </if>
+      <if test="child_bank_code != null">
+        #{child_bank_code,jdbcType=VARCHAR},
       </if>
       <if test="beneficiary_account != null">
         #{beneficiary_account,jdbcType=VARCHAR},
@@ -187,6 +217,9 @@
       <if test="remit_account_number != null">
         #{remit_account_number,jdbcType=VARCHAR},
       </if>
+      <if test="enter_account_flag != null">
+        #{enter_account_flag,jdbcType=TINYINT},
+      </if>
       <if test="remit_business_id != null">
         #{remit_business_id,jdbcType=VARCHAR},
       </if>
@@ -196,18 +229,25 @@
       <if test="car_dealer_rebate != null">
         #{car_dealer_rebate,jdbcType=DECIMAL},
       </if>
-
-
     </trim>
   </insert>
   <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.RemitDetailsDO">
     update remit_details
     <set>
+      <if test="version != null">
+        version = #{version,jdbcType=INTEGER},
+      </if>
       <if test="bank_code != null">
         bank_code = #{bank_code,jdbcType=VARCHAR},
       </if>
       <if test="beneficiary_bank != null">
         beneficiary_bank = #{beneficiary_bank,jdbcType=VARCHAR},
+      </if>
+      <if test="child_bank != null">
+        child_bank = #{child_bank,jdbcType=VARCHAR},
+      </if>
+      <if test="child_bank_code != null">
+        child_bank_code = #{child_bank_code,jdbcType=VARCHAR},
       </if>
       <if test="beneficiary_account != null">
         beneficiary_account = #{beneficiary_account,jdbcType=VARCHAR},
@@ -257,24 +297,28 @@
       <if test="remit_account_number != null">
         remit_account_number = #{remit_account_number,jdbcType=VARCHAR},
       </if>
+      <if test="enter_account_flag != null">
+        enter_account_flag = #{enter_account_flag,jdbcType=TINYINT},
+      </if>
+      <if test="remit_business_id != null">
+        remit_business_id = #{remit_business_id,jdbcType=VARCHAR},
+      </if>
       <if test="remit_status != null">
         remit_status = #{remit_status,jdbcType=TINYINT},
       </if>
       <if test="car_dealer_rebate != null">
         car_dealer_rebate = #{car_dealer_rebate,jdbcType=DECIMAL},
       </if>
-
-
-      <if test="remit_business_id != null">
-        remit_business_id = #{remit_business_id,jdbcType=VARCHAR},
-      </if>
     </set>
-    where id = #{id,jdbcType=BIGINT} and remit_status !=1
+    where id = #{id,jdbcType=BIGINT}
   </update>
   <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.RemitDetailsDO">
     update remit_details
-    set bank_code = #{bank_code,jdbcType=VARCHAR},
-    beneficiary_bank = #{beneficiary_bank,jdbcType=VARCHAR},
+    set version = #{version,jdbcType=INTEGER},
+      bank_code = #{bank_code,jdbcType=VARCHAR},
+      beneficiary_bank = #{beneficiary_bank,jdbcType=VARCHAR},
+      child_bank = #{child_bank,jdbcType=VARCHAR},
+      child_bank_code = #{child_bank_code,jdbcType=VARCHAR},
       beneficiary_account = #{beneficiary_account,jdbcType=VARCHAR},
       beneficiary_account_number = #{beneficiary_account_number,jdbcType=VARCHAR},
       remit_amount = #{remit_amount,jdbcType=DECIMAL},
@@ -291,9 +335,10 @@
       remit_bank = #{remit_bank,jdbcType=VARCHAR},
       remit_account = #{remit_account,jdbcType=VARCHAR},
       remit_account_number = #{remit_account_number,jdbcType=VARCHAR},
+      enter_account_flag = #{enter_account_flag,jdbcType=TINYINT},
       remit_business_id = #{remit_business_id,jdbcType=VARCHAR},
       remit_status = #{remit_status,jdbcType=TINYINT},
-      car_dealer_rebate = #{car_dealer_rebate,jdbcType=TINYINT}
+      car_dealer_rebate = #{car_dealer_rebate,jdbcType=DECIMAL}
     where id = #{id,jdbcType=BIGINT}
   </update>
 </mapper>

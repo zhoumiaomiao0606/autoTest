@@ -19,6 +19,10 @@ public class LoanBusinessPaymentParam {
 
     private String remit_bank_code;
 
+    private String remit_child_bank;
+
+    private String remit_child_bank_code;
+
     private String remit_beneficiary_account;
 
     private String remit_beneficiary_account_number;

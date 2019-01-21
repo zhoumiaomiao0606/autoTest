@@ -2,27 +2,35 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.yunche.loan.mapper.PartnerBankAccountDOMapper">
     <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.PartnerBankAccountDO">
-        <id column="id" property="id" jdbcType="BIGINT"/>
-        <result column="partner_id" property="partnerId" jdbcType="BIGINT"/>
-        <result column="open_bank" property="openBank" jdbcType="VARCHAR"/>
-        <result column="bank_code" property="bankCode" jdbcType="VARCHAR"/>
-        <result column="account_name" property="accountName" jdbcType="VARCHAR"/>
-        <result column="bank_account" property="bankAccount" jdbcType="VARCHAR"/>
-        <result column="gmt_create" property="gmtCreate" jdbcType="TIMESTAMP"/>
-        <result column="gmt_modify" property="gmtModify" jdbcType="TIMESTAMP"/>
+        <id column="id" jdbcType="BIGINT" property="id" />
+        <result column="partner_id" jdbcType="BIGINT" property="partnerId" />
+        <result column="open_bank" jdbcType="VARCHAR" property="openBank" />
+        <result column="bank_code" jdbcType="VARCHAR" property="bankCode" />
+        <result column="bank_id" jdbcType="INTEGER" property="bankId" />
+        <result column="child_bank_name" jdbcType="VARCHAR" property="childBankName" />
+        <result column="child_bank_code" jdbcType="VARCHAR" property="childBankCode" />
+        <result column="child_bank_id" jdbcType="INTEGER" property="childBankId" />
+        <result column="account_name" jdbcType="VARCHAR" property="accountName" />
+        <result column="bank_account" jdbcType="VARCHAR" property="bankAccount" />
+        <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate" />
+        <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify" />
     </resultMap>
     <sql id="Base_Column_List">
-        id, partner_id, open_bank,bank_code, account_name, bank_account, gmt_create, gmt_modify
-    </sql>
+    id, partner_id, open_bank, bank_code, bank_id, child_bank_name, child_bank_code,
+    child_bank_id, account_name, bank_account, gmt_create, gmt_modify
+  </sql>
 
     <!-- batchInsert -->
     <insert id="batchInsert" parameterType="java.util.List">
-        insert into partner_bank_account (partner_id, open_bank,bank_code,
+        insert into partner_bank_account (partner_id, open_bank,bank_code,bank_id, child_bank_name, child_bank_code,
+        child_bank_id,
         account_name, bank_account, gmt_create,
         gmt_modify)
         values
         <foreach collection="list" item="item" index="index" separator=",">
             (#{item.partnerId,jdbcType=BIGINT}, #{item.openBank,jdbcType=VARCHAR},#{item.bankCode,jdbcType=VARCHAR},
+            #{item.bankId,jdbcType=INTEGER}, #{item.childBankName,jdbcType=VARCHAR},
+            #{item.childBankCode,jdbcType=VARCHAR}, #{item.childBankId,jdbcType=INTEGER},
             #{item.accountName,jdbcType=VARCHAR}, #{item.bankAccount,jdbcType=VARCHAR},
             #{item.gmtCreate,jdbcType=TIMESTAMP},#{item.gmtModify,jdbcType=TIMESTAMP})
         </foreach>
@@ -42,31 +50,32 @@
         where partner_id = #{partnerId,jdbcType=BIGINT}
     </delete>
 
-    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
+    <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
         select
-        <include refid="Base_Column_List"/>
+        <include refid="Base_Column_List" />
         from partner_bank_account
         where id = #{id,jdbcType=BIGINT}
     </select>
-
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
-        delete from partner_bank_account
-        where id = #{id,jdbcType=BIGINT}
-    </delete>
-
+    delete from partner_bank_account
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
     <insert id="insert" parameterType="com.yunche.loan.domain.entity.PartnerBankAccountDO">
         <selectKey resultType="java.lang.Long" keyProperty="id"
                    order="AFTER">
             SELECT LAST_INSERT_ID()
         </selectKey>
-        insert into partner_bank_account (id, partner_id, open_bank,bank_code,
-        account_name, bank_account, gmt_create,
-        gmt_modify)
-        values (#{id,jdbcType=BIGINT}, #{partnerId,jdbcType=BIGINT}, #{openBank,jdbcType=VARCHAR},#{bankCode,jdbcType=VARCHAR},
-        #{accountName,jdbcType=VARCHAR}, #{bankAccount,jdbcType=VARCHAR}, #{gmtCreate,jdbcType=TIMESTAMP},
-        #{gmtModify,jdbcType=TIMESTAMP})
+        insert into partner_bank_account (id, partner_id, open_bank,
+        bank_code, bank_id, child_bank_name,
+        child_bank_code, child_bank_id, account_name,
+        bank_account, gmt_create, gmt_modify
+        )
+        values (#{id,jdbcType=BIGINT}, #{partnerId,jdbcType=BIGINT}, #{openBank,jdbcType=VARCHAR},
+        #{bankCode,jdbcType=VARCHAR}, #{bankId,jdbcType=INTEGER}, #{childBankName,jdbcType=VARCHAR},
+        #{childBankCode,jdbcType=VARCHAR}, #{childBankId,jdbcType=INTEGER}, #{accountName,jdbcType=VARCHAR},
+        #{bankAccount,jdbcType=VARCHAR}, #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModify,jdbcType=TIMESTAMP}
+        )
     </insert>
-
     <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.PartnerBankAccountDO">
         <selectKey resultType="java.lang.Long" keyProperty="id"
                    order="AFTER">
@@ -85,6 +94,18 @@
             </if>
             <if test="bankCode != null">
                 bank_code,
+            </if>
+            <if test="bankId != null">
+                bank_id,
+            </if>
+            <if test="childBankName != null">
+                child_bank_name,
+            </if>
+            <if test="childBankCode != null">
+                child_bank_code,
+            </if>
+            <if test="childBankId != null">
+                child_bank_id,
             </if>
             <if test="accountName != null">
                 account_name,
@@ -112,6 +133,18 @@
             <if test="bankCode != null">
                 #{bankCode,jdbcType=VARCHAR},
             </if>
+            <if test="bankId != null">
+                #{bankId,jdbcType=INTEGER},
+            </if>
+            <if test="childBankName != null">
+                #{childBankName,jdbcType=VARCHAR},
+            </if>
+            <if test="childBankCode != null">
+                #{childBankCode,jdbcType=VARCHAR},
+            </if>
+            <if test="childBankId != null">
+                #{childBankId,jdbcType=INTEGER},
+            </if>
             <if test="accountName != null">
                 #{accountName,jdbcType=VARCHAR},
             </if>
@@ -126,7 +159,6 @@
             </if>
         </trim>
     </insert>
-
     <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.PartnerBankAccountDO">
         update partner_bank_account
         <set>
@@ -138,6 +170,18 @@
             </if>
             <if test="bankCode != null">
                 bank_code = #{bankCode,jdbcType=VARCHAR},
+            </if>
+            <if test="bankId != null">
+                bank_id = #{bankId,jdbcType=INTEGER},
+            </if>
+            <if test="childBankName != null">
+                child_bank_name = #{childBankName,jdbcType=VARCHAR},
+            </if>
+            <if test="childBankCode != null">
+                child_bank_code = #{childBankCode,jdbcType=VARCHAR},
+            </if>
+            <if test="childBankId != null">
+                child_bank_id = #{childBankId,jdbcType=INTEGER},
             </if>
             <if test="accountName != null">
                 account_name = #{accountName,jdbcType=VARCHAR},
@@ -154,12 +198,15 @@
         </set>
         where id = #{id,jdbcType=BIGINT}
     </update>
-
     <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.PartnerBankAccountDO">
     update partner_bank_account
     set partner_id = #{partnerId,jdbcType=BIGINT},
       open_bank = #{openBank,jdbcType=VARCHAR},
       bank_code = #{bankCode,jdbcType=VARCHAR},
+      bank_id = #{bankId,jdbcType=INTEGER},
+      child_bank_name = #{childBankName,jdbcType=VARCHAR},
+      child_bank_code = #{childBankCode,jdbcType=VARCHAR},
+      child_bank_id = #{childBankId,jdbcType=INTEGER},
       account_name = #{accountName,jdbcType=VARCHAR},
       bank_account = #{bankAccount,jdbcType=VARCHAR},
       gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},

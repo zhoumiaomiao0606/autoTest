@@ -2,6 +2,8 @@ package com.yunche.loan.web.controller;
 
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.entity.BankCodeDO;
+import com.yunche.loan.domain.param.BankCodeParam;
+import com.yunche.loan.domain.param.InsOrUpBankListParam;
 import com.yunche.loan.domain.query.BizModelQuery;
 import com.yunche.loan.domain.query.PartnerQuery;
 import com.yunche.loan.domain.query.RelaQuery;
@@ -55,10 +57,16 @@ public class PartnerController {
         return partnerService.delete(id);
     }
 
-    @GetMapping(value = "/selectAllBankName")
-    public ResultBean selectAllBankName(@RequestParam("bankName") String bankName,@RequestParam("level") Byte level)
+    @GetMapping(value = "/selectAllBankId")
+    public ResultBean selectAllBankId(@RequestParam(name = "bankId",required = false) Integer bankId,@RequestParam(name = "level",required = false) Byte level)
     {
-        return ResultBean.ofSuccess(partnerService.selectAllBankName(bankName,level));
+        return ResultBean.ofSuccess(partnerService.selectAllBankId(bankId,level));
+    }
+
+    @GetMapping(value = "/selectAllBankName")
+    public ResultBean selectAllBankName()
+    {
+        return ResultBean.ofSuccess(partnerService.selectAllBankId(null,null));
     }
 
     @GetMapping(value = "/selectBankNameByParentId")
@@ -67,13 +75,31 @@ public class PartnerController {
         return ResultBean.ofSuccess(partnerService.selectBankNameByParentId(bankId));
     }
 
+    @GetMapping(value = "/selectBankListByParentName")
+    public ResultBean selectBankListByParentName(@RequestParam("bankName") String bankName)
+    {
+        return ResultBean.ofSuccess(partnerService.selectBankListByParentName(bankName));
+    }
+
     @PostMapping(value = "/insertBankName")
     public ResultBean insertBankName(@RequestBody @Validated BankCodeDO bankCodeDO)
     {
         return partnerService.insertBankName(bankCodeDO);
     }
 
-    @PostMapping(value = "/deleteByBankId")
+    @PostMapping(value = "/insertOrUpdateBankList")
+    public ResultBean insertOrUpdateBankList(@RequestBody @Validated InsOrUpBankListParam insOrUpBankListParam)
+    {
+        return partnerService.insertOrUpdateBankList(insOrUpBankListParam);
+    }
+
+    @PostMapping(value = "/bankNameList")
+    public ResultBean bankNameList(@RequestBody @Validated BankCodeParam param)
+    {
+        return partnerService.bankNameList(param);
+    }
+
+    @GetMapping(value = "/deleteByBankId")
     public ResultBean deleteByBankId(@RequestParam("bankId") Integer bankId)
     {
         return partnerService.deleteByBankId(bankId);
@@ -185,7 +211,8 @@ public class PartnerController {
      * @return
      */
     @GetMapping(value = "/listAccount")
-    public ResultBean<PartnerAccountVO> listAccount(@RequestParam("employeeId") Long employeeId) {
+    public ResultBean<PartnerAccountVO> listAccount(@RequestParam("employeeId") Long employeeId)
+    {
         return partnerService.listAccount(employeeId);
     }
 

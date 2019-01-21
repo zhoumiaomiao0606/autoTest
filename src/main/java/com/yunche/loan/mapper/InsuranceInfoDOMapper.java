@@ -1,6 +1,7 @@
 package com.yunche.loan.mapper;
 
 import com.yunche.loan.domain.entity.InsuranceInfoDO;
+import com.yunche.loan.domain.vo.InsuranceRelevanceInfoVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -19,4 +20,7 @@ public interface InsuranceInfoDOMapper {
     List<InsuranceInfoDO> listByOrderId(@Param("orderId") Long orderId);
 
     int updateByPrimaryKeySelective(InsuranceInfoDO record);
+
+
+    List<InsuranceRelevanceInfoVO> selectInsuranceByOrderId(@Param("orderId") Long orderId);
 }
