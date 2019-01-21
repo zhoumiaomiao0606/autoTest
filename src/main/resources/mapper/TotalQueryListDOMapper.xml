@@ -319,7 +319,7 @@
     where serial.api_status != 200 or serial.status not in (0,1,2,3) and process.bank_credit_record =2
     )
     </select>
-    <select id="selectApplyCreditExcept"  resultType="com.yunche.loan.domain.vo.TaskListVO" parameterType="com.yunche.loan.domain.query.TaskListQuery">
+    <select id="selectApplyCredit"  resultType="com.yunche.loan.domain.vo.TaskListVO" parameterType="com.yunche.loan.domain.query.TaskListQuery">
         SELECT
                 main.id,
                 customer.`name` AS customer,
@@ -338,12 +338,7 @@
         LEFT JOIN loan_customer customer ON customer.id = main.loan_customer_id
         WHERE
         deputy.order_status = 1
-        AND CASE
-        WHEN #{taskStatus} = 0 THEN
-             deputy.credit_apply != 0
-        ELSE
-            deputy.credit_apply = #{taskStatus}
-        END
+        AND  deputy.credit_apply = #{taskStatus}
         AND CASE WHEN #{maxGroupLevel}  = 0 THEN false
         when #{maxGroupLevel} = 1 then 1 = 1
         <if test="juniorIds != null and juniorIds.size() > 0">
@@ -352,6 +347,10 @@
                 #{item}
             </foreach>
         </if>
+        else true end
+
+        and case when #{maxGroupLevel} = 3 then 1=1
+        else 1=1
         <if test="bizAreaIdList != null and bizAreaIdList.size() > 0">
             and par.id in
             <foreach item="item" index="index" collection="bizAreaIdList" open="(" separator="," close=")">
@@ -364,7 +363,7 @@
                 #{item}
             </foreach>
         </if>
-        else true end
+        end
         <if test="orderId != null">
             AND loan.id = #{orderId}
         </if>
@@ -395,31 +394,30 @@
         order by main.gmt_create
     </select>
 
-    <select id="selectApplyCreditBack"  resultType="com.yunche.loan.domain.vo.TaskListVO" parameterType="com.yunche.loan.domain.query.TaskListQuery">
-        SELECT
-            main.id,
-            customer.`name` AS customer,
-            customer.id_card AS idCard,
-            customer.mobile AS mobile,
-            employee.`name` AS salesman,
-            partner.`name` AS partner,
-            main.gmt_create AS orderGmtCreate,
-            deputy.order_status AS orderStatus
-        FROM
-        loan_order loan
-        LEFT JOIN loan_process deputy ON loan.id = deputy.order_id
-        LEFT JOIN loan_base_info base ON base.id = loan.loan_base_info_id
-        LEFT JOIN partner partner ON partner.id = base.partner_id
-        LEFT JOIN employee employee ON employee.id = base.salesman_id
-        LEFT JOIN loan_customer customer ON customer.id = loan.loan_customer_id
-        WHERE
-        deputy.order_status = 1
-        AND CASE
-        WHEN #{taskStatus} = 0 THEN
-        deputy.credit_apply != 0
-        ELSE
-        deputy.credit_apply = #{taskStatus}
-        END
+    <select id="selectCarGps" resultType="com.yunche.loan.domain.vo.TaskListVO" parameterType="com.yunche.loan.domain.query.TaskListQuery">
+         SELECT
+          loan.id                                 as id,
+          cus.`name`                              as customer,
+          cus.id_card                             as idCard,
+          emp.`name`							  							as salesman,
+          par.NAME                                as partner,
+          base.bank                               as bank,
+          car.car_type														as carType,
+          useGetSmallCarName ( car.car_detail_id ) AS carName,
+          car.gps_num 														 AS carGpsNum,
+          vehicle.license_plate_number 						 AS licensePlateNumber
+
+          FROM
+          loan_order loan
+          LEFT JOIN loan_base_info base ON base.id = loan.loan_base_info_id
+          LEFT JOIN loan_customer cus ON cus.id = loan.loan_customer_id
+          LEFT JOIN partner par ON par.id = base.partner_id
+          left join employee emp on emp.id = base.salesman_id
+          left join loan_car_info car on car.id = loan.loan_car_info_id
+          LEFT JOIN vehicle_information vehicle ON vehicle.id = loan.vehicle_information_id
+        AND case when #{taskStatus} = 0 then process.install_gps != 0
+        else process.install_gps = #{taskStatus} end
+                      AND car.gps_num &gt; 0
         AND CASE WHEN #{maxGroupLevel}  = 0 THEN false
         when #{maxGroupLevel} = 1 then 1 = 1
         <if test="juniorIds != null and juniorIds.size() > 0">
@@ -428,8 +426,12 @@
                 #{item}
             </foreach>
         </if>
+        else true end
+
+        and case when #{maxGroupLevel} = 3 then 1=1
+        else 1=1
         <if test="bizAreaIdList != null and bizAreaIdList.size() > 0">
-            and partner.id in
+            and par.id in
             <foreach item="item" index="index" collection="bizAreaIdList" open="(" separator="," close=")">
                 #{item}
             </foreach>
@@ -440,24 +442,21 @@
                 #{item}
             </foreach>
         </if>
-        else true end
+        end
         <if test="orderId != null">
             AND loan.id = #{orderId}
         </if>
         <if test="customer != null and customer != ''">
-            AND customer.name LIKE CONCAT('%', #{customer} ,'%')
-        </if>
-        <if test="loanBank != null">
-            AND base.bank = #{loanBank}
+            AND cus.name LIKE CONCAT('%', #{customer} ,'%')
         </if>
         <if test="idCard != null">
-            AND customer.id_card = #{idCard}
+            AND cus.id_card = #{idCard}
+        </if>
+        <if test="partnerId != null">
+            AND par.id = #{partnerId}
         </if>
         <if test="salesmanId != null">
             AND base.salesman_id = #{salesmanId}
-        </if>
-        <if test="partnerId != null">
-            AND partner.id = #{partnerId}
         </if>
         <if test="bizAreaId != null">
             AND
@@ -468,15 +467,7 @@
             else 1=2
             end
         </if>
-        <if test="bankInterfaceSerialOrderidList != null and bankInterfaceSerialOrderidList.size() > 0">
-            AND loan.id in
-            <foreach item="item" index="index" collection="bankInterfaceSerialOrderidList" open="(" separator="," close=")">
-                #{item}
-            </foreach>
-        </if>
-        order by main.gmt_create
     </select>
-
 
 
 </mapper>

@@ -285,13 +285,11 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         taskListQuery.setBizAreaIdList(getUserHaveBizAreaPartnerId(loginUser.getId()));
         //获取用户可见的银行
         taskListQuery.setBankList(getUserHaveBank(loginUser.getId()));
-        if("back".equals(taskListQuery.getSerialStatus())){
-            List<Long> bankInterfaceSerialOrderidList = taskSchedulingDOMapper.selectBankInterfaceSerialOrderidList(taskListQuery);
-            taskListQuery.setBankInterfaceSerialOrderidList(bankInterfaceSerialOrderidList);
-        }
         PageHelper.startPage(taskListQuery.getPageIndex(), taskListQuery.getPageSize(), true);
-        List<TaskListVO> list = totalQueryListDOMapper.selectApplyCreditExcept(taskListQuery);
+        List<TaskListVO> list = totalQueryListDOMapper.selectApplyCredit(taskListQuery);
+
         PageInfo<TaskListVO> pageInfo = new PageInfo<>(list);
+
         return ResultBean.ofSuccess(list, new Long(pageInfo.getTotal()).intValue(), pageInfo.getPageNum(), pageInfo.getPageSize());
     }
 
@@ -313,7 +311,7 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         return ResultBean.ofSuccess(list, new Long(pageInfo.getTotal()).intValue(), pageInfo.getPageNum(), pageInfo.getPageSize());
     }
 
-    //新列表
+    @Override
     public ResultBean<List<TaskListVO>> queryNewTaskList(TaskListQuery taskListQuery) throws BizException {
 
         Preconditions.checkNotNull(taskListQuery.getTaskStatus(), "taskStatus不能为空");
@@ -348,11 +346,14 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         taskListQuery.setBankList(getUserHaveBank(loginUser.getId()));
         List<TaskListVO> list = new ArrayList<>();
         PageHelper.startPage(taskListQuery.getPageIndex(), taskListQuery.getPageSize(), true);
-        if(LoanProcessEnum.FINANCIAL_SCHEME.getCode().equals(taskListQuery.getTaskDefinitionKey())){
+        if(LoanProcessEnum.CREDIT_APPLY.getCode().equals(taskListQuery.getTaskDefinitionKey())){
+            list = totalQueryListDOMapper.selectApplyCredit(taskListQuery);
+        }else if(LoanProcessEnum.FINANCIAL_SCHEME.getCode().equals(taskListQuery.getTaskDefinitionKey())){
             list = totalQueryListDOMapper.selectTotalCusInfo(taskListQuery);
-        }else if(LoanProcessEnum.BANK_CREDIT_RECORD.getCode().equals(taskListQuery.getTaskDefinitionKey())){
+        }else if(LoanProcessEnum.BANK_CREDIT_RECORD.getCode().equals(taskListQuery.getTaskDefinitionKey())) {
             list = totalQueryListDOMapper.selectBankCreditPend(taskListQuery);
-
+        }else if (LoanProcessEnum.INSTALL_GPS.getCode().equals(taskListQuery.getTaskDefinitionKey())){
+            list = totalQueryListDOMapper.selectCarGps(taskListQuery);
         }
 
         PageInfo<TaskListVO> pageInfo = new PageInfo<>(list);
@@ -408,7 +409,7 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
 
         return ResultBean.ofSuccess(list, new Long(pageInfo.getTotal()).intValue(), pageInfo.getPageNum(), pageInfo.getPageSize());
     }
-
+    @Override
     public ResultBean<Long> countNewQueryTaskList(TaskListQuery taskListQuery) {
         Preconditions.checkNotNull(taskListQuery.getTaskStatus(), "taskStatus不能为空");
 
