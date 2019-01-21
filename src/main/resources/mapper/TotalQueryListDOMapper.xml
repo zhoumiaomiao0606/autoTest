@@ -477,6 +477,80 @@
         order by loan.gmt_create
     </select>
 
+    <select id="selectCarGps" resultType="com.yunche.loan.domain.vo.TaskListVO" parameterType="com.yunche.loan.domain.query.TaskListQuery">
+         SELECT
+          loan.id                                 as id,
+          cus.`name`                              as customer,
+          cus.id_card                             as idCard,
+          emp.`name`							  							as salesman,
+          par.NAME                                as partner,
+          base.bank                               as bank,
+          car.car_type														as carType,
+          useGetSmallCarName ( car.car_detail_id ) AS carName,
+          car.gps_num 														 AS carGpsNum,
+          vehicle.license_plate_number 						 AS licensePlateNumber
+
+          FROM
+          loan_order loan
+          LEFT JOIN loan_base_info base ON base.id = loan.loan_base_info_id
+          LEFT JOIN loan_customer cus ON cus.id = loan.loan_customer_id
+          LEFT JOIN partner par ON par.id = base.partner_id
+          left join employee emp on emp.id = base.salesman_id
+          left join loan_car_info car on car.id = loan.loan_car_info_id
+          LEFT JOIN vehicle_information vehicle ON vehicle.id = loan.vehicle_information_id
+        AND case when #{taskStatus} = 0 then process.install_gps != 0
+        else process.install_gps = #{taskStatus} end
+                      AND car.gps_num &gt; 0
+        AND CASE WHEN #{maxGroupLevel}  = 0 THEN false
+        when #{maxGroupLevel} = 1 then 1 = 1
+        <if test="juniorIds != null and juniorIds.size() > 0">
+            and base.salesman_id in
+            <foreach item="item" index="index" collection="juniorIds" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        else true end
+
+        and case when #{maxGroupLevel} = 3 then 1=1
+        else 1=1
+        <if test="bizAreaIdList != null and bizAreaIdList.size() > 0">
+            and par.id in
+            <foreach item="item" index="index" collection="bizAreaIdList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="bankList != null and bankList.size() > 0">
+            and base.bank in
+            <foreach item="item" index="index" collection="bankList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        end
+        <if test="orderId != null">
+            AND loan.id = #{orderId}
+        </if>
+        <if test="customer != null and customer != ''">
+            AND cus.name LIKE CONCAT('%', #{customer} ,'%')
+        </if>
+        <if test="idCard != null">
+            AND cus.id_card = #{idCard}
+        </if>
+        <if test="partnerId != null">
+            AND par.id = #{partnerId}
+        </if>
+        <if test="salesmanId != null">
+            AND base.salesman_id = #{salesmanId}
+        </if>
+        <if test="bizAreaId != null">
+            AND
+            case
+            when (select level from base_area where area_id = #{bizAreaId}) = 0 then 1=1
+            when (select level from base_area where area_id = #{bizAreaId}) = 1 then base.area_id in (select area_id from base_area where parent_area_id = #{bizAreaId})
+            when (select level from base_area where area_id = #{bizAreaId}) = 2 then base.area_id = #{bizAreaId}
+            else 1=2
+            end
+        </if>
+    </select>
 
 
 </mapper>

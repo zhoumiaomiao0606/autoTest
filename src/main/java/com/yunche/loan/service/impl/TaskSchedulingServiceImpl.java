@@ -318,7 +318,7 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         return ResultBean.ofSuccess(list, new Long(pageInfo.getTotal()).intValue(), pageInfo.getPageNum(), pageInfo.getPageSize());
     }
 
-    //新列表
+    @Override
     public ResultBean<List<TaskListVO>> queryNewTaskList(TaskListQuery taskListQuery) throws BizException {
 
         Preconditions.checkNotNull(taskListQuery.getTaskStatus(), "taskStatus不能为空");
@@ -358,6 +358,8 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         }else if(LoanProcessEnum.BANK_CREDIT_RECORD.getCode().equals(taskListQuery.getTaskDefinitionKey())){
             list = totalQueryListDOMapper.selectBankCreditPend(taskListQuery);
 
+        }if(LoanProcessEnum.INSTALL_GPS.getCode().equals(taskListQuery.getTaskDefinitionKey())){
+            list = totalQueryListDOMapper.selectCarGps(taskListQuery);
         }
 
         PageInfo<TaskListVO> pageInfo = new PageInfo<>(list);
@@ -413,7 +415,7 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
 
         return ResultBean.ofSuccess(list, new Long(pageInfo.getTotal()).intValue(), pageInfo.getPageNum(), pageInfo.getPageSize());
     }
-
+    @Override
     public ResultBean<Long> countNewQueryTaskList(TaskListQuery taskListQuery) {
         Preconditions.checkNotNull(taskListQuery.getTaskStatus(), "taskStatus不能为空");
 

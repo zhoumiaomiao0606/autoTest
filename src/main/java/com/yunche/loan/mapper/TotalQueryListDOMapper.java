@@ -21,4 +21,6 @@ public interface TotalQueryListDOMapper {
     List<TaskListVO> selectApplyCreditExcept(TaskListQuery taskListQuery);
     //征信申请退回
     List<TaskListVO> selectApplyCreditBack(TaskListQuery taskListQuery);
+
+    List<TaskListVO> selectCarGps(TaskListQuery taskListQuery);
 }
