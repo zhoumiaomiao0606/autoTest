@@ -422,7 +422,7 @@
           LEFT JOIN vehicle_information vehicle ON vehicle.id = loan.vehicle_information_id
           left join loan_process process on process.order_id = loan.id
         where
-        and case when #{taskStatus} = 0 then process.install_gps != 0
+        case when #{taskStatus} = 0 then process.install_gps != 0
         else process.install_gps = #{taskStatus} and process.order_status = 1 end
                       AND car.gps_num &gt; 0
         AND CASE WHEN #{maxGroupLevel}  = 0 THEN false
@@ -496,10 +496,35 @@
         LEFT JOIN loan_customer customer ON customer.id = main.loan_customer_id
         left join department depart on depart.id = partner.department_id
         WHERE
-        deputy.order_status = 1
-        AND  case when #{taskStatus} =0 then deputy.loan_info_record !=0
-                else deputy.loan_info_record = #{taskStatus}
+
+        case when #{taskStatus} =0 then deputy.loan_info_record !=0
+                else deputy.loan_info_record = #{taskStatus} AND deputy.order_status = 1
              end
+        AND CASE WHEN #{maxGroupLevel}  = 0 THEN false
+        when #{maxGroupLevel} = 1 then 1 = 1
+        <if test="juniorIds != null and juniorIds.size() > 0">
+            and base.salesman_id in
+            <foreach item="item" index="index" collection="juniorIds" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        else true end
+
+        and case when #{maxGroupLevel} = 3 then 1=1
+        else 1=1
+        <if test="bizAreaIdList != null and bizAreaIdList.size() > 0">
+            and partner.id in
+            <foreach item="item" index="index" collection="bizAreaIdList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="bankList != null and bankList.size() > 0">
+            and base.bank in
+            <foreach item="item" index="index" collection="bankList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        end
         <if test="orderId != null">
             AND main.id = #{orderId}
         </if>
@@ -657,9 +682,34 @@
         LEFT JOIN loan_customer customer ON customer.id = main.loan_customer_id
         left join current_node_manager node on node.order_id = main.id
         WHERE
-        deputy.order_status = 1
-        AND  case when #{taskStatus} =0 then deputy.vehicle_information !=0
-        else deputy.vehicle_information = #{taskStatus}
+
+        case when #{taskStatus} =0 then deputy.vehicle_information !=0
+        else deputy.vehicle_information = #{taskStatus}  AND　deputy.order_status = 1
+        end
+        AND CASE WHEN #{maxGroupLevel}  = 0 THEN false
+        when #{maxGroupLevel} = 1 then 1 = 1
+        <if test="juniorIds != null and juniorIds.size() > 0">
+            and base.salesman_id in
+            <foreach item="item" index="index" collection="juniorIds" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        else true end
+
+        and case when #{maxGroupLevel} = 3 then 1=1
+        else 1=1
+        <if test="bizAreaIdList != null and bizAreaIdList.size() > 0">
+            and partner.id in
+            <foreach item="item" index="index" collection="bizAreaIdList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="bankList != null and bankList.size() > 0">
+            and base.bank in
+            <foreach item="item" index="index" collection="bankList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
         end
         <if test="orderId != null">
             AND main.id = #{orderId}
@@ -696,17 +746,16 @@
         base.bank AS bank
         FROM
         loan_order main
-        LEFT JOIN loan_process deputy ON main.id = deputy.order_id
+        left join loan_financial_plan_temp_his join_his   on main.id          = join_his.order_id
         LEFT JOIN loan_base_info base ON base.id = main.loan_base_info_id
         LEFT JOIN partner partner ON partner.id = base.partner_id
         LEFT JOIN employee employee ON employee.id = base.salesman_id
         LEFT JOIN loan_customer customer ON customer.id = main.loan_customer_id
         left join current_node_manager node on node.order_id = main.id
         WHERE
-        deputy.order_status = 1
-        AND  case when #{taskStatus} =0 then deputy.vehicle_information !=0
-        else deputy.vehicle_information = #{taskStatus}
-        end
+
+        case when #{taskStatus} = 0 then join_his.status  != 0
+            else join_his.status　= #{taskStatus} end
         <if test="orderId != null">
             AND main.id = #{orderId}
         </if>
@@ -721,12 +770,6 @@
         </if>
         <if test="loanBank != null">
             AND base.bank = #{loanBank}
-        </if>
-        <if test="startCreditGmtCreate != null">
-            AND TO_DAYS(node.usertask_credit_apply_create_time) &gt;= TO_DAYS(#{startCreditGmtCreate})
-        </if>
-        <if test="endCreditGmtCreate != null">
-            AND TO_DAYS(node.usertask_credit_apply_create_time) &lt;= TO_DAYS(#{endCreditGmtCreate})
         </if>
     </select>
 
@@ -749,7 +792,7 @@
         left join partner par on par.id = base.partner_id
         left join loan_customer cus on cus.id = loan.loan_customer_id
 		left join loan_info_supplement supplement on supplement.order_id = loan.id
-        where  AND case when #{taskStatus} = 0 then loan_info_supplement.status  != 0
+        where   case when #{taskStatus} = 0 then loan_info_supplement.status  != 0
         else loan_info_supplement.status = #{taskStatus} and process.order_status = 1 end
         AND CASE WHEN #{maxGroupLevel}  = 0 THEN false
         when #{maxGroupLevel} = 1 then 1 = 1

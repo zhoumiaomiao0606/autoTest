@@ -34,4 +34,8 @@ public interface TotalQueryListDOMapper {
 
     //提车资料
     List<TaskListVO>  selectVehicleInformationList(TaskListQuery taskListQuery);
+
+    //金融方案修改
+    List<TaskListVO>   selectFinancialSchemeModifyApplyList(TaskListQuery taskListQuery);
+
 }
