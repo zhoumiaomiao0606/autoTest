@@ -650,7 +650,7 @@
         LEFT JOIN partner partner ON partner.id = base.partner_id
         LEFT JOIN employee employee ON employee.id = base.salesman_id
         LEFT JOIN loan_customer customer ON customer.id = main.loan_customer_id
-        left join current_node_manager node on node.order_id = loan.id
+        left join current_node_manager node on node.order_id = main.id
         WHERE
         deputy.order_status = 1
         AND  case when #{taskStatus} =0 then deputy.loan_info_record !=0
