@@ -51,6 +51,8 @@ public class RemitDetailsDO {
 
     private String remit_account_number;
 
+    private Byte enter_account_flag;
+
     //打款开户行
     private String remit_business_id;
     private Byte remit_status;

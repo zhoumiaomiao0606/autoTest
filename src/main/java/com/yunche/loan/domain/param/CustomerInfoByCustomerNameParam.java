@@ -7,5 +7,5 @@ public class CustomerInfoByCustomerNameParam
 {
     private String customerName;
 
-    private int type;
+    private Integer type;
 }

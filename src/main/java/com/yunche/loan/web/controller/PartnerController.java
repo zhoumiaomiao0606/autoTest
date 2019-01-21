@@ -66,7 +66,7 @@ public class PartnerController {
     @GetMapping(value = "/selectAllBankName")
     public ResultBean selectAllBankName()
     {
-        return ResultBean.ofSuccess(partnerService.selectAllBankId(null,null));
+        return ResultBean.ofSuccess(partnerService.selectAllBankId(null,new Byte("1")));
     }
 
     @GetMapping(value = "/selectBankNameByParentId")
