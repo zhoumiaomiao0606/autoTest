@@ -485,7 +485,7 @@
             employee.`name` AS salesman,
             partner.`name` AS partner,
             main.id  AS taskId,
-            base.bank as bnak,
+            base.bank as bank,
             depart.`name`as departmentName
         FROM
         loan_order main
