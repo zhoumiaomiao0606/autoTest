@@ -419,6 +419,7 @@
           left join employee emp on emp.id = base.salesman_id
           left join loan_car_info car on car.id = loan.loan_car_info_id
           LEFT JOIN vehicle_information vehicle ON vehicle.id = loan.vehicle_information_id
+          left join loan_process process on process.order_id = loan.id
         where process.order_status = 1
         and case when #{taskStatus} = 0 then process.install_gps = 1
         else process.install_gps = #{taskStatus} end
@@ -650,7 +651,7 @@
         LEFT JOIN partner partner ON partner.id = base.partner_id
         LEFT JOIN employee employee ON employee.id = base.salesman_id
         LEFT JOIN loan_customer customer ON customer.id = main.loan_customer_id
-        left join current_node_manager node on node.order_id = loan.id
+        left join current_node_manager node on node.order_id = main.id
         WHERE
         deputy.order_status = 1
         AND  case when #{taskStatus} =0 then deputy.loan_info_record !=0
