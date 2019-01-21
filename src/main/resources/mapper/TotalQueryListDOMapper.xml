@@ -409,7 +409,8 @@
           car.car_type														as carType,
           useGetSmallCarName ( car.car_detail_id ) AS carName,
           car.gps_num 														 AS carGpsNum,
-          vehicle.license_plate_number 						 AS licensePlateNumber
+          vehicle.license_plate_number 						 AS licensePlateNumber,
+          useGetTaskTypeText(#{taskDefinitionKey},process.install_gps,process.order_status) AS taskTypeText
 
           FROM
           loan_order loan
@@ -483,7 +484,9 @@
             customer.mobile AS mobile,
             employee.`name` AS salesman,
             partner.`name` AS partner,
-            main.id  AS taskId
+            main.id  AS taskId,
+            base.bank as bnak,
+            depart.`name`as departmentName
         FROM
         loan_order main
         LEFT JOIN loan_process deputy ON main.id = deputy.order_id
@@ -491,6 +494,7 @@
         LEFT JOIN partner partner ON partner.id = base.partner_id
         LEFT JOIN employee employee ON employee.id = base.salesman_id
         LEFT JOIN loan_customer customer ON customer.id = main.loan_customer_id
+        left join department depart on depart.id = partner.department_id
         WHERE
         deputy.order_status = 1
         AND  case when #{taskStatus} =0 then deputy.loan_info_record !=0
@@ -517,7 +521,8 @@
         par.name             as partner,
         cus.`name`      		 as customer,
         cus.id_card          as idCard,
-        base.bank            as bank
+        base.bank            as bank,
+        useGetTaskTypeText(#{taskDefinitionKey},process.visit_verify,process.order_status) AS taskTypeText
 
         from loan_order loan
         left join loan_process process on process.order_id = loan.id
@@ -579,7 +584,8 @@
         par.name             as partner,
         cus.`name`      		 as customer,
         cus.id_card          as idCard,
-        base.bank            as bank
+        base.bank            as bank,
+        useGetTaskTypeText(#{taskDefinitionKey},process.car_insurance,process.order_status) AS taskTypeText
 
         from loan_order loan
         left join loan_process process on process.order_id = loan.id
@@ -675,5 +681,72 @@
         <if test="endCreditGmtCreate != null">
             AND TO_DAYS(node.usertask_credit_apply_create_time) &lt;= TO_DAYS(#{endCreditGmtCreate})
         </if>
+    </select>
+
+
+    <select id="selectSupplementInfo" resultType="com.yunche.loan.domain.vo.TaskListVO" parameterType="com.yunche.loan.domain.query.TaskListQuery">
+        select
+        loan.id       as id,
+        par.partner_code     as partnerCode,
+        par.name             as partner,
+        cus.`name`      		 as customer,
+        cus.id_card          as idCard,
+        base.bank            as bank,
+		supplement.id        as supplementOrderId,
+		supplement.type									 as supplementType,
+		useSupplementTypeTxt(supplement.type)         AS supplementTypeText
+
+        from loan_order loan
+        left join loan_process process on process.order_id = loan.id
+        left join loan_base_info base on base.id = loan.loan_base_info_id
+        left join partner par on par.id = base.partner_id
+        left join loan_customer cus on cus.id = loan.loan_customer_id
+		left join loan_info_supplement supplement on supplement.order_id = loan.id
+        where  AND case when #{taskStatus} = 0 then loan_info_supplement.status  != 0
+        else loan_info_supplement.status = #{taskStatus} and process.order_status = 1 end
+        AND CASE WHEN #{maxGroupLevel}  = 0 THEN false
+        when #{maxGroupLevel} = 1 then 1 = 1
+        <if test="juniorIds != null and juniorIds.size() > 0">
+            and base.salesman_id in
+            <foreach item="item" index="index" collection="juniorIds" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        else true end
+
+        and case when #{maxGroupLevel} = 3 then 1=1
+        else 1=1
+        <if test="bizAreaIdList != null and bizAreaIdList.size() > 0">
+            and par.id in
+            <foreach item="item" index="index" collection="bizAreaIdList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="bankList != null and bankList.size() > 0">
+            and base.bank in
+            <foreach item="item" index="index" collection="bankList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        end
+        <if test="orderId != null">
+            AND loan.id = #{orderId}
+        </if>
+        <if test="customer != null and customer != ''">
+            AND cus.name LIKE CONCAT('%', #{customer} ,'%')
+        </if>
+        <if test="idCard != null">
+            AND cus.id_card = #{idCard}
+        </if>
+        <if test="partnerId != null">
+            AND par.id = #{partnerId}
+        </if>
+        <if test="salesmanId != null">
+            AND base.salesman_id = #{salesmanId}
+        </if>
+        <if test="supplementType != null">
+            AND supplement.type = #{supplementType}
+        </if>
+
     </select>
 </mapper>
