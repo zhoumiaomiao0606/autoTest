@@ -1327,6 +1327,13 @@ public class PartnerServiceImpl implements PartnerService {
     }
 
     @Override
+    public List<BankCodeDO> selectBankListByParentName(String bankName)
+    {
+        List<BankCodeDO> bankCodeDOS = bankCodeDOMapper.selectBankListByParentName(bankName);
+        return bankCodeDOS;
+    }
+
+    @Override
     public ResultBean insertBankName(BankCodeDO bankCodeDO)
     {
         Preconditions.checkNotNull(bankCodeDO.getName(),"银行名称不能为空！！");

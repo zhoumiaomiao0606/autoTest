@@ -62,4 +62,6 @@ public interface PartnerService {
     ResultBean bankNameList(BankCodeParam param);
 
     ResultBean insertOrUpdateBankList(InsOrUpBankListParam insOrUpBankListParam);
+
+    List<BankCodeDO> selectBankListByParentName(String bankName);
 }

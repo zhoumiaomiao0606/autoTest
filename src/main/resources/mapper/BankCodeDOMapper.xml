@@ -156,4 +156,12 @@
     delete from bank_code
     where parent_id =  #{bankId,jdbcType=INTEGER} and status = 0
   </delete>
+
+  <select id="selectBankListByParentName" parameterType="String" resultMap="BaseResultMap">
+    select
+   a.id, a.code, a.name, a.level, a.parent_id, a.status
+    from bank_code a
+    left join bank_code b on a.parent_id = b.id
+    where b.name =  #{bankName,jdbcType=VARCHAR} and a.status = 0
+  </select>
 </mapper>

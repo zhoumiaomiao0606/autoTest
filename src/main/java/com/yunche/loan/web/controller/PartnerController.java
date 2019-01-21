@@ -75,6 +75,12 @@ public class PartnerController {
         return ResultBean.ofSuccess(partnerService.selectBankNameByParentId(bankId));
     }
 
+    @GetMapping(value = "/selectBankListByParentName")
+    public ResultBean selectBankListByParentName(@RequestParam("bankName") String bankName)
+    {
+        return ResultBean.ofSuccess(partnerService.selectBankListByParentName(bankName));
+    }
+
     @PostMapping(value = "/insertBankName")
     public ResultBean insertBankName(@RequestBody @Validated BankCodeDO bankCodeDO)
     {

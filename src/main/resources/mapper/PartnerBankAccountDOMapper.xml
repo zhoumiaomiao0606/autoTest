@@ -29,8 +29,8 @@
         values
         <foreach collection="list" item="item" index="index" separator=",">
             (#{item.partnerId,jdbcType=BIGINT}, #{item.openBank,jdbcType=VARCHAR},#{item.bankCode,jdbcType=VARCHAR},
-            #{bankId,jdbcType=INTEGER}, #{childBankName,jdbcType=VARCHAR},
-            #{childBankCode,jdbcType=VARCHAR}, #{childBankId,jdbcType=INTEGER},
+            #{item.bankId,jdbcType=INTEGER}, #{item.childBankName,jdbcType=VARCHAR},
+            #{item.childBankCode,jdbcType=VARCHAR}, #{item.childBankId,jdbcType=INTEGER},
             #{item.accountName,jdbcType=VARCHAR}, #{item.bankAccount,jdbcType=VARCHAR},
             #{item.gmtCreate,jdbcType=TIMESTAMP},#{item.gmtModify,jdbcType=TIMESTAMP})
         </foreach>

@@ -29,4 +29,6 @@ public interface BankCodeDOMapper {
     List<BankCodeVO> bankNameList(BankCodeParam param);
 
     int deleteBankByParentId(Integer parentId);
+
+    List<BankCodeDO> selectBankListByParentName(String bankName);
 }
