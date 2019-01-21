@@ -346,11 +346,12 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         taskListQuery.setBankList(getUserHaveBank(loginUser.getId()));
         List<TaskListVO> list = new ArrayList<>();
         PageHelper.startPage(taskListQuery.getPageIndex(), taskListQuery.getPageSize(), true);
-        if(LoanProcessEnum.FINANCIAL_SCHEME.getCode().equals(taskListQuery.getTaskDefinitionKey())){
+        if(LoanProcessEnum.CREDIT_APPLY.getCode().equals(taskListQuery.getTaskDefinitionKey())){
+            list = totalQueryListDOMapper.selectApplyCredit(taskListQuery);
+        }else if(LoanProcessEnum.FINANCIAL_SCHEME.getCode().equals(taskListQuery.getTaskDefinitionKey())){
             list = totalQueryListDOMapper.selectTotalCusInfo(taskListQuery);
-        }else if(LoanProcessEnum.BANK_CREDIT_RECORD.getCode().equals(taskListQuery.getTaskDefinitionKey())){
+        }else if(LoanProcessEnum.BANK_CREDIT_RECORD.getCode().equals(taskListQuery.getTaskDefinitionKey())) {
             list = totalQueryListDOMapper.selectBankCreditPend(taskListQuery);
-
         }
 
         PageInfo<TaskListVO> pageInfo = new PageInfo<>(list);
