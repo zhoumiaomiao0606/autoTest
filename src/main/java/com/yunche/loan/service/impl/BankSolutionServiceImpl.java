@@ -1180,16 +1180,16 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         //联系人一
         customer.setReltname1(emergencys.get(0).getName());//姓名
         customer.setReltsex1(String.valueOf(emergencys.get(0).getSex()));//性别
-        customer.setReltship1(String.valueOf(emergencys.get(0).getCustRelation()));//与主卡申请关系
+        customer.setReltship1(dictMapCache.getValue(IConstant.RELT_SHIP,String.valueOf(emergencys.get(0).getCustRelation()).trim()));//与主卡申请关系
         customer.setReltmobl1(StringUtil.isEmpty(emergencys.get(0).getMobile()) ? "0" : emergencys.get(0).getMobile());//联系人一手机
         customer.setReltmobl1(StringUtil.isEmpty(emergencys.get(0).getMobile()) ? "0" : emergencys.get(0).getMobile());//联系人一手机
         customer.setRelaphone1(StringUtil.isEmpty(emergencys.get(0).getMobile()) ? "0" : emergencys.get(0).getMobile());//联系人一联系电话号
         //联系人二
         customer.setReltname2(emergencys.get(1).getName());//姓名
         customer.setReltsex2(String.valueOf(emergencys.get(1).getSex()));//性别
-        customer.setReltship2(String.valueOf(emergencys.get(1).getCustRelation()));//与主卡申请关系
-        customer.setReltmobl2(StringUtil.isEmpty(emergencys.get(1).getMobile()) ? "0" : emergencys.get(0).getMobile());//联系人二手机
-        customer.setRtcophon2(StringUtil.isEmpty(emergencys.get(1).getMobile()) ? "0" : emergencys.get(0).getMobile());//联系人二联系电话号
+        customer.setReltship2(dictMapCache.getValue(IConstant.RELT_SHIP,String.valueOf(emergencys.get(1).getCustRelation()).trim()));//与主卡申请关系
+        customer.setReltmobl2(StringUtil.isEmpty(emergencys.get(1).getMobile()) ? "0" : emergencys.get(1).getMobile());//联系人二手机
+        customer.setRtcophon2(StringUtil.isEmpty(emergencys.get(1).getMobile()) ? "0" : emergencys.get(1).getMobile());//联系人二联系电话号
 
         applyBankOpenCard.setCustomer(customer);
         applyBankOpenCard.setPictures(bankOpenCardParam.getPictures());

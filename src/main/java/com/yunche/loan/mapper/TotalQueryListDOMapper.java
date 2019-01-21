@@ -17,10 +17,8 @@ public interface TotalQueryListDOMapper {
 
     List<Long> selectProcessBankOrder(@Param("transCode")String transCode);
 
-    //征信申请暂存/全部
-    List<TaskListVO> selectApplyCreditExcept(TaskListQuery taskListQuery);
-    //征信申请退回
-    List<TaskListVO> selectApplyCreditBack(TaskListQuery taskListQuery);
+    //征信申请
+    List<TaskListVO> selectApplyCredit(TaskListQuery taskListQuery);
 
     List<TaskListVO> selectCarGps(TaskListQuery taskListQuery);
 }
