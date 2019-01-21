@@ -2,7 +2,8 @@ package com.yunche.loan.domain.query;
 
 import lombok.Data;
 
-import java.util.Date;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Created by zhouguoliang on 2018/2/8.
@@ -10,34 +11,22 @@ import java.util.Date;
 @Data
 public class OrderListQuery extends BaseQuery {
 
-    private String orderNbr;
+    private Long orderId;
 
     private String custName;
 
-    private String phone;
+    private String custIdCard;
 
-    private String identityNumber;
-
-    private Long areaId;
-
-    private String prov;
-
-    private String city;
-
-    private Long partnerId;
-
-    private String startDateString;
-
-    private String endDateString;
-
-    private Date startDate;
-
-    private Date endDate;
-
-    // 未提交节点
-    private String unsubmitProcessTask;
-    // 未审核节点
-    private String todoProcessTask;
-    // 已审核节点
-    private String doneProcessTask;
+    /**
+     * 合伙人权限
+     */
+    private List<Long> partnerIdList;
+    /**
+     * 银行权限
+     */
+    private List<String> bankNameList;
+    /**
+     * 业务员权限
+     */
+    private Set<String> salesmanIdList;
 }

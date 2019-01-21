@@ -2,7 +2,7 @@ package com.yunche.loan.service;
 
 import com.github.pagehelper.PageInfo;
 import com.yunche.loan.domain.query.OrderListQuery;
-import com.yunche.loan.domain.vo.CreditApplyOrderListVO;
+import com.yunche.loan.domain.vo.OrderListVO;
 
 /**
  * @author liuzhe
@@ -10,5 +10,5 @@ import com.yunche.loan.domain.vo.CreditApplyOrderListVO;
  */
 public interface OrderListService {
 
-    PageInfo<CreditApplyOrderListVO> creditApply(OrderListQuery query);
+    PageInfo<OrderListVO> materialReview(OrderListQuery query);
 }

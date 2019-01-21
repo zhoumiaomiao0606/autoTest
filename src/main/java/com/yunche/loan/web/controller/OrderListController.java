@@ -3,7 +3,7 @@ package com.yunche.loan.web.controller;
 import com.github.pagehelper.PageInfo;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.query.OrderListQuery;
-import com.yunche.loan.domain.vo.CreditApplyOrderListVO;
+import com.yunche.loan.domain.vo.OrderListVO;
 import com.yunche.loan.service.OrderListService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -24,9 +24,9 @@ public class OrderListController {
     private OrderListService orderListService;
 
 
-    @PostMapping(value = "/creditApply", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultBean<List<CreditApplyOrderListVO>> creditApply(@RequestBody OrderListQuery query) {
-        PageInfo<CreditApplyOrderListVO> pageInfo = orderListService.creditApply(query);
+    @PostMapping(value = "/materialReview", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResultBean<List<OrderListVO>> materialReview(@RequestBody OrderListQuery query) {
+        PageInfo<OrderListVO> pageInfo = orderListService.materialReview(query);
         return ResultBean.ofPageInfo(pageInfo);
     }
 }

@@ -1,7 +1,7 @@
 package com.yunche.loan.mapper;
 
 import com.yunche.loan.domain.query.OrderListQuery;
-import com.yunche.loan.domain.vo.CreditApplyOrderListVO;
+import com.yunche.loan.domain.vo.OrderListVO;
 
 import java.util.List;
 
@@ -11,5 +11,5 @@ import java.util.List;
  */
 public interface OrderListQueryMapper {
 
-    List<CreditApplyOrderListVO> creditApply(OrderListQuery query);
+    List<OrderListVO> materialReview(OrderListQuery query);
 }

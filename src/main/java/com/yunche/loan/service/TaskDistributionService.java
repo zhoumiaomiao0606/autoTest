@@ -3,6 +3,7 @@ package com.yunche.loan.service;
 import com.yunche.loan.domain.vo.TaskDisVO;
 
 import java.util.List;
+import java.util.Map;
 
 public interface TaskDistributionService {
 
@@ -31,6 +32,15 @@ public interface TaskDistributionService {
      * @return
      */
     TaskDisVO query(Long taskId, String taskKey);
+
+    /**
+     * 查询当前任务-领取详情list
+     *
+     * @param taskKey
+     * @param taskId
+     * @return
+     */
+    Map<Long, TaskDisVO> list(String taskKey, List<Long> taskId);
 
     /**
      * finish-tasks         ==> status - 1

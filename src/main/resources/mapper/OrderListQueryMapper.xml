@@ -3,12 +3,55 @@
 <mapper namespace="com.yunche.loan.mapper.OrderListQueryMapper">
 
     <sql id="Base_Column_List">
-        id, name, uri, menu_id, gmt_create, gmt_modify, feature, status
+        orderId, custId, custName, custIdCard, partnerId, partnerName, partnerCode,
+        bankId, bankName, taskId, taskReceiverId, taskReceiverName
     </sql>
 
-    <!-- creditApply -->
-    <select id="creditApply" parameterType="com.yunche.loan.domain.query.OrderListQuery"
-            resultType="com.yunche.loan.domain.vo.CreditApplyOrderListVO">
+    <!-- materialReview -->
+    <select id="materialReview" parameterType="com.yunche.loan.domain.query.OrderListQuery"
+            resultType="com.yunche.loan.domain.vo.OrderListVO">
+
+        SELECT
+                o.id                AS orderId,
+                c.id                AS custId,
+                c.name              AS custName,
+                c.id_card           AS custIdCard,
+                b.partner_id        AS partnerId,
+                b.bank              AS bankName
+
+        FROM loan_order o
+
+        LEFT JOIN loan_process p ON p.order_id = o.id
+
+        LEFT JOIN loan_base_info b ON b.id = o.loan_base_info_id
+
+        LEFT JOIN loan_customer c ON c.id = o.loan_customer_id
+
+        WHERE p.order_status = 1
+
+        AND p.material_review = 1
+
+        <if test="orderId != null and orderId != '' ">
+            AND o.`id` = #{orderId}
+        </if>
+        <if test="custIdCard != null and custIdCard != '' ">
+            AND c.`id_card` = #{custIdCard}
+        </if>
+        <if test="custName != null and custName != '' ">
+            AND c.`name` LIKE CONCAT('%', #{custName}, '%')
+        </if>
+        <if test="bankNameList != null and bankNameList.size() > 0">
+            AND b.`bank` IN
+            <foreach collection="bankNameList" item="bankName" open="(" close=")" separator=",">
+                #{bankName}
+            </foreach>
+        </if>
+        <if test="partnerIdList != null and partnerIdList.size() > 0">
+            AND b.`partner_id` IN
+            <foreach collection="partnerIdList" item="partnerId" open="(" close=")" separator=",">
+                #{partnerId}
+            </foreach>
+        </if>
     </select>
 
 </mapper>

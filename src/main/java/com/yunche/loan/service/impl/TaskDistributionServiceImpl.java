@@ -1,6 +1,8 @@
 package com.yunche.loan.service.impl;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.util.SessionUtils;
 import com.yunche.loan.domain.entity.*;
@@ -10,11 +12,11 @@ import com.yunche.loan.service.TaskDistributionService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import static com.yunche.loan.config.constant.LoanProcessEnum.*;
 import static com.yunche.loan.config.constant.LoanUserGroupConst.LEVEL_DIRECTOR;
@@ -457,5 +459,60 @@ public class TaskDistributionServiceImpl implements TaskDistributionService {
             taskDisVO.setSendeeName(taskDistributionDO.getSendeeName());
             return taskDisVO;
         }
+    }
+
+    @Override
+    public Map<Long, TaskDisVO> list(String taskKey, List<Long> taskIdList) {
+        Assert.isTrue(!CollectionUtils.isEmpty(taskIdList), "任务id不能为空");
+        Assert.isTrue(StringUtils.isNotBlank(taskKey), "taskKey不能为空");
+
+        List<Long> taskIdList_ = Lists.newArrayList();
+        Map<Long, TaskDisVO> map = Maps.newHashMap();
+
+        List<TaskDistributionDO> taskDistributionDOList = taskDistributionDOMapper.list(taskKey, taskIdList);
+
+        if (!CollectionUtils.isEmpty(taskDistributionDOList)) {
+
+            Collection<TaskDistributionDO> synchronizedTaskDistributionDOList = Collections.synchronizedCollection(taskDistributionDOList);
+
+            synchronizedTaskDistributionDOList.parallelStream()
+                    .filter(Objects::nonNull)
+                    .forEach(e -> {
+
+                        Long taskId = e.getTaskId();
+                        taskIdList_.add(taskId);
+
+                        TaskDisVO taskDisVO = new TaskDisVO();
+
+                        taskDisVO.setStatus(String.valueOf(e.getStatus()));
+                        taskDisVO.setSendee(String.valueOf(e.getSendee()));
+                        taskDisVO.setSendeeName(e.getSendeeName());
+
+                        map.put(taskId, taskDisVO);
+                    });
+        }
+
+        taskIdList.removeAll(taskIdList_);
+
+        if (!CollectionUtils.isEmpty(taskIdList)) {
+
+            Collection<Long> synchronizedTaskIdList = Collections.synchronizedCollection(taskIdList);
+
+            synchronizedTaskIdList.parallelStream()
+                    .filter(Objects::nonNull)
+                    .forEach(taskId -> {
+
+                        TaskDisVO taskDisVO = new TaskDisVO();
+
+                        // 未领取
+                        taskDisVO.setStatus("1");
+//                        taskDisVO.setSendee();
+//                        taskDisVO.setSendeeName();
+
+                        map.put(taskId, taskDisVO);
+                    });
+        }
+
+        return map;
     }
 }
