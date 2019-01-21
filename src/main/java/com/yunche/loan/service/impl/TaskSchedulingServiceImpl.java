@@ -354,6 +354,8 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
             list = totalQueryListDOMapper.selectBankCreditPend(taskListQuery);
         }else if (LoanProcessEnum.INSTALL_GPS.getCode().equals(taskListQuery.getTaskDefinitionKey())){
             list = totalQueryListDOMapper.selectCarGps(taskListQuery);
+        }else if(LoanProcessEnum.LOAN_INFO_RECORD.getCode().equals(taskListQuery.getTaskDefinitionKey())){
+            list = totalQueryListDOMapper.selectLoanInfoRecordList(taskListQuery);
         }
 
         PageInfo<TaskListVO> pageInfo = new PageInfo<>(list);

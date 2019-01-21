@@ -327,11 +327,14 @@
                 customer.mobile AS mobile,
                 employee.`name` AS salesman,
                 partner.`name` AS partner,
+                partner.id     AS partnerCode,
                 main.gmt_create AS orderGmtCreate,
-                deputy.order_status AS orderStatus
+                deputy.order_status AS orderStatus,
+                main.id  AS taskId
         FROM
         loan_order main
         LEFT JOIN loan_process deputy ON main.id = deputy.order_id
+        LEFT JOIN `task_distribution` task ON task.`task_id` = main.id and task.task_key = 'usertask_bank_credit_record'
         LEFT JOIN loan_base_info base ON base.id = main.loan_base_info_id
         LEFT JOIN partner partner ON partner.id = base.partner_id
         LEFT JOIN employee employee ON employee.id = base.salesman_id
@@ -469,5 +472,36 @@
         </if>
     </select>
 
+    <select id="selectLoanInfoRecordList" resultType="com.yunche.loan.domain.vo.TaskListVO" parameterType="com.yunche.loan.domain.query.TaskListQuery">
+        SELECT
+            main.id,
+            customer.`name` AS customer,
+            customer.id_card AS idCard,
+            customer.mobile AS mobile,
+            employee.`name` AS salesman,
+            partner.`name` AS partner,
+            main.id  AS taskId
+        FROM
+        loan_order main
+        LEFT JOIN loan_process deputy ON main.id = deputy.order_id
+        LEFT JOIN loan_base_info base ON base.id = main.loan_base_info_id
+        LEFT JOIN partner partner ON partner.id = base.partner_id
+        LEFT JOIN employee employee ON employee.id = base.salesman_id
+        LEFT JOIN loan_customer customer ON customer.id = main.loan_customer_id
+        WHERE
+        deputy.order_status = 1
+        AND  case when #{taskStatus} =0 then deputy.loan_info_record !=0
+                else deputy.loan_info_record = #{taskStatus}
+             end
+        <if test="customer != null and customer != ''">
+            AND cus.name LIKE CONCAT('%', #{customer} ,'%')
+        </if>
+        <if test="partnerId != null">
+            AND par.id = #{partnerId}
+        </if>
+        <if test="salesmanId != null">
+            AND base.salesman_id = #{salesmanId}
+        </if>
+    </select>
 
 </mapper>
