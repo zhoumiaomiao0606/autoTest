@@ -421,7 +421,7 @@
           LEFT JOIN vehicle_information vehicle ON vehicle.id = loan.vehicle_information_id
           left join loan_process process on process.order_id = loan.id
         where process.order_status = 1
-        and case when #{taskStatus} = 0 then process.install_gps = 1
+        and case when #{taskStatus} = 0 then process.install_gps != 0
         else process.install_gps = #{taskStatus} end
                       AND car.gps_num &gt; 0
         AND CASE WHEN #{maxGroupLevel}  = 0 THEN false
