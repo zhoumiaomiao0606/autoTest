@@ -413,6 +413,14 @@
         </dependency>
         <!-- swagger2 -->
 
+        <!-- unirest -->
+        <dependency>
+            <groupId>com.mashape.unirest</groupId>
+            <artifactId>unirest-java</artifactId>
+            <version>1.4.9</version>
+        </dependency>
+        <!-- unirest -->¬
+
         <!--sftp-->
         <dependency>
             <groupId>com.jcraft</groupId>
