@@ -524,7 +524,7 @@
         left join partner par on par.id = base.partner_id
         left join loan_customer cus on cus.id = loan.loan_customer_id
         where process.order_status = 1
-        and case when #{taskStatus} = 0 then process.visit_verify = 1
+        and case when #{taskStatus} = 0 then process.visit_verify != 0
         else process.visit_verify = #{taskStatus} end
         AND CASE WHEN #{maxGroupLevel}  = 0 THEN false
         when #{maxGroupLevel} = 1 then 1 = 1
@@ -586,7 +586,7 @@
         left join partner par on par.id = base.partner_id
         left join loan_customer cus on cus.id = loan.loan_customer_id
         where process.order_status = 1
-        and case when #{taskStatus} = 0 then process.car_insurance = 1
+        and case when #{taskStatus} = 0 then process.car_insurance != 0
         else process.car_insurance = #{taskStatus} end
         AND CASE WHEN #{maxGroupLevel}  = 0 THEN false
         when #{maxGroupLevel} = 1 then 1 = 1
