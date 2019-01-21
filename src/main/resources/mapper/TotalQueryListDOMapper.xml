@@ -419,6 +419,7 @@
           left join employee emp on emp.id = base.salesman_id
           left join loan_car_info car on car.id = loan.loan_car_info_id
           LEFT JOIN vehicle_information vehicle ON vehicle.id = loan.vehicle_information_id
+          left join loan_process process on process.order_id = loan.id
         where process.order_status = 1
         and case when #{taskStatus} = 0 then process.install_gps = 1
         else process.install_gps = #{taskStatus} end
