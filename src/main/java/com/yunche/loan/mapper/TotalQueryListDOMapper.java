@@ -21,4 +21,14 @@ public interface TotalQueryListDOMapper {
     List<TaskListVO> selectApplyCredit(TaskListQuery taskListQuery);
 
     List<TaskListVO> selectCarGps(TaskListQuery taskListQuery);
+
+    List<TaskListVO> selectVisitDoor(TaskListQuery taskListQuery);
+
+    List<TaskListVO> selectCarInsurance(TaskListQuery taskListQuery);
+
+    // 视频面签登记
+    List<TaskListVO> selectLoanInfoRecordList(TaskListQuery taskListQuery);
+
+    //提车资料
+    List<TaskListVO>  selectVehicleInformationList(TaskListQuery taskListQuery);
 }
