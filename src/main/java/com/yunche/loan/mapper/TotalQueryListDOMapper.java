@@ -20,4 +20,5 @@ public interface TotalQueryListDOMapper {
     //征信申请
     List<TaskListVO> selectApplyCredit(TaskListQuery taskListQuery);
 
+    List<TaskListVO> selectCarGps(TaskListQuery taskListQuery);
 }

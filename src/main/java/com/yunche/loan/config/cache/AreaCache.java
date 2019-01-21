@@ -159,7 +159,7 @@ public class AreaCache {
      */
     public void refreshAll(List<BaseAreaDO> allArea) {
         BoundValueOperations<String, String> boundValueOps = stringRedisTemplate.boundValueOps(ALL_CACHE_AREA_KEY);
-        boundValueOps.set(JSON.toJSONString(allArea));
+//        boundValueOps.set(JSON.toJSONString(allArea));
     }
 
 
