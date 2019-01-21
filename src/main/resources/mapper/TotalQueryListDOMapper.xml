@@ -654,14 +654,17 @@
         left join current_node_manager node on node.order_id = main.id
         WHERE
         deputy.order_status = 1
-        AND  case when #{taskStatus} =0 then deputy.loan_info_record !=0
-        else deputy.loan_info_record = #{taskStatus}
+        AND  case when #{taskStatus} =0 then deputy.vehicle_information !=0
+        else deputy.vehicle_information = #{taskStatus}
         end
+        <if test="orderId != null">
+            AND main.id = #{orderId}
+        </if>
         <if test="customer != null and customer != ''">
-            AND cus.name LIKE CONCAT('%', #{customer} ,'%')
+            AND customer.name LIKE CONCAT('%', #{customer} ,'%')
         </if>
         <if test="partnerId != null">
-            AND par.id = #{partnerId}
+            AND partner.id = #{partnerId}
         </if>
         <if test="salesmanId != null">
             AND base.salesman_id = #{salesmanId}
