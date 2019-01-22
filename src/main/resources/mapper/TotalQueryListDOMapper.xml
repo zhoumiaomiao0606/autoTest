@@ -564,7 +564,7 @@
         LEFT JOIN employee employee ON employee.id = base.salesman_id
         left join current_node_manager node on node.order_id = loan.id
         where  case when #{taskStatus} = 0 then process.visit_verify != 0
-        when #{taskStatus} = 2 then process.visit_verify = 2 or process.visit_verify = 3 and process.order_status = 1
+        when #{taskStatus} = 2 then (process.visit_verify = 2 or process.visit_verify = 3) and process.order_status = 1
         else process.visit_verify = #{taskStatus} and process.order_status = 1 end
         AND CASE WHEN #{maxGroupLevel}  = 0 THEN false
         when #{maxGroupLevel} = 1 then 1 = 1
