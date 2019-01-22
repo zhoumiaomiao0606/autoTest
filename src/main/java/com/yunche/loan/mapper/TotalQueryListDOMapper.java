@@ -30,6 +30,10 @@ public interface TotalQueryListDOMapper {
 
     List<TaskListVO> selectBusinessPay(TaskListQuery taskListQuery);
 
+    List<TaskListVO> selectLoanReview(TaskListQuery taskListQuery);
+
+    List<TaskListVO> selectRemitReview(TaskListQuery taskListQuery);
+
     // 视频面签登记
     List<TaskListVO> selectLoanInfoRecordList(TaskListQuery taskListQuery);
 
