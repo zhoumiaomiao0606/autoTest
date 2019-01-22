@@ -39,4 +39,7 @@ public interface TotalQueryListDOMapper {
     //金融方案修改
     List<TaskListVO>   selectFinancialSchemeModifyApplyList(TaskListQuery taskListQuery);
 
+    //业务审批单
+    List<TaskListVO> selectBusinessReviewList(TaskListQuery taskListQuery);
+
 }
