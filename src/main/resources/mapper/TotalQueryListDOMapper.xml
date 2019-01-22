@@ -475,6 +475,9 @@
             else 1=2
             end
         </if>
+        <if test="taskStatus == 0">
+            order by loan.id desc
+        </if>
     </select>
 
     <select id="selectLoanInfoRecordList" resultType="com.yunche.loan.domain.vo.TaskListVO" parameterType="com.yunche.loan.domain.query.TaskListQuery">
@@ -601,6 +604,9 @@
         </if>
         <if test="loanBank != null">
             AND base.bank = #{loanBank}
+        </if>
+        <if test="taskStatus == 0">
+            order by loan.id desc
         </if>
     </select>
 
