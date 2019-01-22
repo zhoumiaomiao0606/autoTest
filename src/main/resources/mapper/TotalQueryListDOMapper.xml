@@ -763,7 +763,7 @@
         join_his.id   AS his_id
         FROM
         loan_financial_plan_temp_his join_his
-        left join loan_order main   on main.id          = join_his.order_id
+        INNER JOIN loan_order main   on main.id          = join_his.order_id
         LEFT JOIN loan_base_info base ON base.id = main.loan_base_info_id
         LEFT JOIN partner partner ON partner.id = base.partner_id
         LEFT JOIN employee employee ON employee.id = base.salesman_id
