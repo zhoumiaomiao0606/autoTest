@@ -111,6 +111,7 @@
 		cus.id_card       as idCard,
 		emp.name          as salesman,
 		par.`name`        as partner,
+        par.partner_code  as partnerCode,
 		DATE_FORMAT(loan.gmt_create,'%Y-%m-%d %H:%i:%S')      AS orderGmtCreate,
         jbds.cat                                              as creditDate,
         loan.id                                               as taskId,
@@ -555,6 +556,7 @@
         left join partner par on par.id = base.partner_id
         left join loan_customer cus on cus.id = loan.loan_customer_id
         where  case when #{taskStatus} = 0 then process.visit_verify != 0
+        when #{taskStatus} = 2 then process.visit_verify = 2 or process.visit_verify = 3 and process.order_status = 1
         else process.visit_verify = #{taskStatus} and process.order_status = 1 end
         AND CASE WHEN #{maxGroupLevel}  = 0 THEN false
         when #{maxGroupLevel} = 1 then 1 = 1
