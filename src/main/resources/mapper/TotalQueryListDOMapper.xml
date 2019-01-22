@@ -1390,6 +1390,8 @@
         loan_customer.`name` AS customer,
         loan_customer.id_card AS idCard,
         taskdis.status as taskDisStatus,
+        taskdis.id as taskId,
+        taskdis.task_key as taskKey,
         taskdis.sendee_name as receiveManName,
         loan_customer.mobile,
         partner.name AS partner,
