@@ -684,7 +684,7 @@
         WHERE
 
         case when #{taskStatus} =0 then deputy.vehicle_information !=0
-        else deputy.vehicle_information = #{taskStatus}  and　deputy.order_status = 1
+        else deputy.vehicle_information= #{taskStatus} and deputy.`order_status` = 1
         end
         AND CASE WHEN #{maxGroupLevel}  = 0 THEN false
         when #{maxGroupLevel} = 1 then 1 = 1
