@@ -765,6 +765,16 @@
         main.id  AS taskId,
         base.bank AS bank,
         join_his.id   AS his_id,
+        CASE
+        WHEN join_his.status  = 1  THEN
+        "已提交"
+        WHEN join_his.status  = 2  THEN
+        "未提交"
+        WHEN join_his.status  = 3  THEN
+        "已打回"
+        ELSE
+        "状态异常"
+        END    AS taskTypeText,
         join_his.status AS taskStatus
         FROM
         loan_financial_plan_temp_his join_his
