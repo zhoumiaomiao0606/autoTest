@@ -717,6 +717,9 @@
         <if test="customer != null and customer != ''">
             AND customer.name LIKE CONCAT('%', #{customer} ,'%')
         </if>
+        <if test="idCard != null">
+            AND customer.id_card = #{idCard}
+        </if>
         <if test="partnerId != null">
             AND partner.id = #{partnerId}
         </if>
