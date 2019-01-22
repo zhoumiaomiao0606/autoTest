@@ -58,4 +58,7 @@ public interface TotalQueryListDOMapper {
     //抵押记录
     List<TaskListVO>   queryApplyLicensePlateDepositList(TaskListQuery taskListQuery);
 
+    //资料审核
+    List<TaskListVO>   queryMaterialReviewList(TaskListQuery taskListQuery);
+
 }
