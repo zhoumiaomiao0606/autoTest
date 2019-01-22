@@ -612,7 +612,6 @@
         <if test="taskStatus == 0">
             order by loan.id desc
         </if>
-        order by node.usertask_loan_apply_create_time
     </select>
 
     <select id="selectCarInsurance" resultType="com.yunche.loan.domain.vo.TaskListVO" parameterType="com.yunche.loan.domain.query.TaskListQuery">
