@@ -827,7 +827,10 @@
                                                                        AS bridgeRepayInterestDate,
                           third_party.repay_register_remark            AS bridgeRepayRegisterRemark,
                           third_party.lend_status                      AS bridgeLendStatus,
-                          third_party.lend_amount                      AS bridgeLendAmount
+                          third_party.lend_amount                      AS bridgeLendAmount,
+                          case when join_f.loan_amount &gt;= join_bp.remit_amount
+                          then floor(join_bp.remit_amount/100)*100
+                          else floor(join_f.loan_amount/100)*100 end   AS confThirdLoanMoney
                       </when>
 
                       <otherwise>
