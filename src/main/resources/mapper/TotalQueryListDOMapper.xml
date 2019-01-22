@@ -1308,7 +1308,7 @@
         partner.name AS partner,
         b.bank,
         e.name as salesman,
-        useGetTaskTypeText(#{taskDefinitionKey},loan_process.loan_apply,loan_process.order_status) AS taskTypeText
+        useGetTaskTypeText(#{taskDefinitionKey},loan_process.material_manage,loan_process.order_status) AS taskTypeText
 
         FROM
         loan_order main
@@ -1397,7 +1397,7 @@
         partner.name AS partner,
         b.bank,
         e.name as salesman,
-        useGetTaskTypeText(#{taskDefinitionKey},loan_process.loan_apply,loan_process.order_status) AS taskTypeText
+        useGetTaskTypeText(#{taskDefinitionKey},loan_process.material_print_review,loan_process.order_status) AS taskTypeText
 
         FROM
         loan_order main
@@ -1484,7 +1484,7 @@
         partner.name AS partner,
         b.bank,
         e.name as salesman,
-        useGetTaskTypeText(#{taskDefinitionKey},loan_process.loan_apply,loan_process.order_status) AS taskTypeText
+        useGetTaskTypeText(#{taskDefinitionKey},loan_process.apply_license_plate_deposit_info,loan_process.order_status) AS taskTypeText
 
         FROM
         loan_order main
@@ -1585,7 +1585,7 @@
         partner.partner_group as partnerGroup,
         b.bank,
         e.name as salesman,
-        useGetTaskTypeText(#{taskDefinitionKey},loan_process.loan_apply,loan_process.order_status) AS taskTypeText
+        useGetTaskTypeText(#{taskDefinitionKey},loan_process.material_print_review,loan_process.order_status) AS taskTypeText
 
         FROM
         loan_order main
