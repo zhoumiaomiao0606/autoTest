@@ -1399,7 +1399,7 @@
         LEFT JOIN loan_base_info b ON main.loan_base_info_id = b.id
         LEFT JOIN employee e ON b.salesman_id = e.id
         LEFT JOIN partner ON b.partner_id = partner.id
-        left join task_distribution taskdis on main.id = taskdis.task_id and task.taskKey = 'usertask_material_print_review'
+        left join task_distribution taskdis on main.id = taskdis.task_id and taskdis.task_key = 'usertask_material_print_review'
         <where>
             <if test="taskStatus !=null" >
                 AND
