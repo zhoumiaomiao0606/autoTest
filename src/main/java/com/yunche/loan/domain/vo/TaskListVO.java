@@ -176,6 +176,8 @@ public class TaskListVO {
 
 
     private String orderRisk;
+
+    private String confThirdLoanMoney;
 }
 
 
