@@ -687,7 +687,8 @@
             employee.`name` AS salesman,
             partner.`name` AS partner,
             main.id  AS taskId,
-            base.bank AS bank
+            base.bank AS bank,
+            partner.partner_code AS partnerCode
         FROM
         loan_order main
         LEFT JOIN loan_process deputy ON main.id = deputy.order_id
