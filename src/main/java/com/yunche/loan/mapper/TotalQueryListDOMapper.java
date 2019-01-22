@@ -30,6 +30,10 @@ public interface TotalQueryListDOMapper {
 
     List<TaskListVO> selectBusinessPay(TaskListQuery taskListQuery);
 
+    List<TaskListVO> selectLoanReview(TaskListQuery taskListQuery);
+
+    List<TaskListVO> selectRemitReview(TaskListQuery taskListQuery);
+
     // 视频面签登记
     List<TaskListVO> selectLoanInfoRecordList(TaskListQuery taskListQuery);
 
@@ -38,6 +42,9 @@ public interface TotalQueryListDOMapper {
 
     //金融方案修改
     List<TaskListVO>   selectFinancialSchemeModifyApplyList(TaskListQuery taskListQuery);
+
+    //业务审批单
+    List<TaskListVO> selectBusinessReviewList(TaskListQuery taskListQuery);
 
     //贷款申请
     List<TaskListVO>   queryLoanApplyList(TaskListQuery taskListQuery);
