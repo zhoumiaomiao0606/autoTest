@@ -7,8 +7,8 @@
         bankId, bankName, taskId, taskReceiverId, taskReceiverName
     </sql>
 
-    <!-- materialReview -->
-    <select id="materialReview" parameterType="com.yunche.loan.domain.query.OrderListQuery"
+    <!-- query -->
+    <select id="query" parameterType="com.yunche.loan.domain.query.OrderListQuery"
             resultType="com.yunche.loan.domain.vo.OrderListVO">
 
         SELECT
@@ -29,7 +29,18 @@
 
         WHERE p.order_status = 1
 
-        AND p.material_review = 1
+        <if test="taskStatus == 0">
+            AND p.material_review != 0
+        </if>
+        <if test="taskStatus == 1">
+            AND p.material_review = 1
+        </if>
+        <if test="taskStatus == 2">
+            AND p.material_review = 2
+        </if>
+        <if test="taskStatus == 3">
+            AND p.material_review = 3
+        </if>
 
         <if test="orderId != null and orderId != '' ">
             AND o.`id` = #{orderId}
@@ -39,6 +50,12 @@
         </if>
         <if test="custName != null and custName != '' ">
             AND c.`name` LIKE CONCAT('%', #{custName}, '%')
+        </if>
+        <if test="salesmanIdList != null and salesmanIdList.size() > 0">
+            AND b.`salesman_id` IN
+            <foreach collection="salesmanIdList" item="salesmanId" open="(" close=")" separator=",">
+                #{salesmanId}
+            </foreach>
         </if>
         <if test="bankNameList != null and bankNameList.size() > 0">
             AND b.`bank` IN

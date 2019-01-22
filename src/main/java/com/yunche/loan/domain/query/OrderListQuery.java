@@ -11,6 +11,10 @@ import java.util.Set;
 @Data
 public class OrderListQuery extends BaseQuery {
 
+    private String taskDefinitionKey;
+
+    private Byte taskStatus;
+
     private Long orderId;
 
     private String custName;

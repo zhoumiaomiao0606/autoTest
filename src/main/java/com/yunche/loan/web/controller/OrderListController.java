@@ -24,9 +24,9 @@ public class OrderListController {
     private OrderListService orderListService;
 
 
-    @PostMapping(value = "/materialReview", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultBean<List<OrderListVO>> materialReview(@RequestBody OrderListQuery query) {
-        PageInfo<OrderListVO> pageInfo = orderListService.materialReview(query);
+    @PostMapping(value = "/query", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResultBean<List<OrderListVO>> query(@RequestBody OrderListQuery query) {
+        PageInfo<OrderListVO> pageInfo = orderListService.query(query);
         return ResultBean.ofPageInfo(pageInfo);
     }
 }

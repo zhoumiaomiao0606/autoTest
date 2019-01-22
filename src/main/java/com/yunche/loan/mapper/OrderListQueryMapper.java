@@ -11,5 +11,5 @@ import java.util.List;
  */
 public interface OrderListQueryMapper {
 
-    List<OrderListVO> materialReview(OrderListQuery query);
+    List<OrderListVO> query(OrderListQuery query);
 }

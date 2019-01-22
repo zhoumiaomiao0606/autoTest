@@ -10,5 +10,5 @@ import com.yunche.loan.domain.vo.OrderListVO;
  */
 public interface OrderListService {
 
-    PageInfo<OrderListVO> materialReview(OrderListQuery query);
+    PageInfo<OrderListVO> query(OrderListQuery query);
 }

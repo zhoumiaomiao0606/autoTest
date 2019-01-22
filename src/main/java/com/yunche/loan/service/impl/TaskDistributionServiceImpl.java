@@ -438,6 +438,7 @@ public class TaskDistributionServiceImpl implements TaskDistributionService {
 
         TaskDistributionDO taskDistributionDO = taskDistributionDOMapper.selectByPrimaryKey(taskId, taskKey);
         if (taskDistributionDO == null) {
+            // 未领取
             taskDisVO.setStatus("1");
             return taskDisVO;
         } else {
@@ -466,7 +467,7 @@ public class TaskDistributionServiceImpl implements TaskDistributionService {
         Assert.isTrue(!CollectionUtils.isEmpty(taskIdList), "任务id不能为空");
         Assert.isTrue(StringUtils.isNotBlank(taskKey), "taskKey不能为空");
 
-        List<Long> taskIdList_ = Lists.newArrayList();
+        List<Long> taskIdList_ = Lists.newCopyOnWriteArrayList();
         Map<Long, TaskDisVO> map = Maps.newHashMap();
 
         List<TaskDistributionDO> taskDistributionDOList = taskDistributionDOMapper.list(taskKey, taskIdList);
@@ -492,26 +493,26 @@ public class TaskDistributionServiceImpl implements TaskDistributionService {
                     });
         }
 
-        taskIdList.removeAll(taskIdList_);
-
-        if (!CollectionUtils.isEmpty(taskIdList)) {
-
-            Collection<Long> synchronizedTaskIdList = Collections.synchronizedCollection(taskIdList);
-
-            synchronizedTaskIdList.parallelStream()
-                    .filter(Objects::nonNull)
-                    .forEach(taskId -> {
-
-                        TaskDisVO taskDisVO = new TaskDisVO();
-
-                        // 未领取
-                        taskDisVO.setStatus("1");
-//                        taskDisVO.setSendee();
-//                        taskDisVO.setSendeeName();
-
-                        map.put(taskId, taskDisVO);
-                    });
-        }
+//        taskIdList.removeAll(taskIdList_);
+//
+//        if (!CollectionUtils.isEmpty(taskIdList)) {
+//
+//            Collection<Long> synchronizedTaskIdList = Collections.synchronizedCollection(taskIdList);
+//
+//            synchronizedTaskIdList.parallelStream()
+//                    .filter(Objects::nonNull)
+//                    .forEach(taskId -> {
+//
+//                        TaskDisVO taskDisVO = new TaskDisVO();
+//
+//                        // 未领取
+//                        taskDisVO.setStatus("1");
+////                        taskDisVO.setSendee();
+////                        taskDisVO.setSendeeName();
+//
+//                        map.put(taskId, taskDisVO);
+//                    });
+//        }
 
         return map;
     }

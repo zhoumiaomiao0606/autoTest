@@ -5,7 +5,8 @@ import com.github.pagehelper.PageInfo;
 import com.google.common.collect.Lists;
 import com.yunche.loan.config.cache.BankCache;
 import com.yunche.loan.config.cache.PartnerCache;
-import com.yunche.loan.config.constant.LoanProcessEnum;
+import com.yunche.loan.config.constant.EmployeeConst;
+import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.util.SessionUtils;
 import com.yunche.loan.domain.entity.EmployeeDO;
 import com.yunche.loan.domain.entity.PartnerDO;
@@ -17,6 +18,7 @@ import com.yunche.loan.mapper.LoanQueryDOMapper;
 import com.yunche.loan.mapper.OrderListQueryMapper;
 import com.yunche.loan.mapper.UserGroupRelaBankDOMapper;
 import com.yunche.loan.service.*;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
@@ -64,24 +66,30 @@ public class OrderListServiceImpl implements OrderListService {
 
 
     @Override
-    public PageInfo<OrderListVO> materialReview(OrderListQuery query) {
+    public PageInfo<OrderListVO> query(OrderListQuery query) {
+        Assert.isTrue(StringUtils.isNotBlank(query.getTaskDefinitionKey()), "taskDefinitionKey不能为空");
+        Assert.notNull(query.getTaskStatus(), "taskStatus不能为空");
 
         // check
-        permissionService.checkTaskPermission(LoanProcessEnum.MATERIAL_REVIEW.getCode());
+        permissionService.checkTaskPermission(query.getTaskDefinitionKey());
 
-        // 内部员工
         EmployeeDO loginUser = SessionUtils.getLoginUser();
-        query.setBankNameList(getUserHavBankNameList(loginUser.getId()));
-        query.setPartnerIdList(getUserHaveBizAreaPartnerId(loginUser.getId()));
-
-        // 合伙人
-        query.setSalesmanIdList(getUserHavSalesmanIdList(loginUser.getId()));
+        if (EmployeeConst.TYPE_ZS.equals(loginUser.getType())) {
+            // 内部员工
+            query.setBankNameList(getUserHavBankNameList(loginUser.getId()));
+            query.setPartnerIdList(getUserHaveBizAreaPartnerId(loginUser.getId()));
+        } else if (EmployeeConst.TYPE_WB.equals(loginUser.getType())) {
+            // 合伙人
+            query.setSalesmanIdList(getUserHavSalesmanIdList(loginUser.getId()));
+        } else {
+            throw new BizException("用户类型非法：" + loginUser.getType());
+        }
 
         PageHelper.startPage(query.getPageIndex(), query.getPageSize(), true);
-        List<OrderListVO> orderListVOList = orderListQueryMapper.materialReview(query);
+        List<OrderListVO> orderListVOList = orderListQueryMapper.query(query);
 
         // fillMsg
-        fillMsg(orderListVOList, LoanProcessEnum.MATERIAL_REVIEW.getCode());
+        fillMsg(orderListVOList, query.getTaskDefinitionKey());
 
         PageInfo<OrderListVO> pageInfo = PageInfo.of(orderListVOList);
 
@@ -94,7 +102,7 @@ public class OrderListServiceImpl implements OrderListService {
             return;
         }
 
-        List<Long> orderIdList = Lists.newArrayList();
+        List<Long> orderIdList = Lists.newCopyOnWriteArrayList();
 
         Collection<OrderListVO> synchronizedOrderListVOList = Collections.synchronizedCollection(orderListVOList);
 
@@ -118,18 +126,20 @@ public class OrderListServiceImpl implements OrderListService {
 
         // task
         Map<Long, TaskDisVO> taskMap = taskDistributionService.list(taskKey, orderIdList);
-        synchronizedOrderListVOList.parallelStream()
-                .filter(Objects::nonNull)
-                .forEach(e -> {
+        if (!CollectionUtils.isEmpty(taskMap)) {
+            synchronizedOrderListVOList.parallelStream()
+                    .filter(Objects::nonNull)
+                    .forEach(e -> {
 
-                    TaskDisVO taskDisVO = taskMap.get(Long.valueOf(e.getOrderId()));
-                    if (null != taskDisVO) {
-                        e.setTaskId(e.getOrderId());
-                        e.setTaskReceiverId(taskDisVO.getSendee());
-                        e.setTaskReceiverName(taskDisVO.getSendeeName());
-                        e.setTaskStatus(taskDisVO.getStatus());
-                    }
-                });
+                        TaskDisVO taskDisVO = taskMap.get(Long.valueOf(e.getOrderId()));
+                        if (null != taskDisVO) {
+                            e.setTaskId(e.getOrderId());
+                            e.setTaskReceiverId(taskDisVO.getSendee());
+                            e.setTaskReceiverName(taskDisVO.getSendeeName());
+                            e.setTaskDisStatus(taskDisVO.getStatus());
+                        }
+                    });
+        }
     }
 
     private Set<String> getUserHavSalesmanIdList(Long userId) {
