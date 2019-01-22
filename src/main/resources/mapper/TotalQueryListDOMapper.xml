@@ -475,6 +475,7 @@
             else 1=2
             end
         </if>
+        order by loan.gmt_create
     </select>
 
     <select id="selectLoanInfoRecordList" resultType="com.yunche.loan.domain.vo.TaskListVO" parameterType="com.yunche.loan.domain.query.TaskListQuery">
@@ -539,6 +540,7 @@
         <if test="salesmanId != null">
             AND base.salesman_id = #{salesmanId}
         </if>
+        order by main.gmt_create
     </select>
 
     <select id="selectVisitDoor" resultType="com.yunche.loan.domain.vo.TaskListVO" parameterType="com.yunche.loan.domain.query.TaskListQuery">
@@ -602,6 +604,8 @@
         <if test="loanBank != null">
             AND base.bank = #{loanBank}
         </if>
+
+        order by loan.gmt_create
     </select>
 
     <select id="selectCarInsurance" resultType="com.yunche.loan.domain.vo.TaskListVO" parameterType="com.yunche.loan.domain.query.TaskListQuery">
@@ -664,6 +668,7 @@
         <if test="loanBank != null">
             AND base.bank = #{loanBank}
         </if>
+        order by loan.gmt_create
     </select>
 
     <select id="selectVehicleInformationList" resultType="com.yunche.loan.domain.vo.TaskListVO" parameterType="com.yunche.loan.domain.query.TaskListQuery">
@@ -738,6 +743,7 @@
         <if test="endCreditGmtCreate != null">
             AND TO_DAYS(node.usertask_credit_apply_create_time) &lt;= TO_DAYS(#{endCreditGmtCreate})
         </if>
+        order by main.gmt_create
     </select>
 
     <select id="selectFinancialSchemeModifyApplyList" resultType="com.yunche.loan.domain.vo.TaskListVO" parameterType="com.yunche.loan.domain.query.TaskListQuery">
@@ -778,6 +784,7 @@
         <if test="loanBank != null">
             AND base.bank = #{loanBank}
         </if>
+        order by main.gmt_create
     </select>
 
 
@@ -844,7 +851,7 @@
         <if test="supplementType != null">
             AND supplement.type = #{supplementType}
         </if>
-
+        order by loan.gmt_create
     </select>
     <select id="selectBusinessPay" resultType="com.yunche.loan.domain.vo.TaskListVO" parameterType="com.yunche.loan.domain.query.TaskListQuery">
         select
@@ -923,7 +930,7 @@
             else 1=2
             end
         </if>
-
+        order by loan.gmt_create
 
     </select>
 
@@ -988,6 +995,7 @@
         <if test="loanBank != null">
             AND base.bank = #{loanBank}
         </if>
+        order by main.gmt_create
     </select>
     <select id="selectLoanReview" resultType="com.yunche.loan.domain.vo.TaskListVO" parameterType="com.yunche.loan.domain.query.TaskListQuery">
         SELECT
@@ -1081,6 +1089,7 @@
         <if test="endLoanGmtCreate != null">
             AND TO_DAYS(node.usertask_loan_apply_create_time) &lt;= TO_DAYS(#{endLoanGmtCreate})
         </if>
+        order by loan.gmt_create
     </select>
     <select id="selectRemitReview" resultType="com.yunche.loan.domain.vo.TaskListVO" parameterType="com.yunche.loan.domain.query.TaskListQuery">
         select
@@ -1193,5 +1202,6 @@
         <if test="maxRemitAmount != null">
             AND join_bp.remit_amount &lt;= #{maxRemitAmount}
         </if>
+        order by loan.gmt_create
     </select>
 </mapper>
