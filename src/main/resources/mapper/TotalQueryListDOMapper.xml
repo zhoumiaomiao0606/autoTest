@@ -423,6 +423,7 @@
           left join loan_car_info car on car.id = loan.loan_car_info_id
           LEFT JOIN vehicle_information vehicle ON vehicle.id = loan.vehicle_information_id
           left join loan_process process on process.order_id = loan.id
+          left join current_node_manager node on node.order_id = loan.id
         where
         case when #{taskStatus} = 0 then process.install_gps != 0
         else process.install_gps = #{taskStatus} and process.order_status = 1 end
@@ -476,9 +477,7 @@
             else 1=2
             end
         </if>
-        <if test="taskStatus == 0">
-            order by loan.id desc
-        </if>
+        order by node.usertask_loan_apply_create_time
     </select>
 
     <select id="selectLoanInfoRecordList" resultType="com.yunche.loan.domain.vo.TaskListVO" parameterType="com.yunche.loan.domain.query.TaskListQuery">
@@ -563,6 +562,7 @@
         left join partner par on par.id = base.partner_id
         left join loan_customer cus on cus.id = loan.loan_customer_id
         LEFT JOIN employee employee ON employee.id = base.salesman_id
+        left join current_node_manager node on node.order_id = loan.id
         where  case when #{taskStatus} = 0 then process.visit_verify != 0
         when #{taskStatus} = 2 then process.visit_verify = 2 or process.visit_verify = 3 and process.order_status = 1
         else process.visit_verify = #{taskStatus} and process.order_status = 1 end
@@ -612,6 +612,7 @@
         <if test="taskStatus == 0">
             order by loan.id desc
         </if>
+        order by node.usertask_loan_apply_create_time
     </select>
 
     <select id="selectCarInsurance" resultType="com.yunche.loan.domain.vo.TaskListVO" parameterType="com.yunche.loan.domain.query.TaskListQuery">
@@ -629,6 +630,7 @@
         left join loan_base_info base on base.id = loan.loan_base_info_id
         left join partner par on par.id = base.partner_id
         left join loan_customer cus on cus.id = loan.loan_customer_id
+        left join current_node_manager node on node.order_id = loan.id
         where case when #{taskStatus} = 0 then process.car_insurance != 0
         else process.car_insurance = #{taskStatus} and process.order_status = 1 end
         AND CASE WHEN #{maxGroupLevel}  = 0 THEN false
@@ -674,7 +676,7 @@
         <if test="loanBank != null">
             AND base.bank = #{loanBank}
         </if>
-        order by loan.gmt_create
+        order by node.usertask_loan_apply_create_time
     </select>
 
     <select id="selectVehicleInformationList" resultType="com.yunche.loan.domain.vo.TaskListVO" parameterType="com.yunche.loan.domain.query.TaskListQuery">
@@ -812,8 +814,9 @@
         left join partner par on par.id = base.partner_id
         left join loan_customer cus on cus.id = loan.loan_customer_id
 		left join loan_info_supplement supplement on supplement.order_id = loan.id
-        where   case when #{taskStatus} = 0 then loan_info_supplement.status  != 0
-        else loan_info_supplement.status = #{taskStatus} and process.order_status = 1 end
+        left join current_node_manager node on node.order_id = loan.id
+        where   case when #{taskStatus} = 0 then supplement.status  != 0
+        else supplement.status = #{taskStatus} and process.order_status = 1 end
         AND CASE WHEN #{maxGroupLevel}  = 0 THEN false
         when #{maxGroupLevel} = 1 then 1 = 1
         <if test="juniorIds != null and juniorIds.size() > 0">
@@ -857,7 +860,7 @@
         <if test="supplementType != null">
             AND supplement.type = #{supplementType}
         </if>
-        order by loan.gmt_create
+        order by node.usertask_loan_apply_create_time
     </select>
     <select id="selectBusinessPay" resultType="com.yunche.loan.domain.vo.TaskListVO" parameterType="com.yunche.loan.domain.query.TaskListQuery">
         select
@@ -874,6 +877,7 @@
         left join loan_base_info base on base.id = loan.loan_base_info_id
         left join partner par on par.id = base.partner_id
         left join loan_customer cus on cus.id = loan.loan_customer_id
+        left join current_node_manager node on node.order_id = loan.id
         where case when #{taskStatus} = 0 then process.business_pay != 0
         else process.business_pay = #{taskStatus} and process.order_status = 1 end
         AND CASE WHEN #{maxGroupLevel}  = 0 THEN false
@@ -936,7 +940,7 @@
             else 1=2
             end
         </if>
-        order by loan.gmt_create
+        order by node.usertask_loan_apply_create_time
 
     </select>
 
@@ -1095,7 +1099,7 @@
         <if test="endLoanGmtCreate != null">
             AND TO_DAYS(node.usertask_loan_apply_create_time) &lt;= TO_DAYS(#{endLoanGmtCreate})
         </if>
-        order by loan.gmt_create
+        order by node.usertask_loan_apply_create_time
     </select>
     <select id="selectRemitReview" resultType="com.yunche.loan.domain.vo.TaskListVO" parameterType="com.yunche.loan.domain.query.TaskListQuery">
         select
@@ -1208,7 +1212,7 @@
         <if test="maxRemitAmount != null">
             AND join_bp.remit_amount &lt;= #{maxRemitAmount}
         </if>
-        order by loan.gmt_create
+        order by node.usertask_loan_apply_create_time
     </select>
 
     <select id="queryLoanApplyList" resultType="com.yunche.loan.domain.vo.TaskListVO" parameterType="com.yunche.loan.domain.query.TaskListQuery">
