@@ -1448,7 +1448,7 @@
         loan_customer.`name` AS customer,
         loan_customer.id_card AS idCard,
         taskdis.status as taskDisStatus,
-        taskdis.task_id as taskId,
+        main.id as taskId,
         taskdis.sendee_name as receiveManName,
         loan_process.material_print_review as taskStatus,
         loan_customer.mobile,
