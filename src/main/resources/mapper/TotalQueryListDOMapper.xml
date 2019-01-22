@@ -484,6 +484,7 @@
             customer.mobile AS mobile,
             employee.`name` AS salesman,
             partner.`name` AS partner,
+            partner.id     AS partnerCode,
             main.id  AS taskId,
             base.bank as bank,
             depart.`name`as departmentName
@@ -745,8 +746,10 @@
         customer.mobile AS mobile,
         employee.`name` AS salesman,
         partner.`name` AS partner,
+        partner.id     AS partnerCode,
         main.id  AS taskId,
-        base.bank AS bank
+        base.bank AS bank,
+        join_his.id   AS his_id
         FROM
         loan_financial_plan_temp_his join_his
         left join loan_order main   on main.id          = join_his.order_id
