@@ -475,7 +475,9 @@
             else 1=2
             end
         </if>
-        order by loan.gmt_create
+        <if test="taskStatus == 0">
+            order by loan.id desc
+        </if>
     </select>
 
     <select id="selectLoanInfoRecordList" resultType="com.yunche.loan.domain.vo.TaskListVO" parameterType="com.yunche.loan.domain.query.TaskListQuery">
@@ -604,8 +606,9 @@
         <if test="loanBank != null">
             AND base.bank = #{loanBank}
         </if>
-
-        order by loan.gmt_create
+        <if test="taskStatus == 0">
+            order by loan.id desc
+        </if>
     </select>
 
     <select id="selectCarInsurance" resultType="com.yunche.loan.domain.vo.TaskListVO" parameterType="com.yunche.loan.domain.query.TaskListQuery">
