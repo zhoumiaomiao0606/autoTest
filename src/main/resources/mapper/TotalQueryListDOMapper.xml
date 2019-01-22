@@ -919,6 +919,69 @@
 
 
     </select>
+
+    <select id="selectBusinessReviewList" resultType="com.yunche.loan.domain.vo.TaskListVO" parameterType="com.yunche.loan.domain.query.TaskListQuery">
+        SELECT
+            main.id,
+            customer.`name` AS customer,
+            customer.id_card AS idCard,
+            customer.mobile AS mobile,
+            employee.`name` AS salesman,
+            partner.`name` AS partner,
+            main.id  AS taskId,
+            base.bank AS bank
+        FROM
+        loan_order main
+        LEFT JOIN loan_process deputy ON main.id = deputy.order_id
+        LEFT JOIN loan_base_info base ON base.id = main.loan_base_info_id
+        LEFT JOIN partner partner ON partner.id = base.partner_id
+        LEFT JOIN employee employee ON employee.id = base.salesman_id
+        LEFT JOIN loan_customer customer ON customer.id = main.loan_customer_id
+        left join current_node_manager node on node.order_id = main.id
+        WHERE
+        case when #{taskStatus} =0 then deputy.business_review !=0
+        else deputy.business_review = #{taskStatus} and deputy.order_status=1 end
+        AND CASE WHEN #{maxGroupLevel}  = 0 THEN false
+        when #{maxGroupLevel} = 1 then 1 = 1
+        <if test="juniorIds != null and juniorIds.size() > 0">
+            and base.salesman_id in
+            <foreach item="item" index="index" collection="juniorIds" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        else true end
+
+        and case when #{maxGroupLevel} = 3 then 1=1
+        else 1=1
+        <if test="bizAreaIdList != null and bizAreaIdList.size() > 0">
+            and partner.id in
+            <foreach item="item" index="index" collection="bizAreaIdList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="bankList != null and bankList.size() > 0">
+            and base.bank in
+            <foreach item="item" index="index" collection="bankList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        end
+        <if test="orderId != null">
+            AND main.id = #{orderId}
+        </if>
+        <if test="customer != null and customer != ''">
+            AND customer.name LIKE CONCAT('%', #{customer} ,'%')
+        </if>
+        <if test="partnerId != null">
+            AND partner.id = #{partnerId}
+        </if>
+        <if test="salesmanId != null">
+            AND base.salesman_id = #{salesmanId}
+        </if>
+        <if test="loanBank != null">
+            AND base.bank = #{loanBank}
+        </if>
+    </select>
     <select id="selectLoanReview" resultType="com.yunche.loan.domain.vo.TaskListVO" parameterType="com.yunche.loan.domain.query.TaskListQuery">
         SELECT
 		loan.id           as id,
