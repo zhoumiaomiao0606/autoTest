@@ -815,8 +815,9 @@
         cus.id_card          as idCard,
         base.bank            as bank,
 		supplement.id        as supplementOrderId,
-		supplement.type									 as supplementType,
-		useSupplementTypeTxt(supplement.type)         AS supplementTypeText
+		supplement.type								as supplementType,
+		useSupplementTypeTxt(supplement.type)        AS supplementTypeText,
+        supplement.status                            AS taskStatus
 
         from loan_order loan
         left join loan_process process on process.order_id = loan.id
