@@ -258,33 +258,33 @@ public class MaterialServiceImpl implements MaterialService {
 
     @Override
     public ResultBean<String> downSupplementFiles2OSS(Long orderId, Boolean reGenerateZip, Long infoSupplementId) {
-        return materialDownClient.downSup2OSS(orderId,infoSupplementId);
-//        Preconditions.checkNotNull(orderId, "订单编号不能为空");
-//
-//        Long customerId = null;
-//
-//        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
-//        Preconditions.checkNotNull(loanOrderDO, "订单不存在");
-//
-//        customerId = loanOrderDO.getLoanCustomerId();
-//        Preconditions.checkNotNull(customerId, "主贷人不存在");
-//
-//        if (!reGenerateZip) {
-//            // 是否已经存在文件了        26-zip包
-//            List<LoanFileDO> loanFileDOS = loanFileDOMapper.listBySupplementIdAndType(infoSupplementId, ZIP_PACK.getType(), UPLOAD_TYPE_SUPPLEMENT);
-//            if (!CollectionUtils.isEmpty(loanFileDOS)) {
-//                LoanFileDO loanFileDO = loanFileDOS.get(0);
-//                if (null != loanFileDO) {
-//                    String path = loanFileDO.getPath();
-//                    List<String> url = JSON.parseArray(path, String.class);
-//                    if (!CollectionUtils.isEmpty(url)) {
-//                        return ResultBean.ofSuccess(url.get(0));
-//                    }
-//                }
-//            }
-//        }
-//
-//        return packZipSupplementFile2OSS(orderId, infoSupplementId, customerId);
+//        return materialDownClient.downSup2OSS(orderId,infoSupplementId);
+        Preconditions.checkNotNull(orderId, "订单编号不能为空");
+
+        Long customerId = null;
+
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
+        Preconditions.checkNotNull(loanOrderDO, "订单不存在");
+
+        customerId = loanOrderDO.getLoanCustomerId();
+        Preconditions.checkNotNull(customerId, "主贷人不存在");
+
+        if (!reGenerateZip) {
+            // 是否已经存在文件了        26-zip包
+            List<LoanFileDO> loanFileDOS = loanFileDOMapper.listBySupplementIdAndType(infoSupplementId, ZIP_PACK.getType(), UPLOAD_TYPE_SUPPLEMENT);
+            if (!CollectionUtils.isEmpty(loanFileDOS)) {
+                LoanFileDO loanFileDO = loanFileDOS.get(0);
+                if (null != loanFileDO) {
+                    String path = loanFileDO.getPath();
+                    List<String> url = JSON.parseArray(path, String.class);
+                    if (!CollectionUtils.isEmpty(url)) {
+                        return ResultBean.ofSuccess(url.get(0));
+                    }
+                }
+            }
+        }
+
+        return packZipSupplementFile2OSS(orderId, infoSupplementId, customerId);
     }
 
     public ResultBean<String> packZipSupplementFile2OSS(Long orderId, Long infoSupplementId, Long customerId) {
