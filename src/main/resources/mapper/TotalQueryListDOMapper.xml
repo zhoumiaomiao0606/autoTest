@@ -406,6 +406,7 @@
           cus.id_card                             as idCard,
           emp.`name`							  							as salesman,
           par.NAME                                as partner,
+          par.partner_code                        as partnerCode,
           base.bank                               as bank,
           car.car_type														as carType,
           useGetSmallCarName ( car.car_detail_id ) AS carName,
