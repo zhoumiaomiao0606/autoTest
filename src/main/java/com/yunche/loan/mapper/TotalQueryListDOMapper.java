@@ -28,6 +28,7 @@ public interface TotalQueryListDOMapper {
 
     List<TaskListVO> selectSupplementInfo(TaskListQuery taskListQuery);
 
+    List<TaskListVO> selectBusinessPay(TaskListQuery taskListQuery);
 
     // 视频面签登记
     List<TaskListVO> selectLoanInfoRecordList(TaskListQuery taskListQuery);

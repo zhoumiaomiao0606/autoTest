@@ -838,4 +838,84 @@
         </if>
 
     </select>
+    <select id="selectBusinessPay" resultType="com.yunche.loan.domain.vo.TaskListVO" parameterType="com.yunche.loan.domain.query.TaskListQuery">
+        select
+        loan.id       as id,
+        par.partner_code     as partnerCode,
+        par.name             as partner,
+        cus.`name`      		 as customer,
+        cus.id_card          as idCard,
+        base.bank            as bank,
+        useGetTaskTypeText(#{taskDefinitionKey},process.business_pay,process.order_status) AS taskTypeText
+
+        from loan_order loan
+        left join loan_process process on process.order_id = loan.id
+        left join loan_base_info base on base.id = loan.loan_base_info_id
+        left join partner par on par.id = base.partner_id
+        left join loan_customer cus on cus.id = loan.loan_customer_id
+        where case when #{taskStatus} = 0 then process.business_pay != 0
+        else process.business_pay = #{taskStatus} and process.order_status = 1 end
+        AND CASE WHEN #{maxGroupLevel}  = 0 THEN false
+        when #{maxGroupLevel} = 1 then 1 = 1
+        <if test="juniorIds != null and juniorIds.size() > 0">
+            and base.salesman_id in
+            <foreach item="item" index="index" collection="juniorIds" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        else true end
+
+        and case when #{maxGroupLevel} = 3 then 1=1
+        else 1=1
+        <if test="bizAreaIdList != null and bizAreaIdList.size() > 0">
+            and par.id in
+            <foreach item="item" index="index" collection="bizAreaIdList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="bankList != null and bankList.size() > 0">
+            and base.bank in
+            <foreach item="item" index="index" collection="bankList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        end
+        <if test="orderId != null">
+            AND loan.id = #{orderId}
+        </if>
+        <if test="customer != null and customer != ''">
+            AND cus.name LIKE CONCAT('%', #{customer} ,'%')
+        </if>
+        <if test="idCard != null">
+            AND cus.id_card = #{idCard}
+        </if>
+        <if test="partnerId != null">
+            AND par.id = #{partnerId}
+        </if>
+        <if test="salesmanId != null">
+            AND base.salesman_id = #{salesmanId}
+        </if>
+        <if test="loanAmountType != null">
+            <if test="loanAmountType == 1">
+                AND base.loan_amount &lt;= 100000
+            </if>
+            <if test="loanAmountType == 2">
+                AND base.loan_amount &gt; 100000 AND base.loan_amount &lt;= 300000
+            </if>
+            <if test="loanAmountType == 3">
+                AND base.loan_amount &gt; 300000
+            </if>
+        </if>
+        <if test="bizAreaId != null">
+            AND
+            case
+            when (select level from base_area where area_id = #{bizAreaId}) = 0 then 1=1
+            when (select level from base_area where area_id = #{bizAreaId}) = 1 then base.area_id in (select area_id from base_area where parent_area_id = #{bizAreaId})
+            when (select level from base_area where area_id = #{bizAreaId}) = 2 then base.area_id = #{bizAreaId}
+            else 1=2
+            end
+        </if>
+
+
+    </select>
 </mapper>
