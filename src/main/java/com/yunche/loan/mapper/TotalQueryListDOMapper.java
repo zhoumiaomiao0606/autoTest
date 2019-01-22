@@ -39,4 +39,13 @@ public interface TotalQueryListDOMapper {
     //金融方案修改
     List<TaskListVO>   selectFinancialSchemeModifyApplyList(TaskListQuery taskListQuery);
 
+    //贷款申请
+    List<TaskListVO>   queryLoanApplyList(TaskListQuery taskListQuery);
+
+    //合同套打
+    List<TaskListVO>   queryMaterialPrintList(TaskListQuery taskListQuery);
+
+    //合同归档
+    List<TaskListVO>   queryMaterialManageList(TaskListQuery taskListQuery);
+
 }
