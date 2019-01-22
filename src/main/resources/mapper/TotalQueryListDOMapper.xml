@@ -551,9 +551,10 @@
         loan.id       as id,
         par.partner_code     as partnerCode,
         par.name             as partner,
-        cus.`name`      		 as customer,
+        cus.`name`      	 as customer,
         cus.id_card          as idCard,
         base.bank            as bank,
+        employee.`name`      AS salesman,
         useGetTaskTypeText(#{taskDefinitionKey},process.visit_verify,process.order_status) AS taskTypeText
 
         from loan_order loan
@@ -561,6 +562,7 @@
         left join loan_base_info base on base.id = loan.loan_base_info_id
         left join partner par on par.id = base.partner_id
         left join loan_customer cus on cus.id = loan.loan_customer_id
+        LEFT JOIN employee employee ON employee.id = base.salesman_id
         where  case when #{taskStatus} = 0 then process.visit_verify != 0
         when #{taskStatus} = 2 then process.visit_verify = 2 or process.visit_verify = 3 and process.order_status = 1
         else process.visit_verify = #{taskStatus} and process.order_status = 1 end
