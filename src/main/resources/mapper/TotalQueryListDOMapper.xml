@@ -485,6 +485,7 @@
             customer.mobile AS mobile,
             employee.`name` AS salesman,
             partner.`name` AS partner,
+            partner.id     AS partnerCode,
             main.id  AS taskId,
             base.bank as bank,
             depart.`name`as departmentName
@@ -686,7 +687,7 @@
         WHERE
 
         case when #{taskStatus} =0 then deputy.vehicle_information !=0
-        else deputy.vehicle_information = #{taskStatus}  AND　deputy.order_status = 1
+        else deputy.vehicle_information= #{taskStatus} and deputy.`order_status` = 1
         end
         AND CASE WHEN #{maxGroupLevel}  = 0 THEN false
         when #{maxGroupLevel} = 1 then 1 = 1
@@ -719,6 +720,9 @@
         <if test="customer != null and customer != ''">
             AND customer.name LIKE CONCAT('%', #{customer} ,'%')
         </if>
+        <if test="idCard != null">
+            AND customer.id_card = #{idCard}
+        </if>
         <if test="partnerId != null">
             AND partner.id = #{partnerId}
         </if>
@@ -744,20 +748,21 @@
         customer.mobile AS mobile,
         employee.`name` AS salesman,
         partner.`name` AS partner,
+        partner.id     AS partnerCode,
         main.id  AS taskId,
-        base.bank AS bank
+        base.bank AS bank,
+        join_his.id   AS his_id
         FROM
-        loan_order main
-        left join loan_financial_plan_temp_his join_his   on main.id          = join_his.order_id
+        loan_financial_plan_temp_his join_his
+        left join loan_order main   on main.id          = join_his.order_id
         LEFT JOIN loan_base_info base ON base.id = main.loan_base_info_id
         LEFT JOIN partner partner ON partner.id = base.partner_id
         LEFT JOIN employee employee ON employee.id = base.salesman_id
         LEFT JOIN loan_customer customer ON customer.id = main.loan_customer_id
         left join current_node_manager node on node.order_id = main.id
-        WHERE
-
-        case when #{taskStatus} = 0 then join_his.status  != 0
-            else join_his.status　= #{taskStatus} end
+        WHERE 1=1 AND
+        case when #{taskStatus} = 0 then join_his.status !=0
+            else join_his.status = #{taskStatus} end
         <if test="orderId != null">
             AND main.id = #{orderId}
         </if>
