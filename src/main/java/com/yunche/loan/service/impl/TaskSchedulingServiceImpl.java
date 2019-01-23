@@ -354,6 +354,41 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
             list = totalQueryListDOMapper.selectBankCreditPend(taskListQuery);
         }else if (LoanProcessEnum.INSTALL_GPS.getCode().equals(taskListQuery.getTaskDefinitionKey())){
             list = totalQueryListDOMapper.selectCarGps(taskListQuery);
+        }else if(LoanProcessEnum.LOAN_INFO_RECORD.getCode().equals(taskListQuery.getTaskDefinitionKey())){
+            list = totalQueryListDOMapper.selectLoanInfoRecordList(taskListQuery);
+        }else if(LoanProcessEnum.VISIT_VERIFY.getCode().equals(taskListQuery.getTaskDefinitionKey())){
+            list = totalQueryListDOMapper.selectVisitDoor(taskListQuery);
+        }else if(LoanProcessEnum.CAR_INSURANCE.getCode().equals(taskListQuery.getTaskDefinitionKey())){
+            list = totalQueryListDOMapper.selectCarInsurance(taskListQuery);
+        }else if(LoanProcessEnum.VEHICLE_INFORMATION.getCode().equals(taskListQuery.getTaskDefinitionKey())){
+            list = totalQueryListDOMapper.selectVehicleInformationList(taskListQuery);
+        }else if(LoanProcessEnum.INFO_SUPPLEMENT.getCode().equals(taskListQuery.getTaskDefinitionKey())){
+            list = totalQueryListDOMapper.selectSupplementInfo(taskListQuery);
+        }else if(LoanProcessEnum.FINANCIAL_SCHEME_MODIFY_APPLY.getCode().equals(taskListQuery.getTaskDefinitionKey())){
+            list = totalQueryListDOMapper.selectFinancialSchemeModifyApplyList(taskListQuery);
+        }else if(LoanProcessEnum.BUSINESS_PAY.getCode().equals(taskListQuery.getTaskDefinitionKey())){
+            list = totalQueryListDOMapper.selectBusinessPay(taskListQuery);
+        }else if(LoanProcessEnum.BUSINESS_REVIEW.getCode().equals(taskListQuery.getTaskDefinitionKey())){
+            list = totalQueryListDOMapper.selectBusinessReviewList(taskListQuery);
+        }else if(LoanProcessEnum.LOAN_REVIEW.getCode().equals(taskListQuery.getTaskDefinitionKey())){
+            list = totalQueryListDOMapper.selectLoanReview(taskListQuery);
+        }else if(LoanProcessEnum.REMIT_REVIEW.getCode().equals(taskListQuery.getTaskDefinitionKey())){
+            list = totalQueryListDOMapper.selectRemitReview(taskListQuery);
+        }else if (LoanProcessEnum.LOAN_APPLY.getCode().equals(taskListQuery.getTaskDefinitionKey()))
+        {
+            list = totalQueryListDOMapper.queryLoanApplyList(taskListQuery);
+        }else if (LoanProcessEnum.MATERIAL_MANAGE.getCode().equals(taskListQuery.getTaskDefinitionKey()))
+        {
+            list = totalQueryListDOMapper.queryMaterialManageList(taskListQuery);
+
+        }else if (LoanProcessEnum.MATERIAL_PRINT_REVIEW.getCode().equals(taskListQuery.getTaskDefinitionKey()))
+        {
+            list = totalQueryListDOMapper.queryMaterialPrintList(taskListQuery);
+
+        }else if (LoanProcessEnum.APPLY_LICENSE_PLATE_DEPOSIT_INFO.getCode().equals(taskListQuery.getTaskDefinitionKey()))
+        {
+            list = totalQueryListDOMapper.queryApplyLicensePlateDepositList(taskListQuery);
+
         }
 
         PageInfo<TaskListVO> pageInfo = new PageInfo<>(list);
