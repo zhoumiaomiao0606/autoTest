@@ -376,6 +376,16 @@
         <if test="customer != null and customer != ''">
             AND customer.name LIKE CONCAT('%', #{customer} ,'%')
         </if>
+        <if test="relevanceCustomerName != null">
+            AND
+            main.id in
+            (
+            (select id from loan_order where loan_customer_id
+            in (select principal_cust_id from loan_customer where name = #{relevanceCustomerName})
+            and loan_customer_id not in (select id from loan_customer where name = #{relevanceCustomerName})
+            )
+            )
+        </if>
         <if test="loanBank != null">
             AND base.bank = #{loanBank}
         </if>
