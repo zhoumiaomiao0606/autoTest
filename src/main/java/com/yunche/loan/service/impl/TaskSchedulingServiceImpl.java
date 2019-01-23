@@ -313,9 +313,7 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
 
     @Override
     public ResultBean<List<TaskListVO>> queryNewTaskList(TaskListQuery taskListQuery) throws BizException {
-
         Preconditions.checkNotNull(taskListQuery.getTaskStatus(), "taskStatus不能为空");
-
 
         // 节点校验
         if (!LoanProcessEnum.havingCode(taskListQuery.getTaskDefinitionKey())) {
@@ -384,6 +382,8 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
             list = totalQueryListDOMapper.queryMaterialPrintList(taskListQuery);
         } else if (LoanProcessEnum.APPLY_LICENSE_PLATE_DEPOSIT_INFO.getCode().equals(taskListQuery.getTaskDefinitionKey())) {
             list = totalQueryListDOMapper.queryApplyLicensePlateDepositList(taskListQuery);
+        } else if (LoanProcessEnum.TELEPHONE_VERIFY.getCode().equals(taskListQuery.getTaskDefinitionKey())) {
+            list = totalQueryListDOMapper.queryTelephoneVerifyList(taskListQuery);
         }
 
         PageInfo<TaskListVO> pageInfo = new PageInfo<>(list);

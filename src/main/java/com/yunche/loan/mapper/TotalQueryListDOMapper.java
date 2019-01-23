@@ -60,4 +60,6 @@ public interface TotalQueryListDOMapper {
     //资料审核
     List<TaskListVO> queryMaterialReviewList(TaskListQuery taskListQuery);
 
+    // 电审
+    List<TaskListVO> queryTelephoneVerifyList(TaskListQuery taskListQuery);
 }
