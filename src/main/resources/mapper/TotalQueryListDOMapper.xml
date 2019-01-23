@@ -411,10 +411,14 @@
             else 1=2
             end
         </if>
-        and
-        case when #{taskStatus} = 1 then order by node.usertask_loan_apply_create_time
-             else  order by main.gmt_create
-        end
+        <choose>
+            <when test="taskStatus == 1">
+                order by node.usertask_loan_apply_create_time DESC
+            </when>
+            <otherwise>
+                order by main.gmt_create
+            </otherwise>
+        </choose>
     </select>
 
     <select id="selectCarGps" resultType="com.yunche.loan.domain.vo.TaskListVO" parameterType="com.yunche.loan.domain.query.TaskListQuery">
