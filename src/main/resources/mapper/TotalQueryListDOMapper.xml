@@ -1325,7 +1325,7 @@
                 AND main.id = #{orderId}
             </if>
             <if test="idCard != null and idCard != '' ">
-                AND loan_customer.idCard = #{idCard}
+                AND loan_customer.id_card = #{idCard}
             </if>
         </where>
         <choose>
@@ -1419,7 +1419,7 @@
                 AND main.id = #{orderId}
             </if>
             <if test="idCard != null and idCard != '' ">
-                AND loan_customer.idCard = #{idCard}
+                AND loan_customer.id_card = #{idCard}
             </if>
         </where>
         <choose>
@@ -1518,7 +1518,7 @@
                 AND main.id = #{orderId}
             </if>
             <if test="idCard != null and idCard != '' ">
-                AND loan_customer.idCard = #{idCard}
+                AND loan_customer.id_card = #{idCard}
             </if>
         </where>
         <choose>
@@ -1616,7 +1616,7 @@
                 AND main.id = #{orderId}
             </if>
             <if test="idCard != null and idCard != '' ">
-                AND loan_customer.idCard = #{idCard}
+                AND loan_customer.id_card = #{idCard}
             </if>
             <if test="bizAreaId != null">
                 AND
