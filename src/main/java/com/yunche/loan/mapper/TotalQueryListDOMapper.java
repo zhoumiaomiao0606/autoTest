@@ -17,6 +17,13 @@ public interface TotalQueryListDOMapper {
 
     List<Long> selectProcessBankOrder(@Param("transCode") String transCode);
 
+    List<Long> selectApplyInstalmentException(@Param("transCode") String transCode);
+
+    List<Long> selectApplyInstalmentProcess(@Param("transCode") String transCode);
+
+    List<Long> selectApplyInstalmentBack(@Param("transCode") String transCode);
+
+
     //征信申请
     List<TaskListVO> selectApplyCredit(TaskListQuery taskListQuery);
 
@@ -33,6 +40,8 @@ public interface TotalQueryListDOMapper {
     List<TaskListVO> selectLoanReview(TaskListQuery taskListQuery);
 
     List<TaskListVO> selectRemitReview(TaskListQuery taskListQuery);
+
+    List<TaskListVO> selectApplyInstalment(TaskListQuery taskListQuery);
 
     // 视频面签登记
     List<TaskListVO> selectLoanInfoRecordList(TaskListQuery taskListQuery);

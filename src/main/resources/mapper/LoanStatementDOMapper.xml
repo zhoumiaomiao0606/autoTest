@@ -1524,7 +1524,9 @@
         financial.car_price  AS carPrice,
         financial.down_payment_money   AS downPaymentMoney,
         remit.remit_amount             AS remitAmount,
-        ''                             AS lendAmount,
+        case when financial.loan_amount &gt;= remit.remit_amount
+        then floor(remit.remit_amount/100)*100
+        else floor(financial.loan_amount/100)*100 end AS lendAmount,
         conf_third.loan_time           AS loanTime,
         conf_third.year_rate           AS interestRate,
         loan.id                        AS loanForm,

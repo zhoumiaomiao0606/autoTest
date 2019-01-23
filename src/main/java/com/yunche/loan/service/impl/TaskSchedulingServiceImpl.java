@@ -829,6 +829,17 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
 
             taskListQuery.setBankInterfaceSerialOrderidList(bankInterfaceSerialOrderidList);
         }
+        if(LoanProcessEnum.APPLY_INSTALMENT.getCode().equals(taskListQuery.getTaskDefinitionKey())){
+            if("exception".equals(taskListQuery.getSerialStatus())){
+                bankInterfaceSerialOrderidList = totalQueryListDOMapper.selectApplyInstalmentException(taskListQuery.getTransCode());
+            }else if("process".equals(taskListQuery.getSerialStatus())){
+                bankInterfaceSerialOrderidList = totalQueryListDOMapper.selectApplyInstalmentProcess(taskListQuery.getTransCode());
+            }else if("back".equals(taskListQuery.getSerialStatus())){
+                bankInterfaceSerialOrderidList = totalQueryListDOMapper.selectApplyInstalmentBack(taskListQuery.getTransCode());
+            }
+
+            taskListQuery.setBankInterfaceSerialOrderidList(bankInterfaceSerialOrderidList);
+        }
         EmployeeDO loginUser = SessionUtils.getLoginUser();
         Set<String> juniorIds = employeeService.getSelfAndCascadeChildIdList(loginUser.getId());
         Long maxGroupLevel = taskSchedulingDOMapper.selectMaxGroupLevel(loginUser.getId());
@@ -884,6 +895,8 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         {
             list = totalQueryListDOMapper.queryApplyLicensePlateDepositList(taskListQuery);
 
+        }else if(LoanProcessEnum.APPLY_INSTALMENT.getCode().equals(taskListQuery.getTaskDefinitionKey())){
+            list = totalQueryListDOMapper.selectApplyInstalment(taskListQuery);
         }
 
         PageInfo<TaskListVO> pageInfo = new PageInfo<>(list);
@@ -912,6 +925,17 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
 
             taskListQuery.setBankInterfaceSerialOrderidList(bankInterfaceSerialOrderidList);
         }
+        if(LoanProcessEnum.APPLY_INSTALMENT.getCode().equals(taskListQuery.getTaskDefinitionKey())){
+            if("exception".equals(taskListQuery.getSerialStatus())){
+                bankInterfaceSerialOrderidList = totalQueryListDOMapper.selectApplyInstalmentException(taskListQuery.getTransCode());
+            }else if("process".equals(taskListQuery.getSerialStatus())){
+                bankInterfaceSerialOrderidList = totalQueryListDOMapper.selectApplyInstalmentProcess(taskListQuery.getTransCode());
+            }else if("back".equals(taskListQuery.getSerialStatus())){
+                bankInterfaceSerialOrderidList = totalQueryListDOMapper.selectApplyInstalmentBack(taskListQuery.getTransCode());
+            }
+
+            taskListQuery.setBankInterfaceSerialOrderidList(bankInterfaceSerialOrderidList);
+        }
         EmployeeDO loginUser = SessionUtils.getLoginUser();
         Set<String> juniorIds = employeeService.getSelfAndCascadeChildIdList(loginUser.getId());
         Long maxGroupLevel = taskSchedulingDOMapper.selectMaxGroupLevel(loginUser.getId());
@@ -927,6 +951,8 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         }else if(LoanProcessEnum.BANK_CREDIT_RECORD.getCode().equals(taskListQuery.getTaskDefinitionKey())){
             list = totalQueryListDOMapper.selectBankCreditPend(taskListQuery);
 
+        }else if(LoanProcessEnum.APPLY_INSTALMENT.getCode().equals(taskListQuery.getTaskDefinitionKey())){
+            list = totalQueryListDOMapper.selectApplyInstalment(taskListQuery);
         }
         long count =0;
         if(list != null){

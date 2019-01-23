@@ -262,6 +262,9 @@
                                       #{item}
                                   </foreach>
                               </if>
+                              <if test="bankInterfaceSerialOrderidList == null or bankInterfaceSerialOrderidList.size() == 0">
+                                  AND loan.id = 1
+                              </if>
                           </when>
                       </choose>
                   </if>
@@ -1660,5 +1663,144 @@
             </otherwise>
         </choose>
 
+    </select>
+    <select id="selectApplyInstalment" resultType="com.yunche.loan.domain.vo.TaskListVO" parameterType="com.yunche.loan.domain.query.TaskListQuery">
+        SELECT
+        loan.id as id,
+        cus.`name` as customer,
+        cus.id_card as idCard,
+        cus.mobile as mobile,
+        emp.`name` as salesman,
+        par.`name` as partner,
+        base.bank as bank,
+        plan.loan_amount as loanAmount,
+        plan.bank_period_principal as bankPeriodPrincipal,
+        plan.loan_time as loanTime,
+        useGetTaskTypeText(#{taskDefinitionKey},process.apply_instalment,process.order_status) AS taskTypeText
+        FROM
+        loan_order loan
+        LEFT JOIN loan_process process ON process.order_id = loan.id
+        left join loan_customer cus on cus.id = loan.loan_customer_id
+        left join loan_base_info base on base.id =loan.loan_base_info_id
+        left join employee emp on emp.id = base.salesman_id
+        left join partner par on par.id = base.partner_id
+        left join loan_financial_plan plan on plan.id = loan.loan_financial_plan_id
+        WHERE
+        CASE WHEN #{maxGroupLevel}  = 0 THEN false
+        when #{maxGroupLevel} = 1 then 1 = 1
+        <if test="juniorIds != null and juniorIds.size() > 0">
+            and base.salesman_id in
+            <foreach item="item" index="index" collection="juniorIds" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        else true end
+
+        and case when #{maxGroupLevel} = 3 then 1=1
+        else 1=1
+        <if test="bizAreaIdList != null and bizAreaIdList.size() > 0">
+            and par.id in
+            <foreach item="item" index="index" collection="bizAreaIdList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="bankList != null and bankList.size() > 0">
+            and base.bank in
+            <foreach item="item" index="index" collection="bankList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        end
+        <if test="orderId != null">
+            AND loan.id = #{orderId}
+        </if>
+        <if test="customer != null and customer != ''">
+            AND cus.name LIKE CONCAT('%', #{customer} ,'%')
+        </if>
+        <if test="idCard != null">
+            AND cus.id_card = #{idCard}
+        </if>
+        <if test="partnerId != null">
+            AND par.id = #{partnerId}
+        </if>
+        <if test="salesmanId != null">
+            AND base.salesman_id = #{salesmanId}
+        </if>
+        <if test="bizAreaId != null">
+            AND
+            case
+            when (select level from base_area where area_id = #{bizAreaId}) = 0 then 1=1
+            when (select level from base_area where area_id = #{bizAreaId}) = 1 then base.area_id in (select area_id from base_area where parent_area_id = #{bizAreaId})
+            when (select level from base_area where area_id = #{bizAreaId}) = 2 then base.area_id = #{bizAreaId}
+            else 1=2
+            end
+        </if>
+        <if test="loanBank != null">
+            AND base.bank = #{loanBank}
+        </if>
+        <if test = "taskStatus != null">
+            <choose>
+                <when test="taskStatus == 0">
+                    AND process.apply_instalment != 0
+                </when>
+                <otherwise>
+                    and process.order_status = 1 and process.apply_instalment = 2
+                    <if test="serialStatus != null">
+                        <choose>
+                            <when test="serialStatus == 'except'">
+                                AND 0 =IF( ( SELECT count( 0 ) FROM bank_interface_serial WHERE trans_code = 'applydivigeneral'
+                                AND order_id = loan.id ) > 0, 1, 0 )
+                            </when>
+                        </choose>
+                        <choose>
+                            <when test="serialStatus == 'exception'  or serialStatus == 'process'  or serialStatus == 'back'">
+                                <if test="bankInterfaceSerialOrderidList != null and bankInterfaceSerialOrderidList.size() > 0">
+                                    AND loan.id in
+                                    <foreach item="item" index="index" collection="bankInterfaceSerialOrderidList" open="(" separator="," close=")">
+                                        #{item}
+                                    </foreach>
+                                </if>
+                                <if test="bankInterfaceSerialOrderidList == null or bankInterfaceSerialOrderidList.size() == 0">
+                                    AND loan.id = 1
+                                </if>
+                            </when>
+                        </choose>
+                    </if>
+                </otherwise>
+            </choose>
+        </if>
+
+    </select>
+    <select id="selectApplyInstalmentException"  parameterType="java.lang.String" resultType="java.lang.Long">
+        select  DISTINCT serial.order_id from bank_interface_serial serial
+                        inner join
+                        (
+                          select SUBSTRING_INDEX(GROUP_CONCAT(serial_no order by request_time desc separator ','),',',1)
+                          as serial_no
+                          from bank_interface_serial GROUP BY trans_code,customer_id
+                        ) orderdata on orderdata.serial_no = serial.serial_no and serial.trans_code = #{transCode}
+                        where serial.api_status !=200 or serial.status not in (0,1,2,3)
+    </select>
+    <select id="selectApplyInstalmentProcess"  parameterType="java.lang.String" resultType="java.lang.Long">
+        select DISTINCT serial.order_id from bank_interface_serial serial
+                        inner join
+                        (
+                          select SUBSTRING_INDEX(GROUP_CONCAT(serial_no order by request_time desc separator
+                          ','),',',1)
+                          as serial_no
+                          from bank_interface_serial GROUP BY trans_code,customer_id
+                        ) orderdata on orderdata.serial_no = serial.serial_no and serial.trans_code = #{transCode}
+                        where serial.api_status = 200 and serial.status = 2
+    </select>
+    <select id="selectApplyInstalmentBack"  parameterType="java.lang.String" resultType="java.lang.Long">
+         select DISTINCT serial.order_id from bank_interface_serial serial
+                                inner join
+                                (
+                                select SUBSTRING_INDEX(GROUP_CONCAT(serial_no order by request_time desc separator
+                                ','),',',1)
+                                as serial_no
+                                from bank_interface_serial GROUP BY trans_code,customer_id
+                                ) orderdata on orderdata.serial_no = serial.serial_no and serial.trans_code = #{transCode}
+                                where serial.api_status = 200 and serial.status = 3
     </select>
 </mapper>
