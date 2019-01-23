@@ -96,7 +96,7 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         PageHelper.startPage(query.getPageIndex(), query.getPageSize(), true);
         List list = taskSchedulingDOMapper.selectZhonganList(query);
         PageInfo<ZhonganListVO> pageInfo = new PageInfo<>(list);
-        return ResultBean.ofSuccess(list, new Long(pageInfo.getTotal()).intValue(), pageInfo.getPageNum(), pageInfo.getPageSize());
+        return ResultBean.ofPageInfo(pageInfo);
 
     }
 
@@ -152,7 +152,7 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         // 征信结果：截取title的[已通过/xx]
         cutTitle(list, query.getMultipartType());
 
-        return ResultBean.ofSuccess(list, new Long(pageInfo.getTotal()).intValue(), pageInfo.getPageNum(), pageInfo.getPageSize());
+        return ResultBean.ofPageInfo(pageInfo);
     }
 
     @Override
@@ -199,7 +199,7 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         List<ScheduleTaskVO> list = new ArrayList<>();
         PageInfo<ScheduleTaskVO> pageInfo = new PageInfo<>(list);
 
-        return ResultBean.ofSuccess(list, new Long(pageInfo.getTotal()).intValue(), pageInfo.getPageNum(), pageInfo.getPageSize());
+        return ResultBean.ofPageInfo(pageInfo);
     }
 
     @Override
@@ -263,7 +263,7 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         List<TaskListVO> list = taskSchedulingDOMapper.selectRoleChangeHisTaskList(taskListQuery);
         PageInfo<TaskListVO> pageInfo = new PageInfo<>(list);
 
-        return ResultBean.ofSuccess(list, new Long(pageInfo.getTotal()).intValue(), pageInfo.getPageNum(), pageInfo.getPageSize());
+        return ResultBean.ofPageInfo(pageInfo);
     }
 
     @Override
@@ -290,7 +290,7 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
 
         PageInfo<TaskListVO> pageInfo = new PageInfo<>(list);
 
-        return ResultBean.ofSuccess(list, new Long(pageInfo.getTotal()).intValue(), pageInfo.getPageNum(), pageInfo.getPageSize());
+        return ResultBean.ofPageInfo(pageInfo);
     }
 
     @Override
@@ -308,7 +308,7 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         List<TaskListVO> list = taskSchedulingDOMapper.selectCancelTaskList(taskListQuery);
         PageInfo<TaskListVO> pageInfo = new PageInfo<>(list);
 
-        return ResultBean.ofSuccess(list, new Long(pageInfo.getTotal()).intValue(), pageInfo.getPageNum(), pageInfo.getPageSize());
+        return ResultBean.ofPageInfo(pageInfo);
     }
 
     @Override
@@ -325,10 +325,10 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         // 节点权限校验
         permissionService.checkTaskPermission(taskListQuery.getTaskDefinitionKey());
         List<Long> bankInterfaceSerialOrderidList = new ArrayList<>();
-        if(LoanProcessEnum.BANK_CREDIT_RECORD.getCode().equals(taskListQuery.getTaskDefinitionKey())){
-            if("process".equals(taskListQuery.getSerialStatus())){
+        if (LoanProcessEnum.BANK_CREDIT_RECORD.getCode().equals(taskListQuery.getTaskDefinitionKey())) {
+            if ("process".equals(taskListQuery.getSerialStatus())) {
                 bankInterfaceSerialOrderidList = totalQueryListDOMapper.selectProcessBankOrder("applyCredit");
-            }else if("pending".equals(taskListQuery.getSerialStatus())){
+            } else if ("pending".equals(taskListQuery.getSerialStatus())) {
                 bankInterfaceSerialOrderidList = totalQueryListDOMapper.selectSuccessBankOrder("applyCredit");
             }
 
@@ -344,56 +344,51 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         taskListQuery.setBizAreaIdList(getUserHaveBizAreaPartnerId(loginUser.getId()));
         //获取用户可见的银行
         taskListQuery.setBankList(getUserHaveBank(loginUser.getId()));
+
         List<TaskListVO> list = new ArrayList<>();
         PageHelper.startPage(taskListQuery.getPageIndex(), taskListQuery.getPageSize(), true);
-        if(LoanProcessEnum.CREDIT_APPLY.getCode().equals(taskListQuery.getTaskDefinitionKey())){
+
+        if (LoanProcessEnum.CREDIT_APPLY.getCode().equals(taskListQuery.getTaskDefinitionKey())) {
             list = totalQueryListDOMapper.selectApplyCredit(taskListQuery);
-        }else if(LoanProcessEnum.FINANCIAL_SCHEME.getCode().equals(taskListQuery.getTaskDefinitionKey())){
+        } else if (LoanProcessEnum.FINANCIAL_SCHEME.getCode().equals(taskListQuery.getTaskDefinitionKey())) {
             list = totalQueryListDOMapper.selectTotalCusInfo(taskListQuery);
-        }else if(LoanProcessEnum.BANK_CREDIT_RECORD.getCode().equals(taskListQuery.getTaskDefinitionKey())) {
+        } else if (LoanProcessEnum.BANK_CREDIT_RECORD.getCode().equals(taskListQuery.getTaskDefinitionKey())) {
             list = totalQueryListDOMapper.selectBankCreditPend(taskListQuery);
-        }else if (LoanProcessEnum.INSTALL_GPS.getCode().equals(taskListQuery.getTaskDefinitionKey())){
+        } else if (LoanProcessEnum.INSTALL_GPS.getCode().equals(taskListQuery.getTaskDefinitionKey())) {
             list = totalQueryListDOMapper.selectCarGps(taskListQuery);
-        }else if(LoanProcessEnum.LOAN_INFO_RECORD.getCode().equals(taskListQuery.getTaskDefinitionKey())){
+        } else if (LoanProcessEnum.LOAN_INFO_RECORD.getCode().equals(taskListQuery.getTaskDefinitionKey())) {
             list = totalQueryListDOMapper.selectLoanInfoRecordList(taskListQuery);
-        }else if(LoanProcessEnum.VISIT_VERIFY.getCode().equals(taskListQuery.getTaskDefinitionKey())){
+        } else if (LoanProcessEnum.VISIT_VERIFY.getCode().equals(taskListQuery.getTaskDefinitionKey())) {
             list = totalQueryListDOMapper.selectVisitDoor(taskListQuery);
-        }else if(LoanProcessEnum.CAR_INSURANCE.getCode().equals(taskListQuery.getTaskDefinitionKey())){
+        } else if (LoanProcessEnum.CAR_INSURANCE.getCode().equals(taskListQuery.getTaskDefinitionKey())) {
             list = totalQueryListDOMapper.selectCarInsurance(taskListQuery);
-        }else if(LoanProcessEnum.VEHICLE_INFORMATION.getCode().equals(taskListQuery.getTaskDefinitionKey())){
+        } else if (LoanProcessEnum.VEHICLE_INFORMATION.getCode().equals(taskListQuery.getTaskDefinitionKey())) {
             list = totalQueryListDOMapper.selectVehicleInformationList(taskListQuery);
-        }else if(LoanProcessEnum.INFO_SUPPLEMENT.getCode().equals(taskListQuery.getTaskDefinitionKey())){
+        } else if (LoanProcessEnum.INFO_SUPPLEMENT.getCode().equals(taskListQuery.getTaskDefinitionKey())) {
             list = totalQueryListDOMapper.selectSupplementInfo(taskListQuery);
-        }else if(LoanProcessEnum.FINANCIAL_SCHEME_MODIFY_APPLY.getCode().equals(taskListQuery.getTaskDefinitionKey())){
+        } else if (LoanProcessEnum.FINANCIAL_SCHEME_MODIFY_APPLY.getCode().equals(taskListQuery.getTaskDefinitionKey())) {
             list = totalQueryListDOMapper.selectFinancialSchemeModifyApplyList(taskListQuery);
-        }else if(LoanProcessEnum.BUSINESS_PAY.getCode().equals(taskListQuery.getTaskDefinitionKey())){
+        } else if (LoanProcessEnum.BUSINESS_PAY.getCode().equals(taskListQuery.getTaskDefinitionKey())) {
             list = totalQueryListDOMapper.selectBusinessPay(taskListQuery);
-        }else if(LoanProcessEnum.BUSINESS_REVIEW.getCode().equals(taskListQuery.getTaskDefinitionKey())){
+        } else if (LoanProcessEnum.BUSINESS_REVIEW.getCode().equals(taskListQuery.getTaskDefinitionKey())) {
             list = totalQueryListDOMapper.selectBusinessReviewList(taskListQuery);
-        }else if(LoanProcessEnum.LOAN_REVIEW.getCode().equals(taskListQuery.getTaskDefinitionKey())){
+        } else if (LoanProcessEnum.LOAN_REVIEW.getCode().equals(taskListQuery.getTaskDefinitionKey())) {
             list = totalQueryListDOMapper.selectLoanReview(taskListQuery);
-        }else if(LoanProcessEnum.REMIT_REVIEW.getCode().equals(taskListQuery.getTaskDefinitionKey())){
+        } else if (LoanProcessEnum.REMIT_REVIEW.getCode().equals(taskListQuery.getTaskDefinitionKey())) {
             list = totalQueryListDOMapper.selectRemitReview(taskListQuery);
-        }else if (LoanProcessEnum.LOAN_APPLY.getCode().equals(taskListQuery.getTaskDefinitionKey()))
-        {
+        } else if (LoanProcessEnum.LOAN_APPLY.getCode().equals(taskListQuery.getTaskDefinitionKey())) {
             list = totalQueryListDOMapper.queryLoanApplyList(taskListQuery);
-        }else if (LoanProcessEnum.MATERIAL_MANAGE.getCode().equals(taskListQuery.getTaskDefinitionKey()))
-        {
+        } else if (LoanProcessEnum.MATERIAL_MANAGE.getCode().equals(taskListQuery.getTaskDefinitionKey())) {
             list = totalQueryListDOMapper.queryMaterialManageList(taskListQuery);
-
-        }else if (LoanProcessEnum.MATERIAL_PRINT_REVIEW.getCode().equals(taskListQuery.getTaskDefinitionKey()))
-        {
+        } else if (LoanProcessEnum.MATERIAL_PRINT_REVIEW.getCode().equals(taskListQuery.getTaskDefinitionKey())) {
             list = totalQueryListDOMapper.queryMaterialPrintList(taskListQuery);
-
-        }else if (LoanProcessEnum.APPLY_LICENSE_PLATE_DEPOSIT_INFO.getCode().equals(taskListQuery.getTaskDefinitionKey()))
-        {
+        } else if (LoanProcessEnum.APPLY_LICENSE_PLATE_DEPOSIT_INFO.getCode().equals(taskListQuery.getTaskDefinitionKey())) {
             list = totalQueryListDOMapper.queryApplyLicensePlateDepositList(taskListQuery);
-
         }
 
         PageInfo<TaskListVO> pageInfo = new PageInfo<>(list);
 
-        return ResultBean.ofSuccess(list, new Long(pageInfo.getTotal()).intValue(), pageInfo.getPageNum(), pageInfo.getPageSize());
+        return ResultBean.ofPageInfo(pageInfo);
     }
 
     @Override
@@ -442,8 +437,9 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         List<TaskListVO> list = taskSchedulingDOMapper.selectTaskList(taskListQuery);
         PageInfo<TaskListVO> pageInfo = new PageInfo<>(list);
 
-        return ResultBean.ofSuccess(list, new Long(pageInfo.getTotal()).intValue(), pageInfo.getPageNum(), pageInfo.getPageSize());
+        return ResultBean.ofPageInfo(pageInfo);
     }
+
     @Override
     public ResultBean<Long> countNewQueryTaskList(TaskListQuery taskListQuery) {
         Preconditions.checkNotNull(taskListQuery.getTaskStatus(), "taskStatus不能为空");
@@ -455,16 +451,17 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
 
         // 节点权限校验
         permissionService.checkTaskPermission(taskListQuery.getTaskDefinitionKey());
+
         List<Long> bankInterfaceSerialOrderidList = new ArrayList<>();
-        if(LoanProcessEnum.BANK_CREDIT_RECORD.getCode().equals(taskListQuery.getTaskDefinitionKey())){
-            if("process".equals(taskListQuery.getSerialStatus())){
+        if (LoanProcessEnum.BANK_CREDIT_RECORD.getCode().equals(taskListQuery.getTaskDefinitionKey())) {
+            if ("process".equals(taskListQuery.getSerialStatus())) {
                 bankInterfaceSerialOrderidList = totalQueryListDOMapper.selectProcessBankOrder("applyCredit");
-            }else if("pending".equals(taskListQuery.getSerialStatus())){
+            } else if ("pending".equals(taskListQuery.getSerialStatus())) {
                 bankInterfaceSerialOrderidList = totalQueryListDOMapper.selectSuccessBankOrder("applyCredit");
             }
-
             taskListQuery.setBankInterfaceSerialOrderidList(bankInterfaceSerialOrderidList);
         }
+
         EmployeeDO loginUser = SessionUtils.getLoginUser();
         Set<String> juniorIds = employeeService.getSelfAndCascadeChildIdList(loginUser.getId());
         Long maxGroupLevel = taskSchedulingDOMapper.selectMaxGroupLevel(loginUser.getId());
@@ -474,15 +471,15 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         taskListQuery.setBizAreaIdList(getUserHaveBizAreaPartnerId(loginUser.getId()));
         //获取用户可见的银行
         taskListQuery.setBankList(getUserHaveBank(loginUser.getId()));
-        List<TaskListVO> list = new ArrayList<>();
-        if(LoanProcessEnum.FINANCIAL_SCHEME.getCode().equals(taskListQuery.getTaskDefinitionKey())){
-            list = totalQueryListDOMapper.selectTotalCusInfo(taskListQuery);
-        }else if(LoanProcessEnum.BANK_CREDIT_RECORD.getCode().equals(taskListQuery.getTaskDefinitionKey())){
-            list = totalQueryListDOMapper.selectBankCreditPend(taskListQuery);
 
+        List<TaskListVO> list = new ArrayList<>();
+        if (LoanProcessEnum.FINANCIAL_SCHEME.getCode().equals(taskListQuery.getTaskDefinitionKey())) {
+            list = totalQueryListDOMapper.selectTotalCusInfo(taskListQuery);
+        } else if (LoanProcessEnum.BANK_CREDIT_RECORD.getCode().equals(taskListQuery.getTaskDefinitionKey())) {
+            list = totalQueryListDOMapper.selectBankCreditPend(taskListQuery);
         }
-        long count =0;
-        if(list != null){
+        long count = 0;
+        if (list != null) {
             count = list.size();
         }
 
@@ -613,7 +610,7 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         // 补充
         convert(list);
 
-        return ResultBean.ofSuccess(list, new Long(pageInfo.getTotal()).intValue(), pageInfo.getPageNum(), pageInfo.getPageSize());
+        return ResultBean.ofPageInfo(pageInfo);
     }
 
     /**
