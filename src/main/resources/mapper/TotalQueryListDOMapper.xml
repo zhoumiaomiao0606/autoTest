@@ -1901,19 +1901,8 @@
                     <when test="serialStatus == 'except'">
                         <choose>
                             <when test="bankOpenCardOrder == 'except'">
-                                AND main.id not in  <!--  出现一次就判定为除外 -->
-                                (
-                                <choose>
-                                    <when test="bankInterfaceSerialOrderidList != null and bankInterfaceSerialOrderidList.size() > 0">
-                                        <foreach item="item" index="index" collection="bankInterfaceSerialOrderidList" separator=",">
-                                            #{item}
-                                        </foreach>
-                                    </when>
-                                    <otherwise>
-                                        select temp.id from (SELECT 1 as id) temp  where temp.id =2
-                                    </otherwise>
-                                </choose>
-                                )
+                                AND 0 =IF( ( SELECT count( 0 ) FROM bank_interface_serial WHERE trans_code = 'creditcardapply'
+                                AND order_id = main.id ) > 0, 1, 0 )
                                 AND
                                 case when customer.open_card_order = 1 then true
                                 when customer.open_card_order  = 0 then deputy.telephone_verify = 1
