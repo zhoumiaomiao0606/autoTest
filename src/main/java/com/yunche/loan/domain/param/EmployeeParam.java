@@ -22,11 +22,11 @@ public class EmployeeParam extends EmployeeDO {
     /**
      * 旧密码
      */
-    private String oldPassword;
+    private transient String oldPassword;
     /**
      * 新密码
      */
-    private String newPassword;
+    private transient String newPassword;
     /**
      * 是否为移动端登录
      */
