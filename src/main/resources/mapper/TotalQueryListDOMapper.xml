@@ -764,7 +764,7 @@
         customer.mobile AS mobile,
         employee.`name` AS salesman,
         partner.`name` AS partner,
-        partner.id     AS partnerCode,
+        partner.partner_code     AS partnerCode,
         main.id  AS taskId,
         base.bank AS bank,
         join_his.id   AS his_id,
