@@ -9,37 +9,39 @@
 
     <!-- query -->
     <select id="query" parameterType="com.yunche.loan.domain.query.OrderListQuery"
-            resultType="com.yunche.loan.domain.vo.OrderListVO">
+            resultType="com.yunche.loan.domain.vo.OrderListVO"
+            statementType="PREPARED">
 
         SELECT
-                o.id                AS orderId,
-                c.id                AS custId,
-                c.name              AS custName,
-                c.id_card           AS custIdCard,
-                b.partner_id        AS partnerId,
-                b.bank              AS bankName
+                o.id                    AS orderId,
+                p.${loanProcessFiled}   AS taskStatus,
+                c.id                    AS custId,
+                c.name                  AS custName,
+                c.id_card               AS custIdCard,
+                b.partner_id            AS partnerId,
+                b.bank                  AS bankName
 
         FROM loan_order o
 
-        LEFT JOIN loan_process p ON p.order_id = o.id
+        LEFT JOIN loan_process    p   ON p.order_id = o.id
 
-        LEFT JOIN loan_base_info b ON b.id = o.loan_base_info_id
+        LEFT JOIN loan_base_info  b   ON b.id = o.loan_base_info_id
 
-        LEFT JOIN loan_customer c ON c.id = o.loan_customer_id
+        LEFT JOIN loan_customer   c   ON c.id = o.loan_customer_id
 
         WHERE p.order_status = 1
 
         <if test="taskStatus == 0">
-            AND p.material_review != 0
+            AND p.${loanProcessFiled} != 0
         </if>
         <if test="taskStatus == 1">
-            AND p.material_review = 1
+            AND p.${loanProcessFiled} = 1
         </if>
         <if test="taskStatus == 2">
-            AND p.material_review = 2
+            AND p.${loanProcessFiled} = 2
         </if>
         <if test="taskStatus == 3">
-            AND p.material_review = 3
+            AND p.${loanProcessFiled} = 3
         </if>
 
         <if test="orderId != null and orderId != '' ">

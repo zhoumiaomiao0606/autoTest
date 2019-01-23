@@ -27,9 +27,14 @@ public class OrderListVO {
 
     private String bankName;
     /**
+     * 当前查询节点KEY
+     */
+    private String taskKey;
+    /**
      * 节点状态：1-已提交；2-待处理；3-已打回；
      */
     private String taskStatus;
+
 
     // ---------------------任务领取
     /**

@@ -1,6 +1,7 @@
 package com.yunche.loan.service.impl;
 
 import com.google.common.base.Preconditions;
+import com.yunche.loan.config.constant.LoanProcessConst;
 import com.yunche.loan.config.util.StringUtil;
 import com.yunche.loan.domain.entity.*;
 import com.yunche.loan.mapper.LoanFinancialPlanTempHisDOMapper;
@@ -95,10 +96,10 @@ public class LoanRejectLogServiceImpl implements LoanRejectLogService {
 
         String[] keyArr = null;
 
-        if (taskDefinitionKey.startsWith("servicetask")) {
-            keyArr = taskDefinitionKey.split("servicetask");
-        } else if (taskDefinitionKey.startsWith("usertask")) {
-            keyArr = taskDefinitionKey.split("usertask");
+        if (taskDefinitionKey.startsWith(LoanProcessConst.TASK_KEY_SERVICETASK_PREFIX)) {
+            keyArr = taskDefinitionKey.split(LoanProcessConst.TASK_KEY_SERVICETASK_PREFIX);
+        } else if (taskDefinitionKey.startsWith(LoanProcessConst.TASK_KEY_USERTASK_PREFIX)) {
+            keyArr = taskDefinitionKey.split(LoanProcessConst.TASK_KEY_USERTASK_PREFIX);
         }
 
         try {

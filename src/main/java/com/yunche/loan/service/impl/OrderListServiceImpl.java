@@ -73,6 +73,7 @@ public class OrderListServiceImpl implements OrderListService {
         // check
         permissionService.checkTaskPermission(query.getTaskDefinitionKey());
 
+        // 数据权限
         EmployeeDO loginUser = SessionUtils.getLoginUser();
         if (EmployeeConst.TYPE_ZS.equals(loginUser.getType())) {
             // 内部员工
@@ -85,6 +86,7 @@ public class OrderListServiceImpl implements OrderListService {
             throw new BizException("用户类型非法：" + loginUser.getType());
         }
 
+        // 分页query
         PageHelper.startPage(query.getPageIndex(), query.getPageSize(), true);
         List<OrderListVO> orderListVOList = orderListQueryMapper.query(query);
 
@@ -111,6 +113,9 @@ public class OrderListServiceImpl implements OrderListService {
                 .forEach(e -> {
 
                     orderIdList.add(Long.valueOf(e.getOrderId()));
+
+                    // taskKey返回
+                    e.setTaskKey(taskKey);
 
                     // partner
                     PartnerDO partnerDO = partnerCache.getById(Long.valueOf(e.getPartnerId()));
