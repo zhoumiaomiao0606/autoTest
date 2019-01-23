@@ -77,7 +77,8 @@ public class ICBCController {
     public ResultBean multimediaUpload(@RequestBody @Valid @Validated MultimediaUploadParam param) {
         logger.info(param.getOrderId()+":视频推送开始");
 //        bankSolutionService.multimediaUpload(Long.parseLong(param.getOrderId()));
-        return  multimediauploadClient.multimediaUpload(param);
+        multimediauploadClient.multimediaUpload(param);
+        return  ResultBean.ofSuccess(null);
     }
 
     //银行二手车评估价
