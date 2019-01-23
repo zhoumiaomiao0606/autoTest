@@ -379,6 +379,16 @@
         <if test="customer != null and customer != ''">
             AND customer.name LIKE CONCAT('%', #{customer} ,'%')
         </if>
+        <if test="relevanceCustomerName != null">
+            AND
+            main.id in
+            (
+            (select id from loan_order where loan_customer_id
+            in (select principal_cust_id from loan_customer where name = #{relevanceCustomerName})
+            and loan_customer_id not in (select id from loan_customer where name = #{relevanceCustomerName})
+            )
+            )
+        </if>
         <if test="loanBank != null">
             AND base.bank = #{loanBank}
         </if>
@@ -1328,7 +1338,7 @@
                 AND main.id = #{orderId}
             </if>
             <if test="idCard != null and idCard != '' ">
-                AND loan_customer.idCard = #{idCard}
+                AND loan_customer.id_card = #{idCard}
             </if>
         </where>
         <choose>
@@ -1422,7 +1432,7 @@
                 AND main.id = #{orderId}
             </if>
             <if test="idCard != null and idCard != '' ">
-                AND loan_customer.idCard = #{idCard}
+                AND loan_customer.id_card = #{idCard}
             </if>
         </where>
         <choose>
@@ -1521,7 +1531,7 @@
                 AND main.id = #{orderId}
             </if>
             <if test="idCard != null and idCard != '' ">
-                AND loan_customer.idCard = #{idCard}
+                AND loan_customer.id_card = #{idCard}
             </if>
         </where>
         <choose>
@@ -1619,7 +1629,7 @@
                 AND main.id = #{orderId}
             </if>
             <if test="idCard != null and idCard != '' ">
-                AND loan_customer.idCard = #{idCard}
+                AND loan_customer.id_card = #{idCard}
             </if>
             <if test="bizAreaId != null">
                 AND
