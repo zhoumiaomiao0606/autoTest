@@ -255,7 +255,7 @@
                           </when>
                       </choose>
                       <choose>
-                          <when test="serialStatus == 'pending' or serialStatus = 'process'">
+                          <when test="serialStatus == 'pending' or serialStatus == 'process'">
                               <if test="bankInterfaceSerialOrderidList != null and bankInterfaceSerialOrderidList.size() > 0">
                                   AND loan.id in  <!--  出现一次就判定为除外 -->
                                   <foreach item="item" index="index" collection="bankInterfaceSerialOrderidList" open="(" separator="," close=")">
