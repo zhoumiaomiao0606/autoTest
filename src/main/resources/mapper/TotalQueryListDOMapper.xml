@@ -328,7 +328,7 @@
                 customer.mobile AS mobile,
                 employee.`name` AS salesman,
                 partner.`name` AS partner,
-                partner.id     AS partnerCode,
+                partner.partner_code     AS partnerCode,
                 main.gmt_create AS orderGmtCreate,
                 deputy.order_status AS orderStatus,
                 main.id  AS taskId,
