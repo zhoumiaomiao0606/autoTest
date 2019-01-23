@@ -1820,7 +1820,8 @@
                 main.id  AS taskId,
                 base.bank AS bank,
                 partner.partner_code AS partnerCode,
-                deputy.bank_open_card AS taskStatus
+                deputy.bank_open_card AS taskStatus,
+                useGetTaskTypeText(#{taskDefinitionKey},deputy.bank_open_card,deputy.order_status) AS taskTypeText
         FROM
         loan_order main
         LEFT JOIN loan_process deputy ON main.id = deputy.order_id
@@ -1901,19 +1902,8 @@
                     <when test="serialStatus == 'except'">
                         <choose>
                             <when test="bankOpenCardOrder == 'except'">
-                                AND main.id not in  <!--  出现一次就判定为除外 -->
-                                (
-                                <choose>
-                                    <when test="bankInterfaceSerialOrderidList != null and bankInterfaceSerialOrderidList.size() > 0">
-                                        <foreach item="item" index="index" collection="bankInterfaceSerialOrderidList" separator=",">
-                                            #{item}
-                                        </foreach>
-                                    </when>
-                                    <otherwise>
-                                        select temp.id from (SELECT 1 as id) temp  where temp.id =2
-                                    </otherwise>
-                                </choose>
-                                )
+                                AND 0 =IF( ( SELECT count( 0 ) FROM bank_interface_serial WHERE trans_code = 'creditcardapply'
+                                AND order_id = main.id ) > 0, 1, 0 )
                                 AND
                                 case when customer.open_card_order = 1 then true
                                 when customer.open_card_order  = 0 then deputy.telephone_verify = 1
@@ -1923,7 +1913,7 @@
 
                             </when>
                             <when test="bankOpenCardOrder == 'having'">
-                                AND tab.id not in  <!--  出现一次就判定为除外 -->
+                                AND main.id not in  <!--  出现一次就判定为除外 -->
                                 (
                                 <choose>
                                     <when test="bankInterfaceSerialOrderidList != null and bankInterfaceSerialOrderidList.size() > 0">
@@ -1943,7 +1933,7 @@
                                 end
                             </when>
                             <otherwise>
-                                AND tab.id not in  <!--  出现一次就判定为除外 -->
+                                AND main.id not in  <!--  出现一次就判定为除外 -->
                                 (
                                 <choose>
                                     <when test="bankInterfaceSerialOrderidList != null and bankInterfaceSerialOrderidList.size() > 0">
@@ -1962,7 +1952,7 @@
                     </when>
 
                     <when test="serialStatus == 'exception'">
-                        AND tab.id in  <!--  有一个异常,就判定为这个单子异常 -->
+                        AND main.id in  <!--  有一个异常,就判定为这个单子异常 -->
                         (
                         <choose>
                             <when test="bankInterfaceSerialOrderidList != null and bankInterfaceSerialOrderidList.size() > 0">
@@ -1977,7 +1967,7 @@
                         )
                     </when>
                     <when test="serialStatus == 'pending'">
-                        AND tab.id in <!--  全部成功才算成功 -->
+                        AND .id in <!--  全部成功才算成功 -->
                         (
                         <choose>
                             <when test="bankInterfaceSerialOrderidList != null and bankInterfaceSerialOrderidList.size() > 0">
@@ -1992,7 +1982,7 @@
                         )
                     </when>
                     <when test="serialStatus == 'success'">
-                        AND tab.id in <!--  全部成功才算成功 -->
+                        AND main.id in <!--  全部成功才算成功 -->
                         (
                         <choose>
                             <when test="bankInterfaceSerialOrderidList != null and bankInterfaceSerialOrderidList.size() > 0">
@@ -2007,7 +1997,7 @@
                         )
                     </when>
                     <when test="serialStatus == 'failure'">
-                        AND tab.id in <!--  全部成功才算成功 -->
+                        AND main.id in <!--  全部成功才算成功 -->
                         (
                         <choose>
                             <when test="bankInterfaceSerialOrderidList != null and bankInterfaceSerialOrderidList.size() > 0">
@@ -2022,7 +2012,7 @@
                         )
                     </when>
                     <when test="serialStatus == 'back'">
-                        AND tab.id in <!--  有一个退回就判定单子为退回 -->
+                        AND main.id in <!--  有一个退回就判定单子为退回 -->
                         (
                         <choose>
                             <when test="bankInterfaceSerialOrderidList != null and bankInterfaceSerialOrderidList.size() > 0">
@@ -2037,7 +2027,7 @@
                         )
                     </when>
                     <when test="serialStatus == 'process'">
-                        AND tab.id in <!--  全部处理中才算处理中 -->
+                        AND main.id in <!--  全部处理中才算处理中 -->
                         (
                         <choose>
                             <when test="bankInterfaceSerialOrderidList != null and bankInterfaceSerialOrderidList.size() > 0">
