@@ -840,6 +840,11 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
 
             taskListQuery.setBankInterfaceSerialOrderidList(bankInterfaceSerialOrderidList);
         }
+
+        if(LoanProcessEnum.BANK_OPEN_CARD.getCode().equals(taskListQuery.getTaskDefinitionKey())){
+            bankInterfaceSerialOrderidList =  taskSchedulingDOMapper.selectBankInterfaceSerialOrderidList(taskListQuery);
+            taskListQuery.setBankInterfaceSerialOrderidList(bankInterfaceSerialOrderidList);
+        }
         EmployeeDO loginUser = SessionUtils.getLoginUser();
         Set<String> juniorIds = employeeService.getSelfAndCascadeChildIdList(loginUser.getId());
         Long maxGroupLevel = taskSchedulingDOMapper.selectMaxGroupLevel(loginUser.getId());
@@ -897,6 +902,8 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
 
         }else if(LoanProcessEnum.APPLY_INSTALMENT.getCode().equals(taskListQuery.getTaskDefinitionKey())){
             list = totalQueryListDOMapper.selectApplyInstalment(taskListQuery);
+        }else if(LoanProcessEnum.BANK_OPEN_CARD.getCode().equals(taskListQuery.getTaskDefinitionKey())){
+            list = totalQueryListDOMapper.selectBankOpenCardList(taskListQuery);
         }
 
         PageInfo<TaskListVO> pageInfo = new PageInfo<>(list);
@@ -936,6 +943,10 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
 
             taskListQuery.setBankInterfaceSerialOrderidList(bankInterfaceSerialOrderidList);
         }
+        if(LoanProcessEnum.BANK_OPEN_CARD.getCode().equals(taskListQuery.getTaskDefinitionKey())){
+            bankInterfaceSerialOrderidList =  taskSchedulingDOMapper.selectBankInterfaceSerialOrderidList(taskListQuery);
+            taskListQuery.setBankInterfaceSerialOrderidList(bankInterfaceSerialOrderidList);
+        }
         EmployeeDO loginUser = SessionUtils.getLoginUser();
         Set<String> juniorIds = employeeService.getSelfAndCascadeChildIdList(loginUser.getId());
         Long maxGroupLevel = taskSchedulingDOMapper.selectMaxGroupLevel(loginUser.getId());
@@ -953,6 +964,8 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
 
         }else if(LoanProcessEnum.APPLY_INSTALMENT.getCode().equals(taskListQuery.getTaskDefinitionKey())){
             list = totalQueryListDOMapper.selectApplyInstalment(taskListQuery);
+        }else if(LoanProcessEnum.BANK_OPEN_CARD.getCode().equals(taskListQuery.getTaskDefinitionKey())){
+            list = totalQueryListDOMapper.selectBankOpenCardList(taskListQuery);
         }
         long count =0;
         if(list != null){
