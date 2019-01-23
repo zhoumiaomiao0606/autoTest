@@ -1241,6 +1241,15 @@
                 else 1=1
                 end
             </if>
+            AND CASE WHEN #{maxGroupLevel}  = 0 THEN false
+            when #{maxGroupLevel} = 1 then 1 = 1
+            <if test="juniorIds != null and juniorIds.size() > 0">
+                and b.salesman_id in
+                <foreach item="item" index="index" collection="juniorIds" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            else true end
             and
             case when #{maxGroupLevel} = 3 then 1=1
             else 1=1
@@ -1275,7 +1284,7 @@
                 AND main.id = #{orderId}
             </if>
             <if test="idCard != null and idCard != '' ">
-                AND loan_customer.idCard = #{idCard}
+                AND loan_customer.id_card = #{idCard}
             </if>
         </where>
         <choose>
@@ -1308,7 +1317,7 @@
         partner.name AS partner,
         b.bank,
         e.name as salesman,
-        useGetTaskTypeText(#{taskDefinitionKey},loan_process.loan_apply,loan_process.order_status) AS taskTypeText
+        useGetTaskTypeText(#{taskDefinitionKey},loan_process.material_manage,loan_process.order_status) AS taskTypeText
 
         FROM
         loan_order main
@@ -1326,6 +1335,15 @@
                 else 1=1
                 end
             </if>
+            AND CASE WHEN #{maxGroupLevel}  = 0 THEN false
+            when #{maxGroupLevel} = 1 then 1 = 1
+            <if test="juniorIds != null and juniorIds.size() > 0">
+                and b.salesman_id in
+                <foreach item="item" index="index" collection="juniorIds" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            else true end
             and
             case when #{maxGroupLevel} = 3 then 1=1
             else 1=1
@@ -1360,7 +1378,7 @@
                 AND main.id = #{orderId}
             </if>
             <if test="idCard != null and idCard != '' ">
-                AND loan_customer.idCard = #{idCard}
+                AND loan_customer.id_card = #{idCard}
             </if>
         </where>
         <choose>
@@ -1390,14 +1408,14 @@
         loan_customer.`name` AS customer,
         loan_customer.id_card AS idCard,
         taskdis.status as taskDisStatus,
-        taskdis.id as taskId,
-        taskdis.task_key as taskKey,
+        main.id as taskId,
         taskdis.sendee_name as receiveManName,
+        loan_process.material_print_review as taskStatus,
         loan_customer.mobile,
         partner.name AS partner,
         b.bank,
         e.name as salesman,
-        useGetTaskTypeText(#{taskDefinitionKey},loan_process.loan_apply,loan_process.order_status) AS taskTypeText
+        useGetTaskTypeText(#{taskDefinitionKey},loan_process.material_print_review,loan_process.order_status) AS taskTypeText
 
         FROM
         loan_order main
@@ -1416,6 +1434,15 @@
                 else 1=1
                 end
             </if>
+            AND CASE WHEN #{maxGroupLevel}  = 0 THEN false
+            when #{maxGroupLevel} = 1 then 1 = 1
+            <if test="juniorIds != null and juniorIds.size() > 0">
+                and b.salesman_id in
+                <foreach item="item" index="index" collection="juniorIds" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            else true end
             and
             case when #{maxGroupLevel} = 3 then 1=1
             else 1=1
@@ -1450,7 +1477,7 @@
                 AND main.id = #{orderId}
             </if>
             <if test="idCard != null and idCard != '' ">
-                AND loan_customer.idCard = #{idCard}
+                AND loan_customer.id_card = #{idCard}
             </if>
         </where>
         <choose>
@@ -1484,7 +1511,7 @@
         partner.name AS partner,
         b.bank,
         e.name as salesman,
-        useGetTaskTypeText(#{taskDefinitionKey},loan_process.loan_apply,loan_process.order_status) AS taskTypeText
+        useGetTaskTypeText(#{taskDefinitionKey},loan_process.apply_license_plate_deposit_info,loan_process.order_status) AS taskTypeText
 
         FROM
         loan_order main
@@ -1505,6 +1532,15 @@
                 else 1=1
                 end
             </if>
+            AND CASE WHEN #{maxGroupLevel}  = 0 THEN false
+            when #{maxGroupLevel} = 1 then 1 = 1
+            <if test="juniorIds != null and juniorIds.size() > 0">
+                and b.salesman_id in
+                <foreach item="item" index="index" collection="juniorIds" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            else true end
             and
             case when #{maxGroupLevel} = 3 then 1=1
             else 1=1
@@ -1539,7 +1575,7 @@
                 AND main.id = #{orderId}
             </if>
             <if test="idCard != null and idCard != '' ">
-                AND loan_customer.idCard = #{idCard}
+                AND loan_customer.id_card = #{idCard}
             </if>
             <if test="bizAreaId != null">
                 AND
@@ -1585,7 +1621,7 @@
         partner.partner_group as partnerGroup,
         b.bank,
         e.name as salesman,
-        useGetTaskTypeText(#{taskDefinitionKey},loan_process.loan_apply,loan_process.order_status) AS taskTypeText
+        useGetTaskTypeText(#{taskDefinitionKey},loan_process.material_print_review,loan_process.order_status) AS taskTypeText
 
         FROM
         loan_order main
