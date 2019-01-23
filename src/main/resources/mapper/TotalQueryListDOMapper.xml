@@ -1820,7 +1820,8 @@
                 main.id  AS taskId,
                 base.bank AS bank,
                 partner.partner_code AS partnerCode,
-                deputy.bank_open_card AS taskStatus
+                deputy.bank_open_card AS taskStatus,
+                useGetTaskTypeText(#{taskDefinitionKey},deputy.bank_open_card,deputy.order_status) AS taskTypeText
         FROM
         loan_order main
         LEFT JOIN loan_process deputy ON main.id = deputy.order_id
