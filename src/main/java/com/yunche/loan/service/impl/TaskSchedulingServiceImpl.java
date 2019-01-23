@@ -93,11 +93,12 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         query.setBizAreaIdList(getUserHaveBizAreaPartnerId(loginUser.getId()));
         //获取用户可见的银行
         query.setBankList(getUserHaveBank(loginUser.getId()));
+
         PageHelper.startPage(query.getPageIndex(), query.getPageSize(), true);
         List list = taskSchedulingDOMapper.selectZhonganList(query);
         PageInfo<ZhonganListVO> pageInfo = new PageInfo<>(list);
-        return ResultBean.ofPageInfo(pageInfo);
 
+        return ResultBean.ofPageInfo(pageInfo);
     }
 
     @Override
@@ -161,7 +162,6 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         if (orderId == null) {
             throw new BizException("无订单");
         }
-
         return taskSchedulingDOMapper.selectRejectTask(orderId);
     }
 
