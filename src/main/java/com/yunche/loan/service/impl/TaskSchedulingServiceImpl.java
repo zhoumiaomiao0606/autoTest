@@ -910,7 +910,15 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
 
         }else if (LoanProcessEnum.BUSINESS_REVIEW.getCode().equals(taskListQuery.getTaskDefinitionKey()))
         {
-            list = totalQueryListDOMapper.queryBusinessPayList(taskListQuery);
+            list = totalQueryListDOMapper.queryBusinessReviewList(taskListQuery);
+
+        }else if (LoanProcessEnum.LOAN_REVIEW.getCode().equals(taskListQuery.getTaskDefinitionKey()))
+        {
+            list = totalQueryListDOMapper.queryLoanReviewList(taskListQuery);
+
+        }else if (LoanProcessEnum.REMIT_REVIEW.getCode().equals(taskListQuery.getTaskDefinitionKey()))
+        {
+            list = totalQueryListDOMapper.queryRemitReviewList(taskListQuery);
 
         }
 
