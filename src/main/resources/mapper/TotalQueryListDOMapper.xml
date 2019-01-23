@@ -345,6 +345,7 @@
         LEFT JOIN partner partner ON partner.id = base.partner_id
         LEFT JOIN employee employee ON employee.id = base.salesman_id
         LEFT JOIN loan_customer customer ON customer.id = main.loan_customer_id
+        left join current_node_manager node on node.order_id = main.id
         WHERE
         deputy.order_status = 1
         AND  deputy.credit_apply = #{taskStatus}
@@ -410,7 +411,14 @@
             else 1=2
             end
         </if>
-        order by main.gmt_create
+        <choose>
+            <when test="taskStatus == 1">
+                order by node.usertask_loan_apply_create_time DESC
+            </when>
+            <otherwise>
+                order by main.gmt_create
+            </otherwise>
+        </choose>
     </select>
 
     <select id="selectCarGps" resultType="com.yunche.loan.domain.vo.TaskListVO" parameterType="com.yunche.loan.domain.query.TaskListQuery">
