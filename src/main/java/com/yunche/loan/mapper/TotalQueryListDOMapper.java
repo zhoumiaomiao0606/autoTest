@@ -67,8 +67,11 @@ public interface TotalQueryListDOMapper {
     //抵押记录
     List<TaskListVO>   queryApplyLicensePlateDepositList(TaskListQuery taskListQuery);
 
-    //抵押记录
+    //业务付款申请
     List<TaskListVO>   queryBusinessPayList(TaskListQuery taskListQuery);
+
+    //业务审批单
+    List<TaskListVO>   queryBusinessReviewList(TaskListQuery taskListQuery);
 
     //申请开卡
     List<TaskListVO> selectBankOpenCardList(TaskListQuery taskListQuery);

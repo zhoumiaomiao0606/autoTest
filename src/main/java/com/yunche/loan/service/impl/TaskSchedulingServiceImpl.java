@@ -908,6 +908,10 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         {
             list = totalQueryListDOMapper.queryBusinessPayList(taskListQuery);
 
+        }else if (LoanProcessEnum.BUSINESS_REVIEW.getCode().equals(taskListQuery.getTaskDefinitionKey()))
+        {
+            list = totalQueryListDOMapper.queryBusinessPayList(taskListQuery);
+
         }
 
         PageInfo<TaskListVO> pageInfo = new PageInfo<>(list);
