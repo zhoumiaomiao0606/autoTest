@@ -836,28 +836,44 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
 
     @Override
     public ResultBean<List<TaskListVO>> queryNewTaskList(TaskListQuery taskListQuery) throws BizException {
-
+        Preconditions.checkArgument(StringUtils.isNoneBlank(taskListQuery.getTaskDefinitionKey()), "taskDefinitionKey不能为空");
         Preconditions.checkNotNull(taskListQuery.getTaskStatus(), "taskStatus不能为空");
 
+        // taskKey
+        String taskDefinitionKey = taskListQuery.getTaskDefinitionKey();
 
         // 节点校验
-        if (!LoanProcessEnum.havingCode(taskListQuery.getTaskDefinitionKey())) {
-            throw new BizException("错误的任务节点key");
-        }
+        Preconditions.checkArgument(LoanProcessEnum.havingCode(taskDefinitionKey), "错误的任务节点key");
 
         // 节点权限校验
-        permissionService.checkTaskPermission(taskListQuery.getTaskDefinitionKey());
+        permissionService.checkTaskPermission(taskDefinitionKey);
+
+        // 登录用户权限
+        EmployeeDO loginUser = SessionUtils.getLoginUser();
+
+        Set<String> juniorIds = employeeService.getSelfAndCascadeChildIdList(loginUser.getId());
+        Long maxGroupLevel = taskSchedulingDOMapper.selectMaxGroupLevel(loginUser.getId());
+        taskListQuery.setEmployeeId(loginUser.getId());
+        taskListQuery.setJuniorIds(juniorIds);
+        taskListQuery.setMaxGroupLevel(maxGroupLevel);
+
+        //获取用户可见的区域
+        taskListQuery.setBizAreaIdList(getUserHaveBizAreaPartnerId(loginUser.getId()));
+        //获取用户可见的银行
+        taskListQuery.setBankList(getUserHaveBank(loginUser.getId()));
+
         List<Long> bankInterfaceSerialOrderidList = new ArrayList<>();
-        if (LoanProcessEnum.BANK_CREDIT_RECORD.getCode().equals(taskListQuery.getTaskDefinitionKey())) {
+        if (LoanProcessEnum.BANK_CREDIT_RECORD.getCode().equals(taskDefinitionKey)) {
+
             if ("process".equals(taskListQuery.getSerialStatus())) {
                 bankInterfaceSerialOrderidList = totalQueryListDOMapper.selectProcessBankOrder("applyCredit");
             } else if ("pending".equals(taskListQuery.getSerialStatus())) {
                 bankInterfaceSerialOrderidList = totalQueryListDOMapper.selectSuccessBankOrder("applyCredit");
             }
-
             taskListQuery.setBankInterfaceSerialOrderidList(bankInterfaceSerialOrderidList);
-        }
-        if (LoanProcessEnum.APPLY_INSTALMENT.getCode().equals(taskListQuery.getTaskDefinitionKey())) {
+
+        } else if (LoanProcessEnum.APPLY_INSTALMENT.getCode().equals(taskDefinitionKey)) {
+
             if ("exception".equals(taskListQuery.getSerialStatus())) {
                 bankInterfaceSerialOrderidList = totalQueryListDOMapper.selectApplyInstalmentException(taskListQuery.getTransCode());
             } else if ("process".equals(taskListQuery.getSerialStatus())) {
@@ -867,73 +883,69 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
             }
 
             taskListQuery.setBankInterfaceSerialOrderidList(bankInterfaceSerialOrderidList);
-        }
 
-        if (LoanProcessEnum.BANK_OPEN_CARD.getCode().equals(taskListQuery.getTaskDefinitionKey())) {
+        } else if (LoanProcessEnum.BANK_OPEN_CARD.getCode().equals(taskDefinitionKey)) {
             bankInterfaceSerialOrderidList = taskSchedulingDOMapper.selectBankInterfaceSerialOrderidList(taskListQuery);
             taskListQuery.setBankInterfaceSerialOrderidList(bankInterfaceSerialOrderidList);
+        } else if (LoanProcessEnum.TELEPHONE_VERIFY.getCode().equals(taskDefinitionKey)) {
+            Long telephoneVerifyLevel = taskSchedulingDOMapper.selectTelephoneVerifyLevel(loginUser.getId());
+            taskListQuery.setTelephoneVerifyLevel(telephoneVerifyLevel);
         }
-        EmployeeDO loginUser = SessionUtils.getLoginUser();
-        Set<String> juniorIds = employeeService.getSelfAndCascadeChildIdList(loginUser.getId());
-        Long maxGroupLevel = taskSchedulingDOMapper.selectMaxGroupLevel(loginUser.getId());
-        taskListQuery.setEmployeeId(loginUser.getId());
-        taskListQuery.setJuniorIds(juniorIds);
-        taskListQuery.setMaxGroupLevel(maxGroupLevel);
-        //获取用户可见的区域
-        taskListQuery.setBizAreaIdList(getUserHaveBizAreaPartnerId(loginUser.getId()));
-        //获取用户可见的银行
-        taskListQuery.setBankList(getUserHaveBank(loginUser.getId()));
+
+
+        // 分层查询
         List<TaskListVO> list = new ArrayList<>();
-        PageHelper.startPage(taskListQuery.getPageIndex(), taskListQuery.getPageSize(), true);
-        if (LoanProcessEnum.CREDIT_APPLY.getCode().equals(taskListQuery.getTaskDefinitionKey())) {
+        PageHelper.startPage(taskListQuery.getPageIndex(), taskListQuery.getPageSize());
+
+        if (LoanProcessEnum.CREDIT_APPLY.getCode().equals(taskDefinitionKey)) {
             list = totalQueryListDOMapper.selectApplyCredit(taskListQuery);
-        } else if (LoanProcessEnum.FINANCIAL_SCHEME.getCode().equals(taskListQuery.getTaskDefinitionKey())) {
+        } else if (LoanProcessEnum.FINANCIAL_SCHEME.getCode().equals(taskDefinitionKey)) {
             list = totalQueryListDOMapper.selectTotalCusInfo(taskListQuery);
-        } else if (LoanProcessEnum.BANK_CREDIT_RECORD.getCode().equals(taskListQuery.getTaskDefinitionKey())) {
+        } else if (LoanProcessEnum.BANK_CREDIT_RECORD.getCode().equals(taskDefinitionKey)) {
             list = totalQueryListDOMapper.selectBankCreditPend(taskListQuery);
-        } else if (LoanProcessEnum.INSTALL_GPS.getCode().equals(taskListQuery.getTaskDefinitionKey())) {
+        } else if (LoanProcessEnum.INSTALL_GPS.getCode().equals(taskDefinitionKey)) {
             list = totalQueryListDOMapper.selectCarGps(taskListQuery);
-        } else if (LoanProcessEnum.LOAN_INFO_RECORD.getCode().equals(taskListQuery.getTaskDefinitionKey())) {
+        } else if (LoanProcessEnum.LOAN_INFO_RECORD.getCode().equals(taskDefinitionKey)) {
             list = totalQueryListDOMapper.selectLoanInfoRecordList(taskListQuery);
-        } else if (LoanProcessEnum.VISIT_VERIFY.getCode().equals(taskListQuery.getTaskDefinitionKey())) {
+        } else if (LoanProcessEnum.VISIT_VERIFY.getCode().equals(taskDefinitionKey)) {
             list = totalQueryListDOMapper.selectVisitDoor(taskListQuery);
-        } else if (LoanProcessEnum.CAR_INSURANCE.getCode().equals(taskListQuery.getTaskDefinitionKey())) {
+        } else if (LoanProcessEnum.CAR_INSURANCE.getCode().equals(taskDefinitionKey)) {
             list = totalQueryListDOMapper.selectCarInsurance(taskListQuery);
-        } else if (LoanProcessEnum.VEHICLE_INFORMATION.getCode().equals(taskListQuery.getTaskDefinitionKey())) {
+        } else if (LoanProcessEnum.VEHICLE_INFORMATION.getCode().equals(taskDefinitionKey)) {
             list = totalQueryListDOMapper.selectVehicleInformationList(taskListQuery);
-        } else if (LoanProcessEnum.INFO_SUPPLEMENT.getCode().equals(taskListQuery.getTaskDefinitionKey())) {
+        } else if (LoanProcessEnum.INFO_SUPPLEMENT.getCode().equals(taskDefinitionKey)) {
             list = totalQueryListDOMapper.selectSupplementInfo(taskListQuery);
-        } else if (LoanProcessEnum.FINANCIAL_SCHEME_MODIFY_APPLY.getCode().equals(taskListQuery.getTaskDefinitionKey())) {
+        } else if (LoanProcessEnum.FINANCIAL_SCHEME_MODIFY_APPLY.getCode().equals(taskDefinitionKey)) {
             list = totalQueryListDOMapper.selectFinancialSchemeModifyApplyList(taskListQuery);
-        } else if (LoanProcessEnum.BUSINESS_PAY.getCode().equals(taskListQuery.getTaskDefinitionKey())) {
+        } else if (LoanProcessEnum.BUSINESS_PAY.getCode().equals(taskDefinitionKey)) {
             list = totalQueryListDOMapper.selectBusinessPay(taskListQuery);
-        } else if (LoanProcessEnum.BUSINESS_REVIEW.getCode().equals(taskListQuery.getTaskDefinitionKey())) {
+        } else if (LoanProcessEnum.BUSINESS_REVIEW.getCode().equals(taskDefinitionKey)) {
             list = totalQueryListDOMapper.selectBusinessReviewList(taskListQuery);
-        } else if (LoanProcessEnum.LOAN_REVIEW.getCode().equals(taskListQuery.getTaskDefinitionKey())) {
+        } else if (LoanProcessEnum.LOAN_REVIEW.getCode().equals(taskDefinitionKey)) {
             list = totalQueryListDOMapper.selectLoanReview(taskListQuery);
-        } else if (LoanProcessEnum.REMIT_REVIEW.getCode().equals(taskListQuery.getTaskDefinitionKey())) {
+        } else if (LoanProcessEnum.REMIT_REVIEW.getCode().equals(taskDefinitionKey)) {
             list = totalQueryListDOMapper.selectRemitReview(taskListQuery);
-        } else if (LoanProcessEnum.LOAN_APPLY.getCode().equals(taskListQuery.getTaskDefinitionKey())) {
+        } else if (LoanProcessEnum.LOAN_APPLY.getCode().equals(taskDefinitionKey)) {
             list = totalQueryListDOMapper.queryLoanApplyList(taskListQuery);
-        } else if (LoanProcessEnum.MATERIAL_MANAGE.getCode().equals(taskListQuery.getTaskDefinitionKey())) {
+        } else if (LoanProcessEnum.MATERIAL_MANAGE.getCode().equals(taskDefinitionKey)) {
             list = totalQueryListDOMapper.queryMaterialManageList(taskListQuery);
-        } else if (LoanProcessEnum.MATERIAL_PRINT_REVIEW.getCode().equals(taskListQuery.getTaskDefinitionKey())) {
+        } else if (LoanProcessEnum.MATERIAL_PRINT_REVIEW.getCode().equals(taskDefinitionKey)) {
             list = totalQueryListDOMapper.queryMaterialPrintList(taskListQuery);
-        } else if (LoanProcessEnum.APPLY_LICENSE_PLATE_DEPOSIT_INFO.getCode().equals(taskListQuery.getTaskDefinitionKey())) {
+        } else if (LoanProcessEnum.APPLY_LICENSE_PLATE_DEPOSIT_INFO.getCode().equals(taskDefinitionKey)) {
             list = totalQueryListDOMapper.queryApplyLicensePlateDepositList(taskListQuery);
-        } else if (LoanProcessEnum.APPLY_INSTALMENT.getCode().equals(taskListQuery.getTaskDefinitionKey())) {
+        } else if (LoanProcessEnum.APPLY_INSTALMENT.getCode().equals(taskDefinitionKey)) {
             list = totalQueryListDOMapper.selectApplyInstalment(taskListQuery);
-        } else if (LoanProcessEnum.BANK_OPEN_CARD.getCode().equals(taskListQuery.getTaskDefinitionKey())) {
+        } else if (LoanProcessEnum.BANK_OPEN_CARD.getCode().equals(taskDefinitionKey)) {
             list = totalQueryListDOMapper.selectBankOpenCardList(taskListQuery);
-        } else if (LoanProcessEnum.BUSINESS_PAY.getCode().equals(taskListQuery.getTaskDefinitionKey())) {
+        } else if (LoanProcessEnum.BUSINESS_PAY.getCode().equals(taskDefinitionKey)) {
             list = totalQueryListDOMapper.queryBusinessPayList(taskListQuery);
-        } else if (LoanProcessEnum.BUSINESS_REVIEW.getCode().equals(taskListQuery.getTaskDefinitionKey())) {
+        } else if (LoanProcessEnum.BUSINESS_REVIEW.getCode().equals(taskDefinitionKey)) {
             list = totalQueryListDOMapper.queryBusinessReviewList(taskListQuery);
-        } else if (LoanProcessEnum.LOAN_REVIEW.getCode().equals(taskListQuery.getTaskDefinitionKey())) {
+        } else if (LoanProcessEnum.LOAN_REVIEW.getCode().equals(taskDefinitionKey)) {
             list = totalQueryListDOMapper.queryLoanReviewList(taskListQuery);
-        } else if (LoanProcessEnum.REMIT_REVIEW.getCode().equals(taskListQuery.getTaskDefinitionKey())) {
+        } else if (LoanProcessEnum.REMIT_REVIEW.getCode().equals(taskDefinitionKey)) {
             list = totalQueryListDOMapper.queryRemitReviewList(taskListQuery);
-        } else if (LoanProcessEnum.TELEPHONE_VERIFY.getCode().equals(taskListQuery.getTaskDefinitionKey())) {
+        } else if (LoanProcessEnum.TELEPHONE_VERIFY.getCode().equals(taskDefinitionKey)) {
             list = totalQueryListDOMapper.queryTelephoneVerifyList(taskListQuery);
         }
 
@@ -944,41 +956,21 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
 
     @Override
     public ResultBean<Long> countNewQueryTaskList(TaskListQuery taskListQuery) {
+        Preconditions.checkArgument(StringUtils.isNoneBlank(taskListQuery.getTaskDefinitionKey()), "taskDefinitionKey不能为空");
         Preconditions.checkNotNull(taskListQuery.getTaskStatus(), "taskStatus不能为空");
 
+        // taskKey
+        String taskDefinitionKey = taskListQuery.getTaskDefinitionKey();
+
         // 节点校验
-        if (!LoanProcessEnum.havingCode(taskListQuery.getTaskDefinitionKey())) {
-            throw new BizException("错误的任务节点key");
-        }
+        Preconditions.checkArgument(LoanProcessEnum.havingCode(taskDefinitionKey), "错误的任务节点key");
 
         // 节点权限校验
-        permissionService.checkTaskPermission(taskListQuery.getTaskDefinitionKey());
-        List<Long> bankInterfaceSerialOrderidList = new ArrayList<>();
-        if (LoanProcessEnum.BANK_CREDIT_RECORD.getCode().equals(taskListQuery.getTaskDefinitionKey())) {
-            if ("process".equals(taskListQuery.getSerialStatus())) {
-                bankInterfaceSerialOrderidList = totalQueryListDOMapper.selectProcessBankOrder("applyCredit");
-            } else if ("pending".equals(taskListQuery.getSerialStatus())) {
-                bankInterfaceSerialOrderidList = totalQueryListDOMapper.selectSuccessBankOrder("applyCredit");
-            }
+        permissionService.checkTaskPermission(taskDefinitionKey);
 
-            taskListQuery.setBankInterfaceSerialOrderidList(bankInterfaceSerialOrderidList);
-        }
-        if (LoanProcessEnum.APPLY_INSTALMENT.getCode().equals(taskListQuery.getTaskDefinitionKey())) {
-            if ("exception".equals(taskListQuery.getSerialStatus())) {
-                bankInterfaceSerialOrderidList = totalQueryListDOMapper.selectApplyInstalmentException(taskListQuery.getTransCode());
-            } else if ("process".equals(taskListQuery.getSerialStatus())) {
-                bankInterfaceSerialOrderidList = totalQueryListDOMapper.selectApplyInstalmentProcess(taskListQuery.getTransCode());
-            } else if ("back".equals(taskListQuery.getSerialStatus())) {
-                bankInterfaceSerialOrderidList = totalQueryListDOMapper.selectApplyInstalmentBack(taskListQuery.getTransCode());
-            }
-
-            taskListQuery.setBankInterfaceSerialOrderidList(bankInterfaceSerialOrderidList);
-        }
-        if (LoanProcessEnum.BANK_OPEN_CARD.getCode().equals(taskListQuery.getTaskDefinitionKey())) {
-            bankInterfaceSerialOrderidList = taskSchedulingDOMapper.selectBankInterfaceSerialOrderidList(taskListQuery);
-            taskListQuery.setBankInterfaceSerialOrderidList(bankInterfaceSerialOrderidList);
-        }
+        // 登录用户权限
         EmployeeDO loginUser = SessionUtils.getLoginUser();
+
         Set<String> juniorIds = employeeService.getSelfAndCascadeChildIdList(loginUser.getId());
         Long maxGroupLevel = taskSchedulingDOMapper.selectMaxGroupLevel(loginUser.getId());
         taskListQuery.setJuniorIds(juniorIds);
@@ -988,38 +980,62 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         //获取用户可见的银行
         taskListQuery.setBankList(getUserHaveBank(loginUser.getId()));
 
+        List<Long> bankInterfaceSerialOrderidList = new ArrayList<>();
+        if (LoanProcessEnum.BANK_CREDIT_RECORD.getCode().equals(taskDefinitionKey)) {
+
+            if ("process".equals(taskListQuery.getSerialStatus())) {
+                bankInterfaceSerialOrderidList = totalQueryListDOMapper.selectProcessBankOrder("applyCredit");
+            } else if ("pending".equals(taskListQuery.getSerialStatus())) {
+                bankInterfaceSerialOrderidList = totalQueryListDOMapper.selectSuccessBankOrder("applyCredit");
+            }
+            taskListQuery.setBankInterfaceSerialOrderidList(bankInterfaceSerialOrderidList);
+
+        } else if (LoanProcessEnum.APPLY_INSTALMENT.getCode().equals(taskDefinitionKey)) {
+
+            if ("exception".equals(taskListQuery.getSerialStatus())) {
+                bankInterfaceSerialOrderidList = totalQueryListDOMapper.selectApplyInstalmentException(taskListQuery.getTransCode());
+            } else if ("process".equals(taskListQuery.getSerialStatus())) {
+                bankInterfaceSerialOrderidList = totalQueryListDOMapper.selectApplyInstalmentProcess(taskListQuery.getTransCode());
+            } else if ("back".equals(taskListQuery.getSerialStatus())) {
+                bankInterfaceSerialOrderidList = totalQueryListDOMapper.selectApplyInstalmentBack(taskListQuery.getTransCode());
+            }
+            taskListQuery.setBankInterfaceSerialOrderidList(bankInterfaceSerialOrderidList);
+
+        } else if (LoanProcessEnum.BANK_OPEN_CARD.getCode().equals(taskDefinitionKey)) {
+
+            bankInterfaceSerialOrderidList = taskSchedulingDOMapper.selectBankInterfaceSerialOrderidList(taskListQuery);
+            taskListQuery.setBankInterfaceSerialOrderidList(bankInterfaceSerialOrderidList);
+
+        } else if (LoanProcessEnum.TELEPHONE_VERIFY.getCode().equals(taskDefinitionKey)) {
+
+            Long telephoneVerifyLevel = taskSchedulingDOMapper.selectTelephoneVerifyLevel(loginUser.getId());
+            taskListQuery.setTelephoneVerifyLevel(telephoneVerifyLevel);
+        }
+
+
+        // 总数统计
         long count = 0;
 
-        if (LoanProcessEnum.FINANCIAL_SCHEME.getCode().equals(taskListQuery.getTaskDefinitionKey())) {
-
+        if (LoanProcessEnum.FINANCIAL_SCHEME.getCode().equals(taskDefinitionKey)) {
             count = PageHelper.count(() -> {
                 totalQueryListDOMapper.selectTotalCusInfo(taskListQuery);
             });
-
-        } else if (LoanProcessEnum.BANK_CREDIT_RECORD.getCode().equals(taskListQuery.getTaskDefinitionKey())) {
-
+        } else if (LoanProcessEnum.BANK_CREDIT_RECORD.getCode().equals(taskDefinitionKey)) {
             count = PageHelper.count(() -> {
                 totalQueryListDOMapper.selectBankCreditPend(taskListQuery);
             });
-
-        } else if (LoanProcessEnum.APPLY_INSTALMENT.getCode().equals(taskListQuery.getTaskDefinitionKey())) {
-
+        } else if (LoanProcessEnum.APPLY_INSTALMENT.getCode().equals(taskDefinitionKey)) {
             count = PageHelper.count(() -> {
                 totalQueryListDOMapper.selectApplyInstalment(taskListQuery);
             });
-
-        } else if (LoanProcessEnum.BANK_OPEN_CARD.getCode().equals(taskListQuery.getTaskDefinitionKey())) {
-
+        } else if (LoanProcessEnum.BANK_OPEN_CARD.getCode().equals(taskDefinitionKey)) {
             count = PageHelper.count(() -> {
                 totalQueryListDOMapper.selectBankOpenCardList(taskListQuery);
             });
-
-        } else if (LoanProcessEnum.TELEPHONE_VERIFY.getCode().equals(taskListQuery.getTaskDefinitionKey())) {
-
+        } else if (LoanProcessEnum.TELEPHONE_VERIFY.getCode().equals(taskDefinitionKey)) {
             count = PageHelper.count(() -> {
                 totalQueryListDOMapper.queryTelephoneVerifyList(taskListQuery);
             });
-
         }
 
         return ResultBean.ofSuccess(count);
