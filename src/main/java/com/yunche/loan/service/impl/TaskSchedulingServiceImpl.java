@@ -1,6 +1,5 @@
 package com.yunche.loan.service.impl;
 
-import com.github.pagehelper.ISelect;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.common.base.Preconditions;
