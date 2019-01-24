@@ -6,11 +6,10 @@ spring:
       url: jdbc:mysql://47.97.112.202:3307/test_loan_biz?useUnicode=true&characterEncoding=utf-8
       username: yunche
       password: yc_123
-      driver-class-name: com.mysql.jdbc.Driver
+      driver-class-name: com.mysql.cj.jdbc.Driver
       max-wait: 10000
       initialSize: 8
       min-idle: 0
-      max-idle: 16
       max-active: 20
       test-on-borrow: true
 
@@ -61,11 +60,10 @@ spring:
       url: jdbc:mysql://rm-bp1uk11f20h4i65u9oo.mysql.rds.aliyuncs.com:3306/yunche_loan_biz?useUnicode=true&characterEncoding=utf-8
       username: yuncheadmin
       password: ycjinfu@2099
-      driver-class-name: com.mysql.jdbc.Driver
+      driver-class-name: com.mysql.cj.jdbc.Driver
       max-wait: 10000
       initialSize: 8
       min-idle: 0
-      max-idle: 8
       max-active: 8
       test-on-borrow: true
 
@@ -109,11 +107,10 @@ spring:
       url: jdbc:mysql://rm-bp1uk11f20h4i65u9rw.mysql.rds.aliyuncs.com:3306/yunche_loan_biz?useUnicode=true&characterEncoding=utf-8
       username: yuncheadmin
       password: ycjinfu@2099
-      driver-class-name: com.mysql.jdbc.Driver
+      driver-class-name: com.mysql.cj.jdbc.Driver
       max-wait: 10000
       initialSize: 16
       minIdle: 16
-      max-idle: 16
       max-active: 30
       test-on-borrow: true
 

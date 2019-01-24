@@ -2519,4 +2519,167 @@
         </choose>
 
     </select>
+
+    <select id="queryTelephoneVerifyList" parameterType="com.yunche.loan.domain.query.TaskListQuery"
+            resultType="com.yunche.loan.domain.vo.TaskListVO">
+
+        SELECT
+                complex.*,
+                DATE_FORMAT( complex_log.usertask_loan_apply_create_time, '%Y-%m-%d %H:%i:%S' ) AS loanGmtCreate,
+                DATE_FORMAT( complex_log.usertask_telephone_verify_create_time, '%Y-%m-%d %H:%i:%S' ) AS telephoneGmtCreate,
+                DATE_FORMAT( complex_log.usertask_visit_verify_create_time, '%Y-%m-%d %H:%i:%S' ) AS visitGmtCreate
+        FROM
+        (
+            SELECT
+                    task.*,
+                    taskdis.STATUS AS taskDisStatus,
+                    taskdis.sendee AS receiveManId,
+                    taskdis.sendee_name AS receiveManName
+            FROM
+            (
+                SELECT
+                        tab.*,
+                        'usertask_telephone_verify' AS taskKey,
+                        tab.taskStatus AS taskType,
+                        useGetTaskTypeText ( 'usertask_telephone_verify', tab.taskStatus, tab.orderStatus ) AS taskTypeText,
+                        useGetCurrentTask ( 'usertask_telephone_verify' ) AS currentTask
+                FROM
+                (
+                    SELECT
+                            main.id AS taskId,
+                            main.id AS id,
+                            join_e.id AS salesmanId,
+                            join_p.id AS partnerId,
+                            join_c.id AS customerId,
+                            join_c.NAME AS customer,
+                            join_c.id_card AS idCard,
+                            join_c.mobile AS mobile,
+                            join_b.bank AS bank,
+                            join_f.loan_amount AS loanAmount,
+                            join_f.bank_period_principal AS bankPeriodPrincipal,
+                            join_p.NAME AS partner,
+                            join_p.partner_code AS partnerCode,
+                            join_p.partner_group AS partnerGroup,
+                            deputy.order_status AS orderStatus,
+                            deputy.telephone_verify AS telephoneVerifyStatus,
+                            useLevelGetTaskStatus(#{telephoneVerifyLevel}, deputy.telephone_verify) AS taskStatus
+
+                    FROM  loan_order main
+                    INNER JOIN loan_process deputy ON main.id = deputy.order_id
+                    LEFT JOIN loan_customer join_c ON join_c.id = main.loan_customer_id
+                    LEFT JOIN loan_base_info join_b ON join_b.id = main.loan_base_info_id
+                    LEFT JOIN loan_financial_plan join_f ON join_f.id = main.loan_financial_plan_id
+                    LEFT JOIN partner join_p ON join_p.id = join_b.partner_id
+                    LEFT JOIN employee join_e ON join_e.id = join_b.salesman_id
+
+                    WHERE   TRUE
+                    <if test="taskStatus != 0">
+                        AND deputy.order_status = 1
+                    </if>
+
+                    AND useLevelGetTaskStatus(#{telephoneVerifyLevel}, deputy.telephone_verify) != -1
+                    AND
+                        CASE
+                            WHEN #{taskStatus} = 0  THEN
+                                deputy.telephone_verify != 0
+                            ELSE
+                                deputy.telephone_verify = #{taskStatus}
+                        END
+                ) tab
+
+                <where>
+                    AND
+                        CASE
+                            -- maxGroupLevel = 3  --> admin
+                            WHEN #{maxGroupLevel} = 3 THEN
+                                TRUE
+                            ELSE
+                                TRUE
+                            <if test="bizAreaIdList != null and bizAreaIdList.size() > 0">
+                                AND
+                                partner.id IN
+                                <foreach item="item" collection="bizAreaIdList" open="(" separator="," close=")">
+                                    #{item}
+                                </foreach>
+                            </if>
+                            <if test="bankList != null and bankList.size() > 0">
+                                AND
+                                b.bank IN
+                                <foreach item="item" collection="bankList" open="(" separator="," close=")">
+                                    #{item}
+                                </foreach>
+                            </if>
+                        END
+                        <if test="orderId != null">
+                            AND tab.id = #{orderId}
+                        </if>
+                        <if test="partnerCode != null and partnerCode !=''">
+                            AND tab.partnerCode = #{partnerCode}
+                        </if>
+                        <if test="partnerGroup != null and partnerGroup !=''">
+                            AND tab.partnerGroup = #{partnerGroup}
+                        </if>
+                        <if test="customer != null and customer != ''">
+                            AND tab.customer LIKE CONCAT('%', #{customer} ,'%')
+                        </if>
+                        <if test="mobile != null">
+                            AND tab.mobile = #{mobile}
+                        </if>
+                        <if test="idCard != null">
+                            AND tab.idCard = #{idCard}
+                        </if>
+                        <if test="salesmanId != null">
+                            AND tab.salesmanId = #{salesmanId}
+                        </if>
+                        <if test="startCreditGmtCreate != null">
+                            AND TO_DAYS(complex_log.usertask_credit_apply_create_time) &gt;= TO_DAYS(#{startCreditGmtCreate})
+                        </if>
+                        <if test="endCreditGmtCreate != null">
+                            AND TO_DAYS(complex_log.usertask_credit_apply_create_time) &lt;= TO_DAYS(#{endCreditGmtCreate})
+                        </if>
+                </where>
+
+            AND
+                CASE
+                    WHEN #{maxGroupLevel} = 0 THEN
+                        FALSE
+                    WHEN #{maxGroupLevel} = 1 THEN
+                        tab.salesmanId IN
+                        <foreach collection="juniorIds" item="item" open="(" close=")" separator=",">
+                            #{item}
+                        </foreach>
+                    ELSE TRUE
+                END
+
+            ) task
+
+            LEFT JOIN task_distribution taskdis ON task.taskId = taskdis.task_id
+            AND task.taskKey = taskdis.task_key
+            HAVING
+                CASE
+                    WHEN #{maxGroupLevel} = 3 THEN
+                        TRUE
+                    WHEN receiveManId IS NOT NULL THEN
+                        CASE
+                            WHEN receiveManId = #{employeeId} THEN
+                                TRUE
+                            ELSE
+                                FALSE
+                        END
+                    ELSE
+                        FALSE
+                END
+        ) complex
+
+        LEFT JOIN current_node_manager complex_log ON complex_log.order_id = complex.id
+        <choose>
+            <when test="taskStatus == 2 or taskStatus == 4 or taskStatus == 5 or taskStatus == 6  or pull == false ">
+                ORDER BY loanGmtCreate ASC
+            </when>
+            <otherwise>
+                ORDER BY telephoneGmtCreate DESC
+            </otherwise>
+        </choose>
+    </select>
+
 </mapper>

@@ -16,6 +16,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 
 import java.util.*;
@@ -758,6 +759,34 @@ public class UserGroupServiceImpl implements UserGroupService {
         userGroupRelaBankDOMapper.deleteAllByUserGroupId(userGroupParam.getId());
         doBindBank(userGroupParam.getId(), userGroupParam.getBankNameList());
         return ResultBean.ofSuccess(null, "更新完成");
+    }
+
+    @Override
+    public List<Long> bankIdList(Long userId) {
+        Assert.notNull(userId, "userId不能为空");
+
+        List<Long> userGroupIdList = employeeRelaUserGroupDOMapper.getUserGroupIdListByEmployeeId(userId);
+
+        if (CollectionUtils.isEmpty(userGroupIdList)) {
+            return Collections.EMPTY_LIST;
+        }
+
+        List<Long> bankIdList = userGroupRelaBankDOMapper.listBankIdByUserGroupIdList(userGroupIdList);
+        return bankIdList;
+    }
+
+    @Override
+    public List<String> bankNameList(Long userId) {
+        Assert.notNull(userId, "userId不能为空");
+
+        List<Long> userGroupIdList = employeeRelaUserGroupDOMapper.getUserGroupIdListByEmployeeId(userId);
+
+        if (CollectionUtils.isEmpty(userGroupIdList)) {
+            return Collections.EMPTY_LIST;
+        }
+
+        List<String> bankNameList = userGroupRelaBankDOMapper.listBankNameByUserGroupIdList(userGroupIdList);
+        return bankNameList;
     }
 
     /**

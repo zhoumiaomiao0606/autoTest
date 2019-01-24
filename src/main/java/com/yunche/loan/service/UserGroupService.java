@@ -48,4 +48,8 @@ public interface UserGroupService {
     ResultBean updateUserArea(UserGroupParam userGroupParam);
 
     ResultBean updateUserBank(UserGroupParam userGroupParam);
+
+    List<Long> bankIdList(Long userId);
+
+    List<String> bankNameList(Long userId);
 }
