@@ -2587,7 +2587,7 @@
 
                 <where>
                     AND
-                        CASE
+                       CASE
                             -- maxGroupLevel = 3  --> admin
                             WHEN #{maxGroupLevel} = 3 THEN
                                 TRUE
@@ -2595,14 +2595,14 @@
                                 TRUE
                             <if test="bizAreaIdList != null and bizAreaIdList.size() > 0">
                                 AND
-                                partner.id IN
+                                tab.partnerId IN
                                 <foreach item="item" collection="bizAreaIdList" open="(" separator="," close=")">
                                     #{item}
                                 </foreach>
                             </if>
                             <if test="bankList != null and bankList.size() > 0">
                                 AND
-                                b.bank IN
+                                tab.bank IN
                                 <foreach item="item" collection="bankList" open="(" separator="," close=")">
                                     #{item}
                                 </foreach>
