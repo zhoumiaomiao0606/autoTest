@@ -26,6 +26,8 @@ public interface JinTouHangAccommodationApplyService {
 
     ResultBean export(ExportApplyLoanPushParam param);
 
+    ResultBean exportProcess(ExportApplyLoanPushParam param);
+
     ResultBean errorExport(ExportApplyLoanPushParam param);
 
     ResultBean detail(Long bridgeProcessId,Long orderId);
