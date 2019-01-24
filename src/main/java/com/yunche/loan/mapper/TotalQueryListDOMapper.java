@@ -13,9 +13,16 @@ public interface TotalQueryListDOMapper {
 
     List<TaskListVO> selectBankCreditPend(TaskListQuery taskListQuery);
 
-    List<Long> selectSuccessBankOrder(@Param("transCode")String transCode);
+    List<Long> selectSuccessBankOrder(@Param("transCode") String transCode);
 
-    List<Long> selectProcessBankOrder(@Param("transCode")String transCode);
+    List<Long> selectProcessBankOrder(@Param("transCode") String transCode);
+
+    List<Long> selectApplyInstalmentException(@Param("transCode") String transCode);
+
+    List<Long> selectApplyInstalmentProcess(@Param("transCode") String transCode);
+
+    List<Long> selectApplyInstalmentBack(@Param("transCode") String transCode);
+
 
     //征信申请
     List<TaskListVO> selectApplyCredit(TaskListQuery taskListQuery);
@@ -33,6 +40,8 @@ public interface TotalQueryListDOMapper {
     List<TaskListVO> selectLoanReview(TaskListQuery taskListQuery);
 
     List<TaskListVO> selectRemitReview(TaskListQuery taskListQuery);
+
+    List<TaskListVO> selectApplyInstalment(TaskListQuery taskListQuery);
 
     // 视频面签登记
     List<TaskListVO> selectLoanInfoRecordList(TaskListQuery taskListQuery);
@@ -58,6 +67,20 @@ public interface TotalQueryListDOMapper {
     //抵押记录
     List<TaskListVO>   queryApplyLicensePlateDepositList(TaskListQuery taskListQuery);
 
+    //业务付款申请
+    List<TaskListVO>   queryBusinessPayList(TaskListQuery taskListQuery);
+
+    //业务审批单
+    List<TaskListVO>   queryBusinessReviewList(TaskListQuery taskListQuery);
+
+    //放款审批单
+    List<TaskListVO>   queryLoanReviewList(TaskListQuery taskListQuery);
+
+    //打款确认单
+    List<TaskListVO>   queryRemitReviewList(TaskListQuery taskListQuery);
+
+    //申请开卡
+    List<TaskListVO> selectBankOpenCardList(TaskListQuery taskListQuery);
     //资料审核
     List<TaskListVO>   queryMaterialReviewList(TaskListQuery taskListQuery);
 
