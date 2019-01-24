@@ -472,18 +472,20 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         //获取用户可见的银行
         taskListQuery.setBankList(getUserHaveBank(loginUser.getId()));
 
+        PageHelper.startPage(1, 1, true);
         List<TaskListVO> list = new ArrayList<>();
+
         if (LoanProcessEnum.FINANCIAL_SCHEME.getCode().equals(taskListQuery.getTaskDefinitionKey())) {
             list = totalQueryListDOMapper.selectTotalCusInfo(taskListQuery);
         } else if (LoanProcessEnum.BANK_CREDIT_RECORD.getCode().equals(taskListQuery.getTaskDefinitionKey())) {
             list = totalQueryListDOMapper.selectBankCreditPend(taskListQuery);
-        }
-        long count = 0;
-        if (list != null) {
-            count = list.size();
+        } else if (LoanProcessEnum.TELEPHONE_VERIFY.getCode().equals(taskListQuery.getTaskDefinitionKey())) {
+            list = totalQueryListDOMapper.queryTelephoneVerifyList(taskListQuery);
         }
 
-        return ResultBean.ofSuccess(count);
+        PageInfo<TaskListVO> pageInfo = PageInfo.of(list);
+
+        return ResultBean.ofSuccess(pageInfo.getTotal());
     }
 
     @Override

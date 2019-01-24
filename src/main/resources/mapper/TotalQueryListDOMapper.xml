@@ -1716,7 +1716,7 @@
             (
                 SELECT
                         tab.*,
-                        ( 'usertask_telephone_verify' ) AS taskKey,
+                        'usertask_telephone_verify' AS taskKey,
                         tab.taskStatus AS taskType,
                         useGetTaskTypeText ( 'usertask_telephone_verify', tab.taskStatus, tab.orderStatus ) AS taskTypeText,
                         useGetCurrentTask ( 'usertask_telephone_verify' ) AS currentTask
@@ -1775,14 +1775,14 @@
                             <if test="bizAreaIdList != null and bizAreaIdList.size() > 0">
                                 AND
                                 partner.id IN
-                                <foreach item="item" index="index" collection="bizAreaIdList" open="(" separator="," close=")">
+                                <foreach item="item" collection="bizAreaIdList" open="(" separator="," close=")">
                                     #{item}
                                 </foreach>
                             </if>
                             <if test="bankList != null and bankList.size() > 0">
                                 AND
                                 b.bank IN
-                                <foreach item="item" index="index" collection="bankList" open="(" separator="," close=")">
+                                <foreach item="item" collection="bankList" open="(" separator="," close=")">
                                     #{item}
                                 </foreach>
                             </if>
