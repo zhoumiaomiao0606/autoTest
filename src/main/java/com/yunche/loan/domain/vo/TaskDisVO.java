@@ -8,5 +8,8 @@ public class TaskDisVO {
 
     private String sendeeName;
 
+    /**
+     * 1：未领取；2-已领取；
+     */
     private String status;
 }

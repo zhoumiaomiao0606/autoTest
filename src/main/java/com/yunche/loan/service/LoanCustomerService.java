@@ -48,6 +48,5 @@ public interface LoanCustomerService {
      */
     void updateCustomerEnable(Long principalId);
 
-    ResultBean<List<CustomerListVO>> queryCustomerList(CustomerListQuery customerListQuery);
 
 }

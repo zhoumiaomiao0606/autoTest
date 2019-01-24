@@ -154,20 +154,26 @@ public class TaskSchedulingController {
         return taskSchedulingService.queryTaskList(taskListQuery);
     }
 
+    /**
+     * 新列表接口
+     *
+     * @param taskListQuery
+     * @return
+     */
     @Limiter(3)
     @PostMapping(value = "/queryNewTaskList")
     public ResultBean<List<TaskListVO>> scheduleNewTaskList(@RequestBody @Validated TaskListQuery taskListQuery) {
         return taskSchedulingService.queryNewTaskList(taskListQuery);
     }
+
     /**
-     * 统计接口
+     * 新统计接口
      */
     @Limiter(2)
     @PostMapping(value = "/countNewQueryTaskList")
     public ResultBean<Long> countNewQueryTaskList(@RequestBody @Validated TaskListQuery taskListQuery) {
         return taskSchedulingService.countNewQueryTaskList(taskListQuery);
     }
-
 
 
     /**
@@ -220,4 +226,5 @@ public class TaskSchedulingController {
         TaskDisVO taskDisVO = taskDistributionService.query(Long.valueOf(param.getTaskId()), param.getTaskKey());
         return ResultBean.ofSuccess(taskDisVO, "操作成功");
     }
+
 }

@@ -32,11 +32,11 @@ public class LoanOrderProcessConst {
     public static final Byte TASK_PROCESS_LOCKED = 22;
 
     /**
-     * 任务状态:  2-已结清;
+     * 任务状态:  11-已结清;
      */
     public static final Byte TASK_PROCESS_CLOSED = 11;
     /**
-     * 任务状态:  11-弃单;
+     * 任务状态:  12-弃单;
      */
     public static final Byte TASK_PROCESS_CANCEL = 12;
 

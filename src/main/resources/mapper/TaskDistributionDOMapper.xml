@@ -1,107 +1,119 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.yunche.loan.mapper.TaskDistributionDOMapper" >
-  <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.TaskDistributionDO" >
-    <id column="task_id" property="taskId" jdbcType="BIGINT" />
-    <id column="task_key" property="taskKey" jdbcType="VARCHAR" />
-    <result column="sendee" property="sendee" jdbcType="BIGINT" />
-    <result column="sendee_name" property="sendeeName" jdbcType="VARCHAR" />
-    <result column="get_create" property="getCreate" jdbcType="TIMESTAMP" />
-    <result column="finish_create" property="finishCreate" jdbcType="TIMESTAMP" />
-    <result column="status" property="status" jdbcType="TINYINT" />
-  </resultMap>
-  <sql id="Base_Column_List" >
+<mapper namespace="com.yunche.loan.mapper.TaskDistributionDOMapper">
+    <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.TaskDistributionDO">
+        <id column="task_id" property="taskId" jdbcType="BIGINT"/>
+        <id column="task_key" property="taskKey" jdbcType="VARCHAR"/>
+        <result column="sendee" property="sendee" jdbcType="BIGINT"/>
+        <result column="sendee_name" property="sendeeName" jdbcType="VARCHAR"/>
+        <result column="get_create" property="getCreate" jdbcType="TIMESTAMP"/>
+        <result column="finish_create" property="finishCreate" jdbcType="TIMESTAMP"/>
+        <result column="status" property="status" jdbcType="TINYINT"/>
+    </resultMap>
+    <sql id="Base_Column_List">
     task_id, task_key, sendee, sendee_name, get_create, finish_create, status
   </sql>
-  <select id="selectByPrimaryKey" resultMap="BaseResultMap">
-    select 
-    <include refid="Base_Column_List" />
-    from task_distribution
-    where task_id = #{taskId,jdbcType=BIGINT}
-      and task_key = #{taskKey,jdbcType=VARCHAR}
-  </select>
 
-  <select id="selectByPrimaryKeyAndStatus" resultMap="BaseResultMap">
-    select
-    <include refid="Base_Column_List" />
-    from task_distribution
-    where task_id = #{taskId,jdbcType=BIGINT}
-    and task_key = #{taskKey,jdbcType=VARCHAR} and status = 2
-  </select>
-  <delete id="deleteByPrimaryKey">
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from task_distribution
+        where task_id = #{taskId,jdbcType=BIGINT}
+        and task_key = #{taskKey,jdbcType=VARCHAR}
+    </select>
+
+    <select id="list" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from task_distribution
+        where task_key = #{taskKey,jdbcType=VARCHAR}
+        AND task_id IN
+        <foreach collection="taskIdList" item="taskId" open="(" close=")" separator=",">
+            #{taskId,jdbcType=BIGINT}
+        </foreach>
+    </select>
+
+    <select id="selectByPrimaryKeyAndStatus" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from task_distribution
+        where task_id = #{taskId,jdbcType=BIGINT}
+        and task_key = #{taskKey,jdbcType=VARCHAR} and status = 2
+    </select>
+    <delete id="deleteByPrimaryKey">
     delete from task_distribution
     where task_id = #{taskId,jdbcType=BIGINT}
       and task_key = #{taskKey,jdbcType=VARCHAR}
   </delete>
-  <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.TaskDistributionDO" >
-    insert into task_distribution
-    <trim prefix="(" suffix=")" suffixOverrides="," >
-      <if test="taskId != null" >
-        task_id,
-      </if>
-      <if test="taskKey != null" >
-        task_key,
-      </if>
-      <if test="sendee != null" >
-        sendee,
-      </if>
-      <if test="sendeeName != null" >
-        sendee_name,
-      </if>
-      <if test="getCreate != null" >
-        get_create,
-      </if>
-      <if test="finishCreate != null" >
-        finish_create,
-      </if>
-      <if test="status != null" >
-        status,
-      </if>
-    </trim>
-    <trim prefix="values (" suffix=")" suffixOverrides="," >
-      <if test="taskId != null" >
-        #{taskId,jdbcType=BIGINT},
-      </if>
-      <if test="taskKey != null" >
-        #{taskKey,jdbcType=VARCHAR},
-      </if>
-      <if test="sendee != null" >
-        #{sendee,jdbcType=BIGINT},
-      </if>
-      <if test="sendeeName != null" >
-        #{sendeeName,jdbcType=VARCHAR},
-      </if>
-      <if test="getCreate != null" >
-        #{getCreate,jdbcType=TIMESTAMP},
-      </if>
-      <if test="finishCreate != null" >
-        #{finishCreate,jdbcType=TIMESTAMP},
-      </if>
-      <if test="status != null" >
-        #{status,jdbcType=TINYINT},
-      </if>
-    </trim>
-  </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.TaskDistributionDO" >
-    update task_distribution
-    <set >
-      <if test="sendee != null" >
-        sendee = #{sendee,jdbcType=BIGINT},
-      </if>
-      <if test="sendeeName != null" >
-        sendee_name = #{sendeeName,jdbcType=VARCHAR},
-      </if>
-      <if test="getCreate != null" >
-        get_create = #{getCreate,jdbcType=TIMESTAMP},
-      </if>
-      <if test="finishCreate != null" >
-        finish_create = #{finishCreate,jdbcType=TIMESTAMP},
-      </if>
-      <if test="status != null" >
-        status = #{status,jdbcType=TINYINT},
-      </if>
-    </set>
-    where task_id = #{taskId,jdbcType=BIGINT}
-      and task_key = #{taskKey,jdbcType=VARCHAR}
-  </update>
+    <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.TaskDistributionDO">
+        insert into task_distribution
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="taskId != null">
+                task_id,
+            </if>
+            <if test="taskKey != null">
+                task_key,
+            </if>
+            <if test="sendee != null">
+                sendee,
+            </if>
+            <if test="sendeeName != null">
+                sendee_name,
+            </if>
+            <if test="getCreate != null">
+                get_create,
+            </if>
+            <if test="finishCreate != null">
+                finish_create,
+            </if>
+            <if test="status != null">
+                status,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="taskId != null">
+                #{taskId,jdbcType=BIGINT},
+            </if>
+            <if test="taskKey != null">
+                #{taskKey,jdbcType=VARCHAR},
+            </if>
+            <if test="sendee != null">
+                #{sendee,jdbcType=BIGINT},
+            </if>
+            <if test="sendeeName != null">
+                #{sendeeName,jdbcType=VARCHAR},
+            </if>
+            <if test="getCreate != null">
+                #{getCreate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="finishCreate != null">
+                #{finishCreate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="status != null">
+                #{status,jdbcType=TINYINT},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.TaskDistributionDO">
+        update task_distribution
+        <set>
+            <if test="sendee != null">
+                sendee = #{sendee,jdbcType=BIGINT},
+            </if>
+            <if test="sendeeName != null">
+                sendee_name = #{sendeeName,jdbcType=VARCHAR},
+            </if>
+            <if test="getCreate != null">
+                get_create = #{getCreate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="finishCreate != null">
+                finish_create = #{finishCreate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="status != null">
+                status = #{status,jdbcType=TINYINT},
+            </if>
+        </set>
+        where task_id = #{taskId,jdbcType=BIGINT}
+        and task_key = #{taskKey,jdbcType=VARCHAR}
+    </update>
 </mapper>

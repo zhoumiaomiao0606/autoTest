@@ -815,10 +815,4 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
 
     }
 
-    @Override
-    public ResultBean<List<CustomerListVO>> queryCustomerList(CustomerListQuery customerListQuery)
-    {
-        return null;
-    }
-
 }

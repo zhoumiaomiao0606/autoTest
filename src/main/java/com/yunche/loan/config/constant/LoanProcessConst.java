@@ -12,6 +12,15 @@ import static com.yunche.loan.config.constant.LoanProcessEnum.*;
  */
 public class LoanProcessConst {
 
+    // ------------------- taskKey 前缀
+    public static final String TASK_KEY_USERTASK_PREFIX = "usertask";
+    public static final String TASK_KEY_SERVICETASK_PREFIX = "servicetask";
+
+    public static final String TASK_KEY_USER_TASK_PREFIX_2 = "usertask_";
+    public static final String TASK_KEY_SERVICE_TASK_PREFIX_2 = "servicetask_";
+
+
+    // ------------------- taskKey Set
     /**
      * 第三方过桥资金-KEY
      */
