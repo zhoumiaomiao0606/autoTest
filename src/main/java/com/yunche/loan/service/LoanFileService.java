@@ -16,14 +16,14 @@ public interface LoanFileService {
 
     ResultBean<Void> update(LoanFileDO loanFileDO);
 
-    ResultBean<List<FileVO>> listByCustomerId(Long customerId, Byte fileUploadType);
+    List<FileVO> listByCustomerId(Long customerId, Byte fileUploadType);
 
     /**
      * @param customerId
      * @param uploadType
      * @return
      */
-    ResultBean<List<FileVO>> listByCustomerIdAndUploadType(Long customerId, Byte uploadType);
+    List<FileVO> listByCustomerIdAndUploadType(Long customerId, Byte uploadType);
 
     /**
      * 批量插入

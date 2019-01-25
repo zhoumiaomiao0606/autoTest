@@ -315,8 +315,7 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
         Preconditions.checkArgument(fileResultBean.getSuccess(), fileResultBean.getMsg());
 
         // enable_type：增信增补(自动)打回----如果是特殊关联人--则不需要征信打回
-        if (!CUST_TYPE_SPECIAL_CONTACT.equals(customerParam.getCustType()))
-        {
+        if (!CUST_TYPE_SPECIAL_CONTACT.equals(customerParam.getCustType())) {
             enable(String.valueOf(resultBean.getData()), ENABLE_TYPE_CREDIT_SUPPLEMENT);
         }
 
@@ -599,9 +598,8 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
     }
 
     private void fillFiles(CustomerVO customerVO, Byte fileUploadType) {
-        ResultBean<List<FileVO>> fileResultBean = loanFileService.listByCustomerId(customerVO.getId(), fileUploadType);
-        Preconditions.checkArgument(fileResultBean.getSuccess(), fileResultBean.getMsg());
-        customerVO.setFiles(fileResultBean.getData());
+        List<FileVO> fileVOS = loanFileService.listByCustomerId(customerVO.getId(), fileUploadType);
+        customerVO.setFiles(fileVOS);
     }
 
     private void updateOrInsertLoanCustomer(AllCustDetailParam allCustDetailParam) {
@@ -816,8 +814,7 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
     }
 
     @Override
-    public ResultBean<List<CustomerListVO>> queryCustomerList(CustomerListQuery customerListQuery)
-    {
+    public ResultBean<List<CustomerListVO>> queryCustomerList(CustomerListQuery customerListQuery) {
         return null;
     }
 

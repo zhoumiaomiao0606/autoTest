@@ -283,9 +283,8 @@ public class LoanCreditInfoServiceImpl implements LoanCreditInfoService {
      * @param customerId
      */
     private void fillFiles(CreditRecordVO.CustomerCreditRecord customerCreditRecord, Long customerId) {
-        ResultBean<List<FileVO>> filesResultBean = loanFileService.listByCustomerId(customerId, null);
-        Preconditions.checkArgument(filesResultBean.getSuccess(), filesResultBean.getMsg());
-        customerCreditRecord.setFiles(filesResultBean.getData());
+        List<FileVO> fileVOS = loanFileService.listByCustomerId(customerId, null);
+        customerCreditRecord.setFiles(fileVOS);
     }
 
     /**

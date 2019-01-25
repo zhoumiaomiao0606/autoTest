@@ -65,7 +65,7 @@ public class LoanFileServiceImpl implements LoanFileService {
     }
 
     @Override
-    public ResultBean<List<FileVO>> listByCustomerId(Long customerId, Byte fileUploadType) {
+    public List<FileVO> listByCustomerId(Long customerId, Byte fileUploadType) {
         Preconditions.checkNotNull(customerId, "客户ID不能为空");
 
         Map<Byte, FileVO> typeFilesMap = Maps.newConcurrentMap();
@@ -113,11 +113,11 @@ public class LoanFileServiceImpl implements LoanFileService {
                 .sorted(Comparator.comparing(FileVO::getType))
                 .collect(Collectors.toList());
 
-        return ResultBean.ofSuccess(fileVOS);
+        return fileVOS;
     }
 
     @Override
-    public ResultBean<List<FileVO>> listByCustomerIdAndUploadType(Long customerId, Byte uploadType) {
+    public List<FileVO> listByCustomerIdAndUploadType(Long customerId, Byte uploadType) {
         Preconditions.checkNotNull(customerId, "客户ID不能为空");
 
         List<FileVO> fileVOS = Lists.newArrayList();
@@ -139,7 +139,7 @@ public class LoanFileServiceImpl implements LoanFileService {
                     .collect(Collectors.toList());
         }
 
-        return ResultBean.ofSuccess(fileVOS);
+        return fileVOS;
     }
 
 
