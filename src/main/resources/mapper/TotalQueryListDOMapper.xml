@@ -1982,19 +1982,7 @@
                         )
                     </when>
                     <when test="serialStatus == 'success'">
-                        AND main.id in <!--  全部成功才算成功 -->
-                        (
-                        <choose>
-                            <when test="bankInterfaceSerialOrderidList != null and bankInterfaceSerialOrderidList.size() > 0">
-                                <foreach item="item" index="index" collection="bankInterfaceSerialOrderidList" separator=",">
-                                    #{item}
-                                </foreach>
-                            </when>
-                            <otherwise>
-                                select temp.id from (SELECT 1 as id) temp  where temp.id =2
-                            </otherwise>
-                        </choose>
-                        )
+                        AND  1=1
                     </when>
                     <when test="serialStatus == 'failure'">
                         AND main.id in <!--  全部成功才算成功 -->
