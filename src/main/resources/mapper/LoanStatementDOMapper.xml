@@ -1514,6 +1514,42 @@
         order by submitTime desc
 
     </select>
+    <select id="selectApplyLoanProcess" parameterType="com.yunche.loan.domain.param.ExportApplyLoanPushParam"
+            resultType="com.yunche.loan.domain.vo.ExportApplyLoanPushVO">
+        select
+        process.id        AS bridgeProcessId,
+        customer.name     AS customerName,
+        customer.id_card  AS customerIdCard,
+        car.car_detail_name  AS carDetailName,
+        financial.car_price  AS carPrice,
+        financial.down_payment_money   AS downPaymentMoney,
+        remit.remit_amount             AS remitAmount,
+        case when financial.loan_amount &gt;= remit.remit_amount
+        then floor(remit.remit_amount/100)*100
+        else floor(financial.loan_amount/100)*100 end AS lendAmount,
+        conf_third.loan_time           AS loanTime,
+        conf_third.year_rate           AS interestRate,
+        loan.id                        AS loanForm,
+        base.bank                      AS bank,
+        customer.mobile                AS tel,
+        visit.debit_card               AS bankCard
+
+
+        from
+        (select * from loan_process_bridge where bridge_handle=2 and order_status = 1) process
+        LEFT JOIN loan_order  loan ON process.order_id = loan.id
+        LEFT JOIN conf_third_real_bridge_process  real_c ON real_c.bridge_process_id = process.id
+        LEFT JOIN conf_third_party_money conf_third ON conf_third.id =real_c.conf_third_party_id
+        LEFT JOIN loan_base_info base ON loan.loan_base_info_id=base.id
+        LEFT JOIN loan_customer customer ON loan.loan_customer_id = customer.id
+        LEFT JOIN loan_financial_plan financial ON financial.id = loan.loan_financial_plan_id
+        LEFT JOIN remit_details remit  ON loan.remit_details_id =remit.id
+        LEFT JOIN loan_car_info car ON loan.loan_car_info_id=car.id
+        LEFT JOIN third_party_fund_business third_party ON third_party.bridge_procecss_id=process.id
+        left join loan_home_visit visit on visit.id = loan.loan_home_visit_id
+        where 	if((select count(1) from third_party_fund_business where bridge_procecss_id=process.id and lend_status in (7))=1,true,false)
+    </select>
+
     <select id="exportApplyLoanPush" parameterType="com.yunche.loan.domain.param.ExportApplyLoanPushParam"
             resultType="com.yunche.loan.domain.vo.ExportApplyLoanPushVO">
         select

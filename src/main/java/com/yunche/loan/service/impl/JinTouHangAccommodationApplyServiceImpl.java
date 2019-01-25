@@ -569,6 +569,37 @@ public class JinTouHangAccommodationApplyServiceImpl implements JinTouHangAccomm
     }
 
     @Override
+    public ResultBean exportProcess(ExportApplyLoanPushParam param) {
+        List<ExportApplyLoanPushVO> voList = loanStatementDOMapper.selectApplyLoanProcess(param);
+        List<String> header = Lists.newArrayList("流水号", "委托人（购车人、借款人）", "身份证号",
+                "车辆品牌型号", "车价", "首付款", "甲方垫款金额（导出）", "乙方借款金额（导入）", "借款期限", "利率", "借据号", "最终放款银行","手机号码","借记卡号"
+        );
+        //生成Excel文件
+        String ossResultKey = POIUtil.createExcelFile("购车融资业务推送清单", voList, header, ExportApplyLoanPushVO.class, ossConfig);
+
+        // 更新记录为已导出
+        voList.parallelStream()
+                .filter(Objects::nonNull)
+                .forEach(e -> {
+                    ThirdPartyFundBusinessDO fundBusinessDO = thirdPartyFundBusinessDOMapper.selectByPrimaryKey(Long.valueOf(e.getBridgeProcessId()));
+                    if (fundBusinessDO == null) {
+                        ThirdPartyFundBusinessDO thirdPartyFundBusinessDO = new ThirdPartyFundBusinessDO();
+                        thirdPartyFundBusinessDO.setBridgeProcecssId(Long.valueOf(e.getBridgeProcessId()));
+                        thirdPartyFundBusinessDO.setOrderId(Long.valueOf(e.getLoanForm()));
+                        thirdPartyFundBusinessDO.setLendStatus(IDict.K_CJZT.K_CJZT_NO);
+                        thirdPartyFundBusinessDO.setGmtCreate(new Date());
+                        thirdPartyFundBusinessDOMapper.insertSelective(thirdPartyFundBusinessDO);
+                    } else {
+                        fundBusinessDO.setLendStatus(IDict.K_CJZT.K_CJZT_NO);
+                        int count = thirdPartyFundBusinessDOMapper.updateByPrimaryKeySelective(fundBusinessDO);
+                        Preconditions.checkArgument(count > 0, "更新失败");
+                    }
+                });
+
+        return ResultBean.ofSuccess(ossResultKey);
+    }
+
+    @Override
     public ResultBean errorExport(ExportApplyLoanPushParam param) {
         List<ExportErrorOrderVO> voList = loanStatementDOMapper.exportErrorOrder(param);
         List<String> header = Lists.newArrayList( "委托人（购车人、借款人）", "身份证号",
