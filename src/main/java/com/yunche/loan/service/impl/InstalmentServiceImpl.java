@@ -2,12 +2,12 @@ package com.yunche.loan.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
+import com.yunche.loan.config.constant.LoanFileConst;
+import com.yunche.loan.config.constant.LoanFileEnum;
 import com.yunche.loan.config.constant.TermFileEnum;
 import com.yunche.loan.config.exception.BizException;
-import com.yunche.loan.domain.entity.LoanFileDO;
-import com.yunche.loan.domain.entity.LoanFinancialPlanDO;
-import com.yunche.loan.domain.entity.LoanOrderDO;
-import com.yunche.loan.domain.entity.VehicleInformationDO;
+import com.yunche.loan.domain.entity.*;
 import com.yunche.loan.domain.param.InstalmentUpdateParam;
 import com.yunche.loan.domain.param.UniversalFileParam;
 import com.yunche.loan.domain.vo.ApplyDiviGeneralInfoVO;
@@ -18,12 +18,12 @@ import com.yunche.loan.service.LoanQueryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+
+import static com.yunche.loan.config.constant.LoanFileEnum.*;
 
 @Service
 @Transactional
@@ -47,13 +47,47 @@ public class InstalmentServiceImpl implements InstalmentService {
     @Autowired
     private VehicleInformationDOMapper vehicleInformationDOMapper;
 
+    @Autowired
+    private LoanBaseInfoDOMapper loanBaseInfoDOMapper;
+
 
     @Override
     public RecombinationVO detail(Long orderId) {
 
+
         LoanOrderDO orderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
         if (orderDO == null) {
             throw new BizException("此订单不存在");
+        }
+        //台州
+        LoanBaseInfoDO loanBaseInfoDO = loanBaseInfoDOMapper.selectByPrimaryKey(orderDO.getLoanBaseInfoId());
+        if("中国工商银行台州路桥支行".equals(loanBaseInfoDO.getBank())){
+            //发票
+            // INVOICE((byte) 19, "发票"),   CAR_INVOICE((byte) 41, "购车发票"),
+            List<LoanFileDO> loanFileDOS = loanFileDOMapper.listByCustomerIdAndType(orderDO.getLoanCustomerId(), CAR_INVOICE.getType(), LoanFileConst.UPLOAD_TYPE_NORMAL);
+            if(CollectionUtils.isEmpty(loanFileDOS)){
+                String path = getPath(orderDO.getLoanCustomerId(), INVOICE.getType());
+                LoanFileDO loanFileDO = new LoanFileDO();
+                loanFileDO.setCustomerId(orderDO.getLoanCustomerId());
+                loanFileDO.setPath(path);
+                loanFileDO.setType(CAR_INVOICE.getType());
+                loanFileDO.setUploadType(LoanFileConst.UPLOAD_TYPE_NORMAL);
+                loanFileDO.setGmtCreate(new Date());
+                loanFileDOMapper.insertSelective(loanFileDO);
+            }
+            //保单
+            // POLICY((byte) 21, "保单"), S9016((byte) 80, "机动车辆保险单"),
+            List<LoanFileDO> policyDOS = loanFileDOMapper.listByCustomerIdAndType(orderDO.getLoanCustomerId(), S9016.getType(), LoanFileConst.UPLOAD_TYPE_NORMAL);
+            if(CollectionUtils.isEmpty(policyDOS)){
+                String path = getPath(orderDO.getLoanCustomerId(), POLICY.getType());
+                LoanFileDO loanFileDO = new LoanFileDO();
+                loanFileDO.setCustomerId(orderDO.getLoanCustomerId());
+                loanFileDO.setPath(path);
+                loanFileDO.setType(S9016.getType());
+                loanFileDO.setUploadType(LoanFileConst.UPLOAD_TYPE_NORMAL);
+                loanFileDO.setGmtCreate(new Date());
+                loanFileDOMapper.insertSelective(loanFileDO);
+            }
         }
 
         Set<Byte> types = new HashSet<>();
@@ -118,5 +152,21 @@ public class InstalmentServiceImpl implements InstalmentService {
         vehicleInformationDO.setId(orderDO.getVehicleInformationId());
         vehicleInformationDO.setAssess_use_year(param.getVehicle_assess_use_year());
         vehicleInformationDOMapper.updateByPrimaryKeySelective(vehicleInformationDO);
+    }
+
+
+    private String getPath(Long customerId,Byte type){
+        List<LoanFileDO> old1 = loanFileDOMapper.listByCustomerIdAndType(customerId, type, LoanFileConst.UPLOAD_TYPE_NORMAL);
+        List<LoanFileDO> old2 = loanFileDOMapper.listByCustomerIdAndType(customerId, type, LoanFileConst.UPLOAD_TYPE_SUPPLEMENT);
+        ArrayList<String> paths = Lists.newArrayList();
+        List<LoanFileDO> newList = Lists.newArrayList();
+        newList.addAll(old1);
+        newList.addAll(old2);
+        newList.stream().forEach(e->{
+            List<String> urls = JSON.parseArray(e.getPath(), String.class);
+            paths.addAll(urls);
+        });
+        String s = JSON.toJSONString(paths);
+        return s;
     }
 }
