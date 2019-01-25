@@ -63,14 +63,14 @@ public class InstalmentServiceImpl implements InstalmentService {
         LoanBaseInfoDO loanBaseInfoDO = loanBaseInfoDOMapper.selectByPrimaryKey(orderDO.getLoanBaseInfoId());
         if("中国工商银行台州路桥支行".equals(loanBaseInfoDO.getBank())){
             //发票
-            // INVOICE((byte) 19, "发票"),   CAR_INVOICE((byte) 41, "购车发票"),
-            List<LoanFileDO> loanFileDOS = loanFileDOMapper.listByCustomerIdAndType(orderDO.getLoanCustomerId(), CAR_INVOICE.getType(), LoanFileConst.UPLOAD_TYPE_NORMAL);
+            // INVOICE((byte) 19, "发票"),    S9012((byte) 76, "购车发票"),
+            List<LoanFileDO> loanFileDOS = loanFileDOMapper.listByCustomerIdAndType(orderDO.getLoanCustomerId(), S9012.getType(), LoanFileConst.UPLOAD_TYPE_NORMAL);
             if(CollectionUtils.isEmpty(loanFileDOS)){
                 String path = getPath(orderDO.getLoanCustomerId(), INVOICE.getType());
                 LoanFileDO loanFileDO = new LoanFileDO();
                 loanFileDO.setCustomerId(orderDO.getLoanCustomerId());
                 loanFileDO.setPath(path);
-                loanFileDO.setType(CAR_INVOICE.getType());
+                loanFileDO.setType(S9012.getType());
                 loanFileDO.setUploadType(LoanFileConst.UPLOAD_TYPE_NORMAL);
                 loanFileDO.setGmtCreate(new Date());
                 loanFileDOMapper.insertSelective(loanFileDO);
