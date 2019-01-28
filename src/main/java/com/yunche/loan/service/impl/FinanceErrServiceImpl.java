@@ -46,6 +46,7 @@ public class FinanceErrServiceImpl implements FinanceErrService {
             approvalParam.setOrderId(Long.valueOf(financeErrVO.getOrderId()));
             approvalParam.setProcessId(financeErrVO.getProcessId()==null?0:Long.valueOf(financeErrVO.getProcessId()));
             approvalParam.setAction(ACTION_PASS);
+            approvalParam.setSubmitTime(financeErrVO.getBusinessDate());
             EventBusCenter.eventBus.post(approvalParam);
         }
         return ResultBean.ofSuccess("处理完成，请舒心列表");

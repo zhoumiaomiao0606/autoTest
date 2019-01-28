@@ -25,6 +25,8 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
 
@@ -40,6 +42,8 @@ public class AsyncFinanceApI {
     //private static final String HOST = "http://47.96.78.20:8012";
 
     private static final String PATH = "/costcalculation/insert";
+
+    private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd  HH:mm:ss");
 
     @Autowired
     private FinanceConfig financeConfig;
@@ -92,6 +96,9 @@ public class AsyncFinanceApI {
     @Autowired
     private CarModelDOMapper carModelDOMapper;
 
+    @Autowired
+    private LoanProcessLogDOMapper loanProcessLogDOMapper;
+
 
 
 
@@ -138,6 +145,21 @@ public class AsyncFinanceApI {
             LoanCustomerDO loanCustomerDO = loanCustomerDOMapper.selectByPrimaryKey(loanOrderDO.getLoanCustomerId(), VALID_STATUS);
             postFinanceData.setCustomerName(loanCustomerDO.getName());
             postFinanceData.setCustomerIdCard(loanCustomerDO.getIdCard());
+            postFinanceData.setCustomerNo(loanCustomerDO.getId());
+
+            //设置业务发生时间
+            LoanProcessLogDO loanProcessLogDO = loanProcessLogDOMapper.lastLogByOrderIdAndTaskDefinitionKey(approvalParam.getOrderId(), approvalParam.getTaskDefinitionKey());
+            //如果为null，则说明是新提交
+            if (approvalParam.getSubmitTime()==null)
+            {
+                postFinanceData.setBusinessTime(sdf.format(loanProcessLogDO.getCreateTime()));
+                approvalParam.setSubmitTime(sdf.format(loanProcessLogDO.getCreateTime()));
+            }else
+                {
+                    postFinanceData.setBusinessTime(approvalParam.getSubmitTime());
+                }
+
+
 
 
             Long bankId = bankDOMapper.selectIdByName(loanBaseInfoDO.getBank());
@@ -261,7 +283,7 @@ public class AsyncFinanceApI {
                 voucherErrRecordDO.setSerialNo(execute);
                 voucherErrRecordDO.setOrderId(approvalParam.getOrderId());
                 voucherErrRecordDO.setTaskDefinitionKey(approvalParam.getTaskDefinitionKey());
-                voucherErrRecordDO.setCreateTime(new Date());
+                voucherErrRecordDO.setCreateTime(new Date(approvalParam.getSubmitTime()));
                 voucherErrRecordDO.setProcessId(approvalParam.getProcessId());
                 voucherErrRecordDO.setRetMessage("发送异常或者接口不通");
                 voucherErrRecordDOMapper.insertSelective(voucherErrRecordDO);
@@ -287,7 +309,7 @@ public class AsyncFinanceApI {
             voucherErrRecordDO.setSerialNo(execute);
             voucherErrRecordDO.setOrderId(approvalParam.getOrderId());
             voucherErrRecordDO.setTaskDefinitionKey(approvalParam.getTaskDefinitionKey());
-            voucherErrRecordDO.setCreateTime(new Date());
+            voucherErrRecordDO.setCreateTime(new Date(approvalParam.getSubmitTime()));
             voucherErrRecordDO.setProcessId(approvalParam.getProcessId());
 
             try {

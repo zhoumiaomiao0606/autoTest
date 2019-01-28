@@ -5,6 +5,7 @@ import com.alibaba.fastjson.serializer.SerializerFeature;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.util.Date;
 
 @Data
 public class PostFinanceData
@@ -17,7 +18,12 @@ public class PostFinanceData
 
     private String customerName;//客户姓名
 
-    private String customerIdCard;
+    private String customerIdCard;//客户身份证
+
+    private Long customerNo;//客户编码
+
+    private String BusinessTime;
+
 
 
 
