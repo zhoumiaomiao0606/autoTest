@@ -382,7 +382,7 @@
 -->
 
 
-        <table tableName="conf_video_face_artificial" domainObjectName="ConfVideoFaceArtificialDO"
+       <!-- <table tableName="conf_video_face_artificial" domainObjectName="ConfVideoFaceArtificialDO"
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
         </table>
@@ -390,6 +390,13 @@
         <table tableName="conf_video_face_machine" domainObjectName="ConfVideoFaceMachineDO"
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+        </table>
+-->
+
+        <table tableName="remit_details" domainObjectName="RemitDetailsDO"
+               enableCountByExample="false" enableUpdateByExample="false"
+               enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+            <property name="useActualColumnNames" value="true"/>
         </table>
 
         <!-- 忽略列，不生成bean 字段

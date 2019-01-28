@@ -114,7 +114,9 @@ public class AsyncFinanceApI {
         return remitDetailsDO;
     }
     @Async
-    public void postFinanceData(ApprovalParam approvalParam) {
+    public void postFinanceData(ApprovalParam approvalParam)
+    {
+        LOG.info("记录处理订单号："+approvalParam.getOrderId()+"处理类型"+approvalParam.getTaskDefinitionKey());
 
         //进行推送
         try {

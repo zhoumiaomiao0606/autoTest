@@ -256,4 +256,22 @@
 
     </select>
 
+    <select id="videoPush" resultType="java.lang.String">
+        select a.order_id  AS orderId from
+
+        (select DISTINCT serial.`serial_no`,serial.`order_id`   from bank_interface_serial serial
+        inner join
+        (
+        select SUBSTRING_INDEX(GROUP_CONCAT(serial_no order by request_time desc separator
+        ','),',',1)
+        as serial_no
+        from bank_interface_serial GROUP BY trans_code,customer_id
+        ) orderdata on orderdata.serial_no = serial.serial_no and serial.trans_code = 'multimediaupload'
+        where serial.api_status = 200 and serial.status =2) a
+        LEFT JOIN  bank_interface_file_serial b ON a.`serial_no`= b.`serial_no`
+        where   b.`success`= 0
+        and b.`request_time`> '2019-01-11 00:00:00'
+
+    </select>
+
 </mapper>

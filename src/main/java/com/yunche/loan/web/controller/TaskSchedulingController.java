@@ -204,4 +204,18 @@ public class TaskSchedulingController {
         TaskDisVO taskDisVO = taskDistributionService.query(Long.valueOf(param.getTaskId()), param.getTaskKey());
         return ResultBean.ofSuccess(taskDisVO, "操作成功");
     }
+
+    @Limiter(3)
+    @PostMapping(value = "/queryNewTaskList")
+    public ResultBean<List<TaskListVO>> scheduleNewTaskList(@RequestBody @Validated TaskListQuery taskListQuery) {
+        return taskSchedulingService.queryNewTaskList(taskListQuery);
+    }
+    /**
+     * 统计接口
+     */
+    @Limiter(2)
+    @PostMapping(value = "/countNewQueryTaskList")
+    public ResultBean<Long> countNewQueryTaskList(@RequestBody @Validated TaskListQuery taskListQuery) {
+        return taskSchedulingService.countNewQueryTaskList(taskListQuery);
+    }
 }

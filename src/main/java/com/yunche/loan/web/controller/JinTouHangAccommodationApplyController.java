@@ -93,6 +93,11 @@ public class JinTouHangAccommodationApplyController {
         return accommodationApplyService.export(param);
     }
 
+    @PostMapping(value = "/exportprocess", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    ResultBean exportProcess(@RequestBody ExportApplyLoanPushParam param) {
+        return accommodationApplyService.exportProcess(param);
+    }
+
     @PostMapping(value = "/errorexport", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     ResultBean errorExport(@RequestBody ExportApplyLoanPushParam param) {
         return accommodationApplyService.errorExport(param);

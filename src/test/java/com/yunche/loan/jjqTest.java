@@ -4,6 +4,7 @@ import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -12,18 +13,10 @@ import org.junit.Test;
 
 public class jjqTest {
     public static void main(String[] args) throws IOException {
-        File file =new File("/Users/zhongmingxiao/Downloads/yc.mp4");
+      String str="download/20190116_1.txt";
+        String[] split = str.split(File.separator);
 
-        System.out.println("====="+file.getPath());
-
-
-
-        System.out.println("====++++++"+new StringBuilder(file.getPath()).append("_c"));
-
-        System.out.println("====="+file.getName());
-        System.out.println("====="+file.getAbsolutePath());
-        System.out.println("====="+file.getAbsoluteFile());
-        System.out.println("====="+file.getCanonicalPath());
+        System.out.println(split[0]);
 
 
     }

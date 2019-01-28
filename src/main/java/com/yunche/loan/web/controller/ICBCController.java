@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Preconditions;
 import com.yunche.loan.config.constant.IDict;
 import com.yunche.loan.config.feign.client.ICBCFeignClient;
+import com.yunche.loan.config.feign.client.MultimediauploadClient;
 import com.yunche.loan.config.feign.request.ICBCApiRequest;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.GeneratorIDUtil;
@@ -44,6 +45,9 @@ public class ICBCController {
     private ICBCFeignClient icbcFeignClient;
 
     @Autowired
+    private MultimediauploadClient multimediauploadClient;
+
+    @Autowired
     private BankSolutionProcessService bankSolutionProcessService;
 
     @Autowired
@@ -68,15 +72,14 @@ public class ICBCController {
         bankSolutionService.commonBusinessApply(Long.parseLong(param.getOrderId()));
         return ResultBean.ofSuccess(null);
     }
-
     //请求接口
     @PostMapping (value = "/multimediaupload", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean multimediaUpload(@RequestBody @Valid @Validated MultimediaUploadParam param) {
-        bankSolutionService.multimediaUpload(Long.parseLong(param.getOrderId()));
-        return ResultBean.ofSuccess(null);
+        logger.info(param.getOrderId()+":视频推送开始");
+//        bankSolutionService.multimediaUpload(Long.parseLong(param.getOrderId()));
+        multimediauploadClient.multimediaUpload(param);
+        return  ResultBean.ofSuccess(null);
     }
-
-
 
     //银行二手车评估价
     @GetMapping(value = "/applyevaluate")

@@ -13,4 +13,6 @@ public interface MaterialDownClient {
     @RequestMapping(value = "/api/v1/loanorder/material/down2oss", method = RequestMethod.GET)
     ResultBean down2OSS(@RequestParam(value = "orderId") Long orderId,@RequestParam(value = "reGenerateZip") Boolean reGenerateZip);
 
+    @RequestMapping(value = "/api/v1/loanorder/material/downsup2oss", method = RequestMethod.GET)
+    ResultBean downSup2OSS(@RequestParam(value = "orderId") Long orderId,@RequestParam(value = "infoSupplementId")Long infoSupplementId);
 }

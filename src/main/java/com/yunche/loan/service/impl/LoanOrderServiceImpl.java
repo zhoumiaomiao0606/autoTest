@@ -247,8 +247,6 @@ public class LoanOrderServiceImpl implements LoanOrderService {
             loanCustomerDOS.stream().filter(Objects::nonNull).forEach(e -> {
 
 
-
-
                 LoanOrderDO loanOrderDO = null;
                 //主贷人
                 if (PRINCIPAL_LENDER.getType().equals(e.getCustType())) {
@@ -265,7 +263,7 @@ public class LoanOrderServiceImpl implements LoanOrderService {
                 //如果orderId 为null 第一次创建 需要判断是否重复
                 if (loanOrderDO != null) {
 
-                    if(orderId==null ||(orderId!=null && !loanOrderDO.getId().equals(orderId))){
+                    if (orderId == null || (orderId != null && !loanOrderDO.getId().equals(orderId))) {
                         LoanBaseInfoDO loanBaseInfoDO = loanBaseInfoDOMapper.selectByPrimaryKey(loanOrderDO.getLoanBaseInfoId());
                         //同一个贷款银行需要校验征信
                         if (bankName.equals(loanBaseInfoDO.getBank())) {
@@ -377,15 +375,14 @@ public class LoanOrderServiceImpl implements LoanOrderService {
         VehicleInformationUpdateParam vehicleInformationUpdateParam = new VehicleInformationUpdateParam();
         //更新绑定
         LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(loanCarInfoParam.getOrderId());
-        if (loanCarInfoParam.getCarType() ==0 )
-        {
+        if (loanCarInfoParam.getCarType() == 0) {
             vehicleInformationUpdateParam.setNow_driving_license_owner(loanCarInfoParam.getNowDrivingLicenseOwner());
             vehicleInformationUpdateParam.setColor(loanCarInfoParam.getColor());
             loanOrderDO.setSecond_hand_car_evaluate_id(null);
             loanOrderDOMapper.updateByPrimaryKeySelective(loanOrderDO);
-        }else {
+        } else {
 
-            if (loanCarInfoParam.getEvaluationType()==2)//手工评估
+            if (loanCarInfoParam.getEvaluationType() == 2)//手工评估
             {
                 vehicleInformationUpdateParam.setNow_driving_license_owner(loanCarInfoParam.getNowDrivingLicenseOwner());
                 vehicleInformationUpdateParam.setColor(loanCarInfoParam.getColor());
@@ -396,7 +393,7 @@ public class LoanOrderServiceImpl implements LoanOrderService {
                 loanOrderDO.setSecond_hand_car_evaluate_id(null);
                 loanOrderDOMapper.updateByPrimaryKeySelective(loanOrderDO);
 
-            }else if(loanCarInfoParam.getEvaluationType()==1)//在线评估
+            } else if (loanCarInfoParam.getEvaluationType() == 1)//在线评估
             {
                 loanOrderDO.setSecond_hand_car_evaluate_id(loanCarInfoParam.getSecond_hand_car_evaluate_id());
                 //更新车辆信息其他信息
@@ -444,16 +441,15 @@ public class LoanOrderServiceImpl implements LoanOrderService {
         VehicleInformationUpdateParam vehicleInformationUpdateParam = new VehicleInformationUpdateParam();
         //更新绑定
         LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(loanCarInfoParam.getOrderId());
-        if (loanCarInfoParam.getCarType() ==0 )
-        {
+        if (loanCarInfoParam.getCarType() == 0) {
             vehicleInformationUpdateParam.setNow_driving_license_owner(loanCarInfoParam.getNowDrivingLicenseOwner());
             vehicleInformationUpdateParam.setColor(loanCarInfoParam.getColor());
             loanOrderDO.setSecond_hand_car_evaluate_id(null);
             loanOrderDOMapper.updateByPrimaryKeySelective(loanOrderDO);
-        }else {
+        } else {
 
 
-            if (loanCarInfoParam.getEvaluationType()==2)//手工评估
+            if (loanCarInfoParam.getEvaluationType() == 2)//手工评估
             {
                 vehicleInformationUpdateParam.setNow_driving_license_owner(loanCarInfoParam.getNowDrivingLicenseOwner());
                 vehicleInformationUpdateParam.setColor(loanCarInfoParam.getColor());
@@ -464,7 +460,7 @@ public class LoanOrderServiceImpl implements LoanOrderService {
                 loanOrderDO.setSecond_hand_car_evaluate_id(null);
                 loanOrderDOMapper.updateByPrimaryKeySelective(loanOrderDO);
 
-            }else if(loanCarInfoParam.getEvaluationType()==1)//在线评估
+            } else if (loanCarInfoParam.getEvaluationType() == 1)//在线评估
             {
                 loanOrderDO.setSecond_hand_car_evaluate_id(loanCarInfoParam.getSecond_hand_car_evaluate_id());
                 //更新车辆信息其他信息
@@ -483,7 +479,7 @@ public class LoanOrderServiceImpl implements LoanOrderService {
                 vehicleInformationUpdateParam.setVehicle_identification_number(secondHandCarEvaluateDO.getVin());
 
                 loanOrderDOMapper.updateByPrimaryKeySelective(loanOrderDO);
-            }else{
+            } else {
                 throw new BizException("估价类型有误");
             }
 
@@ -640,14 +636,15 @@ public class LoanOrderServiceImpl implements LoanOrderService {
 
     /**
      * 银行征信图片合成压缩包
+     *
      * @param loanCreditExportQuery
      * @return
      */
     @Override
     public ResultBean createCreditDownreport(LoanCreditExportQuery loanCreditExportQuery) {
-        OSSClient ossUnit=null;
-        String resultName= null;
-        String diskName =null;
+        OSSClient ossUnit = null;
+        String resultName = null;
+        String diskName = null;
         EmployeeDO loginUser = SessionUtils.getLoginUser();
         try {
 
@@ -656,7 +653,7 @@ public class LoanOrderServiceImpl implements LoanOrderService {
 
             String name = loginUser.getName();
 
-            if(IDict.K_YORN.K_YORN_NO.equals(loanCreditExportQuery.getIsForce())){
+            if (IDict.K_YORN.K_YORN_NO.equals(loanCreditExportQuery.getIsForce())) {
                 List<LoanFileDO> loanFileDOS = loanFileDOMapper.listByCustomerIdAndType(loginUser.getId(), BANK_CREDIT_PIC.getType(), UPLOAD_TYPE_NORMAL);
                 if (!CollectionUtils.isEmpty(loanFileDOS)) {
                     LoanFileDO loanFileDO = loanFileDOS.get(0);
@@ -667,8 +664,8 @@ public class LoanOrderServiceImpl implements LoanOrderService {
                         loanFileDOMapper.deleteByPrimaryKey(loanFileDO.getId());
                         if (!CollectionUtils.isEmpty(url)) {
                             return ResultBean.ofSuccess(url.get(0));
-                        }else{
-                            throw  new BizException("网络异常，请稍后重试");
+                        } else {
+                            throw new BizException("网络异常，请稍后重试");
                         }
                     }
                 }
@@ -676,13 +673,13 @@ public class LoanOrderServiceImpl implements LoanOrderService {
             }
 
 
-            diskName = name+ DateUtil.getTime();//图片存放的文件夹名称
-            final String localPath ="/tmp/"+diskName;//文件夹绝对路径
+            diskName = name + DateUtil.getTime();//图片存放的文件夹名称
+            final String localPath = "/tmp/" + diskName;//文件夹绝对路径
 
             ossUnit = OSSUnit.getOSSClient();
             //查询符合要求的数据
             List<CreditPicExportVO> creditPicExportVOS = loanStatementDOMapper.selectCreditPicExport(loanCreditExportQuery);
-            if(CollectionUtils.isEmpty(creditPicExportVOS)){
+            if (CollectionUtils.isEmpty(creditPicExportVOS)) {
                 return ResultBean.ofError("筛选条件查询记录为空");
             }
 
@@ -702,56 +699,55 @@ public class LoanOrderServiceImpl implements LoanOrderService {
                 });
             }
 
-            resultName = diskName+".tar.gz";//压缩包文件名
+            resultName = diskName + ".tar.gz";//压缩包文件名
 
-            RuntimeUtils.exe("mkdir "+localPath);
-            LOG.info("图片合成 开始时间："+start);
-            creditPicExportVOS.stream().filter(Objects::nonNull).forEach(e->{
+            RuntimeUtils.exe("mkdir " + localPath);
+            LOG.info("图片合成 开始时间：" + start);
+            creditPicExportVOS.stream().filter(Objects::nonNull).forEach(e -> {
                 //查图片
                 Set types = Sets.newHashSet();
                 //1:合成身份证图片 , 2:合成图片
-                if("1".equals(loanCreditExportQuery.getMergeFlag())){
+                if ("1".equals(loanCreditExportQuery.getMergeFlag())) {
                     types.add(new Byte("2"));
                     types.add(new Byte("3"));
-                }else{
+                } else {
                     types.add(new Byte("2"));
                     types.add(new Byte("3"));
                     types.add(new Byte("4"));
                     types.add(new Byte("5"));
                 }
-                String fileName = e.getOrderId()+e.getCustomerName()+e.getIdCard()+ IDict.K_SUFFIX.K_SUFFIX_JPG;
+                String fileName = e.getOrderId() + e.getCustomerName() + e.getIdCard() + IDict.K_SUFFIX.K_SUFFIX_JPG;
 
                 List<UniversalMaterialRecordVO> list = loanQueryDOMapper.selectUniversalCustomerFiles(e.getLoanCustomerId(), types);
                 List<String> urls = Lists.newLinkedList();
                 for (UniversalMaterialRecordVO V : list) {
                     urls.addAll(V.getUrls());
                 }
-                try{
-                    ImageUtil.mergetImage2PicByConvert(localPath+ File.separator,fileName,urls);
+                try {
+                    ImageUtil.mergetImage2PicByConvert(localPath + File.separator, fileName, urls);
                     LoanCustomerDO loanCustomerDO = loanCustomerDOMapper.selectByPrimaryKey(e.getLoanCustomerId(), VALID_STATUS);
-                    if(loanCustomerDO!=null){
+                    if (loanCustomerDO != null) {
                         loanCustomerDO.setCreditExpFlag(IDict.K_CREDIT_PIC_EXP.K_SUFFIX_JPG_YES);
                         loanCustomerDOMapper.updateByPrimaryKeySelective(loanCustomerDO);
                     }
-                }catch (Exception ex){
-                    LOG.info(e.getCustomerName()+"：图片合成失败["+fileName+"]");
+                } catch (Exception ex) {
+                    LOG.info(e.getCustomerName() + "：图片合成失败[" + fileName + "]");
                 }
             });
 
             Process exec = Runtime.getRuntime().exec("tar -cPf " + "/tmp/" + resultName + " " + localPath);
             exec.waitFor();
-            if(exec.exitValue()!=0){
+            if (exec.exitValue() != 0) {
                 throw new BizException("压缩文件出错啦");
             }
 
             File file = new File("/tmp/" + resultName);
 
 
-
-            OSSUnit.uploadObject2OSS(ossUnit, file, ossConfig.getBucketName(), ossConfig.getDownLoadDiskName()+File.separator);
+            OSSUnit.uploadObject2OSS(ossUnit, file, ossConfig.getBucketName(), ossConfig.getDownLoadDiskName() + File.separator);
             long end = System.currentTimeMillis();
-            LOG.info("图片合成 结束时间："+end);
-            LOG.info("总用时："+(end-start)/1000);
+            LOG.info("图片合成 结束时间：" + end);
+            LOG.info("总用时：" + (end - start) / 1000);
 
             LOG.info("打包结束啦啦啦啦啦啦啦");
 
@@ -759,12 +755,13 @@ public class LoanOrderServiceImpl implements LoanOrderService {
             throw new BizException(e.getMessage());
         }
 
-        saveToLoanFile(loginUser.getId(),ossConfig.getDownLoadDiskName()+File.separator+resultName);
-        return ResultBean.ofSuccess(ossConfig.getDownLoadDiskName()+File.separator+resultName);
+        saveToLoanFile(loginUser.getId(), ossConfig.getDownLoadDiskName() + File.separator + resultName);
+        return ResultBean.ofSuccess(ossConfig.getDownLoadDiskName() + File.separator + resultName);
     }
 
     /**
      * 检测图片是否合并完成
+     *
      * @return
      */
     @Override
@@ -809,6 +806,7 @@ public class LoanOrderServiceImpl implements LoanOrderService {
             loanFileDOMapper.updateByPrimaryKeySelective(e);
         });
     }
+
     @Override
     public ResultBean<LoanCarInfoVO> loanCarInfoDetail(Long orderId) {
         Preconditions.checkNotNull(orderId, "业务单号不能为空");
@@ -818,8 +816,7 @@ public class LoanOrderServiceImpl implements LoanOrderService {
         Long loanCarInfoId = loanOrderDOMapper.getLoanCarInfoIdById(orderId);
 
         LoanCarInfoDO loanCarInfoDO = loanCarInfoDOMapper.selectByPrimaryKey(loanCarInfoId);
-        if (null != loanCarInfoDO)
-        {
+        if (null != loanCarInfoDO) {
             BeanUtils.copyProperties(loanCarInfoDO, loanCarInfoVO);
 
             // 车型回填
@@ -843,12 +840,10 @@ public class LoanOrderServiceImpl implements LoanOrderService {
             loanCarInfoVO.setVehicleCarCategory(vehicleInformationDO.getCar_category());
         }
         String tmpApplyLicensePlateArea = null;
-        if (loanBaseInfoDO.getAreaId() != null)
-        {
+        if (loanBaseInfoDO.getAreaId() != null) {
             BaseAreaDO baseAreaDO = baseAreaDOMapper.selectByPrimaryKey(loanBaseInfoDO.getAreaId(), VALID_STATUS);
             //（个性化）如果上牌地是区县一级，则返回形式为 省+区
-            if ("3".equals(String.valueOf(baseAreaDO.getLevel())))
-            {
+            if ("3".equals(String.valueOf(baseAreaDO.getLevel()))) {
                 Long parentAreaId = baseAreaDO.getParentAreaId();
                 BaseAreaDO cityDO = baseAreaDOMapper.selectByPrimaryKey(parentAreaId, null);
                 baseAreaDO.setParentAreaId(cityDO.getParentAreaId());
@@ -857,8 +852,7 @@ public class LoanOrderServiceImpl implements LoanOrderService {
             loanCarInfoVO.setHasApplyLicensePlateArea(baseAreaDO);
 
             if (baseAreaDO != null) {
-                if (baseAreaDO.getParentAreaName() != null)
-                {
+                if (baseAreaDO.getParentAreaName() != null) {
                     tmpApplyLicensePlateArea = baseAreaDO.getParentAreaName() + baseAreaDO.getAreaName();
                 } else {
                     tmpApplyLicensePlateArea = baseAreaDO.getAreaName();
@@ -868,12 +862,10 @@ public class LoanOrderServiceImpl implements LoanOrderService {
         loanCarInfoVO.setApplyLicensePlateArea(tmpApplyLicensePlateArea);
         //增加业务员
         UniversalInfoVO universalInfoVO = loanQueryDOMapper.selectUniversalInfo(orderId);
-        if (loanOrderDO.getSecond_hand_car_evaluate_id()!=null && !"".equals(loanOrderDO.getSecond_hand_car_evaluate_id())
-                && loanCarInfoDO!=null && loanCarInfoDO.getEvaluationType().equals(new Byte("1")))
-        {
+        if (loanOrderDO.getSecond_hand_car_evaluate_id() != null && !"".equals(loanOrderDO.getSecond_hand_car_evaluate_id())
+                && loanCarInfoDO != null && loanCarInfoDO.getEvaluationType().equals(new Byte("1"))) {
             SecondHandCarEvaluateDO secondHandCarEvaluateDO = secondHandCarEvaluateDOMapper.selectByPrimaryKey(loanOrderDO.getSecond_hand_car_evaluate_id());
-            if (secondHandCarEvaluateDO!=null)
-            {
+            if (secondHandCarEvaluateDO != null) {
                 loanCarInfoVO.setVin(secondHandCarEvaluateDO.getVin());
                 loanCarInfoVO.setSecond_hand_car_evaluate_id(loanOrderDO.getSecond_hand_car_evaluate_id());
                 loanCarInfoVO.setMileage(secondHandCarEvaluateDO.getMileage());
@@ -881,20 +873,19 @@ public class LoanOrderServiceImpl implements LoanOrderService {
             }
 
         }
-        if(vehicleInformationDO!=null){
+        if (vehicleInformationDO != null) {
             loanCarInfoVO.setVin(vehicleInformationDO.getVehicle_identification_number());
         }
 
 
-
-        if(loanCarInfoDO!=null){
+        if (loanCarInfoDO != null) {
             //人工
-            if(new Byte("2").equals(loanCarInfoDO.getEvaluationType())){
+            if (new Byte("2").equals(loanCarInfoDO.getEvaluationType())) {
                 Long area_id = loanCarInfoDO.getCityId();
-                if(area_id!=null){
+                if (area_id != null) {
                     LoanCarInfoVO.SecondCityArea secondCityArea = new LoanCarInfoVO.SecondCityArea();
                     BaseAreaDO county = baseAreaDOMapper.selectByPrimaryKey(area_id, null);
-                    if(county.getLevel().toString().equals("3")){
+                    if (county.getLevel().toString().equals("3")) {
                         BaseAreaDO city = baseAreaDOMapper.selectByPrimaryKey(county.getParentAreaId(), null);
                         //区
                         secondCityArea.setCountyId(county.getAreaId());
@@ -907,7 +898,7 @@ public class LoanOrderServiceImpl implements LoanOrderService {
                         //省
                         secondCityArea.setProvinceId(city.getParentAreaId());
                         secondCityArea.setProvinceName(city.getParentAreaName());
-                    }else if(county.getLevel().toString().equals("2")){
+                    } else if (county.getLevel().toString().equals("2")) {
 
                         secondCityArea.setCityId(county.getAreaId());
                         secondCityArea.setCountyName(county.getAreaName());
@@ -922,8 +913,7 @@ public class LoanOrderServiceImpl implements LoanOrderService {
 
 
         }
-        if (universalInfoVO != null)
-        {
+        if (universalInfoVO != null) {
             loanCarInfoVO.setSalesManName(universalInfoVO.getSalesman_name());
             loanCarInfoVO.setPartnerName(universalInfoVO.getPartner_name());
         }
@@ -1295,10 +1285,9 @@ public class LoanOrderServiceImpl implements LoanOrderService {
         }
 
         //根据客户号查询上传的文件
-        ResultBean<List<FileVO>> listFileResultBean = loanFileService.listByCustomerIdAndUploadType(customerVO.getId(), UPLOAD_TYPE_NORMAL);
-        Preconditions.checkArgument(listFileResultBean.getSuccess(), listFileResultBean.getMsg());
+        List<FileVO> fileVOList = loanFileService.listByCustomerIdAndUploadType(customerVO.getId(), UPLOAD_TYPE_NORMAL);
 
-        List<FileVO> fileVOS = listFileResultBean.getData().parallelStream()
+        List<FileVO> fileVOS = fileVOList.parallelStream()
                 .filter(Objects::nonNull)
                 .map(e -> {
 
@@ -1316,7 +1305,6 @@ public class LoanOrderServiceImpl implements LoanOrderService {
 
         loanSimpleCustomerInfoVOS.add(simpleCustomerInfoVO);
     }
-
 
 
 }
