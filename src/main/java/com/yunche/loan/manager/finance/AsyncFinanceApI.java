@@ -152,8 +152,10 @@ public class AsyncFinanceApI {
             //如果为null，则说明是新提交
             if (approvalParam.getSubmitTime()==null)
             {
+                LOG.info("记录时间"+sdf.format(loanProcessLogDO.getCreateTime()));
                 postFinanceData.setBusinessTime(sdf.format(loanProcessLogDO.getCreateTime()));
                 approvalParam.setSubmitTime(sdf.format(loanProcessLogDO.getCreateTime()));
+                LOG.info("记录时间结束"+approvalParam.getSubmitTime());
             }else
                 {
                     postFinanceData.setBusinessTime(approvalParam.getSubmitTime());
