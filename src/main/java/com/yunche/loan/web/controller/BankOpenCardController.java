@@ -2,6 +2,7 @@ package com.yunche.loan.web.controller;
 
 import com.google.common.base.Preconditions;
 import com.yunche.loan.config.result.ResultBean;
+import com.yunche.loan.domain.param.BankOpenCardExportParam;
 import com.yunche.loan.domain.param.BankOpenCardParam;
 import com.yunche.loan.service.BankOpenCardService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,5 +39,11 @@ public class BankOpenCardController {
     public ResultBean taskschedule(@RequestParam("orderId") Long orderId){
 
         return  bankOpenCardService.taskschedule(orderId);
+    }
+
+    @PostMapping(value = "/export")
+    public ResultBean export(@RequestBody BankOpenCardExportParam bankOpenCardExportParam){
+
+        return bankOpenCardService.export(bankOpenCardExportParam);
     }
 }

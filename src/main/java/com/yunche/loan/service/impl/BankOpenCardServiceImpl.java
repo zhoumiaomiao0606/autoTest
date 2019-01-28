@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.yunche.loan.config.common.OSSConfig;
 import com.yunche.loan.config.common.SysConfig;
 import com.yunche.loan.config.constant.BaseConst;
 import com.yunche.loan.config.constant.IDict;
@@ -17,6 +18,7 @@ import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.*;
 import com.yunche.loan.domain.entity.*;
 import com.yunche.loan.domain.param.ApprovalParam;
+import com.yunche.loan.domain.param.BankOpenCardExportParam;
 import com.yunche.loan.domain.param.BankOpenCardParam;
 import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.mapper.*;
@@ -32,10 +34,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.*;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.yunche.loan.config.constant.BaseConst.*;
@@ -117,6 +116,9 @@ public class BankOpenCardServiceImpl implements BankOpenCardService {
 
     @Autowired
     private TaskService taskService;
+
+    @Autowired
+    private OSSConfig ossConfig;
 
     /**
      * 银行开卡详情页
@@ -578,6 +580,18 @@ public class BankOpenCardServiceImpl implements BankOpenCardService {
         bankOpenCardParam.getPictures().add(picture2);
         bankOpenCardParam.setCmpseq(serNo);
         bankOpenCardParam.setFileNum(String.valueOf(2));
+    }
+
+
+    @Override
+    public ResultBean export(BankOpenCardExportParam bankOpenCardExportParam) {
+        List<BankOpenCardExportVO> list = loanQueryDOMapper.openCardExport(bankOpenCardExportParam);
+        ArrayList<String> header = Lists.newArrayList("业务编号","合伙人编码", "合伙人团队",
+                "客户姓名", "身份证号", "贷款银行", "贷款金额", "银行分期本金", "分期期数", "推送时间", "开卡状态"
+        );
+        String ossResultKey = POIUtil.createExcelFile("BankOpenCard",list,header,BankOpenCardExportVO.class,ossConfig);
+
+        return ResultBean.ofSuccess(ossResultKey);
     }
 
     /**
