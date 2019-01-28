@@ -406,7 +406,7 @@ public class VideoFaceServiceImpl implements VideoFaceService {
         String f = "银行：请问您购买的是什么品牌的汽车？" + redText(videoFaceQuestionAnswerVO.getCarBrandName());
         String g = "银行：请问征信查询授权书是您本人签字吗？";
         String h = "银行：请问您办理业务所需的个人信息材料都是您本人提供并签字的吗？";
-        String i = "银行：您了解该笔贷款是由浙江鑫宝行担保有限公司担保的吗？";
+        String i = "银行：您了解该笔贷款是由浙江鑫宝行融资担保有限公司担保的吗？";
         String j = "银行：请您翻开《牡丹信用卡透支分期付款/抵押合同》 第一页确认相关信息。" +
                 "您申请信用卡汽车分期业务用于购买" + redText(videoFaceQuestionAnswerVO.getCarBrandName()) + "品牌的汽车，" +
                 "车辆交易总价" + redText(videoFaceQuestionAnswerVO.getCarPrice()) + "元，" +
