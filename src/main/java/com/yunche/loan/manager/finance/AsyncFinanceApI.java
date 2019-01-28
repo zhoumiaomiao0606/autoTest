@@ -26,6 +26,7 @@ import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
@@ -43,7 +44,7 @@ public class AsyncFinanceApI {
 
     private static final String PATH = "/costcalculation/insert";
 
-    private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd  HH:mm:ss");
+    private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     @Autowired
     private FinanceConfig financeConfig;
@@ -285,7 +286,11 @@ public class AsyncFinanceApI {
                 voucherErrRecordDO.setSerialNo(execute);
                 voucherErrRecordDO.setOrderId(approvalParam.getOrderId());
                 voucherErrRecordDO.setTaskDefinitionKey(approvalParam.getTaskDefinitionKey());
-                voucherErrRecordDO.setCreateTime(new Date(approvalParam.getSubmitTime()));
+                try {
+                    voucherErrRecordDO.setCreateTime(sdf.parse(approvalParam.getSubmitTime()));
+                } catch (ParseException e1) {
+                    throw new BizException("时间转化异常！！！");
+                }
                 voucherErrRecordDO.setProcessId(approvalParam.getProcessId());
                 voucherErrRecordDO.setRetMessage("发送异常或者接口不通");
                 voucherErrRecordDOMapper.insertSelective(voucherErrRecordDO);
@@ -311,7 +316,11 @@ public class AsyncFinanceApI {
             voucherErrRecordDO.setSerialNo(execute);
             voucherErrRecordDO.setOrderId(approvalParam.getOrderId());
             voucherErrRecordDO.setTaskDefinitionKey(approvalParam.getTaskDefinitionKey());
-            voucherErrRecordDO.setCreateTime(new Date(approvalParam.getSubmitTime()));
+            try {
+                voucherErrRecordDO.setCreateTime(sdf.parse(approvalParam.getSubmitTime()));
+            } catch (ParseException e) {
+                throw new BizException("时间转化异常！！");
+            }
             voucherErrRecordDO.setProcessId(approvalParam.getProcessId());
 
             try {

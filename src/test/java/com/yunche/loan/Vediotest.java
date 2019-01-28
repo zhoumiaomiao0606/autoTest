@@ -61,11 +61,14 @@ public class Vediotest
         String substring = a.substring(0, 2);
         String string = "2016-10-24 21:59:06";
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");*/
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String aa = sdf.format(new Date());
+        System.out.println("====="+new Date(aa));
         //System.out.println("====="+(null==2));
 
 
 
-        List<BankCodeVO> list = Lists.newArrayList();
+        /*List<BankCodeVO> list = Lists.newArrayList();
         List<BankCodeVO> list2 = Lists.newArrayList();
         BankCodeVO bankCodeVO = new BankCodeVO();
         list.add(bankCodeVO);
@@ -77,7 +80,7 @@ public class Vediotest
                     e.setCode("3333");
                     list2.add(e);
                 });
-        System.out.println(list2);
+        System.out.println(list2);*/
 
     }
 
