@@ -17,31 +17,33 @@ public class BankOpenCardController {
     BankOpenCardService bankOpenCardService;
 
     @GetMapping(value = "/detail")
-    public ResultBean detail(@RequestParam("orderId") Long orderId ) {
+    public ResultBean detail(@RequestParam("orderId") Long orderId) {
 
-        Preconditions.checkNotNull(orderId,"业务单号不能为空");
+        Preconditions.checkNotNull(orderId, "业务单号不能为空");
 
         return bankOpenCardService.detail(orderId);
     }
+
     @GetMapping(value = "/openCard")
-    public ResultBean open(@RequestParam("orderId") Long orderId){
+    public ResultBean open(@RequestParam("orderId") Long orderId) {
 
         return bankOpenCardService.openCard(orderId);
     }
 
     @PostMapping(value = "/save")
-    public ResultBean save(@RequestBody BankOpenCardParam bankOpenCardParam){
+    public ResultBean save(@RequestBody BankOpenCardParam bankOpenCardParam) {
 
         return bankOpenCardService.save(bankOpenCardParam);
     }
 
     @GetMapping(value = "/taskStatus")
-    public ResultBean taskschedule(@RequestParam("orderId") Long orderId){
+    public ResultBean taskschedule(@RequestParam("orderId") Long orderId) {
 
-        return  bankOpenCardService.taskschedule(orderId);
+        return bankOpenCardService.taskschedule(orderId);
     }
+
     @PostMapping(value = "/export")
-    public ResultBean export(@RequestBody BankOpenCardExportParam bankOpenCardExportParam){
+    public ResultBean export(@RequestBody BankOpenCardExportParam bankOpenCardExportParam) {
 
         return bankOpenCardService.export(bankOpenCardExportParam);
     }

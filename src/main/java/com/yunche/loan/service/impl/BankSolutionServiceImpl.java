@@ -757,7 +757,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         if (bankId.intValue() == 1) {
             info.setNote(" ");
         } else if (bankId.intValue() == 3) {
-            info.setNote("汽车附加消费分期  " + danBaoFee + "  元，其中担保服务费  " + danBaoFee + "  元");
+            info.setNote("汽车附加消费分期  " + danBaoFee + "  元，其中担保服务费  " + danBaoFee + "  元。具体经营地址："+loanCustomerDO.getCcounty()+loanCustomerDO.getIncomeCertificateCompanyAddress());
         }
 
         //customer

@@ -23,7 +23,4 @@ public class BankOpenCardExportVO {
 
     private String result;
 
-
-
-
 }

@@ -1966,7 +1966,6 @@
 
                     </choose>
                 </when>
-
                 <when test="serialStatus == 'exception'">
                     AND main.id in  <!--  有一个异常,就判定为这个单子异常 -->
                     (

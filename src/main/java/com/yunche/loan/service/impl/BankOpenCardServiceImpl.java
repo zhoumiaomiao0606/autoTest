@@ -593,6 +593,18 @@ public class BankOpenCardServiceImpl implements BankOpenCardService {
         bankOpenCardParam.setFileNum(String.valueOf(2));
     }
 
+
+    @Override
+    public ResultBean export(BankOpenCardExportParam bankOpenCardExportParam) {
+        List<BankOpenCardExportVO> list = loanQueryDOMapper.openCardExport(bankOpenCardExportParam);
+        ArrayList<String> header = Lists.newArrayList("业务编号","合伙人编码", "合伙人团队",
+                "客户姓名", "身份证号", "贷款银行", "贷款金额", "银行分期本金", "分期期数", "推送时间", "开卡状态"
+        );
+        String ossResultKey = POIUtil.createExcelFile("BankOpenCard",list,header,BankOpenCardExportVO.class,ossConfig);
+
+        return ResultBean.ofSuccess(ossResultKey);
+    }
+
     /**
      * 废弃
      *
