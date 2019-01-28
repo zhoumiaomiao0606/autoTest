@@ -45,8 +45,8 @@
             <property name="returnPageInfo" value="check"/>
         </plugin>
 
-        <plugin interceptor="com.yunche.loan.web.aspect.SqlTimeInterceptor">
-        </plugin>
+        <!--<plugin interceptor="com.yunche.loan.web.aspect.SqlTimeInterceptor">-->
+        <!--</plugin>-->
     </plugins>
 
 
