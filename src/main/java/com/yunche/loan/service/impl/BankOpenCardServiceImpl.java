@@ -280,9 +280,9 @@ public class BankOpenCardServiceImpl implements BankOpenCardService {
             recordLists = recordLists.stream().filter(Objects::nonNull).collect(Collectors.toList());//去空
             //过滤非系统客户
             List<BankFileListRecordDO> list = recordLists.parallelStream().filter(e -> e.getIsCustomer().equals(K_YORN_YES)).collect(Collectors.toList());
-            list.stream().filter(Objects::nonNull).forEach(e->{
+            list.stream().filter(Objects::nonNull).forEach(e -> {
                 int count = bankFileListRecordDOMapper.insertSelective(e);
-                Preconditions.checkArgument(count>0, "BankFileListRecordDO插入失败");
+                Preconditions.checkArgument(count > 0, "BankFileListRecordDO插入失败");
             });
 
 //            if (!CollectionUtils.isEmpty(list)) {
@@ -331,7 +331,7 @@ public class BankOpenCardServiceImpl implements BankOpenCardService {
                 if (!openCard.equals(LoanOrderProcessConst.TASK_PROCESS_DONE)) {
 
                     try {
-                        if(checkTask(String.valueOf(loanOrderDO.getProcessInstId()),LoanProcessEnum.BANK_OPEN_CARD.getCode())){
+                        if (checkTask(String.valueOf(loanOrderDO.getProcessInstId()), LoanProcessEnum.BANK_OPEN_CARD.getCode())) {
                             ApprovalParam approvalParam = new ApprovalParam();
                             approvalParam.setOrderId(e.getOrderId());
                             approvalParam.setTaskDefinitionKey(LoanProcessEnum.BANK_OPEN_CARD.getCode());
@@ -341,7 +341,7 @@ public class BankOpenCardServiceImpl implements BankOpenCardService {
                             approvalParam.setCheckPermission(false);
                             ResultBean<Void> approvalResultBean = loanProcessService.approval(approvalParam);
                             LOG.info(e.getOrderId() + approvalResultBean.getMsg());
-                        }else{
+                        } else {
                             throw new BizException("走特殊处理");
                         }
 
@@ -377,27 +377,29 @@ public class BankOpenCardServiceImpl implements BankOpenCardService {
 
     /**
      * 工作流任务任务校验
+     *
      * @param processInstId
      * @param taskDefinitionKey
      * @return
      */
-    boolean checkTask(String processInstId,String taskDefinitionKey){
+    boolean checkTask(String processInstId, String taskDefinitionKey) {
         // 获取当前流程task
-        boolean flag=true;
-        try{
+        boolean flag = true;
+        try {
             Task task = taskService.createTaskQuery()
                     .processInstanceId(processInstId)
                     .taskDefinitionKey(taskDefinitionKey)
                     .singleResult();
-            if(task==null){
-                flag=false;
+            if (task == null) {
+                flag = false;
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             return false;
         }
 
         return flag;
     }
+
     /**
      * 暂存开卡信息
      *
@@ -480,10 +482,10 @@ public class BankOpenCardServiceImpl implements BankOpenCardService {
     @Override
     public ResultBean export(BankOpenCardExportParam bankOpenCardExportParam) {
         List<BankOpenCardExportVO> list = loanQueryDOMapper.openCardExport(bankOpenCardExportParam);
-        ArrayList<String> header = Lists.newArrayList("业务编号","合伙人编码", "合伙人团队",
+        ArrayList<String> header = Lists.newArrayList("业务编号", "合伙人编码", "合伙人团队",
                 "客户姓名", "身份证号", "贷款银行", "贷款金额", "银行分期本金", "分期期数", "推送时间", "开卡状态"
-         );
-        String ossResultKey = POIUtil.createExcelFile("BankOpenCard",list,header,BankOpenCardExportVO.class,ossConfig);
+        );
+        String ossResultKey = POIUtil.createExcelFile("BankOpenCard", list, header, BankOpenCardExportVO.class, ossConfig);
 
         return ResultBean.ofSuccess(ossResultKey);
     }
@@ -591,18 +593,6 @@ public class BankOpenCardServiceImpl implements BankOpenCardService {
         bankOpenCardParam.getPictures().add(picture2);
         bankOpenCardParam.setCmpseq(serNo);
         bankOpenCardParam.setFileNum(String.valueOf(2));
-    }
-
-
-    @Override
-    public ResultBean export(BankOpenCardExportParam bankOpenCardExportParam) {
-        List<BankOpenCardExportVO> list = loanQueryDOMapper.openCardExport(bankOpenCardExportParam);
-        ArrayList<String> header = Lists.newArrayList("业务编号","合伙人编码", "合伙人团队",
-                "客户姓名", "身份证号", "贷款银行", "贷款金额", "银行分期本金", "分期期数", "推送时间", "开卡状态"
-        );
-        String ossResultKey = POIUtil.createExcelFile("BankOpenCard",list,header,BankOpenCardExportVO.class,ossConfig);
-
-        return ResultBean.ofSuccess(ossResultKey);
     }
 
     /**
