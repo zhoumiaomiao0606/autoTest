@@ -826,20 +826,22 @@ public class WebSocketServiceImpl implements WebSocketService {
 
         if (!CollectionUtils.isEmpty(anyChatUserId_wsSessionId_userId_orderId_rankNum_List)) {
 
+            Map<Long, VideoFaceCustomerVO> synchronized_rankNum_customerVO_Map = Collections.synchronizedMap(rankNum_customerVO_Map);
+
             anyChatUserId_wsSessionId_userId_orderId_rankNum_List.parallelStream()
                     .filter(StringUtils::isNotBlank)
                     .forEach(e -> {
 
                         String[] userMsgArr = e.split(SEPARATOR);
                         Long anyChatUserId = Long.valueOf(userMsgArr[0]);
-                        String wkSessionId = userMsgArr[1];
-                        Long customerId = Long.valueOf(userMsgArr[2]);
+//                        String wkSessionId = userMsgArr[1];
+//                        Long customerId = Long.valueOf(userMsgArr[2]);
                         Long orderId = Long.valueOf(userMsgArr[3]);
                         Long rankNum = Long.valueOf(userMsgArr[4]);
 
                         VideoFaceCustomerVO videoFaceCustomerVO = setAndGetVideoFaceCustomerVO(bankId, orderId, anyChatUserId);
 
-                        rankNum_customerVO_Map.put(rankNum, videoFaceCustomerVO);
+                        synchronized_rankNum_customerVO_Map.put(rankNum, videoFaceCustomerVO);
                     });
         }
 
