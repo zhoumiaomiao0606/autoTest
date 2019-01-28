@@ -1983,7 +1983,7 @@
                     )
                 </when>
                 <when test="serialStatus == 'pending'">
-                    AND .id in <!--  全部成功才算成功 -->
+                    AND main.id in <!--  全部成功才算成功 -->
                     (
                     <choose>
                         <when test="bankInterfaceSerialOrderidList != null and bankInterfaceSerialOrderidList.size() > 0">
