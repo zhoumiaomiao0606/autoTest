@@ -3,7 +3,7 @@ spring:
   datasource:
     type: com.alibaba.druid.pool.DruidDataSource
     druid:
-      url: jdbc:mysql://47.97.112.202:3307/test_loan_biz?useUnicode=true&characterEncoding=utf-8
+      url: jdbc:mysql://47.97.112.202:3307/test_loan_biz?useUnicode=true&characterEncoding=utf-8&serverTimezone=GMT%2B8
       username: yunche
       password: yc_123
       driver-class-name: com.mysql.cj.jdbc.Driver
@@ -57,7 +57,7 @@ spring:
   profiles: prepub
   datasource:
     druid:
-      url: jdbc:mysql://rm-bp1uk11f20h4i65u9oo.mysql.rds.aliyuncs.com:3306/yunche_loan_biz?useUnicode=true&characterEncoding=utf-8
+      url: jdbc:mysql://rm-bp1uk11f20h4i65u9oo.mysql.rds.aliyuncs.com:3306/yunche_loan_biz?useUnicode=true&characterEncoding=utf-8&serverTimezone=GMT%2B8
       username: yuncheadmin
       password: ycjinfu@2099
       driver-class-name: com.mysql.cj.jdbc.Driver
@@ -104,7 +104,7 @@ spring:
   profiles: pub
   datasource:
     druid:
-      url: jdbc:mysql://rm-bp1uk11f20h4i65u9rw.mysql.rds.aliyuncs.com:3306/yunche_loan_biz?useUnicode=true&characterEncoding=utf-8
+      url: jdbc:mysql://rm-bp1uk11f20h4i65u9rw.mysql.rds.aliyuncs.com:3306/yunche_loan_biz?useUnicode=true&characterEncoding=utf-8&serverTimezone=GMT%2B8
       username: yuncheadmin
       password: ycjinfu@2099
       driver-class-name: com.mysql.cj.jdbc.Driver
