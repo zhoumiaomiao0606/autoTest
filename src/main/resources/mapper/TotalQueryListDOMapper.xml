@@ -2427,6 +2427,7 @@
         partner.name AS partner,
         b.bank,
         e.name as salesman,
+        main.id AS taskId,
         useGetTaskTypeText(#{taskDefinitionKey},loan_process.remit_review,loan_process.order_status) AS taskTypeText
 
         FROM
