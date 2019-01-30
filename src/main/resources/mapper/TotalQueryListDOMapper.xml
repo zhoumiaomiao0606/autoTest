@@ -345,7 +345,22 @@
         LEFT JOIN partner partner ON partner.id = base.partner_id
         LEFT JOIN employee employee ON employee.id = base.salesman_id
         LEFT JOIN loan_customer customer ON customer.id = main.loan_customer_id
-        left join current_node_manager node on node.order_id = main.id
+        left join (SELECT principal_cust_id, MAX(credit_apply_time) cat
+        FROM
+        (SELECT  allhis.customer_id,allhis.credit_apply_time,loan_customer.principal_cust_id FROM
+        (select customer_id,max(credit_apply_time) AS credit_apply_time FROM loan_credit_info_bank_his GROUP BY customer_id) allhis
+        LEFT JOIN loan_customer ON allhis.customer_id = loan_customer.id) qnmd GROUP BY principal_cust_id) jbds
+        ON jbds.principal_cust_id= main.loan_customer_id
+        <choose>
+            <when test="taskStatus == 1">
+                left join (SELECT principal_cust_id, MAX(credit_apply_time) cat
+                FROM
+                (SELECT  allhis.customer_id,allhis.credit_apply_time,loan_customer.principal_cust_id FROM
+                (select customer_id,max(credit_apply_time) AS credit_apply_time FROM loan_credit_info_bank_his GROUP BY customer_id) allhis
+                LEFT JOIN loan_customer ON allhis.customer_id = loan_customer.id) qnmd GROUP BY principal_cust_id) jbds
+                ON jbds.principal_cust_id= loan.loan_customer_id
+            </when>
+        </choose>
         WHERE
         deputy.order_status = 1
         AND  deputy.credit_apply = #{taskStatus}
@@ -413,7 +428,7 @@
         </if>
         <choose>
             <when test="taskStatus == 1">
-                order by node.usertask_loan_apply_create_time DESC
+                order by jbds.cat desc
             </when>
             <otherwise>
                 order by main.gmt_create
