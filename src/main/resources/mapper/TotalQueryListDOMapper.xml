@@ -1018,6 +1018,7 @@
         customer.mobile AS mobile,
         employee.`name` AS salesman,
         partner.`name` AS partner,
+        partner.partner_code     as partnerCode,
         main.id  AS taskId,
         base.bank AS bank
         FROM
@@ -1592,6 +1593,7 @@
         loan_car_info.car_type as carType,
         vehicle_information.license_plate_number as licensePlateNumber,
         partner.name AS partner,
+        partner.partner_code AS partnerCode,
         b.bank,
         e.name as salesman,
         useGetTaskTypeText(#{taskDefinitionKey},loan_process.apply_license_plate_deposit_info,loan_process.order_status) AS taskTypeText
