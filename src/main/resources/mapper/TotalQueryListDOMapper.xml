@@ -1176,6 +1176,7 @@
         cus.`name`      		 as customer,
         cus.id_card          as idCard,
         base.bank            as bank,
+        loan.id             as       taskId,
         useGetTaskTypeText(#{taskDefinitionKey},process.remit_review,process.order_status) AS taskTypeText
 
         from loan_order loan
