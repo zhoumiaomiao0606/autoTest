@@ -123,6 +123,7 @@ public class ICBCController {
     @PostMapping (value = "/multimediareturn", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public String multimediaUploadreturn(@RequestParam String reqparam) throws IOException {
         try {
+            logger.info("视频推送失败："+reqparam);
             reqparam = URLDecoder.decode(reqparam,"UTF-8");
             ObjectMapper objectMapper = new ObjectMapper();
             bankSolutionProcessService.multimediaUploadCallback(objectMapper.readValue(reqparam,ICBCApiCallbackParam.MultimediaUploadCallback.class));
