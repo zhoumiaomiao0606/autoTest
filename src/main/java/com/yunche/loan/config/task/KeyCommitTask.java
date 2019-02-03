@@ -134,7 +134,7 @@ public class KeyCommitTask
             {
                 List<SDCOrders> collect = sdOrders
                         .stream()
-                        .filter(e -> e.getOrderId() != orderId)
+                        .filter(e -> !e.getOrderId().equals(orderId))
                         .collect(Collectors.toList());
 
 
