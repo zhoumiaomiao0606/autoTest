@@ -109,7 +109,7 @@ public class WebSocketServiceImpl implements WebSocketService {
         Preconditions.checkNotNull(webSocketParam.getAnyChatUserId(), "anyChatUserId不能为空");
         if (TYPE_APP.equals(webSocketParam.getType())) {
             Preconditions.checkNotNull(webSocketParam.getOrderId(), "orderId不能为空");
-            Preconditions.checkNotNull(webSocketParam.getPartnerId(), "partnerId不能为空");
+//            Preconditions.checkNotNull(webSocketParam.getPartnerId(), "partnerId不能为空");
             Preconditions.checkNotNull(webSocketParam.getBankPeriodPrincipal(), "bankPeriodPrincipal不能为空");
         }
 

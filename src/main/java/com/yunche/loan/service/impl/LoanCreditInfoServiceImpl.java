@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.yunche.loan.config.constant.IDict;
-import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.StringUtil;
 import com.yunche.loan.domain.entity.LoanCreditInfoDO;
 import com.yunche.loan.domain.entity.LoanCustomerDO;
@@ -162,11 +161,13 @@ public class LoanCreditInfoServiceImpl implements LoanCreditInfoService {
      */
     private void fillCustInfoAndCreditRecord(CreditRecordVO creditRecordVO, List<LoanCustomerDO> loanCustomerDOList, Byte creditType) {
 
-        List<CreditRecordVO.CustomerCreditRecord> commonLenderList = Lists.newArrayList();
-        List<CreditRecordVO.CustomerCreditRecord> guarantorList = Lists.newArrayList();
-        List<CreditRecordVO.CustomerCreditRecord> emergencyContactList = Lists.newArrayList();
+        List<CreditRecordVO.CustomerCreditRecord> commonLenderList = Lists.newCopyOnWriteArrayList();
+        List<CreditRecordVO.CustomerCreditRecord> guarantorList = Lists.newCopyOnWriteArrayList();
+        List<CreditRecordVO.CustomerCreditRecord> emergencyContactList = Lists.newCopyOnWriteArrayList();
 
-        loanCustomerDOList.stream()
+        Collection<LoanCustomerDO> synchronizedLoanCustomerDOS = Collections.synchronizedCollection(loanCustomerDOList);
+
+        synchronizedLoanCustomerDOS.parallelStream()
                 .filter(Objects::nonNull)
                 .forEach(e -> {
 
