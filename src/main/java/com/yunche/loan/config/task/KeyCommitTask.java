@@ -122,6 +122,7 @@ public class KeyCommitTask
 
     public void refreshShutdownQuerycredit(Long orderId)
     {
+        LOG.info("刷新结束取出距离垫款日21日，并且收钥匙状态=“待收” 的订单");
         BoundValueOperations<String, String> boundValueOps = stringRedisTemplate.boundValueOps(SHUTDOWN_QUERYCREDIT_ORDERS);
         String result = boundValueOps.get();
         if (StringUtils.isNotBlank(result))
@@ -147,7 +148,7 @@ public class KeyCommitTask
 
     public void refreshPartnerAndOrders(List<SDCOrders> collect)
     {
-
+        LOG.info("刷新待收钥匙--合伙人和订单");
         if (!CollectionUtils.isEmpty(collect))
         {
 
