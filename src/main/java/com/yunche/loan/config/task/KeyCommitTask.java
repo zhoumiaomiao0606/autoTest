@@ -149,25 +149,27 @@ public class KeyCommitTask
     public void refreshPartnerAndOrders(List<SDCOrders> collect)
     {
         LOG.info("刷新待收钥匙--合伙人和订单");
+
+        List<Long> partners = Lists.newArrayList();
         if (!CollectionUtils.isEmpty(collect))
         {
 
-            List<Long> partners =
+             partners =
                     collect
                             .stream()
                             .map( e -> e.getPartnerId())
                             .distinct()
                             .collect(Collectors.toList());
-            //封锁该合伙人团队查征信功能
-            if (!CollectionUtils.isEmpty(partners))
-            {
-                BoundValueOperations<String, String> boundValueOpsPartner = stringRedisTemplate.boundValueOps(SHUTDOWN_QUERYCREDIT_PARTNERS);
-                boundValueOpsPartner.set(JSON.toJSONString(partners));
-            }
 
-            BoundValueOperations<String, String> boundValueOpsOrders = stringRedisTemplate.boundValueOps(SHUTDOWN_QUERYCREDIT_ORDERS);
-            boundValueOpsOrders.set(JSON.toJSONString(collect));
         }
+
+        //封锁该合伙人团队查征信功能
+        BoundValueOperations<String, String> boundValueOpsPartner = stringRedisTemplate.boundValueOps(SHUTDOWN_QUERYCREDIT_PARTNERS);
+        boundValueOpsPartner.set(JSON.toJSONString(partners));
+
+        BoundValueOperations<String, String> boundValueOpsOrders = stringRedisTemplate.boundValueOps(SHUTDOWN_QUERYCREDIT_ORDERS);
+        //System.out.println("===="+JSON.toJSONString(collect));
+        boundValueOpsOrders.set(JSON.toJSONString(collect));
     }
 
 
