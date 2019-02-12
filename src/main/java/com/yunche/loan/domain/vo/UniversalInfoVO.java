@@ -8,8 +8,13 @@ import java.math.BigDecimal;
 public class UniversalInfoVO {
 
     private String order_id;
+
     // 预计贷款额
-    private String expect_loan_amount;
+    private String base_loan_amount;
+    private String base_bank;
+    private String base_apply_license_plate_area_id;
+    private String base_apply_license_plate_area;
+
     private String overdue_amount;
     private String material_complete_material_date;
     private String material_remark;
