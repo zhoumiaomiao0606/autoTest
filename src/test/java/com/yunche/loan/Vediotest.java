@@ -1,10 +1,12 @@
 package com.yunche.loan;
 
+import com.alibaba.fastjson.JSON;
 import com.aliyun.oss.model.OSSObject;
 import com.google.common.collect.Lists;
 import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.util.OSSUnit;
 import com.yunche.loan.domain.vo.BankCodeVO;
+import com.yunche.loan.domain.vo.SDCOrders;
 import net.bramp.ffmpeg.FFmpeg;
 import net.bramp.ffmpeg.FFmpegExecutor;
 import net.bramp.ffmpeg.FFmpegUtils;
@@ -25,6 +27,7 @@ import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 /**
  * @author: ZhongMingxiao
@@ -61,9 +64,18 @@ public class Vediotest
         String substring = a.substring(0, 2);
         String string = "2016-10-24 21:59:06";
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");*/
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        String aa = sdf.format(new Date());
-        System.out.println("====="+new Date(aa));
+
+        SDCOrders ss = new SDCOrders();
+        ss.setOrderId(new Long("1901291036128970829"));
+        ss.setPartnerId(new Long("56"));
+        List<SDCOrders> sdOrders = Lists.newArrayList(ss);
+        Long orderId = new Long("1901291036128970829");
+        List<SDCOrders> collect = sdOrders
+                .stream()
+                //.filter(e -> !e.getOrderId().equals(orderId))
+                .collect(Collectors.toList());
+
+        System.out.println("====="+collect.size()+ JSON.toJSONString(collect));
         //System.out.println("====="+(null==2));
 
 

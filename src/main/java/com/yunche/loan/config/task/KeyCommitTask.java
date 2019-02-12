@@ -68,7 +68,7 @@ public class KeyCommitTask
     public void setNeedSendMessageOrder()
     {
 
-        LOG.info("开始取出15<（today-垫款日）<21&& 收钥匙状态=待收的订单");
+        LOG.info("开始取出23<（today-垫款日）<30 && 收钥匙状态=待收的订单");
 
         //取出15<（today-垫款日）<21&& 收钥匙状态=待收的订单
         List<NeedSendMesOrders> list = loanQueryDOMapper.selectHasRimitOrder();
@@ -81,7 +81,7 @@ public class KeyCommitTask
             boundValueOps.set(JSON.toJSONString(list));
         }
 
-        LOG.info("结束取出15<（today-垫款日）<21&& 收钥匙状态=待收的订单");
+        LOG.info("结束取出23<（today-垫款日）<30 && 收钥匙状态=待收的订单");
 
     }
 
@@ -90,13 +90,13 @@ public class KeyCommitTask
     public void setShutDownQueryCreditOrder()
     {
 
-        LOG.info("开始取出距离垫款日21日，并且收钥匙状态=“待收” 的订单");
+        LOG.info("开始取出距离垫款日30日，并且收钥匙状态=“待收” 的订单");
         //距离垫款日21日，并且收钥匙状态=“待收” 的订单
         List<SDCOrders> sdOrders = loanQueryDOMapper.selectShutDownQueryCreditOrder();
 
         refreshPartnerAndOrders(sdOrders);
 
-        LOG.info("结束取出距离垫款日21日，并且收钥匙状态=“待收” 的订单");
+        LOG.info("结束取出距离垫款日30日，并且收钥匙状态=“待收” 的订单");
     }
 
     @PostConstruct
@@ -122,6 +122,7 @@ public class KeyCommitTask
 
     public void refreshShutdownQuerycredit(Long orderId)
     {
+        LOG.info("刷新结束取出距离垫款日30日，并且收钥匙状态=“待收” 的订单");
         BoundValueOperations<String, String> boundValueOps = stringRedisTemplate.boundValueOps(SHUTDOWN_QUERYCREDIT_ORDERS);
         String result = boundValueOps.get();
         if (StringUtils.isNotBlank(result))
@@ -133,7 +134,7 @@ public class KeyCommitTask
             {
                 List<SDCOrders> collect = sdOrders
                         .stream()
-                        .filter(e -> e.getOrderId() != orderId)
+                        .filter(e -> !e.getOrderId().equals(orderId))
                         .collect(Collectors.toList());
 
 
@@ -147,26 +148,28 @@ public class KeyCommitTask
 
     public void refreshPartnerAndOrders(List<SDCOrders> collect)
     {
+        LOG.info("刷新待收钥匙--合伙人和订单");
 
+        List<Long> partners = Lists.newArrayList();
         if (!CollectionUtils.isEmpty(collect))
         {
 
-            List<Long> partners =
+             partners =
                     collect
                             .stream()
                             .map( e -> e.getPartnerId())
                             .distinct()
                             .collect(Collectors.toList());
-            //封锁该合伙人团队查征信功能
-            if (!CollectionUtils.isEmpty(partners))
-            {
-                BoundValueOperations<String, String> boundValueOpsPartner = stringRedisTemplate.boundValueOps(SHUTDOWN_QUERYCREDIT_PARTNERS);
-                boundValueOpsPartner.set(JSON.toJSONString(partners));
-            }
 
-            BoundValueOperations<String, String> boundValueOpsOrders = stringRedisTemplate.boundValueOps(SHUTDOWN_QUERYCREDIT_ORDERS);
-            boundValueOpsOrders.set(JSON.toJSONString(collect));
         }
+
+        //封锁该合伙人团队查征信功能
+        BoundValueOperations<String, String> boundValueOpsPartner = stringRedisTemplate.boundValueOps(SHUTDOWN_QUERYCREDIT_PARTNERS);
+        boundValueOpsPartner.set(JSON.toJSONString(partners));
+
+        BoundValueOperations<String, String> boundValueOpsOrders = stringRedisTemplate.boundValueOps(SHUTDOWN_QUERYCREDIT_ORDERS);
+        //System.out.println("===="+JSON.toJSONString(collect));
+        boundValueOpsOrders.set(JSON.toJSONString(collect));
     }
 
 

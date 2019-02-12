@@ -2837,7 +2837,7 @@ SELECT
         loan_process_log
         WHERE loan_process_log.task_definition_key = 'usertask_remit_review' and loan_process_log.action =1
         GROUP BY order_id
-        HAVING hasRimitDays &gt; 15 AND hasRimitDays &lt; 21
+        HAVING hasRimitDays &gt; 23 AND hasRimitDays &lt; 30
         ) t
         LEFT JOIN loan_process ON t.order_id = loan_process.order_id
         LEFT JOIN loan_order ON t.order_id = loan_order.id
@@ -2845,7 +2845,7 @@ SELECT
         LEFT JOIN loan_base_info ON loan_order.loan_base_info_id = loan_base_info.id
         LEFT JOIN partner ON loan_base_info.partner_id = partner.id
         LEFT JOIN loan_customer ON loan_order.loan_customer_id = loan_customer.id
-        WHERE loan_process.commit_key = 2 and loan_car_info.car_key = 1
+        WHERE loan_process.commit_key = 2 and loan_process.remit_review = 1 and loan_car_info.car_key = 1 and loan_process.order_status = 1
     </select>
 
     <select id="selectShutDownQueryCreditOrder" resultType="com.yunche.loan.domain.vo.SDCOrders">
@@ -2864,13 +2864,13 @@ SELECT
         loan_process_log
         WHERE loan_process_log.task_definition_key = 'usertask_remit_review' and loan_process_log.action =1
         GROUP BY order_id
-        HAVING hasRimitDays &gt;= 21
+        HAVING hasRimitDays &gt;= 30
         ) t
         LEFT JOIN loan_process ON t.order_id = loan_process.order_id
         LEFT JOIN loan_order ON t.order_id = loan_order.id
         left join loan_car_info on loan_order.loan_car_info_id = loan_car_info.id
         LEFT JOIN loan_base_info ON loan_order.loan_base_info_id = loan_base_info.id
-        WHERE loan_process.commit_key = 2 and loan_car_info.car_key = 1
+        WHERE loan_process.commit_key = 2 and loan_process.remit_review = 1 and loan_car_info.car_key = 1 and loan_process.order_status = 1
     </select>
 
     <select id="queryCreditApplyrList" parameterType="com.yunche.loan.domain.param.CreditApplyListQuery" resultType="com.yunche.loan.domain.vo.CreditApplyListVO">

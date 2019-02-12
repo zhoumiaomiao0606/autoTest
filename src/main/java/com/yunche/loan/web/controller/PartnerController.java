@@ -1,6 +1,7 @@
 package com.yunche.loan.web.controller;
 
 import com.yunche.loan.config.result.ResultBean;
+import com.yunche.loan.config.task.KeyCommitTask;
 import com.yunche.loan.domain.entity.BankCodeDO;
 import com.yunche.loan.domain.param.BankCodeParam;
 import com.yunche.loan.domain.param.InsOrUpBankListParam;
@@ -32,6 +33,18 @@ public class PartnerController {
 
     @Autowired
     private PartnerService partnerService;
+
+    @Autowired
+    private KeyCommitTask keyCommitTask;
+
+
+    @GetMapping(value = "/refreshShutdown")
+    public ResultBean refreshShutdown()
+    {
+         keyCommitTask.refreshShutdown();
+
+         return ResultBean.ofSuccess("刷新成功");
+    }
 
 
     /**
