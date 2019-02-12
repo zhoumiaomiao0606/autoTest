@@ -578,7 +578,7 @@ public class JinTouHangAccommodationApplyServiceImpl implements JinTouHangAccomm
         String ossResultKey = POIUtil.createExcelFile("购车融资业务推送清单", voList, header, ExportApplyLoanPushVO.class, ossConfig);
 
         // 更新记录为已导出
-        voList.parallelStream()
+        /*voList.parallelStream()
                 .filter(Objects::nonNull)
                 .forEach(e -> {
                     ThirdPartyFundBusinessDO fundBusinessDO = thirdPartyFundBusinessDOMapper.selectByPrimaryKey(Long.valueOf(e.getBridgeProcessId()));
@@ -594,7 +594,7 @@ public class JinTouHangAccommodationApplyServiceImpl implements JinTouHangAccomm
                         int count = thirdPartyFundBusinessDOMapper.updateByPrimaryKeySelective(fundBusinessDO);
                         Preconditions.checkArgument(count > 0, "更新失败");
                     }
-                });
+                });*/
 
         return ResultBean.ofSuccess(ossResultKey);
     }

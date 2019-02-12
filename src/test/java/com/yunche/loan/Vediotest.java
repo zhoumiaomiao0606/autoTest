@@ -1,5 +1,6 @@
 package com.yunche.loan;
 
+import com.alibaba.fastjson.JSON;
 import com.aliyun.oss.model.OSSObject;
 import com.google.common.collect.Lists;
 import com.yunche.loan.config.exception.BizException;
@@ -71,10 +72,10 @@ public class Vediotest
         Long orderId = new Long("1901291036128970829");
         List<SDCOrders> collect = sdOrders
                 .stream()
-                .filter(e -> !e.getOrderId().equals(orderId))
+                //.filter(e -> !e.getOrderId().equals(orderId))
                 .collect(Collectors.toList());
 
-        System.out.println("====="+collect.size());
+        System.out.println("====="+collect.size()+ JSON.toJSONString(collect));
         //System.out.println("====="+(null==2));
 
 

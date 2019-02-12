@@ -259,7 +259,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             List<Long> shutdownQuerycreditPartners = keyCommitTask.getShutdownQuerycreditPartners();
             if (!CollectionUtils.isEmpty(shutdownQuerycreditPartners)) {
 
-                Preconditions.checkArgument(!shutdownQuerycreditPartners.contains(loanBaseInfoDO.getPartnerId()), "该合伙人有距离垫款日21日，并且收钥匙状态为“待收” 的订单，不能进行征信申请");
+                Preconditions.checkArgument(!shutdownQuerycreditPartners.contains(loanBaseInfoDO.getPartnerId()), "该合伙人有距离垫款日已经30天，并且收钥匙状态为“待收” 的订单，不能进行征信申请");
 
             }
         }
