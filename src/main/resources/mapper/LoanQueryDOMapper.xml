@@ -561,6 +561,7 @@
             parameterType="java.lang.Long">
     select
             main_order.id                                                                           AS order_id,
+            loan.loan_amount                                                                        AS expect_loan_amount,
             DATE_FORMAT(material.complete_material_date,'%Y-%m-%d %H:%i:%S')                        AS material_complete_material_date,
             material.remark                                                                         AS material_remark,
             material.contract_num                                                                   AS material_contract_num,
@@ -704,6 +705,7 @@
             parameterType="java.lang.Long">
         select
         main_order.id                                                                           AS order_id,
+        loan.loan_amount                                                                        AS expect_loan_amount,
         DATE_FORMAT(material.complete_material_date,'%Y-%m-%d %H:%i:%S')                        AS material_complete_material_date,
         material.remark                                                                         AS material_remark,
         material.contract_num                                                                   AS material_contract_num,
@@ -744,8 +746,8 @@
         customer.ctelzone                                                                       AS customer_ctelzone,
         partner.id                                                                              AS partner_id,
         partner.name                                                                            AS partner_name,
-        partner.partner_code                                                                             AS partner_code,
-        partner.partner_group                                                                             AS partner_group,
+        partner.partner_code                                                                    AS partner_code,
+        partner.partner_group                                                                   AS partner_group,
         useGetAreaFullName(partner.area_id)                                                     AS partner_biz_area,
         partner.risk_bear_rate                                                                  AS partner_risk_bear_rate,
         partner.pay_month                                                                       AS partner_pay_month,
@@ -761,14 +763,14 @@
         car.vehicle_property                                                                    AS car_vehicle_property,
         car.car_key                                                                             AS car_key,
         car.info                                                                                AS car_info,
-        car.pay_month                                                                                AS pay_month,
+        car.pay_month                                                                           AS pay_month,
         car.distributor_name                                                                    AS car_distributor_name,
         vehicle.color                                                                           AS vehicle_color,
         vehicle.now_driving_license_owner                                                       AS vehicle_now_driving_license_owner,
         vehicle.old_driving_license_owner                                                       AS vehicle_old_driving_license_owner,
         vehicle.license_plate_type                                                              AS vehicle_license_plate_type,
         CONCAT(area.parent_area_name,area.area_name)                                            AS vehicle_apply_license_plate_area,
-        vehicle.apply_license_plate_area                                           AS vehicle_apply_license_plate_area_id,
+        vehicle.apply_license_plate_area                                                        AS vehicle_apply_license_plate_area_id,
         DATE_FORMAT(bank_credit.gmt_create,'%Y-%m-%d %H:%i:%S')                                 AS bank_credit_gmt_create,
         society_credit.gmt_create                                                               AS society_credit_gmt_create,
         financial.id                                                                            AS financial_id,
