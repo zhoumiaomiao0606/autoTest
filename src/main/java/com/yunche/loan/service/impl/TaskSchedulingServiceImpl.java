@@ -890,6 +890,8 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         } else if (LoanProcessEnum.TELEPHONE_VERIFY.getCode().equals(taskDefinitionKey)) {
             Long telephoneVerifyLevel = taskSchedulingDOMapper.selectTelephoneVerifyLevel(loginUser.getId());
             taskListQuery.setTelephoneVerifyLevel(telephoneVerifyLevel);
+            Set<Long> taskDistributionIdSet = taskSchedulingDOMapper.selectTaskDistributionIdSet(LoanProcessEnum.TELEPHONE_VERIFY.getCode());
+            taskListQuery.setTaskDistributionIdSet(taskDistributionIdSet);
         }
 
 
@@ -1010,6 +1012,9 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
 
             Long telephoneVerifyLevel = taskSchedulingDOMapper.selectTelephoneVerifyLevel(loginUser.getId());
             taskListQuery.setTelephoneVerifyLevel(telephoneVerifyLevel);
+
+            Set<Long> taskDistributionIdSet = taskSchedulingDOMapper.selectTaskDistributionIdSet(LoanProcessEnum.TELEPHONE_VERIFY.getCode());
+            taskListQuery.setTaskDistributionIdSet(taskDistributionIdSet);
         }
 
 
