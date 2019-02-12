@@ -77,6 +77,17 @@ public class LoanOrderController {
     }
 
     /**
+     * 征信录入单详情
+     *
+     * @param orderId 业务单号
+     * @return
+     */
+    @GetMapping(value = "/creditrecord/newDetail")
+    public ResultBean<RecombinationVO> newCreditRecordDetail(@RequestParam("orderId") Long orderId) {
+        return ResultBean.ofSuccess(loanOrderService.newCreditRecordDetail(orderId));
+    }
+
+    /**
      * 征信录入
      *
      * @param creditRecordParam

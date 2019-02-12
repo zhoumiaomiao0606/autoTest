@@ -16,6 +16,11 @@ public class RecombinationVO<T> {
     private String jsonString;
 
     /**
+     * 通用信息
+     */
+//    private UniversalInfoVO universalInfo;
+
+    /**
      * 视频面签
      */
     private UniversalVideoFaceLogVO videoFace;

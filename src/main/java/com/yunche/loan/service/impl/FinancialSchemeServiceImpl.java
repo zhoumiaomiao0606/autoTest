@@ -102,7 +102,7 @@ public class FinancialSchemeServiceImpl implements FinancialSchemeService {
         universalCarInfoVO.setVehicle_apply_license_plate_area(tmpApplyLicensePlateArea);
 
         FinancialSchemeVO schemeVO = loanQueryDOMapper.selectFinancialScheme(orderId);
-        if(StringUtils.isNotBlank(schemeVO.getPartner_area_id())){
+        if (StringUtils.isNotBlank(schemeVO.getPartner_area_id())) {
             String areaName = areaCache.getAreaName(schemeVO.getPartner_area_id());
             schemeVO.setPartner_area_name(areaName);
         }
@@ -112,15 +112,15 @@ public class FinancialSchemeServiceImpl implements FinancialSchemeService {
                 universalCreditInfoVO.setRelevances(loanQueryDOMapper.selectUniversalRelevanceOrderIdByCustomerId(orderId, Long.valueOf(universalCreditInfoVO.getCustomer_id())));
             }
         }
-            RecombinationVO<FinancialSchemeVO> recombinationVO = new RecombinationVO<>();
-            recombinationVO.setCustomers(customers);
-            recombinationVO.setInfo(schemeVO);
-            recombinationVO.setCar(universalCarInfoVO);
-            recombinationVO.setRemit(loanQueryDOMapper.selectUniversalRemitDetails(orderId));
-            recombinationVO.setMaterialAudit(loanQueryDOMapper.selectUniversalMaterialAudit(orderId));
-            recombinationVO.setSupplement(loanQueryService.selectUniversalInfoSupplementHistory(orderId));
-            recombinationVO.setHome(loanQueryDOMapper.selectUniversalHomeVisitInfo(orderId));
-            recombinationVO.setCredits(credits);
+        RecombinationVO<FinancialSchemeVO> recombinationVO = new RecombinationVO<>();
+        recombinationVO.setCustomers(customers);
+        recombinationVO.setInfo(schemeVO);
+        recombinationVO.setCar(universalCarInfoVO);
+        recombinationVO.setRemit(loanQueryDOMapper.selectUniversalRemitDetails(orderId));
+        recombinationVO.setMaterialAudit(loanQueryDOMapper.selectUniversalMaterialAudit(orderId));
+        recombinationVO.setSupplement(loanQueryService.selectUniversalInfoSupplementHistory(orderId));
+        recombinationVO.setHome(loanQueryDOMapper.selectUniversalHomeVisitInfo(orderId));
+        recombinationVO.setCredits(credits);
         recombinationVO.setInsuranceInfo(insuranceInfoDOMapper.selectInsuranceByOrderId(orderId));
 
         return recombinationVO;

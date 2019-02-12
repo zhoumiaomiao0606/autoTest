@@ -49,4 +49,5 @@ public interface LoanCustomerService {
     void updateCustomerEnable(Long principalId);
 
 
+    RecombinationVO newCustomerDetail(Long orderId);
 }
