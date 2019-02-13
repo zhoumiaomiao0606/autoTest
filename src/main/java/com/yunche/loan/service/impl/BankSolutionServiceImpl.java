@@ -765,7 +765,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         customer.setIdType(IDict.K_JJLX.IDCARD);
         customer.setIdNo(loanCustomerDO.getIdCard());
         customer.setMobile(loanCustomerDO.getMobile());
-        customer.setAddress(loanCustomerDO.getCprovince() + loanCustomerDO.getCcity() + loanCustomerDO.getCcounty() + loanCustomerDO.getAddress());
+        customer.setAddress(loanCustomerDO.getHprovince() + loanCustomerDO.getHcity() + loanCustomerDO.getHcounty() + loanCustomerDO.getAddress());
         customer.setUnit(loanCustomerDO.getIncomeCertificateCompanyName());
         //busi
         //car
