@@ -2719,7 +2719,7 @@
         loan_customer.`name` AS customer,
         loan_customer.id_card AS idCard,
         loan_process.commit_key                       AS taskStatus,
-        (IFNULL(join_ltv.risk_sharing_addition,0)  + IFNULL(join_p.risk_bear_rate,0))                    AS orderRisk,
+        (IFNULL(join_ltv.risk_sharing_addition,0)  + IFNULL(partner.risk_bear_rate,0))                    AS orderRisk,
         useGetSmallCarName(loan_car_info.car_detail_id)     AS carName,
         loan_car_info.car_type                              AS carType,
         join_h.license_plate_number                  AS licensePlateNumber,
