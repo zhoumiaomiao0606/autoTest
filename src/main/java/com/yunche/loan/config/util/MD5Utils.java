@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 
 import java.security.MessageDigest;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * 加随机盐MD5
@@ -29,7 +30,7 @@ public class MD5Utils {
         char[] chars = "1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".toCharArray();
 
         //  设置随机数
-        Random random = new Random();
+        ThreadLocalRandom random = ThreadLocalRandom.current();
 
         //  获取N位随机数
         StringBuffer sb = new StringBuffer();
