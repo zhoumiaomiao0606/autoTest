@@ -3670,7 +3670,8 @@
             partner.`name`              AS partner,
             partner.partner_code        AS partnerCode,
             main.id                     AS taskId,
-            base.bank                   AS bank
+            base.bank                   AS bank,
+            node.usertask_remit_review_create_time  AS remitGmtCreate
         FROM
         loan_order main
         LEFT JOIN loan_process deputy ON main.id = deputy.order_id
@@ -3679,6 +3680,7 @@
         LEFT JOIN partner partner ON partner.id = base.partner_id
         LEFT JOIN employee employee ON employee.id = base.salesman_id
         LEFT JOIN loan_customer customer ON customer.id = main.loan_customer_id
+        LEFT JOIN current_node_manager node ON node.order_id = main.id
         WHERE 1=1
         AND case when #{taskStatus} = 0 then deputy.bank_lend_record != 0
         else deputy.bank_lend_record        = #{taskStatus} AND deputy.order_status = 1 end
