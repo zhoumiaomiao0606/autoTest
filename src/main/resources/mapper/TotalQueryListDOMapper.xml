@@ -3586,7 +3586,7 @@
             main.id  AS taskId,
             'usertask_under_line_video_review'  AS taskKey,
             taskdis.status as taskDisStatus,
-            taskdis.sendee_name as receiveManName
+            taskdis.sendee_name as receiveManName,
             base.bank AS bank
         FROM
         loan_order main
