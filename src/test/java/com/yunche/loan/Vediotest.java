@@ -22,6 +22,7 @@ import org.junit.Test;
 import sun.misc.BASE64Encoder;
 
 import java.io.*;
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.Date;
@@ -65,7 +66,7 @@ public class Vediotest
         String string = "2016-10-24 21:59:06";
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");*/
 
-        SDCOrders ss = new SDCOrders();
+        /*SDCOrders ss = new SDCOrders();
         ss.setOrderId(new Long("1901291036128970829"));
         ss.setPartnerId(new Long("56"));
         List<SDCOrders> sdOrders = Lists.newArrayList(ss);
@@ -75,8 +76,15 @@ public class Vediotest
                 //.filter(e -> !e.getOrderId().equals(orderId))
                 .collect(Collectors.toList());
 
-        System.out.println("====="+collect.size()+ JSON.toJSONString(collect));
+        System.out.println("====="+collect.size()+ JSON.toJSONString(collect));*/
         //System.out.println("====="+(null==2));
+
+        BigDecimal a1 = new BigDecimal("0");
+
+        BigDecimal a = new BigDecimal("1.111");
+
+        a1.add(a);
+        System.out.println("===="+a1.add(a));
 
 
 

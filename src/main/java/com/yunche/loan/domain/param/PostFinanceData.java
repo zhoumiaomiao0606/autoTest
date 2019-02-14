@@ -73,6 +73,12 @@ public class PostFinanceData
 
     //private BigDecimal carLoanMoney;//车贷业务代垫款 1
 
+    //基础保证金
+    private BigDecimal baseDeposit;
+
+    //银行分期本金
+    private BigDecimal installmentPrincipal;
+
 
     private String otherDeposit;//其他押金
 
