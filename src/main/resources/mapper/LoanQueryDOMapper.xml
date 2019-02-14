@@ -561,6 +561,10 @@
             parameterType="java.lang.Long">
     select
             main_order.id                                                                           AS order_id,
+            loan.loan_amount                                                                        AS base_loan_amount,
+            loan.bank                                                                               AS base_bank,
+            loan.area_id                                                                            AS base_apply_license_plate_area_id,
+            CONCAT(area.parent_area_name,area.area_name)                                            AS base_apply_license_plate_area,
             DATE_FORMAT(material.complete_material_date,'%Y-%m-%d %H:%i:%S')                        AS material_complete_material_date,
             material.remark                                                                         AS material_remark,
             material.contract_num                                                                   AS material_contract_num,
@@ -601,8 +605,8 @@
             customer.ctelzone                                                                       AS customer_ctelzone,
             partner.id                                                                              AS partner_id,
             partner.name                                                                            AS partner_name,
-            partner.partner_code                                                                             AS partner_code,
-            partner.partner_group                                                                             AS partner_group,
+            partner.partner_code                                                                    AS partner_code,
+            partner.partner_group                                                                   AS partner_group,
             useGetAreaFullName(partner.area_id)                                                     AS partner_biz_area,
             partner.risk_bear_rate                                                                  AS partner_risk_bear_rate,
             partner.pay_month                                                                       AS partner_pay_month,
@@ -626,7 +630,7 @@
             vehicle.old_driving_license_owner                                                       AS vehicle_old_driving_license_owner,
             vehicle.license_plate_type                                                              AS vehicle_license_plate_type,
             CONCAT(area.parent_area_name,area.area_name)                                            AS vehicle_apply_license_plate_area,
-            vehicle.apply_license_plate_area                                           AS vehicle_apply_license_plate_area_id,
+            vehicle.apply_license_plate_area                                                        AS vehicle_apply_license_plate_area_id,
             DATE_FORMAT(bank_credit.gmt_create,'%Y-%m-%d %H:%i:%S')                                 AS bank_credit_gmt_create,
             society_credit.gmt_create                                                               AS society_credit_gmt_create,
             financial.id                                                                            AS financial_id,
@@ -683,7 +687,8 @@
     left join loan_car_info car on main_order.loan_car_info_id = car.id
     left join remit_details remit on main_order.remit_details_id = remit.id
     left join vehicle_information vehicle on main_order.vehicle_information_id = vehicle.id
-    left join base_area area on vehicle.apply_license_plate_area = area.area_id
+    left join base_area area on loan.area_id = area.area_id
+--     left join base_area area on vehicle.apply_license_plate_area = area.area_id
     left join loan_financial_plan financial on main_order.loan_financial_plan_id = financial.id
     left join financial_product product on financial.financial_product_id = product.prod_id
     left join loan_credit_info bank_credit on customer.id = bank_credit.customer_id and bank_credit.type = 1
@@ -704,6 +709,10 @@
             parameterType="java.lang.Long">
         select
         main_order.id                                                                           AS order_id,
+        loan.loan_amount                                                                        AS base_loan_amount,
+        loan.bank                                                                               AS base_bank,
+        loan.area_id                                                                            AS base_apply_license_plate_area_id,
+        CONCAT(area.parent_area_name,area.area_name)                                            AS base_apply_license_plate_area,
         DATE_FORMAT(material.complete_material_date,'%Y-%m-%d %H:%i:%S')                        AS material_complete_material_date,
         material.remark                                                                         AS material_remark,
         material.contract_num                                                                   AS material_contract_num,
@@ -744,8 +753,8 @@
         customer.ctelzone                                                                       AS customer_ctelzone,
         partner.id                                                                              AS partner_id,
         partner.name                                                                            AS partner_name,
-        partner.partner_code                                                                             AS partner_code,
-        partner.partner_group                                                                             AS partner_group,
+        partner.partner_code                                                                    AS partner_code,
+        partner.partner_group                                                                   AS partner_group,
         useGetAreaFullName(partner.area_id)                                                     AS partner_biz_area,
         partner.risk_bear_rate                                                                  AS partner_risk_bear_rate,
         partner.pay_month                                                                       AS partner_pay_month,
@@ -761,14 +770,14 @@
         car.vehicle_property                                                                    AS car_vehicle_property,
         car.car_key                                                                             AS car_key,
         car.info                                                                                AS car_info,
-        car.pay_month                                                                                AS pay_month,
+        car.pay_month                                                                           AS pay_month,
         car.distributor_name                                                                    AS car_distributor_name,
         vehicle.color                                                                           AS vehicle_color,
         vehicle.now_driving_license_owner                                                       AS vehicle_now_driving_license_owner,
         vehicle.old_driving_license_owner                                                       AS vehicle_old_driving_license_owner,
         vehicle.license_plate_type                                                              AS vehicle_license_plate_type,
         CONCAT(area.parent_area_name,area.area_name)                                            AS vehicle_apply_license_plate_area,
-        vehicle.apply_license_plate_area                                           AS vehicle_apply_license_plate_area_id,
+        vehicle.apply_license_plate_area                                                        AS vehicle_apply_license_plate_area_id,
         DATE_FORMAT(bank_credit.gmt_create,'%Y-%m-%d %H:%i:%S')                                 AS bank_credit_gmt_create,
         society_credit.gmt_create                                                               AS society_credit_gmt_create,
         financial.id                                                                            AS financial_id,
@@ -812,7 +821,7 @@
         cost.performance_fee                                                                    AS performance_fee,
         repay.overdue_amount                                                                    AS overdue_amount,
         remit.remit_time                                                                        AS remit_review_time,
-        bank.id                                                    as bank_id,
+        bank.id                                                                                 AS bank_id,
         bank_lend.lend_date                                                                     AS bank_lend_date
 
         from (select * from loan_order where id = #{orderId,jdbcType=BIGINT}) main_order
@@ -825,7 +834,8 @@
         left join loan_car_info car on main_order.loan_car_info_id = car.id
         left join remit_details remit on main_order.remit_details_id = remit.id
         left join vehicle_information vehicle on main_order.vehicle_information_id = vehicle.id
-        left join base_area area on vehicle.apply_license_plate_area = area.area_id
+        left join base_area area on loan.area_id = area.area_id
+--         left join base_area area on vehicle.apply_license_plate_area = area.area_id
         left join loan_financial_plan financial on main_order.loan_financial_plan_id = financial.id
         left join financial_product product on financial.financial_product_id = product.prod_id
         left join loan_credit_info bank_credit on customer.id = bank_credit.customer_id and bank_credit.type = 1

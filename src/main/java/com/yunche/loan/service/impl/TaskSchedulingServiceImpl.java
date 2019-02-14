@@ -890,6 +890,8 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         } else if (LoanProcessEnum.TELEPHONE_VERIFY.getCode().equals(taskDefinitionKey)) {
             Long telephoneVerifyLevel = taskSchedulingDOMapper.selectTelephoneVerifyLevel(loginUser.getId());
             taskListQuery.setTelephoneVerifyLevel(telephoneVerifyLevel);
+            Set<Long> taskDistributionIdSet = taskSchedulingDOMapper.selectTaskDistributionIdSet(LoanProcessEnum.TELEPHONE_VERIFY.getCode());
+            taskListQuery.setTaskDistributionIdSet(taskDistributionIdSet);
         }
 
 
@@ -945,6 +947,8 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
             list = totalQueryListDOMapper.queryRemitReviewList(taskListQuery);
         } else if (LoanProcessEnum.TELEPHONE_VERIFY.getCode().equals(taskDefinitionKey)) {
             list = totalQueryListDOMapper.queryTelephoneVerifyList(taskListQuery);
+        } else if (LoanProcessEnum.COMMIT_KEY.getCode().equals(taskDefinitionKey)) {
+            list = totalQueryListDOMapper.queryCommitKeyList(taskListQuery);
         }else if (LoanProcessEnum.SOCIAL_CREDIT_RECORD.getCode().equals(taskDefinitionKey)) {
             list = totalQueryListDOMapper.selectSocialCredit(taskListQuery);
         }else if (LoanProcessEnum.BANK_CARD_SEND.getCode().equals(taskDefinitionKey)) {
@@ -1019,6 +1023,9 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
 
             Long telephoneVerifyLevel = taskSchedulingDOMapper.selectTelephoneVerifyLevel(loginUser.getId());
             taskListQuery.setTelephoneVerifyLevel(telephoneVerifyLevel);
+
+            Set<Long> taskDistributionIdSet = taskSchedulingDOMapper.selectTaskDistributionIdSet(LoanProcessEnum.TELEPHONE_VERIFY.getCode());
+            taskListQuery.setTaskDistributionIdSet(taskDistributionIdSet);
         }
 
 

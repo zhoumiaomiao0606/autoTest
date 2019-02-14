@@ -36,6 +36,17 @@ public class LoanCustomerController {
     }
 
     /**
+     * 获取贷款客户信息详情(主贷人/共贷人/担保人/紧急联系人)
+     *
+     * @param orderId 业务单ID
+     * @return
+     */
+    @GetMapping(value = "/newDetail")
+    public ResultBean<RecombinationVO> newCustomerDetail(@RequestParam("orderId") Long orderId) {
+        return ResultBean.ofSuccess(loanCustomerService.newCustomerDetail(orderId));
+    }
+
+    /**
      * 贷款客户信息编辑
      *
      * @param allCustDetailParam

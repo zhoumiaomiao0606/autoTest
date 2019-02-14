@@ -24,6 +24,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
@@ -781,6 +782,31 @@ public class LoanOrderServiceImpl implements LoanOrderService {
             });
         }
         return ResultBean.ofSuccess(materialDownloadParam);
+    }
+
+    @Override
+    public RecombinationVO<UniversalInfoVO> newCreditRecordDetail(Long orderId) {
+        Assert.notNull(orderId, "订单号不能为空");
+
+        List<UniversalCustomerVO> customers = loanQueryDOMapper.selectUniversalCustomer(orderId);
+        for (UniversalCustomerVO universalCustomerVO : customers) {
+            List<UniversalCustomerFileVO> files = loanQueryService.selectUniversalCustomerFile(Long.valueOf(universalCustomerVO.getCustomer_id()));
+            universalCustomerVO.setFiles(files);
+        }
+
+        List<UniversalCreditInfoVO> credits = loanQueryDOMapper.selectUniversalCreditInfo(orderId);
+        for (UniversalCreditInfoVO universalCreditInfoVO : credits) {
+            if (!StringUtils.isBlank(universalCreditInfoVO.getCustomer_id())) {
+                universalCreditInfoVO.setRelevances(loanQueryDOMapper.selectUniversalRelevanceOrderIdByCustomerId(orderId, Long.valueOf(universalCreditInfoVO.getCustomer_id())));
+            }
+        }
+
+        RecombinationVO<UniversalInfoVO> recombinationVO = new RecombinationVO<>();
+        recombinationVO.setCustomers(customers);
+        recombinationVO.setCredits(credits);
+        recombinationVO.setInfo(loanQueryDOMapper.selectUniversalInfo(orderId));
+
+        return recombinationVO;
     }
 
     /**

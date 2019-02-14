@@ -44,4 +44,5 @@ public interface LoanOrderService {
     ResultBean picCheck();
 
 
+    RecombinationVO<UniversalInfoVO> newCreditRecordDetail(Long orderId);
 }

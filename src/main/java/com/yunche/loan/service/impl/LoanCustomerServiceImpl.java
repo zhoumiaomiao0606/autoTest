@@ -5,6 +5,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import com.yunche.loan.config.cache.AreaCache;
 import com.yunche.loan.config.common.OSSConfig;
 import com.yunche.loan.config.constant.BaseConst;
 import com.yunche.loan.config.result.ResultBean;
@@ -20,6 +21,7 @@ import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.LoanCustomerService;
 import com.yunche.loan.service.LoanFileService;
+import com.yunche.loan.service.LoanQueryService;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +29,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
@@ -75,6 +78,18 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
 
     @Autowired
     private OSSConfig ossConfig;
+
+    @Autowired
+    private LoanQueryService loanQueryService;
+
+    @Autowired
+    private LoanBaseInfoDOMapper loanBaseInfoDOMapper;
+
+    @Autowired
+    private BaseAreaDOMapper baseAreaDOMapper;
+
+    @Autowired
+    private AreaCache areaCache;
 
 
     @Override
@@ -460,6 +475,60 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
         List<Long> customerIdList = loanCustomerDOMapper.listIdByPrincipalCustIdAndType(principalId, null, VALID_STATUS);
 
         loanCustomerDOMapper.batchUpdateEnable(customerIdList, BaseConst.K_YORN_NO, null);
+    }
+
+    @Override
+    public RecombinationVO newCustomerDetail(Long orderId) {
+        Assert.notNull(orderId, "订单号不能为空");
+
+        List<UniversalCustomerVO> customers = loanQueryDOMapper.selectUniversalCustomer(orderId);
+        for (UniversalCustomerVO universalCustomerVO : customers) {
+            List<UniversalCustomerFileVO> files = loanQueryService.selectUniversalCustomerFile(Long.valueOf(universalCustomerVO.getCustomer_id()));
+            universalCustomerVO.setFiles(files);
+        }
+
+        UniversalCarInfoVO universalCarInfoVO = loanQueryDOMapper.selectUniversalCarInfo(orderId);
+        LoanBaseInfoDO loanBaseInfoDO = loanBaseInfoDOMapper.getTotalInfoByOrderId(orderId);
+        String tmpApplyLicensePlateArea = null;
+        if (loanBaseInfoDO.getAreaId() != null) {
+            BaseAreaDO baseAreaDO = baseAreaDOMapper.selectByPrimaryKey(loanBaseInfoDO.getAreaId(), VALID_STATUS);
+            //（个性化）如果上牌地是区县一级，则返回形式为 省+区
+            if ("3".equals(String.valueOf(baseAreaDO.getLevel()))) {
+                Long parentAreaId = baseAreaDO.getParentAreaId();
+                BaseAreaDO cityDO = baseAreaDOMapper.selectByPrimaryKey(parentAreaId, null);
+                baseAreaDO.setParentAreaId(cityDO.getParentAreaId());
+                baseAreaDO.setParentAreaName(cityDO.getParentAreaName());
+            }
+            if (baseAreaDO != null) {
+                if (baseAreaDO.getParentAreaName() != null) {
+                    tmpApplyLicensePlateArea = baseAreaDO.getParentAreaName() + baseAreaDO.getAreaName();
+                } else {
+                    tmpApplyLicensePlateArea = baseAreaDO.getAreaName();
+                }
+            }
+        }
+        universalCarInfoVO.setVehicle_apply_license_plate_area(tmpApplyLicensePlateArea);
+
+        FinancialSchemeVO schemeVO = loanQueryDOMapper.selectFinancialScheme(orderId);
+        if (StringUtils.isNotBlank(schemeVO.getPartner_area_id())) {
+            String areaName = areaCache.getAreaName(schemeVO.getPartner_area_id());
+            schemeVO.setPartner_area_name(areaName);
+        }
+
+        List<UniversalCreditInfoVO> credits = loanQueryDOMapper.selectUniversalCreditInfo(orderId);
+        for (UniversalCreditInfoVO universalCreditInfoVO : credits) {
+            if (!StringUtils.isBlank(universalCreditInfoVO.getCustomer_id())) {
+                universalCreditInfoVO.setRelevances(loanQueryDOMapper.selectUniversalRelevanceOrderIdByCustomerId(orderId, Long.valueOf(universalCreditInfoVO.getCustomer_id())));
+            }
+        }
+
+        RecombinationVO<FinancialSchemeVO> recombinationVO = new RecombinationVO<>();
+        recombinationVO.setCustomers(customers);
+        recombinationVO.setInfo(schemeVO);
+        recombinationVO.setCar(universalCarInfoVO);
+        recombinationVO.setCredits(credits);
+
+        return recombinationVO;
     }
 
 

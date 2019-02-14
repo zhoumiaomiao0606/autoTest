@@ -86,6 +86,11 @@ public interface TotalQueryListDOMapper {
     // 电审
     List<TaskListVO> queryTelephoneVerifyList(TaskListQuery taskListQuery);
 
+    // 待收钥匙
+    List<TaskListVO> queryCommitKeyList(TaskListQuery taskListQuery);
+
+
+
     //社会征信
     List<TaskListVO> selectSocialCredit(TaskListQuery taskListQuery);
 

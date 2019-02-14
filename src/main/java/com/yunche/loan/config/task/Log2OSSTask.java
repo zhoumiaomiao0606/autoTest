@@ -26,13 +26,13 @@ public class Log2OSSTask {
 
     private static final Logger logger = LoggerFactory.getLogger(Log2OSSTask.class);
 
-    private static String LOG_CLASSPATH = "/root/yunche-biz/pub/logs/";
+    private static final String LOG_CLASSPATH = "/root/yunche-biz/pub/logs/";
 
-//    private static String LOG_CLASSPATH = "/Users/liuzhe/Develop/JAVA/Project/Dev/loanBusiness/loanBusiness/logs/";
+//    private static final String LOG_CLASSPATH = "/Users/liuzhe/Develop/JAVA/Project/Dev/loanBusiness/loanBusiness/logs/";
 
-    private static String LOG_BUCKET_NAME = "yunche-log";
+    private static final String LOG_BUCKET_NAME = "yunche-log";
 
-    private static String DISK_NAME = "yunche-biz-log/";
+    private static final String DISK_NAME = "yunche-biz-log/";
 
 
     /**
@@ -66,7 +66,7 @@ public class Log2OSSTask {
 
             String ipAddress = getIpAddress();
 
-            DISK_NAME += logPath + "/" + ipAddress + "/";
+            String diskName = DISK_NAME + logPath + "/" + ipAddress + "/";
 
             Arrays.stream(files)
                     .filter(Objects::nonNull)
@@ -74,9 +74,9 @@ public class Log2OSSTask {
 
                         try {
 
-                            OSSUnit.uploadObject2OSS(OSSUnit.getOSSClient(), logFile, LOG_BUCKET_NAME, DISK_NAME);
+                            OSSUnit.uploadObject2OSS(OSSUnit.getOSSClient(), logFile, LOG_BUCKET_NAME, diskName);
 
-                            logger.info("日志同步OSS成功     >>>     logFile : {} , diskName : {}", logFile.getName(), DISK_NAME);
+                            logger.info("日志同步OSS成功     >>>     logFile : {} , diskName : {}", logFile.getName(), diskName);
 
                         } catch (Exception ex) {
 

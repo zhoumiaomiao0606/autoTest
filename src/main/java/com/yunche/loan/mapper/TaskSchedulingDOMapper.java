@@ -14,6 +14,7 @@ import org.springframework.validation.annotation.Validated;
 
 
 import java.util.List;
+import java.util.Set;
 
 public interface TaskSchedulingDOMapper {
 
@@ -73,4 +74,12 @@ public interface TaskSchedulingDOMapper {
      * @return
      */
     List<TaskListVO> selectRoleChangeHisTaskList(TaskListQuery taskListQuery);
+
+    /**
+     * 已领取任务ID列表
+     *
+     * @param taskKey
+     * @return
+     */
+    Set<Long> selectTaskDistributionIdSet(String taskKey);
 }

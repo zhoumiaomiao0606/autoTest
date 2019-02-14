@@ -52,6 +52,10 @@
         ( SELECT ug.* FROM employee_rela_user_group eg INNER JOIN user_group ug ON eg.user_group_id = ug.id AND eg.employee_id = #{employeeId} ) t
     </select>
 
+    <select id="selectTaskDistributionIdSet" resultType="java.lang.Long" parameterType="java.lang.String">
+        SELECT distinct task_id FROM task_distribution where task_key = #{taskKey}
+    </select>
+
     <select id="selectBankInterfaceSerialOrderidList" resultType="java.lang.Long" parameterType="com.yunche.loan.domain.query.TaskListQuery">
      <choose>
           <when test="taskDefinitionKey == 'usertask_bank_credit_record' or taskDefinitionKey == 'usertask_credit_apply' or taskDefinitionKey == 'usertask_bank_open_card' or taskDefinitionKey == 'usertask_apply_instalment'">

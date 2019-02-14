@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
 import java.lang.reflect.Method;
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * 分布式🔐
@@ -61,7 +61,7 @@ public class DistributedLockAspect {
 
 
         // randomVal     生成一个随机数：作为当前🔐的val
-        long randomNum = new Random().nextInt(1000000000);
+        long randomNum = ThreadLocalRandom.current().nextInt(1000000000);
         String val = System.currentTimeMillis() + String.valueOf(randomNum);
 
 

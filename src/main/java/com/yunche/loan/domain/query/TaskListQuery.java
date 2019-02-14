@@ -74,7 +74,10 @@ public class TaskListQuery {
     //查询条件
     private boolean fuse = false;
 
+    // 电审-新增任务(任务是否已领取，默认：是)
     private boolean pull = true;
+    // 已领取任务ID列表
+    private Set<Long> taskDistributionIdSet;
 
 
     private String orderId;//业务编号
