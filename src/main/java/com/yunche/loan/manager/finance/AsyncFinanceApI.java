@@ -268,9 +268,9 @@ public class AsyncFinanceApI {
             postFinanceData.setInstallmentPrincipal(loanFinancialPlanDO.getBankPeriodPrincipal());
 
             BigDecimal pr = new BigDecimal("0");
-            if (costDetailsDO.getPartner_rebate_amount()!=null)
+            if (remitDetailsDO.getReturn_rate_amount()!=null)
             {
-                pr = pr.add(costDetailsDO.getPartner_rebate_amount());
+                pr = pr.add(remitDetailsDO.getReturn_rate_amount());
             }
 
             if (costDetailsDO.getRebate_not_deducted() !=null)
