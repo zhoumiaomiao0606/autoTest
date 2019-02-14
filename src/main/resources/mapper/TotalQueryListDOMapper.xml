@@ -3289,6 +3289,8 @@
 		plan.loan_amount     as loanAmount,
 		plan.loan_time       as loanTime,
         base.bank         as bank,
+        remit.remit_amount  as remitAmount,
+        DATE_FORMAT(third_party.lend_date, '%Y-%m-%d') AS bridgeLendDate,
 		join_r.lend_date  as lendDate,
 		bridge.id         as processId
         from loan_order loan
@@ -3370,7 +3372,7 @@
         left join third_party_fund_business third_party on third_party.bridge_procecss_id  = bridge.id
         left join loan_car_info car on car.id = loan.loan_car_info_id
         where
-        AND case when #{taskStatus} = 0 then bridge.bridge_repay_record !=0 else bridge.bridge_repay_record = #{taskStatus} and bridge.order_status = 1 end
+        case when #{taskStatus} = 0 then bridge.bridge_repay_record !=0 else bridge.bridge_repay_record = #{taskStatus} and bridge.order_status = 1 end
         <if test="startLendDate !=null">
             AND third_party.lend_date &gt;= #{startLendDate}
         </if>
