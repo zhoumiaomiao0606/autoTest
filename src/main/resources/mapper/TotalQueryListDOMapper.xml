@@ -2557,6 +2557,7 @@
                             main.id AS taskId,
                             main.id AS id,
                             join_e.id AS salesmanId,
+                            join_e.name AS salesman,
                             join_p.id AS partnerId,
                             join_c.id AS customerId,
                             join_c.NAME AS customer,
