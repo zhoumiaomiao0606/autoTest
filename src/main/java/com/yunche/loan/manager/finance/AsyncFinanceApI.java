@@ -251,7 +251,7 @@ public class AsyncFinanceApI {
 
             postFinanceData.setBankDeposits(loanFinancialPlanDO.getBankPeriodPrincipal());
             postFinanceData.setCarLoanMoney(String.valueOf(remitDetailsDO.getRemit_amount()));
-            postFinanceData.setPartnerRebates(remitDetailsDO.getReturn_rate_amount());
+
             postFinanceData.setMortgageDeposit(costDetailsDO.getApply_license_plate_deposit_fee());
             postFinanceData.setRiskFee(costDetailsDO.getRisk_fee());
             postFinanceData.setCustomerDeposit(costDetailsDO.getPerformance_fee());
@@ -262,6 +262,23 @@ public class AsyncFinanceApI {
 
             //新加
             postFinanceData.setCompanyIncome(costDetailsDO.getService_fee().toString());
+
+            postFinanceData.setBaseDeposit(costDetailsDO.getBased_margin_fee());
+
+            postFinanceData.setInstallmentPrincipal(loanFinancialPlanDO.getBankPeriodPrincipal());
+
+            BigDecimal pr = new BigDecimal("0");
+            if (costDetailsDO.getPartner_rebate_amount()!=null)
+            {
+                pr = pr.add(costDetailsDO.getPartner_rebate_amount());
+            }
+
+            if (costDetailsDO.getRebate_not_deducted() !=null)
+            {
+                pr = pr.add(costDetailsDO.getRebate_not_deducted());
+            }
+
+            postFinanceData.setPartnerRebates(pr);
 
 
             postFinanceData.setType(IDict.K_VOUCHER.K_VOUCHER_2);
