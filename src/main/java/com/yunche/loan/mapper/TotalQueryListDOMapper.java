@@ -85,4 +85,22 @@ public interface TotalQueryListDOMapper {
 
     // 电审
     List<TaskListVO> queryTelephoneVerifyList(TaskListQuery taskListQuery);
+
+    //社会征信
+    List<TaskListVO> selectSocialCredit(TaskListQuery taskListQuery);
+
+    //银行卡寄送
+    List<TaskListVO> selectBankCardSend(TaskListQuery taskListQuery);
+
+    //银行卡接收
+    List<TaskListVO> selectBankCardRecord(TaskListQuery taskListQuery);
+
+    //退款申请
+    List<TaskListVO> selectRefundApply(TaskListQuery taskListQuery);
+
+    //退款单确认 待开发
+    List<TaskListVO> selectRefundApplyReview(TaskListQuery taskListQuery);
+
+
+
 }
