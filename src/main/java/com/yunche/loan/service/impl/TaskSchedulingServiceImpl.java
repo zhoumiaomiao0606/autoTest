@@ -973,6 +973,8 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
             list = totalQueryListDOMapper.selectBankLendRecordList(taskListQuery);
         } else if (LoanProcessEnum.MATERIAL_REVIEW.getCode().equals(taskDefinitionKey)) {
             list = totalQueryListDOMapper.queryMaterialReviewList(taskListQuery);
+        } else if (LoanProcessEnum.FINANCIAL_SCHEME_MODIFY_APPLY_REVIEW.getCode().equals(taskDefinitionKey)) {
+            list = totalQueryListDOMapper.selectFinancialSchemeModifyApplyReviewList(taskListQuery);
         }
 
 
