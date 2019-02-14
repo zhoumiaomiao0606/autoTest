@@ -3490,7 +3490,10 @@
                 partner.`name` AS partner,
                 partner.partner_code     as partnerCode,
                 main.id  AS taskId,
-                base.bank AS bank
+                base.bank AS bank,
+                'usertask_video_review'  AS taskKey,
+                taskdis.status as taskDisStatus,
+                taskdis.sendee_name as receiveManName
         FROM
            loan_order main
             LEFT JOIN loan_process deputy ON main.id = deputy.order_id
@@ -3581,6 +3584,9 @@
             partner.`name` AS partner,
             partner.partner_code     as partnerCode,
             main.id  AS taskId,
+            'usertask_under_line_video_review'  AS taskKey,
+            taskdis.status as taskDisStatus,
+            taskdis.sendee_name as receiveManName
             base.bank AS bank
         FROM
         loan_order main
