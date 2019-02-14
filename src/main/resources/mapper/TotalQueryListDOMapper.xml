@@ -2533,6 +2533,7 @@
 
         SELECT
                 complex.*,
+                complex_log.usertask_credit_apply_gmt_user_name                                    AS creditMan,
                 DATE_FORMAT( complex_log.usertask_loan_apply_create_time, '%Y-%m-%d %H:%i:%S' ) AS loanGmtCreate,
                 DATE_FORMAT( complex_log.usertask_telephone_verify_create_time, '%Y-%m-%d %H:%i:%S' ) AS telephoneGmtCreate,
                 DATE_FORMAT( complex_log.usertask_visit_verify_create_time, '%Y-%m-%d %H:%i:%S' ) AS visitGmtCreate
@@ -2557,6 +2558,7 @@
                             main.id AS taskId,
                             main.id AS id,
                             join_e.id AS salesmanId,
+                            join_e.name AS salesman,
                             join_p.id AS partnerId,
                             join_c.id AS customerId,
                             join_c.NAME AS customer,
@@ -2565,6 +2567,7 @@
                             join_b.bank AS bank,
                             join_f.loan_amount AS loanAmount,
                             join_f.bank_period_principal AS bankPeriodPrincipal,
+                            join_f.sign_rate AS signRate,
                             join_p.NAME AS partner,
                             join_p.partner_code AS partnerCode,
                             join_p.partner_group AS partnerGroup,
