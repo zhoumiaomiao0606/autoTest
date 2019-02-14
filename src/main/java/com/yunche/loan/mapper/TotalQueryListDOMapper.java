@@ -81,7 +81,7 @@ public interface TotalQueryListDOMapper {
     List<TaskListVO> selectBankOpenCardList(TaskListQuery taskListQuery);
 
     //资料审核
-    //List<TaskListVO>   queryMaterialReviewList(TaskListQuery taskListQuery);
+    List<TaskListVO>   queryMaterialReviewList(TaskListQuery taskListQuery);
 
     // 电审
     List<TaskListVO> queryTelephoneVerifyList(TaskListQuery taskListQuery);
