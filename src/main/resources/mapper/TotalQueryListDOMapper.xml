@@ -2990,6 +2990,7 @@
         emp.name          as salesman,
         par.`name`        as partner,
         par.partner_code  as partnerCode,
+        refund.id         as refund_id,
         (#{taskDefinitionKey}) AS taskKey,
         useGetTaskTypeText(#{taskDefinitionKey},refund.status,process.order_status) AS taskTypeText
 
@@ -3076,6 +3077,7 @@
         par.`name`        as partner,
         par.partner_code  as partnerCode,
 		plan.loan_amount  as loanAmount,
+        refund.id         as refund_id,
 		(#{taskDefinitionKey}) AS taskKey,
         useGetTaskTypeText(#{taskDefinitionKey},refund.status,process.order_status) AS taskTypeText
 
