@@ -124,4 +124,7 @@ public interface TotalQueryListDOMapper {
     //银行放款记录
     List<TaskListVO> selectBankLendRecordList(TaskListQuery taskListQuery);
 
+    //金融方案修改审核
+    List<TaskListVO> selectFinancialSchemeModifyApplyReviewList(TaskListQuery taskListQuery);
+
 }

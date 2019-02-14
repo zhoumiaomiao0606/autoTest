@@ -3873,4 +3873,106 @@
         </choose>
 
     </select>
+
+    <select id="selectFinancialSchemeModifyApplyReviewList" resultType="com.yunche.loan.domain.vo.TaskListVO" parameterType="com.yunche.loan.domain.query.TaskListQuery">
+        SELECT
+        main.id,
+        task.status as taskDisStatus,
+        customer.`name` AS customer,
+        customer.id_card AS idCard,
+        customer.mobile AS mobile,
+        employee.`name` AS salesman,
+        partner.`name` AS partner,
+        partner.partner_code     AS partnerCode,
+        join_his.id  AS taskId,
+        base.bank AS bank,
+        join_his.id   AS his_id,
+        useGetTaskTypeText(#{taskDefinitionKey},useLevelGetTaskStatus(#{telephoneVerifyLevel},join_his.status),loan_process.order_status) AS taskTypeText,
+        useLevelGetTaskStatus(#{telephoneVerifyLevel},join_his.status)   AS taskStatus
+
+        FROM
+        loan_financial_plan_temp_his join_his
+        INNER JOIN loan_order main   on main.id          = join_his.order_id
+        LEFT JOIN loan_process ON main.id = loan_process.order_id
+        LEFT JOIN loan_base_info base ON base.id = main.loan_base_info_id
+        LEFT JOIN partner partner ON partner.id = base.partner_id
+        LEFT JOIN employee employee ON employee.id = base.salesman_id
+        LEFT JOIN loan_customer customer ON customer.id = main.loan_customer_id
+        left join current_node_manager node on node.order_id = main.id
+        LEFT JOIN `task_distribution` task ON task.`task_id` = main.id and task.task_key = 'usertask_financial_scheme_modify_apply_review'
+        WHERE 1=1 AND
+        case when #{taskStatus} = 0 then join_his.status !=0
+        else join_his.status = #{taskStatus} end
+        AND useLevelGetTaskStatus(#{telephoneVerifyLevel},join_his.status) !=-1
+        AND CASE WHEN #{maxGroupLevel}  = 0 THEN false
+        when #{maxGroupLevel} = 1 then 1 = 1
+        <if test="taskStatus != 0">
+            <choose>
+                <when test="pull == false">
+                    and task.taskId NOT IN ( ( SELECT distinct task_id FROM task_distribution where task_key =
+                    #{taskDefinitionKey} ) )
+                </when>
+                <otherwise>
+                    and
+                    case when #{maxGroupLevel} = 3 then 1=1
+                    when task.sendee is not null then
+                    case when task.sendee = #{employeeId} then 1=1 else 1=2 end
+                    else 1=1 end
+                    <if test="taskStatus == 2">
+                        and
+                        case when #{maxGroupLevel} = 3 then 1=1
+                        else
+                        task.taskId IN ( ( SELECT distinct task_id FROM task_distribution where task_key =
+                        #{taskDefinitionKey} ) )
+                        end
+                    </if>
+                </otherwise>
+            </choose>
+        </if>
+        <if test="juniorIds != null and juniorIds.size() > 0">
+            and base.salesman_id in
+            <foreach item="item" index="index" collection="juniorIds" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        else true end
+
+        and case when #{maxGroupLevel} = 3 then 1=1
+        else 1=1
+        <if test="bizAreaIdList != null and bizAreaIdList.size() > 0">
+            and partner.id in
+            <foreach item="item" index="index" collection="bizAreaIdList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="bankList != null and bankList.size() > 0">
+            and base.bank in
+            <foreach item="item" index="index" collection="bankList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        end
+        <if test="orderId != null">
+            AND main.id = #{orderId}
+        </if>
+        <if test="partnerGroup != null and partnerGroup !=''">
+            AND partner.partner_group = #{partnerGroup}
+        </if>
+        <if test="partnerCode != null and partnerCode !=''">
+            AND partner.partner_code= #{partnerCode}
+        </if>
+        <if test="customer != null and customer != ''">
+            AND customer.name LIKE CONCAT('%', #{customer} ,'%')
+        </if>
+        <if test="partnerId != null">
+            AND partner.id = #{partnerId}
+        </if>
+        <if test="salesmanId != null">
+            AND base.salesman_id = #{salesmanId}
+        </if>
+        <if test="loanBank != null">
+            AND base.bank = #{loanBank}
+        </if>
+        order by main.gmt_create
+    </select>
 </mapper>
