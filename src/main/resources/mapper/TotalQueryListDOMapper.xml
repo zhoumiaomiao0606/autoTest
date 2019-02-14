@@ -3355,8 +3355,8 @@
             resultType="com.yunche.loan.domain.vo.TaskListVO">
         SELECT
         loan.id           as id,
-		third_party.lend_amount as lendAmount,
-		third_party.lend_date   as lendDate,
+		third_party.lend_amount as bridgeLendAmount,
+		third_party.lend_date   as bridgeLendDate,
 		plan.bank_period_principal as bankPeriodPrincipal,
         cus.NAME          as customer,
         cus.id_card       as idCard,
@@ -3371,8 +3371,12 @@
         left join conf_third_party_money conf_t on real_b.conf_third_party_id = conf_t.id
         left join third_party_fund_business third_party on third_party.bridge_procecss_id  = bridge.id
         left join loan_car_info car on car.id = loan.loan_car_info_id
+        left join loan_base_info base on base.id = loan.loan_base_info_id
+        LEFT JOIN employee emp ON emp.id = base.salesman_id
+        LEFT JOIN partner par ON par.id = base.partner_id
+        left join loan_process process on process.order_id = loan.id
         where
-        case when #{taskStatus} = 0 then bridge.bridge_repay_record !=0 else bridge.bridge_repay_record = #{taskStatus} and bridge.order_status = 1 end
+        case when #{taskStatus} = 0 then bridge.bridge_repay_record !=0 else bridge.bridge_repay_record = #{taskStatus} and bridge.order_status = 1 and process.order_status = 1 end
         <if test="startLendDate !=null">
             AND third_party.lend_date &gt;= #{startLendDate}
         </if>
@@ -3440,8 +3444,11 @@
         left join conf_third_real_bridge_process real_b on bridge.id = real_b.bridge_process_id
         left join conf_third_party_money conf_t on real_b.conf_third_party_id = conf_t.id
         left join third_party_fund_business third_party on third_party.bridge_procecss_id  = bridge.id
+        left join loan_base_info base on base.id = loan.loan_base_info_id
+        LEFT JOIN employee emp ON emp.id = base.salesman_id
+        LEFT JOIN partner par ON par.id = base.partner_id
         where
-        AND case when #{taskStatus} = 0 then bridge.bridge_repay_info !=0 else bridge.bridge_repay_info = #{taskStatus} and bridge.order_status = 1 end
+        case when #{taskStatus} = 0 then bridge.bridge_repay_info !=0 else bridge.bridge_repay_info = #{taskStatus} and bridge.order_status = 1 end
         <if test="startRepayDate !=null">
             AND third_party.repay_date &gt;= #{startRepayDate}
         </if>
