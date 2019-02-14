@@ -2990,6 +2990,7 @@
         emp.name          as salesman,
         par.`name`        as partner,
         par.partner_code  as partnerCode,
+        refund.id         as refund_id,
         (#{taskDefinitionKey}) AS taskKey,
         useGetTaskTypeText(#{taskDefinitionKey},refund.status,process.order_status) AS taskTypeText
 
@@ -3076,6 +3077,7 @@
         par.`name`        as partner,
         par.partner_code  as partnerCode,
 		plan.loan_amount  as loanAmount,
+        refund.id         as refund_id,
 		(#{taskDefinitionKey}) AS taskKey,
         useGetTaskTypeText(#{taskDefinitionKey},refund.status,process.order_status) AS taskTypeText
 
@@ -3287,6 +3289,8 @@
 		plan.loan_amount     as loanAmount,
 		plan.loan_time       as loanTime,
         base.bank         as bank,
+        remit.remit_amount  as remitAmount,
+        DATE_FORMAT(third_party.lend_date, '%Y-%m-%d') AS bridgeLendDate,
 		join_r.lend_date  as lendDate,
 		bridge.id         as processId
         from loan_order loan
@@ -3368,7 +3372,7 @@
         left join third_party_fund_business third_party on third_party.bridge_procecss_id  = bridge.id
         left join loan_car_info car on car.id = loan.loan_car_info_id
         where
-        AND case when #{taskStatus} = 0 then bridge.bridge_repay_record !=0 else bridge.bridge_repay_record = #{taskStatus} and bridge.order_status = 1 end
+        case when #{taskStatus} = 0 then bridge.bridge_repay_record !=0 else bridge.bridge_repay_record = #{taskStatus} and bridge.order_status = 1 end
         <if test="startLendDate !=null">
             AND third_party.lend_date &gt;= #{startLendDate}
         </if>
@@ -3486,7 +3490,10 @@
                 partner.`name` AS partner,
                 partner.partner_code     as partnerCode,
                 main.id  AS taskId,
-                base.bank AS bank
+                base.bank AS bank,
+                'usertask_video_review'  AS taskKey,
+                taskdis.status as taskDisStatus,
+                taskdis.sendee_name as receiveManName
         FROM
            loan_order main
             LEFT JOIN loan_process deputy ON main.id = deputy.order_id
@@ -3577,6 +3584,9 @@
             partner.`name` AS partner,
             partner.partner_code     as partnerCode,
             main.id  AS taskId,
+            'usertask_under_line_video_review'  AS taskKey,
+            taskdis.status as taskDisStatus,
+            taskdis.sendee_name as receiveManName,
             base.bank AS bank
         FROM
         loan_order main
@@ -3590,12 +3600,6 @@
         WHERE 1=1
         AND case when #{taskStatus} = 0 then deputy.under_line_video_review != 0
         else deputy.under_line_video_review        = #{taskStatus} AND deputy.order_status = 1 end
-        AND  case when base.bank = '中国工商银行哈尔滨顾乡支行' then true
-        when base.bank = '中国工商银行南京江宁支行' then true
-        else
-        1 = if( (SELECT count( id ) FROM video_face_log WHERE order_id = main.id) > 0, 1, 0 )
-        end
-
         AND CASE WHEN #{maxGroupLevel}  = 0 THEN false
         when #{maxGroupLevel} = 1 then 1 = 1
         <if test="juniorIds != null and juniorIds.size() > 0">
@@ -3668,7 +3672,8 @@
             partner.`name`              AS partner,
             partner.partner_code        AS partnerCode,
             main.id                     AS taskId,
-            base.bank                   AS bank
+            base.bank                   AS bank,
+            node.usertask_remit_review_create_time  AS remitGmtCreate
         FROM
         loan_order main
         LEFT JOIN loan_process deputy ON main.id = deputy.order_id
@@ -3677,6 +3682,7 @@
         LEFT JOIN partner partner ON partner.id = base.partner_id
         LEFT JOIN employee employee ON employee.id = base.salesman_id
         LEFT JOIN loan_customer customer ON customer.id = main.loan_customer_id
+        LEFT JOIN current_node_manager node ON node.order_id = main.id
         WHERE 1=1
         AND case when #{taskStatus} = 0 then deputy.bank_lend_record != 0
         else deputy.bank_lend_record        = #{taskStatus} AND deputy.order_status = 1 end
