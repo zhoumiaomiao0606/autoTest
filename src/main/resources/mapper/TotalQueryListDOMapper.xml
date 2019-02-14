@@ -3658,6 +3658,85 @@
         order by main.gmt_create
     </select>
 
+    <select id="selectBankLendRecordList" resultType="com.yunche.loan.domain.vo.TaskListVO" parameterType="com.yunche.loan.domain.query.TaskListQuery">
+        SELECT
+            main.id,
+            customer.`name`             AS customer,
+            customer.id_card            AS idCard,
+            customer.mobile             AS mobile,
+            employee.`name`             AS salesman,
+            partner.`name`              AS partner,
+            partner.partner_code        AS partnerCode,
+            main.id                     AS taskId,
+            base.bank                   AS bank
+        FROM
+        loan_order main
+        LEFT JOIN loan_process deputy ON main.id = deputy.order_id
+        LEFT JOIN loan_financial_plan  financial ON main.loan_financial_plan_id =financial.id
+        LEFT JOIN loan_base_info base ON base.id = main.loan_base_info_id
+        LEFT JOIN partner partner ON partner.id = base.partner_id
+        LEFT JOIN employee employee ON employee.id = base.salesman_id
+        LEFT JOIN loan_customer customer ON customer.id = main.loan_customer_id
+        WHERE 1=1
+        AND case when #{taskStatus} = 0 then deputy.bank_lend_record != 0
+        else deputy.bank_lend_record        = #{taskStatus} AND deputy.order_status = 1 end
+
+        AND CASE WHEN #{maxGroupLevel}  = 0 THEN false
+        when #{maxGroupLevel} = 1 then 1 = 1
+        <if test="juniorIds != null and juniorIds.size() > 0">
+            and base.salesman_id in
+            <foreach item="item" index="index" collection="juniorIds" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        else true end
+
+        and case when #{maxGroupLevel} = 3 then 1=1
+        else 1=1
+        <if test="bizAreaIdList != null and bizAreaIdList.size() > 0">
+            and partner.id in
+            <foreach item="item" index="index" collection="bizAreaIdList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="bankList != null and bankList.size() > 0">
+            and base.bank in
+            <foreach item="item" index="index" collection="bankList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        end
+        <if test="orderId != null">
+            AND main.id = #{orderId}
+        </if>
+        <if test="customer != null and customer != ''">
+            AND customer.name LIKE CONCAT('%', #{customer} ,'%')
+        </if>
+        <if test="partnerId != null">
+            AND partner.id = #{partnerId}
+        </if>
+        <if test="idCard != null">
+            AND customer.id_card = #{idCard}
+        </if>
+        <if test="salesmanId != null">
+            AND base.salesman_id = #{salesmanId}
+        </if>
+
+        <if test="loanAmountType != null">
+            <if test="loanAmountType == 1">
+                AND financial.loan_amount &lt;= 100000
+            </if>
+            <if test="loanAmountType == 2">
+                AND financial.loan_amount &gt; 100000 AND financial.loan_amount &lt;= 300000
+            </if>
+            <if test="loanAmountType == 3">
+                AND financial.loan_amount &gt; 300000
+            </if>
+        </if>
+
+        order by main.gmt_create
+    </select>
+
     <select id="queryMaterialReviewList" resultType="com.yunche.loan.domain.vo.TaskListVO" parameterType="com.yunche.loan.domain.query.TaskListQuery">
 
         SELECT

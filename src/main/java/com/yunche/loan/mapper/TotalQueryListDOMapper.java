@@ -121,4 +121,7 @@ public interface TotalQueryListDOMapper {
     //线下视频审核
     List<TaskListVO> selectUnderLineVideoReview(TaskListQuery taskListQuery);
 
+    //银行放款记录
+    List<TaskListVO> selectBankLendRecordList(TaskListQuery taskListQuery);
+
 }
