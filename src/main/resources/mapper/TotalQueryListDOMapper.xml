@@ -3590,12 +3590,6 @@
         WHERE 1=1
         AND case when #{taskStatus} = 0 then deputy.under_line_video_review != 0
         else deputy.under_line_video_review        = #{taskStatus} AND deputy.order_status = 1 end
-        AND  case when base.bank = '中国工商银行哈尔滨顾乡支行' then true
-        when base.bank = '中国工商银行南京江宁支行' then true
-        else
-        1 = if( (SELECT count( id ) FROM video_face_log WHERE order_id = main.id) > 0, 1, 0 )
-        end
-
         AND CASE WHEN #{maxGroupLevel}  = 0 THEN false
         when #{maxGroupLevel} = 1 then 1 = 1
         <if test="juniorIds != null and juniorIds.size() > 0">
