@@ -2834,4 +2834,95 @@
 
     </select>
 
+    <select id="selectVideoReviewList" resultType="com.yunche.loan.domain.vo.TaskListVO" parameterType="com.yunche.loan.domain.query.TaskListQuery">
+        SELECT
+                main.id,
+                customer.`name` AS customer,
+                customer.id_card AS idCard,
+                customer.mobile AS mobile,
+                employee.`name` AS salesman,
+                partner.`name` AS partner,
+                partner.partner_code     as partnerCode,
+                main.id  AS taskId,
+                base.bank AS bank
+        FROM
+           loan_order main
+            LEFT JOIN loan_process deputy ON main.id = deputy.order_id
+            LEFT JOIN loan_base_info base ON base.id = main.loan_base_info_id
+            LEFT JOIN partner partner ON partner.id = base.partner_id
+            LEFT JOIN employee employee ON employee.id = base.salesman_id
+            LEFT JOIN loan_customer customer ON customer.id = main.loan_customer_id
+            LEFT JOIN video_face_num videonum  on videonum.order_id = main.id
+            left join task_distribution taskdis   on main.id = taskdis.task_id and  taskdis.task_key='usertask_video_review'
+        WHERE 1=1
+         AND case when #{taskStatus} = 0 then deputy.video_review != 0
+        else deputy.video_review        = #{taskStatus} AND deputy.order_status = 1 end
+        AND  case when base.bank = '中国工商银行哈尔滨顾乡支行' then true
+        when base.bank = '中国工商银行南京江宁支行' then true
+        else
+        1 = if( (SELECT count( id ) FROM video_face_log WHERE order_id = main.id) > 0, 1, 0 )
+        end
+
+        AND CASE WHEN #{maxGroupLevel}  = 0 THEN false
+        when #{maxGroupLevel} = 1 then 1 = 1
+        <if test="juniorIds != null and juniorIds.size() > 0">
+            and base.salesman_id in
+            <foreach item="item" index="index" collection="juniorIds" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        else true end
+
+        and case when #{maxGroupLevel} = 3 then 1=1
+        else 1=1
+        <if test="bizAreaIdList != null and bizAreaIdList.size() > 0">
+            and partner.id in
+            <foreach item="item" index="index" collection="bizAreaIdList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="bankList != null and bankList.size() > 0">
+            and base.bank in
+            <foreach item="item" index="index" collection="bankList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        end
+        <if test="orderId != null">
+            AND main.id = #{orderId}
+        </if>
+        <if test="customer != null and customer != ''">
+            AND customer.name LIKE CONCAT('%', #{customer} ,'%')
+        </if>
+        <if test="partnerId != null">
+            AND partner.id = #{partnerId}
+        </if>
+        <if test="idCard != null">
+            AND customer.id_card = #{idCard}
+        </if>
+        <if test="partnerGroup != null and partnerGroup !=''">
+            AND partner.partner_group = #{partnerGroup}
+        </if>
+        <if test="partnerCode != null and partnerCode !=''">
+            AND partner.partner_code= #{partnerCode}
+        </if>
+        <if test="bizAreaId != null">
+            AND
+            case
+            when (select level from base_area where area_id = #{bizAreaId}) = 0 then 1=1
+            when (select level from base_area where area_id = #{bizAreaId}) = 1 then base.area_id in (select area_id from base_area where parent_area_id = #{bizAreaId})
+            when (select level from base_area where area_id = #{bizAreaId}) = 2 then base.area_id = #{bizAreaId}
+            else 1=2
+            end
+        </if>
+        <if test="videoFaceFlag != null">
+            and case when #{videoFaceFlag} = '1' then taskdis.status = 1
+            when #{videoFaceFlag} = '2'          then taskdis.status = 2
+            else (taskdis.status != 1
+            AND taskdis.status != 2 ) or taskdis.status is null
+            end
+        </if>
+        order by main.gmt_create
+    </select>
+
 </mapper>

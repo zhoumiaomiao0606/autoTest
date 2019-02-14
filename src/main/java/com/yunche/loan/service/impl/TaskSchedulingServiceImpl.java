@@ -949,6 +949,8 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
             list = totalQueryListDOMapper.queryTelephoneVerifyList(taskListQuery);
         } else if (LoanProcessEnum.COMMIT_KEY.getCode().equals(taskDefinitionKey)) {
             list = totalQueryListDOMapper.queryCommitKeyList(taskListQuery);
+        } else if (LoanProcessEnum.VIDEO_REVIEW.getCode().equals(taskDefinitionKey)) {
+            list = totalQueryListDOMapper.selectVideoReviewList(taskListQuery);
         }
 
         PageInfo<TaskListVO> pageInfo = new PageInfo<>(list);
@@ -1040,6 +1042,10 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         } else if (LoanProcessEnum.TELEPHONE_VERIFY.getCode().equals(taskDefinitionKey)) {
             count = PageHelper.count(() -> {
                 totalQueryListDOMapper.queryTelephoneVerifyList(taskListQuery);
+            });
+        } else if (LoanProcessEnum.VIDEO_REVIEW.getCode().equals(taskDefinitionKey)) {
+            count = PageHelper.count(() -> {
+                totalQueryListDOMapper.selectVideoReviewList(taskListQuery);
             });
         }
 

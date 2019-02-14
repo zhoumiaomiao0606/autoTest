@@ -89,5 +89,8 @@ public interface TotalQueryListDOMapper {
     // 待收钥匙
     List<TaskListVO> queryCommitKeyList(TaskListQuery taskListQuery);
 
+    //视频审核
+    List<TaskListVO> selectVideoReviewList(TaskListQuery taskListQuery);
+
 
 }
