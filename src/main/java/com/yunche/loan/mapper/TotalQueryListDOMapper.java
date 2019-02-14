@@ -93,4 +93,29 @@ public interface TotalQueryListDOMapper {
     List<TaskListVO> selectVideoReviewList(TaskListQuery taskListQuery);
 
 
+
+    //社会征信
+    List<TaskListVO> selectSocialCredit(TaskListQuery taskListQuery);
+
+    //银行卡寄送
+    List<TaskListVO> selectBankCardSend(TaskListQuery taskListQuery);
+
+    //银行卡接收
+    List<TaskListVO> selectBankCardRecord(TaskListQuery taskListQuery);
+
+    //退款申请
+    List<TaskListVO> selectRefundApply(TaskListQuery taskListQuery);
+
+    //退款单确认
+    List<TaskListVO> selectRefundApplyReview(TaskListQuery taskListQuery);
+
+    //金投行过桥处理
+    List<TaskListVO> selectBridgeHandle(TaskListQuery taskListQuery);
+
+    //金投行还款登记
+    List<TaskListVO> selectBridgeRepayRecord(TaskListQuery taskListQuery);
+
+    //金投行还款信息
+    List<TaskListVO> selectBridgeRepayInfo(TaskListQuery taskListQuery);
+
 }
