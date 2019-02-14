@@ -118,4 +118,7 @@ public interface TotalQueryListDOMapper {
     //金投行还款信息
     List<TaskListVO> selectBridgeRepayInfo(TaskListQuery taskListQuery);
 
+    //线下视频审核
+    List<TaskListVO> selectUnderLineVideoReview(TaskListQuery taskListQuery);
+
 }

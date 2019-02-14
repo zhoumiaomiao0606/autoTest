@@ -967,6 +967,8 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
             list = totalQueryListDOMapper.selectBridgeRepayInfo(taskListQuery);
         } else if (LoanProcessEnum.VIDEO_REVIEW.getCode().equals(taskDefinitionKey)) {
             list = totalQueryListDOMapper.selectVideoReviewList(taskListQuery);
+        } else if (LoanProcessEnum.UNDER_LINE_VIDEO_REVIEW.getCode().equals(taskDefinitionKey)) {
+            list = totalQueryListDOMapper.selectUnderLineVideoReview(taskListQuery);
         }
 
 
