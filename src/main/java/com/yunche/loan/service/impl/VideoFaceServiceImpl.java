@@ -423,7 +423,9 @@ public class VideoFaceServiceImpl implements VideoFaceService {
         String l = "银行：我行审批通过后将根据您的授权对您的信用卡进行激活并将您的分期款项汇给浙江鑫宝行担保有限公司账户，您是否有异议？";
         String m = "银行：请您务必在合同上填写正确的手机号码和联系地址。";
         String n = "银行：现在请您在信用卡分期表、分期付款/抵押合同以及客户告知书上签字（客户经理须通过视频识别签字资料，并关注客户签字画面）。";
-        String o = "银行：请您认真阅读您与担保方签订的相关协议，该协议内容以及协议中约定的在您未按时、足额清偿债务时担保方可采取的措施等，均与工商银行无关。" +
+        String o = "银行：是否同意签署《信用卡汽车专项分期付款业务仲裁协议》";
+        String p = "银行：请填写个人手机号码及个人邮箱并签名。";
+        String q = "银行：请您认真阅读您与担保方签订的相关协议，该协议内容以及协议中约定的在您未按时、足额清偿债务时担保方可采取的措施等，均与工商银行无关。" +
                 "您办理该笔分期业务无需向我行和担保公司缴纳任何保证金和押金。" + HTML_NEW_LINE +
                 "银行：请您务必下载和使用工银融E联，通过申请时预留手机号注册登录后，即可享受相应服务。" + HTML_NEW_LINE +
                 "银行：感谢您的配合，业务办理成功后，我行会向您邮寄合同和客户告知书，" + HTML_NEW_LINE +
@@ -461,7 +463,7 @@ public class VideoFaceServiceImpl implements VideoFaceService {
         List<String> questionList = Lists.newArrayList(question_1, question_2, question_3, question_4, question_5,
                 question_6, question_7, question_8, question_9, question_10,
                 question_11, question_12, question_13, question_14);*/
-        List<String> questionList = Lists.newArrayList(a, b, c, d, e, f, g, h, i, j, k, l, m, n, o);
+        List<String> questionList = Lists.newArrayList(a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q);
 
         return questionList;
     }
