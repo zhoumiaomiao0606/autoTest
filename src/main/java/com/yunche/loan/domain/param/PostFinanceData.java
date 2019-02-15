@@ -79,6 +79,9 @@ public class PostFinanceData
     //银行分期本金
     private BigDecimal installmentPrincipal;
 
+    //车商返利
+    private BigDecimal dealerRebate;
+
 
     private String otherDeposit;//其他押金
 

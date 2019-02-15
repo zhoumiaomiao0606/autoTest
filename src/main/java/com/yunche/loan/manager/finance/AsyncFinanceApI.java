@@ -265,6 +265,8 @@ public class AsyncFinanceApI {
 
             postFinanceData.setBaseDeposit(costDetailsDO.getBased_margin_fee());
 
+            postFinanceData.setDealerRebate(remitDetailsDO.getCar_dealer_rebate());
+
             postFinanceData.setInstallmentPrincipal(loanFinancialPlanDO.getBankPeriodPrincipal());
 
             BigDecimal pr = new BigDecimal("0");
