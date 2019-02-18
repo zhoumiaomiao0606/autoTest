@@ -3427,9 +3427,9 @@
             resultType="com.yunche.loan.domain.vo.TaskListVO">
     SELECT
         loan.id           as id,
-		third_party.lend_amount as lendAmount,
-		third_party.lend_date   as lendDate,
-		third_party.repay_date	as repayDate,
+        third_party.lend_amount as bridgeLendAmount,
+        third_party.lend_date   as bridgeLendDate,
+        third_party.repay_date as bridgeRepayDate,
 		third_party.repay_remark AS bridgeRepayRemark,
 		third_party.repay_type   AS bridgeRepayType,
         third_party.interest     AS bridgeInterest,

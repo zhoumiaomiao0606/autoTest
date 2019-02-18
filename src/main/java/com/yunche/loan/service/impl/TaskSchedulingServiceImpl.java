@@ -887,7 +887,7 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         } else if (LoanProcessEnum.BANK_OPEN_CARD.getCode().equals(taskDefinitionKey)) {
             bankInterfaceSerialOrderidList = taskSchedulingDOMapper.selectBankInterfaceSerialOrderidList(taskListQuery);
             taskListQuery.setBankInterfaceSerialOrderidList(bankInterfaceSerialOrderidList);
-        } else if (LoanProcessEnum.TELEPHONE_VERIFY.getCode().equals(taskDefinitionKey)) {
+        } else if (LoanProcessEnum.TELEPHONE_VERIFY.getCode().equals(taskDefinitionKey) || LoanProcessEnum.FINANCIAL_SCHEME_MODIFY_APPLY_REVIEW.getCode().equals(taskDefinitionKey)) {
             Long telephoneVerifyLevel = taskSchedulingDOMapper.selectTelephoneVerifyLevel(loginUser.getId());
             taskListQuery.setTelephoneVerifyLevel(telephoneVerifyLevel);
             Set<Long> taskDistributionIdSet = taskSchedulingDOMapper.selectTaskDistributionIdSet(LoanProcessEnum.TELEPHONE_VERIFY.getCode());
