@@ -594,18 +594,22 @@ public class EmployeeServiceImpl implements EmployeeService {
     public ResultBean<Void> editPassword(EmployeeParam employeeParam) {
         Preconditions.checkArgument(null != employeeParam && StringUtils.isNotBlank(employeeParam.getOldPassword()), "原密码不能为空");
         Preconditions.checkArgument(StringUtils.isNotBlank(employeeParam.getNewPassword()), "新密码不能为空");
-        Preconditions.checkArgument(!employeeParam.getOldPassword().equals(employeeParam.getNewPassword()), "新旧密码不能相同");
+        String newPassword = employeeParam.getNewPassword().trim();
+        String oldPassword = employeeParam.getOldPassword().trim();
+        Preconditions.checkArgument(!oldPassword.equals(newPassword), "新旧密码不能相同");
 
         // 从session中获取User
         EmployeeDO loginUser = SessionUtils.getLoginUser();
         if (null == loginUser) {
             return ResultBean.ofError(BaseExceptionEnum.NOT_LOGIN);
         }
-        Preconditions.checkArgument(MD5Utils.verify(employeeParam.getOldPassword(), loginUser.getPassword()), "原密码有误");
+
+        EmployeeDO employeeDO = employeeDOMapper.selectByPrimaryKey(loginUser.getId(), null);
+        Preconditions.checkArgument(MD5Utils.verify(oldPassword, employeeDO.getPassword()), "原密码有误");
 
         EmployeeDO updateEmployee = new EmployeeDO();
         updateEmployee.setId(loginUser.getId());
-        updateEmployee.setPassword(MD5Utils.md5(employeeParam.getNewPassword()));
+        updateEmployee.setPassword(MD5Utils.md5(newPassword));
         updateEmployee.setGmtModify(new Date());
         int count = employeeDOMapper.updateByPrimaryKeySelective(updateEmployee);
         Preconditions.checkArgument(count > 0, "密码修改失败");
@@ -687,8 +691,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public ResultBean<List<EmployeeDO>> listAllName()
-    {
+    public ResultBean<List<EmployeeDO>> listAllName() {
 
         List<EmployeeDO> all = employeeDOMapper.getAll(TYPE_ZS, VALID_STATUS);
 
