@@ -8,7 +8,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-@FeignClient(name = "icbcFeignClient", url = "http://122.225.203.102:18090/", configuration = FeignConfig.class)
+//@FeignClient(name = "icbcFeignClient", url = "http://122.225.203.102:18090/", configuration = FeignConfig.class)
+@FeignClient(name = "icbcFeignClient", url = "http://122.225.203.102:18080/", configuration = FeignConfig.class)
 //@FeignClient(name = "icbcFeignClient", url = "http://122.225.203.102:9030/", configuration = FeignConfig.class)
 //@FeignClient(name = "iCBCFeignClient" ,url = "http://192.168.0.168:18090/",configuration = FeignConfig.class)
 public interface ICBCFeignClient {
