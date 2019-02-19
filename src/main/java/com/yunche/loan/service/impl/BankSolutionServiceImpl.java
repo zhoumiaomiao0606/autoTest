@@ -960,6 +960,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         asyncUpload.execute(new Process() {
             @Override
             public void process() {
+
                 asyncUpload.upload(serNo, "0004", picName, authSignPic.getUrls());
                 asyncUpload.upload(serNo, "0005", docName, mergeImages);
                 icbcFeignClient.applyCredit(applyCredit);

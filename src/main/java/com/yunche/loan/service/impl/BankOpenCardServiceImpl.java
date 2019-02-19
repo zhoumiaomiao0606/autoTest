@@ -120,6 +120,9 @@ public class BankOpenCardServiceImpl implements BankOpenCardService {
     @Autowired
     private OSSConfig ossConfig;
 
+    @Autowired
+    private BankOnlineTransService bankOnlineTransService;
+
     /**
      * 银行开卡详情页
      *
@@ -309,6 +312,7 @@ public class BankOpenCardServiceImpl implements BankOpenCardService {
                     BankInterfaceSerialDO bankInterfaceSerialDO = bankInterfaceSerialDOMapper.selectByCustomerIdAndTransCode(loanOrderDO.getLoanCustomerId(), IDict.K_TRANS_CODE.CREDITCARDAPPLY);
                     bankInterfaceSerialDO.setStatus(IDict.K_JYZT.FAIL);
                     bankInterfaceSerialDOMapper.updateByPrimaryKeySelective(bankInterfaceSerialDO);
+                    bankOnlineTransService.registerransStatus(e.getOrderId(),IDict.K_TRANS_CODE.CREDITCARDAPPLY,IDict.K_BANK_JYZT.FAIL);
                     return;
                 }
                 //如果卡号存在，则直接完成任务
@@ -365,6 +369,9 @@ public class BankOpenCardServiceImpl implements BankOpenCardService {
                     BankInterfaceSerialDO bankInterfaceSerialDO = bankInterfaceSerialDOMapper.selectByCustomerIdAndTransCode(loanOrderDO.getLoanCustomerId(), IDict.K_TRANS_CODE.CREDITCARDAPPLY);
                     bankInterfaceSerialDO.setStatus(IDict.K_JYZT.SUCCESS);
                     bankInterfaceSerialDOMapper.updateByPrimaryKeySelective(bankInterfaceSerialDO);
+
+                    bankOnlineTransService.registerransStatus(e.getOrderId(),IDict.K_TRANS_CODE.CREDITCARDAPPLY,IDict.K_BANK_JYZT.FULL_SUCC);
+                    bankOnlineTransService.subActionTimes(e.getOrderId());
                 }
             });
         } catch (UnsupportedEncodingException e) {
