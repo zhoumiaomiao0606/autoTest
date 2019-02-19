@@ -1854,6 +1854,7 @@
         LEFT JOIN employee employee ON employee.id = base.salesman_id
         LEFT JOIN loan_customer customer ON customer.id = main.loan_customer_id
         left join current_node_manager node on node.order_id = main.id
+        left join bank_online_trans online on main.id = online.order_id
         WHERE
 
         case when #{taskStatus} =0 then deputy.bank_open_card !=0
@@ -1934,135 +1935,27 @@
                             else
                             false
                             end
-
                         </when>
                         <when test="bankOpenCardOrder == 'having'">
-                            AND main.id not in  <!--  出现一次就判定为除外 -->
-                            (
-                            <choose>
-                                <when test="bankInterfaceSerialOrderidList != null and bankInterfaceSerialOrderidList.size() > 0">
-                                    <foreach item="item" index="index" collection="bankInterfaceSerialOrderidList" separator=",">
-                                        #{item}
-                                    </foreach>
-                                </when>
-                                <otherwise>
-                                    select temp.id from (SELECT 1 as id) temp  where temp.id =2
-                                </otherwise>
-                            </choose>
-                            )
-                            AND
-                            case when customer.open_card_order = 0 then deputy.telephone_verify  != 1
-                            else
-                            false
-                            end
+                            AND online.open_card_status = 2
                         </when>
-                        <otherwise>
-                            AND main.id not in  <!--  出现一次就判定为除外 -->
-                            (
-                            <choose>
-                                <when test="bankInterfaceSerialOrderidList != null and bankInterfaceSerialOrderidList.size() > 0">
-                                    <foreach item="item" index="index" collection="bankInterfaceSerialOrderidList" separator=",">
-                                        #{item}
-                                    </foreach>
-                                </when>
-                                <otherwise>
-                                    select temp.id from (SELECT 1 as id) temp  where temp.id =2
-                                </otherwise>
-                            </choose>
-                            )
-                        </otherwise>
 
                     </choose>
                 </when>
                 <when test="serialStatus == 'exception'">
-                    AND main.id in  <!--  有一个异常,就判定为这个单子异常 -->
-                    (
-                    <choose>
-                        <when test="bankInterfaceSerialOrderidList != null and bankInterfaceSerialOrderidList.size() > 0">
-                            <foreach item="item" index="index" collection="bankInterfaceSerialOrderidList" separator=",">
-                                #{item}
-                            </foreach>
-                        </when>
-                        <otherwise>
-                            select temp.id from (SELECT 1 as id) temp  where temp.id =2
-                        </otherwise>
-                    </choose>
-                    )
-                </when>
-                <when test="serialStatus == 'pending'">
-                    AND main.id in <!--  全部成功才算成功 -->
-                    (
-                    <choose>
-                        <when test="bankInterfaceSerialOrderidList != null and bankInterfaceSerialOrderidList.size() > 0">
-                            <foreach item="item" index="index" collection="bankInterfaceSerialOrderidList" separator=",">
-                                #{item}
-                            </foreach>
-                        </when>
-                        <otherwise>
-                            select temp.id from (SELECT 1 as id) temp  where temp.id =2
-                        </otherwise>
-                    </choose>
-                    )
+                    AND online.open_card_status = 6
                 </when>
                 <when test="serialStatus == 'success'">
-                    AND main.id in <!--  全部成功才算成功 -->
-                    (
-                    <choose>
-                        <when test="bankInterfaceSerialOrderidList != null and bankInterfaceSerialOrderidList.size() > 0">
-                            <foreach item="item" index="index" collection="bankInterfaceSerialOrderidList" separator=",">
-                                #{item}
-                            </foreach>
-                        </when>
-                        <otherwise>
-                            select temp.id from (SELECT 1 as id) temp  where temp.id =2
-                        </otherwise>
-                    </choose>
-                    )
+                    AND online.open_card_status = 4
                 </when>
                 <when test="serialStatus == 'failure'">
-                    AND main.id in <!--  全部成功才算成功 -->
-                    (
-                    <choose>
-                        <when test="bankInterfaceSerialOrderidList != null and bankInterfaceSerialOrderidList.size() > 0">
-                            <foreach item="item" index="index" collection="bankInterfaceSerialOrderidList" separator=",">
-                                #{item}
-                            </foreach>
-                        </when>
-                        <otherwise>
-                            select temp.id from (SELECT 1 as id) temp  where temp.id =2
-                        </otherwise>
-                    </choose>
-                    )
+                    AND online.open_card_status = 5
                 </when>
                 <when test="serialStatus == 'back'">
-                    AND main.id in <!--  有一个退回就判定单子为退回 -->
-                    (
-                    <choose>
-                        <when test="bankInterfaceSerialOrderidList != null and bankInterfaceSerialOrderidList.size() > 0">
-                            <foreach item="item" index="index" collection="bankInterfaceSerialOrderidList" separator=",">
-                                #{item}
-                            </foreach>
-                        </when>
-                        <otherwise>
-                            select temp.id from (SELECT 1 as id) temp  where temp.id =2
-                        </otherwise>
-                    </choose>
-                    )
+                    AND online.open_card_status = 5
                 </when>
                 <when test="serialStatus == 'process'">
-                    AND main.id in <!--  全部处理中才算处理中 -->
-                    (
-                    <choose>
-                        <when test="bankInterfaceSerialOrderidList != null and bankInterfaceSerialOrderidList.size() > 0">
-                            <foreach item="item" index="index" collection="bankInterfaceSerialOrderidList" separator=",">
-                                #{item}
-                            </foreach>
-                        </when>
-                        <otherwise>
-                            select temp.id from (SELECT 1 as id) temp  where temp.id =2
-                        </otherwise>
-                    </choose>
-                    )
+                    AND online.open_card_status = 6
                 </when>
                 <otherwise>
                     AND 1=2

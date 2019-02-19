@@ -433,6 +433,8 @@ public class ICBCApiRequest {
         private String fileNum;
         @NotEmpty
         private String customerId;
+
+        private Integer activeTimes;
     }
 
     /**
