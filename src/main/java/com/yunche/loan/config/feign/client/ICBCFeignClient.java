@@ -9,13 +9,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 //生产
-@FeignClient(name = "icbcFeignClient", url = "http://122.225.203.102:18090/", configuration = FeignConfig.class)
+//@FeignClient(name = "icbcFeignClient", url = "http://122.225.203.102:18090/", configuration = FeignConfig.class)
 
 //未使用
 //@FeignClient(name = "icbcFeignClient", url = "http://122.225.203.102:9030/", configuration = FeignConfig.class)
 
 //测试
-//@FeignClient(name = "iCBCFeignClient" ,url = "http://122.225.203.102:18080/",configuration = FeignConfig.class)
+@FeignClient(name = "iCBCFeignClient" ,url = "http://122.225.203.102:18080/",configuration = FeignConfig.class)
 
 //本地测试
 //@FeignClient(name = "iCBCFeignClient" ,url = "http://127.0.0.1:18080/",configuration = FeignConfig.class)
