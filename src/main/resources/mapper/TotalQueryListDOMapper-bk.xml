@@ -1,0 +1,3884 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yunche.loan.mapper.TotalQueryListDOMapper" >
+    <select id="selectTotalCusInfo" resultType="com.yunche.loan.domain.vo.TaskListVO" parameterType="com.yunche.loan.domain.query.TaskListQuery">
+
+        SELECT
+        loan.id                                 as id,
+        par.partner_code                        as partnerCode,
+        par.NAME                                as partner,
+        cus.`name`                              as customer,
+        cus.id_card                             as idCard,
+        cus.mobile                              as mobile,
+        base.bank                               as bank,
+        plan.loan_amount                        as loanAmount,
+        plan.bank_period_principal              as bankPeriodPrincipal,
+        remit.remit_amount                      as remitAmount,
+        node.usertask_remit_review_create_time  as remitTime,
+        emp.`name`							  as salesman,
+        depart.`name`							  as departmentName
+        FROM
+        loan_order loan
+        LEFT JOIN loan_base_info base ON base.id = loan.loan_base_info_id
+        LEFT JOIN loan_customer cus ON cus.id = loan.loan_customer_id
+        LEFT JOIN partner par ON par.id = base.partner_id
+        LEFT JOIN loan_financial_plan plan ON plan.id = loan.loan_financial_plan_id
+        LEFT JOIN current_node_manager node ON node.order_id = loan.id
+        LEFT JOIN loan_process process ON process.order_id = loan.id
+        left join remit_details remit on remit.id = loan.remit_details_id
+        left join employee emp on emp.id = base.salesman_id
+        left join department depart on depart.id = par.department_id
+        WHERE
+        process.financial_scheme = 1 and process.`order_status` =1
+        AND CASE WHEN #{maxGroupLevel}  = 0 THEN false
+        when #{maxGroupLevel} = 1 then 1 = 1
+        <if test="juniorIds != null and juniorIds.size() > 0">
+            and base.salesman_id in
+            <foreach item="item" index="index" collection="juniorIds" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        else true end
+
+        and case when #{maxGroupLevel} = 3 then 1=1
+        else 1=1
+        <if test="bizAreaIdList != null and bizAreaIdList.size() > 0">
+            and par.id in
+            <foreach item="item" index="index" collection="bizAreaIdList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="bankList != null and bankList.size() > 0">
+            and base.bank in
+            <foreach item="item" index="index" collection="bankList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        end
+
+        <if test="orderId != null">
+            AND loan.id = #{orderId}
+        </if>
+        <if test="customer != null and customer != ''">
+            AND cus.name LIKE CONCAT('%', #{customer} ,'%')
+        </if>
+        <if test="idCard != null">
+            AND cus.id_card = #{idCard}
+        </if>
+        <if test="partnerId != null">
+            AND par.id = #{partnerId}
+        </if>
+        <if test="salesmanId != null">
+            AND base.salesman_id = #{salesmanId}
+        </if>
+        <if test="bizAreaId != null">
+            AND
+            case
+            when (select level from base_area where area_id = #{bizAreaId}) = 0 then 1=1
+            when (select level from base_area where area_id = #{bizAreaId}) = 1 then base.area_id in (select area_id from base_area where parent_area_id = #{bizAreaId})
+            when (select level from base_area where area_id = #{bizAreaId}) = 2 then base.area_id = #{bizAreaId}
+            else 1=2
+            end
+        </if>
+        <if test="loanAmountType != null">
+            <if test="loanAmountType == 1">
+                AND base.loan_amount &lt;= 100000
+            </if>
+            <if test="loanAmountType == 2">
+                AND base.loan_amount &gt; 100000 AND base.loan_amount &lt;= 300000
+            </if>
+            <if test="loanAmountType == 3">
+                AND base.loan_amount &gt; 300000
+            </if>
+        </if>
+        <if test="minRemitAmount != null">
+            AND remit.remit_amount &gt;=  #{minRemitAmount}
+        </if>
+        <if test="maxRemitAmount != null">
+            AND remit.remit_amount &lt;= #{maxRemitAmount}
+        </if>
+        <if test="startRemitGmtCreate != null">
+            AND TO_DAYS(node.usertask_remit_review_create_time) &gt;= TO_DAYS(#{startRemitGmtCreate})
+        </if>
+        <if test="endRemitGmtCreate != null">
+            AND TO_DAYS(node.usertask_remit_review_create_time) &lt;= TO_DAYS(#{endRemitGmtCreate})
+        </if>
+    </select>
+    <select id="selectBankCreditPend" resultType="com.yunche.loan.domain.vo.TaskListVO" parameterType="com.yunche.loan.domain.query.TaskListQuery">
+        SELECT
+        loan.id           as id,
+        cus.NAME          as customer,
+        cus.id_card       as idCard,
+        emp.name          as salesman,
+        par.`name`        as partner,
+        par.partner_code  as partnerCode,
+        (#{taskDefinitionKey}) AS taskKey,
+        DATE_FORMAT(loan.gmt_create,'%Y-%m-%d %H:%i:%S')      AS orderGmtCreate,
+        jbds.cat                                              as creditDate,
+        loan.id                                               as taskId,
+        task.sendee_name                                      as receiveManName,
+        useGetTaskTypeText(#{taskDefinitionKey},process.bank_credit_record,process.order_status) AS taskTypeText,
+        base.bank                                             as bank
+        FROM
+        loan_order loan
+        LEFT JOIN loan_process process ON process.order_id = loan.id
+        LEFT JOIN `task_distribution` task ON task.`task_id` = loan.id and task.task_key = 'usertask_bank_credit_record'
+        LEFT JOIN `loan_customer` cus ON cus.id = loan.`loan_customer_id`
+        LEFT JOIN loan_base_info base ON base.id = loan.loan_base_info_id
+        LEFT JOIN employee emp ON emp.id = base.salesman_id
+        LEFT JOIN partner par ON par.id = base.partner_id
+        left join current_node_manager node on node.order_id = loan.id
+        left join bank_online_trans trans on trans.order_id = loan.id
+        left join (SELECT principal_cust_id, MAX(credit_apply_time) cat
+        FROM
+        (SELECT  allhis.customer_id,allhis.credit_apply_time,loan_customer.principal_cust_id FROM
+        (select customer_id,max(credit_apply_time) AS credit_apply_time FROM loan_credit_info_bank_his GROUP BY customer_id) allhis
+        LEFT JOIN loan_customer ON allhis.customer_id = loan_customer.id) qnmd GROUP BY principal_cust_id) jbds
+        ON jbds.principal_cust_id= loan.loan_customer_id
+        WHERE
+        process.credit_apply = 1
+        AND CASE WHEN #{maxGroupLevel}  = 0 THEN false
+        when #{maxGroupLevel} = 1 then 1 = 1
+        <if test="juniorIds != null and juniorIds.size() > 0">
+            and base.salesman_id in
+            <foreach item="item" index="index" collection="juniorIds" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        else true end
+
+        and case when #{maxGroupLevel} = 3 then 1=1
+        else 1=1
+        <if test="bizAreaIdList != null and bizAreaIdList.size() > 0">
+            and par.id in
+            <foreach item="item" index="index" collection="bizAreaIdList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="bankList != null and bankList.size() > 0">
+            and base.bank in
+            <foreach item="item" index="index" collection="bankList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        end
+        <if test="taskStatus != 0">
+            <choose>
+                <when test="pull == false">
+                    and task.taskId NOT IN ( ( SELECT distinct task_id FROM task_distribution where task_key =
+                    #{taskDefinitionKey} ) )
+                </when>
+                <otherwise>
+                    and
+                    case when #{maxGroupLevel} = 3 then 1=1
+                    when task.sendee is not null then
+                    case when task.sendee = #{employeeId} then 1=1 else 1=2 end
+                    else 1=1 end
+                </otherwise>
+            </choose>
+        </if>
+        <if test="orderId != null">
+            AND loan.id = #{orderId}
+        </if>
+        <if test="customer != null and customer != ''">
+            AND cus.name LIKE CONCAT('%', #{customer} ,'%')
+        </if>
+        <if test="loanBank != null">
+            AND base.bank = #{loanBank}
+        </if>
+        <if test="idCard != null">
+            AND cus.id_card = #{idCard}
+        </if>
+        <if test="salesmanId != null">
+            AND base.salesman_id = #{salesmanId}
+        </if>
+        <if test="partnerId != null">
+            AND par.id = #{partnerId}
+        </if>
+        <if test="bizAreaId != null">
+            AND
+            case
+            when (select level from base_area where area_id = #{bizAreaId}) = 0 then 1=1
+            when (select level from base_area where area_id = #{bizAreaId}) = 1 then base.area_id in (select area_id from base_area where parent_area_id = #{bizAreaId})
+            when (select level from base_area where area_id = #{bizAreaId}) = 2 then base.area_id = #{bizAreaId}
+            else 1=2
+            end
+        </if>
+        <if test="startCreditGmtCreate != null">
+            AND TO_DAYS(node.usertask_credit_apply_create_time) &gt;= TO_DAYS(#{startCreditGmtCreate})
+        </if>
+        <if test="endCreditGmtCreate != null">
+            AND TO_DAYS(node.usertask_credit_apply_create_time) &lt;= TO_DAYS(#{endCreditGmtCreate})
+        </if>
+        <if test="relevanceCustomerName != null">
+            AND
+            loan.id in
+            (
+            (select id from loan_order where loan_customer_id
+            in (select principal_cust_id from loan_customer where name = #{relevanceCustomerName})
+            and loan_customer_id not in (select id from loan_customer where name = #{relevanceCustomerName})
+            )
+            )
+        </if>
+        <if test = "taskStatus != null">
+            <choose>
+                <when test="taskStatus == 0">
+                    AND process.bank_credit_record != 0
+                    order by jbds.cat DESC ,process.bank_credit_record ASC
+                </when>
+                <otherwise>
+                    AND process.bank_credit_record = 2
+                    AND process.order_status = 1
+                    <if test="serialStatus != null">
+                        <choose>
+                            <when test="serialStatus == 'except'">
+                                AND 0 =
+                                IF
+                                ( ( SELECT count( 0 ) FROM bank_interface_serial WHERE trans_code = 'applyCredit' AND order_id = loan.id ) > 0, 1, 0 )
+                                AND IF
+                                (
+                                ( SELECT count( 1 ) FROM loan_customer WHERE principal_cust_id = loan.loan_customer_id AND cust_type IN ( 1, 2, 3 ) AND credit_exp_flag = 1 ) > 0,
+                                true,false)
+                            </when>
+                        </choose>
+                        <choose>
+                            <when test="serialStatus == 'export'">
+                                AND 0 =
+                                IF
+                                ( ( SELECT count( 0 ) FROM bank_interface_serial WHERE trans_code = 'applyCredit' AND order_id = loan.id ) > 0, 1, 0 )
+                                AND
+                                IF
+                                (
+                                ( SELECT count( 1 ) FROM loan_customer WHERE principal_cust_id = loan.loan_customer_id AND cust_type IN ( 1, 2, 3 ) AND credit_exp_flag = 1 ) > 0,
+                                false,
+                                true
+                                )
+                            </when>
+                        </choose>
+                        <choose>
+                            <when test="serialStatus == 'process'">
+                                AND trans.credit_status = 2
+                            </when>
+                        </choose>
+                        <choose>
+                            <when test="serialStatus == 'pending'">
+                                AND trans.credit_status = 4
+                            </when>
+                        </choose>
+                    </if>
+                    order by jbds.cat asc
+                </otherwise>
+            </choose>
+        </if>
+
+
+    </select>
+    <select id="selectSuccessBankOrder" parameterType="java.lang.String" resultType="java.lang.Long">
+    select DISTINCT serial.order_id from bank_interface_serial serial
+                        inner join
+                        (
+                          select SUBSTRING_INDEX(GROUP_CONCAT(serial_no order by request_time desc separator
+                          ','),',',1)
+                          as serial_no
+                          from bank_interface_serial GROUP BY trans_code,customer_id
+                        ) orderdata on orderdata.serial_no = serial.serial_no and serial.trans_code = #{transCode}
+                        left join loan_process process on process.order_id = serial.order_id
+                        where serial.api_status = 200 and serial.status in (0,1) and process.bank_credit_record =2 and serial.order_id not in
+                        (
+                          select DISTINCT serial.order_id from bank_interface_serial serial
+                          inner join
+                          (
+                            select SUBSTRING_INDEX(GROUP_CONCAT(serial_no order by request_time desc separator
+                            ','),',',1)
+                            as serial_no
+                            from bank_interface_serial GROUP BY trans_code,customer_id
+                          ) orderdata on orderdata.serial_no = serial.serial_no and serial.trans_code = #{transCode}
+                          left join loan_process process on process.order_id = serial.order_id
+                        where serial.api_status != 200 or serial.status not in (0,1) and process.bank_credit_record =2
+                        )
+
+  </select>
+    <select id="selectProcessBankOrder" parameterType="java.lang.String" resultType="java.lang.Long">
+    select DISTINCT serial.order_id from bank_interface_serial serial
+    inner join
+    (
+    select SUBSTRING_INDEX(GROUP_CONCAT(serial_no order by request_time desc separator
+    ','),',',1)
+    as serial_no
+    from bank_interface_serial GROUP BY trans_code,customer_id
+    ) orderdata on orderdata.serial_no = serial.serial_no and serial.trans_code = #{transCode}
+    left join loan_process process on process.order_id = serial.order_id
+    where serial.api_status = 200 and serial.status = 2 and process.bank_credit_record =2 and serial.order_id not in
+    (
+    select DISTINCT serial.order_id from bank_interface_serial serial
+    inner join
+    (
+    select SUBSTRING_INDEX(GROUP_CONCAT(serial_no order by request_time desc separator
+    ','),',',1)
+    as serial_no
+    from bank_interface_serial GROUP BY trans_code,customer_id
+    ) orderdata on orderdata.serial_no = serial.serial_no and serial.trans_code = #{transCode}
+    left join loan_process process on process.order_id = serial.order_id
+    where serial.api_status != 200 or serial.status not in (0,1,2,3) and process.bank_credit_record =2
+    )
+    </select>
+    <select id="selectApplyCredit"  resultType="com.yunche.loan.domain.vo.TaskListVO" parameterType="com.yunche.loan.domain.query.TaskListQuery">
+        SELECT
+        main.id,
+        customer.`name` AS customer,
+        customer.id_card AS idCard,
+        customer.mobile AS mobile,
+        employee.`name` AS salesman,
+        partner.`name` AS partner,
+        partner.partner_code     AS partnerCode,
+        main.gmt_create AS orderGmtCreate,
+        deputy.order_status AS orderStatus,
+        main.id  AS taskId,
+        base.bank AS bank
+        FROM
+        loan_order main
+        LEFT JOIN loan_process deputy ON main.id = deputy.order_id
+        LEFT JOIN `task_distribution` task ON task.`task_id` = main.id and task.task_key = 'usertask_bank_credit_record'
+        LEFT JOIN loan_base_info base ON base.id = main.loan_base_info_id
+        LEFT JOIN partner partner ON partner.id = base.partner_id
+        LEFT JOIN employee employee ON employee.id = base.salesman_id
+        LEFT JOIN loan_customer customer ON customer.id = main.loan_customer_id
+        left join (SELECT principal_cust_id, MAX(credit_apply_time) cat
+        FROM
+        (SELECT  allhis.customer_id,allhis.credit_apply_time,loan_customer.principal_cust_id FROM
+        (select customer_id,max(credit_apply_time) AS credit_apply_time FROM loan_credit_info_bank_his GROUP BY customer_id) allhis
+        LEFT JOIN loan_customer ON allhis.customer_id = loan_customer.id) qnmd GROUP BY principal_cust_id) jbds
+        ON jbds.principal_cust_id= main.loan_customer_id
+        WHERE
+        deputy.order_status = 1
+        AND  deputy.credit_apply = #{taskStatus}
+        AND CASE WHEN #{maxGroupLevel}  = 0 THEN false
+        when #{maxGroupLevel} = 1 then 1 = 1
+        <if test="juniorIds != null and juniorIds.size() > 0">
+            and base.salesman_id in
+            <foreach item="item" index="index" collection="juniorIds" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        else true end
+
+        and case when #{maxGroupLevel} = 3 then 1=1
+        else 1=1
+        <if test="bizAreaIdList != null and bizAreaIdList.size() > 0">
+            and partner.id in
+            <foreach item="item" index="index" collection="bizAreaIdList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="bankList != null and bankList.size() > 0">
+            and base.bank in
+            <foreach item="item" index="index" collection="bankList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        end
+        <if test="orderId != null">
+            AND main.id = #{orderId}
+        </if>
+        <if test="customer != null and customer != ''">
+            AND customer.name LIKE CONCAT('%', #{customer} ,'%')
+        </if>
+        <if test="relevanceCustomerName != null">
+            AND
+            main.id in
+            (
+            (select id from loan_order where loan_customer_id
+            in (select principal_cust_id from loan_customer where name = #{relevanceCustomerName})
+            and loan_customer_id not in (select id from loan_customer where name = #{relevanceCustomerName})
+            )
+            )
+        </if>
+        <if test="loanBank != null">
+            AND base.bank = #{loanBank}
+        </if>
+        <if test="idCard != null">
+            AND customer.id_card = #{idCard}
+        </if>
+        <if test="salesmanId != null">
+            AND base.salesman_id = #{salesmanId}
+        </if>
+        <if test="partnerId != null">
+            AND partner.id = #{partnerId}
+        </if>
+        <if test="bizAreaId != null">
+            AND
+            case
+            when (select level from base_area where area_id = #{bizAreaId}) = 0 then 1=1
+            when (select level from base_area where area_id = #{bizAreaId}) = 1 then base.area_id in (select area_id from base_area where parent_area_id = #{bizAreaId})
+            when (select level from base_area where area_id = #{bizAreaId}) = 2 then base.area_id = #{bizAreaId}
+            else 1=2
+            end
+        </if>
+        <choose>
+            <when test="taskStatus == 1">
+                order by jbds.cat desc
+            </when>
+            <otherwise>
+                order by main.gmt_create
+            </otherwise>
+        </choose>
+    </select>
+
+    <select id="selectCarGps" resultType="com.yunche.loan.domain.vo.TaskListVO" parameterType="com.yunche.loan.domain.query.TaskListQuery">
+        SELECT
+        loan.id                                 as id,
+        cus.`name`                              as customer,
+        cus.id_card                             as idCard,
+        emp.`name`							  							as salesman,
+        par.NAME                                as partner,
+        par.partner_code                        as partnerCode,
+        base.bank                               as bank,
+        car.car_type														as carType,
+        useGetSmallCarName ( car.car_detail_id ) AS carName,
+        car.gps_num 														 AS carGpsNum,
+        vehicle.license_plate_number 						 AS licensePlateNumber,
+        useGetTaskTypeText(#{taskDefinitionKey},process.install_gps,process.order_status) AS taskTypeText
+
+        FROM
+        loan_order loan
+        LEFT JOIN loan_base_info base ON base.id = loan.loan_base_info_id
+        LEFT JOIN loan_customer cus ON cus.id = loan.loan_customer_id
+        LEFT JOIN partner par ON par.id = base.partner_id
+        left join employee emp on emp.id = base.salesman_id
+        left join loan_car_info car on car.id = loan.loan_car_info_id
+        LEFT JOIN vehicle_information vehicle ON vehicle.id = loan.vehicle_information_id
+        left join loan_process process on process.order_id = loan.id
+        left join current_node_manager node on node.order_id = loan.id
+        where
+        case when #{taskStatus} = 0 then process.install_gps != 0
+        else process.install_gps = #{taskStatus} and process.order_status = 1 end
+        AND car.gps_num &gt; 0
+        AND CASE WHEN #{maxGroupLevel}  = 0 THEN false
+        when #{maxGroupLevel} = 1 then 1 = 1
+        <if test="juniorIds != null and juniorIds.size() > 0">
+            and base.salesman_id in
+            <foreach item="item" index="index" collection="juniorIds" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        else true end
+
+        and case when #{maxGroupLevel} = 3 then 1=1
+        else 1=1
+        <if test="bizAreaIdList != null and bizAreaIdList.size() > 0">
+            and par.id in
+            <foreach item="item" index="index" collection="bizAreaIdList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="bankList != null and bankList.size() > 0">
+            and base.bank in
+            <foreach item="item" index="index" collection="bankList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        end
+        <if test="orderId != null">
+            AND loan.id = #{orderId}
+        </if>
+        <if test="customer != null and customer != ''">
+            AND cus.name LIKE CONCAT('%', #{customer} ,'%')
+        </if>
+        <if test="idCard != null">
+            AND cus.id_card = #{idCard}
+        </if>
+        <if test="partnerId != null">
+            AND par.id = #{partnerId}
+        </if>
+        <if test="salesmanId != null">
+            AND base.salesman_id = #{salesmanId}
+        </if>
+        <if test="bizAreaId != null">
+            AND
+            case
+            when (select level from base_area where area_id = #{bizAreaId}) = 0 then 1=1
+            when (select level from base_area where area_id = #{bizAreaId}) = 1 then base.area_id in (select area_id from base_area where parent_area_id = #{bizAreaId})
+            when (select level from base_area where area_id = #{bizAreaId}) = 2 then base.area_id = #{bizAreaId}
+            else 1=2
+            end
+        </if>
+        order by node.usertask_loan_apply_create_time
+    </select>
+
+    <select id="selectLoanInfoRecordList" resultType="com.yunche.loan.domain.vo.TaskListVO" parameterType="com.yunche.loan.domain.query.TaskListQuery">
+        SELECT
+        main.id,
+        customer.`name` AS customer,
+        customer.id_card AS idCard,
+        customer.mobile AS mobile,
+        employee.`name` AS salesman,
+        partner.`name` AS partner,
+        partner.partner_code     AS partnerCode,
+        main.id  AS taskId,
+        base.bank as bank,
+        depart.`name`as departmentName
+        FROM
+        loan_order main
+        LEFT JOIN loan_process deputy ON main.id = deputy.order_id
+        LEFT JOIN loan_base_info base ON base.id = main.loan_base_info_id
+        LEFT JOIN partner partner ON partner.id = base.partner_id
+        LEFT JOIN employee employee ON employee.id = base.salesman_id
+        LEFT JOIN loan_customer customer ON customer.id = main.loan_customer_id
+        left join department depart on depart.id = partner.department_id
+        WHERE
+
+        case when #{taskStatus} =0 then deputy.loan_info_record !=0
+        else deputy.loan_info_record = #{taskStatus} AND deputy.order_status = 1
+        end
+        AND CASE WHEN #{maxGroupLevel}  = 0 THEN false
+        when #{maxGroupLevel} = 1 then 1 = 1
+        <if test="juniorIds != null and juniorIds.size() > 0">
+            and base.salesman_id in
+            <foreach item="item" index="index" collection="juniorIds" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        else true end
+
+        and case when #{maxGroupLevel} = 3 then 1=1
+        else 1=1
+        <if test="bizAreaIdList != null and bizAreaIdList.size() > 0">
+            and partner.id in
+            <foreach item="item" index="index" collection="bizAreaIdList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="bankList != null and bankList.size() > 0">
+            and base.bank in
+            <foreach item="item" index="index" collection="bankList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        end
+        <if test="orderId != null">
+            AND main.id = #{orderId}
+        </if>
+        <if test="customer != null and customer != ''">
+            AND customer.name LIKE CONCAT('%', #{customer} ,'%')
+        </if>
+        <if test="partnerId != null">
+            AND partner.id = #{partnerId}
+        </if>
+        <if test="salesmanId != null">
+            AND base.salesman_id = #{salesmanId}
+        </if>
+        order by main.gmt_create
+    </select>
+
+    <select id="selectVisitDoor" resultType="com.yunche.loan.domain.vo.TaskListVO" parameterType="com.yunche.loan.domain.query.TaskListQuery">
+        select
+        loan.id       as id,
+        par.partner_code     as partnerCode,
+        par.name             as partner,
+        cus.`name`      	 as customer,
+        cus.id_card          as idCard,
+        base.bank            as bank,
+        employee.`name`      AS salesman,
+        useGetTaskTypeText(#{taskDefinitionKey},process.visit_verify,process.order_status) AS taskTypeText
+
+        from loan_order loan
+        left join loan_process process on process.order_id = loan.id
+        left join loan_base_info base on base.id = loan.loan_base_info_id
+        left join partner par on par.id = base.partner_id
+        left join loan_customer cus on cus.id = loan.loan_customer_id
+        LEFT JOIN employee employee ON employee.id = base.salesman_id
+        left join current_node_manager node on node.order_id = loan.id
+        where  case when #{taskStatus} = 0 then process.visit_verify != 0
+        when #{taskStatus} = 2 then (process.visit_verify = 2 or process.visit_verify = 3) and process.order_status = 1
+        else process.visit_verify = #{taskStatus} and process.order_status = 1 end
+        AND CASE WHEN #{maxGroupLevel}  = 0 THEN false
+        when #{maxGroupLevel} = 1 then 1 = 1
+        <if test="juniorIds != null and juniorIds.size() > 0">
+            and base.salesman_id in
+            <foreach item="item" index="index" collection="juniorIds" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        else true end
+
+        and case when #{maxGroupLevel} = 3 then 1=1
+        else 1=1
+        <if test="bizAreaIdList != null and bizAreaIdList.size() > 0">
+            and par.id in
+            <foreach item="item" index="index" collection="bizAreaIdList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="bankList != null and bankList.size() > 0">
+            and base.bank in
+            <foreach item="item" index="index" collection="bankList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        end
+        <if test="orderId != null">
+            AND loan.id = #{orderId}
+        </if>
+        <if test="customer != null and customer != ''">
+            AND cus.name LIKE CONCAT('%', #{customer} ,'%')
+        </if>
+        <if test="idCard != null">
+            AND cus.id_card = #{idCard}
+        </if>
+        <if test="partnerId != null">
+            AND par.id = #{partnerId}
+        </if>
+        <if test="salesmanId != null">
+            AND base.salesman_id = #{salesmanId}
+        </if>
+        <if test="loanBank != null">
+            AND base.bank = #{loanBank}
+        </if>
+        <if test="taskStatus == 0">
+            order by loan.id desc
+        </if>
+    </select>
+
+    <select id="selectCarInsurance" resultType="com.yunche.loan.domain.vo.TaskListVO" parameterType="com.yunche.loan.domain.query.TaskListQuery">
+        select
+        loan.id       as id,
+        par.partner_code     as partnerCode,
+        par.name             as partner,
+        cus.`name`      		 as customer,
+        cus.id_card          as idCard,
+        base.bank            as bank,
+        useGetTaskTypeText(#{taskDefinitionKey},process.car_insurance,process.order_status) AS taskTypeText
+
+        from loan_order loan
+        left join loan_process process on process.order_id = loan.id
+        left join loan_base_info base on base.id = loan.loan_base_info_id
+        left join partner par on par.id = base.partner_id
+        left join loan_customer cus on cus.id = loan.loan_customer_id
+        left join current_node_manager node on node.order_id = loan.id
+        where case when #{taskStatus} = 0 then process.car_insurance != 0
+        else process.car_insurance = #{taskStatus} and process.order_status = 1 end
+        AND CASE WHEN #{maxGroupLevel}  = 0 THEN false
+        when #{maxGroupLevel} = 1 then 1 = 1
+        <if test="juniorIds != null and juniorIds.size() > 0">
+            and base.salesman_id in
+            <foreach item="item" index="index" collection="juniorIds" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        else true end
+
+        and case when #{maxGroupLevel} = 3 then 1=1
+        else 1=1
+        <if test="bizAreaIdList != null and bizAreaIdList.size() > 0">
+            and par.id in
+            <foreach item="item" index="index" collection="bizAreaIdList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="bankList != null and bankList.size() > 0">
+            and base.bank in
+            <foreach item="item" index="index" collection="bankList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        end
+        <if test="orderId != null">
+            AND loan.id = #{orderId}
+        </if>
+        <if test="customer != null and customer != ''">
+            AND cus.name LIKE CONCAT('%', #{customer} ,'%')
+        </if>
+        <if test="idCard != null">
+            AND cus.id_card = #{idCard}
+        </if>
+        <if test="partnerId != null">
+            AND par.id = #{partnerId}
+        </if>
+        <if test="salesmanId != null">
+            AND base.salesman_id = #{salesmanId}
+        </if>
+        <if test="loanBank != null">
+            AND base.bank = #{loanBank}
+        </if>
+        order by node.usertask_loan_apply_create_time
+    </select>
+
+    <select id="selectVehicleInformationList" resultType="com.yunche.loan.domain.vo.TaskListVO" parameterType="com.yunche.loan.domain.query.TaskListQuery">
+        SELECT
+        main.id,
+        customer.`name` AS customer,
+        customer.id_card AS idCard,
+        customer.mobile AS mobile,
+        employee.`name` AS salesman,
+        partner.`name` AS partner,
+        main.id  AS taskId,
+        base.bank AS bank,
+        partner.partner_code AS partnerCode,
+        deputy.vehicle_information AS taskStatus
+        FROM
+        loan_order main
+        LEFT JOIN loan_process deputy ON main.id = deputy.order_id
+        LEFT JOIN loan_base_info base ON base.id = main.loan_base_info_id
+        LEFT JOIN partner partner ON partner.id = base.partner_id
+        LEFT JOIN employee employee ON employee.id = base.salesman_id
+        LEFT JOIN loan_customer customer ON customer.id = main.loan_customer_id
+        left join current_node_manager node on node.order_id = main.id
+        WHERE
+
+        case when #{taskStatus} =0 then deputy.vehicle_information !=0
+        else deputy.vehicle_information= #{taskStatus} and deputy.`order_status` = 1
+        end
+        AND CASE WHEN #{maxGroupLevel}  = 0 THEN false
+        when #{maxGroupLevel} = 1 then 1 = 1
+        <if test="juniorIds != null and juniorIds.size() > 0">
+            and base.salesman_id in
+            <foreach item="item" index="index" collection="juniorIds" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        else true end
+
+        and case when #{maxGroupLevel} = 3 then 1=1
+        else 1=1
+        <if test="bizAreaIdList != null and bizAreaIdList.size() > 0">
+            and partner.id in
+            <foreach item="item" index="index" collection="bizAreaIdList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="bankList != null and bankList.size() > 0">
+            and base.bank in
+            <foreach item="item" index="index" collection="bankList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        end
+        <if test="orderId != null">
+            AND main.id = #{orderId}
+        </if>
+        <if test="customer != null and customer != ''">
+            AND customer.name LIKE CONCAT('%', #{customer} ,'%')
+        </if>
+        <if test="idCard != null">
+            AND customer.id_card = #{idCard}
+        </if>
+        <if test="partnerId != null">
+            AND partner.id = #{partnerId}
+        </if>
+        <if test="salesmanId != null">
+            AND base.salesman_id = #{salesmanId}
+        </if>
+        <if test="loanBank != null">
+            AND base.bank = #{loanBank}
+        </if>
+        <if test="startCreditGmtCreate != null">
+            AND TO_DAYS(node.usertask_credit_apply_create_time) &gt;= TO_DAYS(#{startCreditGmtCreate})
+        </if>
+        <if test="endCreditGmtCreate != null">
+            AND TO_DAYS(node.usertask_credit_apply_create_time) &lt;= TO_DAYS(#{endCreditGmtCreate})
+        </if>
+        order by main.gmt_create
+    </select>
+
+    <select id="selectFinancialSchemeModifyApplyList" resultType="com.yunche.loan.domain.vo.TaskListVO" parameterType="com.yunche.loan.domain.query.TaskListQuery">
+        SELECT
+        main.id,
+        customer.`name` AS customer,
+        customer.id_card AS idCard,
+        customer.mobile AS mobile,
+        employee.`name` AS salesman,
+        partner.`name` AS partner,
+        partner.partner_code     AS partnerCode,
+        main.id  AS taskId,
+        base.bank AS bank,
+        join_his.id   AS his_id,
+        CASE
+        WHEN join_his.status  = 1  THEN
+        "已提交"
+        WHEN join_his.status  = 2  THEN
+        "未提交"
+        WHEN join_his.status  = 3  THEN
+        "已打回"
+        ELSE
+        "状态异常"
+        END    AS taskTypeText,
+        join_his.status AS taskStatus
+        FROM
+        loan_financial_plan_temp_his join_his
+        INNER JOIN loan_order main   on main.id          = join_his.order_id
+        LEFT JOIN loan_base_info base ON base.id = main.loan_base_info_id
+        LEFT JOIN partner partner ON partner.id = base.partner_id
+        LEFT JOIN employee employee ON employee.id = base.salesman_id
+        LEFT JOIN loan_customer customer ON customer.id = main.loan_customer_id
+        left join current_node_manager node on node.order_id = main.id
+        WHERE 1=1 AND
+        case when #{taskStatus} = 0 then join_his.status !=0
+        else join_his.status = #{taskStatus} end
+
+        AND CASE WHEN #{maxGroupLevel}  = 0 THEN false
+        when #{maxGroupLevel} = 1 then 1 = 1
+        <if test="juniorIds != null and juniorIds.size() > 0">
+            and base.salesman_id in
+            <foreach item="item" index="index" collection="juniorIds" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        else true end
+
+        and case when #{maxGroupLevel} = 3 then 1=1
+        else 1=1
+        <if test="bizAreaIdList != null and bizAreaIdList.size() > 0">
+            and partner.id in
+            <foreach item="item" index="index" collection="bizAreaIdList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="bankList != null and bankList.size() > 0">
+            and base.bank in
+            <foreach item="item" index="index" collection="bankList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        end
+        <if test="orderId != null">
+            AND main.id = #{orderId}
+        </if>
+        <if test="customer != null and customer != ''">
+            AND customer.name LIKE CONCAT('%', #{customer} ,'%')
+        </if>
+        <if test="partnerId != null">
+            AND partner.id = #{partnerId}
+        </if>
+        <if test="salesmanId != null">
+            AND base.salesman_id = #{salesmanId}
+        </if>
+        <if test="loanBank != null">
+            AND base.bank = #{loanBank}
+        </if>
+        order by main.gmt_create
+    </select>
+
+
+    <select id="selectSupplementInfo" resultType="com.yunche.loan.domain.vo.TaskListVO" parameterType="com.yunche.loan.domain.query.TaskListQuery">
+        select
+        loan.id       as id,
+        par.partner_code     as partnerCode,
+        par.name             as partner,
+        cus.`name`      		 as customer,
+        cus.id_card          as idCard,
+        base.bank            as bank,
+        supplement.id        as supplementOrderId,
+        supplement.type								as supplementType,
+        useSupplementTypeTxt(supplement.type)        AS supplementTypeText,
+        supplement.status                            AS taskStatus
+
+        from loan_order loan
+        left join loan_process process on process.order_id = loan.id
+        left join loan_base_info base on base.id = loan.loan_base_info_id
+        left join partner par on par.id = base.partner_id
+        left join loan_customer cus on cus.id = loan.loan_customer_id
+        left join loan_info_supplement supplement on supplement.order_id = loan.id
+        left join current_node_manager node on node.order_id = loan.id
+        where   case when #{taskStatus} = 0 then supplement.status  != 0
+        else supplement.status = #{taskStatus} and process.order_status = 1 end
+        AND CASE WHEN #{maxGroupLevel}  = 0 THEN false
+        when #{maxGroupLevel} = 1 then 1 = 1
+        <if test="juniorIds != null and juniorIds.size() > 0">
+            and base.salesman_id in
+            <foreach item="item" index="index" collection="juniorIds" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        else true end
+
+        and case when #{maxGroupLevel} = 3 then 1=1
+        else 1=1
+        <if test="bizAreaIdList != null and bizAreaIdList.size() > 0">
+            and par.id in
+            <foreach item="item" index="index" collection="bizAreaIdList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="bankList != null and bankList.size() > 0">
+            and base.bank in
+            <foreach item="item" index="index" collection="bankList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        end
+        <if test="orderId != null">
+            AND loan.id = #{orderId}
+        </if>
+        <if test="customer != null and customer != ''">
+            AND cus.name LIKE CONCAT('%', #{customer} ,'%')
+        </if>
+        <if test="idCard != null">
+            AND cus.id_card = #{idCard}
+        </if>
+        <if test="partnerId != null">
+            AND par.id = #{partnerId}
+        </if>
+        <if test="salesmanId != null">
+            AND base.salesman_id = #{salesmanId}
+        </if>
+        <if test="supplementType != null">
+            AND supplement.type = #{supplementType}
+        </if>
+        order by node.usertask_loan_apply_create_time
+    </select>
+    <select id="selectBusinessPay" resultType="com.yunche.loan.domain.vo.TaskListVO" parameterType="com.yunche.loan.domain.query.TaskListQuery">
+        select
+        loan.id       as id,
+        par.partner_code     as partnerCode,
+        par.name             as partner,
+        cus.`name`      		 as customer,
+        cus.id_card          as idCard,
+        base.bank            as bank,
+        useGetTaskTypeText(#{taskDefinitionKey},process.business_pay,process.order_status) AS taskTypeText
+
+        from loan_order loan
+        left join loan_process process on process.order_id = loan.id
+        left join loan_base_info base on base.id = loan.loan_base_info_id
+        left join partner par on par.id = base.partner_id
+        left join loan_customer cus on cus.id = loan.loan_customer_id
+        left join current_node_manager node on node.order_id = loan.id
+        where case when #{taskStatus} = 0 then process.business_pay != 0
+        else process.business_pay = #{taskStatus} and process.order_status = 1 end
+        AND CASE WHEN #{maxGroupLevel}  = 0 THEN false
+        when #{maxGroupLevel} = 1 then 1 = 1
+        <if test="juniorIds != null and juniorIds.size() > 0">
+            and base.salesman_id in
+            <foreach item="item" index="index" collection="juniorIds" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        else true end
+
+        and case when #{maxGroupLevel} = 3 then 1=1
+        else 1=1
+        <if test="bizAreaIdList != null and bizAreaIdList.size() > 0">
+            and par.id in
+            <foreach item="item" index="index" collection="bizAreaIdList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="bankList != null and bankList.size() > 0">
+            and base.bank in
+            <foreach item="item" index="index" collection="bankList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        end
+        <if test="orderId != null">
+            AND loan.id = #{orderId}
+        </if>
+        <if test="customer != null and customer != ''">
+            AND cus.name LIKE CONCAT('%', #{customer} ,'%')
+        </if>
+        <if test="idCard != null">
+            AND cus.id_card = #{idCard}
+        </if>
+        <if test="partnerId != null">
+            AND par.id = #{partnerId}
+        </if>
+        <if test="salesmanId != null">
+            AND base.salesman_id = #{salesmanId}
+        </if>
+        <if test="loanAmountType != null">
+            <if test="loanAmountType == 1">
+                AND base.loan_amount &lt;= 100000
+            </if>
+            <if test="loanAmountType == 2">
+                AND base.loan_amount &gt; 100000 AND base.loan_amount &lt;= 300000
+            </if>
+            <if test="loanAmountType == 3">
+                AND base.loan_amount &gt; 300000
+            </if>
+        </if>
+        <if test="bizAreaId != null">
+            AND
+            case
+            when (select level from base_area where area_id = #{bizAreaId}) = 0 then 1=1
+            when (select level from base_area where area_id = #{bizAreaId}) = 1 then base.area_id in (select area_id from base_area where parent_area_id = #{bizAreaId})
+            when (select level from base_area where area_id = #{bizAreaId}) = 2 then base.area_id = #{bizAreaId}
+            else 1=2
+            end
+        </if>
+        order by node.usertask_loan_apply_create_time
+
+    </select>
+
+    <select id="selectBusinessReviewList" resultType="com.yunche.loan.domain.vo.TaskListVO" parameterType="com.yunche.loan.domain.query.TaskListQuery">
+        SELECT
+        main.id,
+        customer.`name` AS customer,
+        customer.id_card AS idCard,
+        customer.mobile AS mobile,
+        employee.`name` AS salesman,
+        partner.`name` AS partner,
+        partner.partner_code     as partnerCode,
+        main.id  AS taskId,
+        base.bank AS bank
+        FROM
+        loan_order main
+        LEFT JOIN loan_process deputy ON main.id = deputy.order_id
+        LEFT JOIN loan_base_info base ON base.id = main.loan_base_info_id
+        LEFT JOIN partner partner ON partner.id = base.partner_id
+        LEFT JOIN employee employee ON employee.id = base.salesman_id
+        LEFT JOIN loan_customer customer ON customer.id = main.loan_customer_id
+        left join current_node_manager node on node.order_id = main.id
+        WHERE
+        case when #{taskStatus} =0 then deputy.business_review !=0
+        else deputy.business_review = #{taskStatus} and deputy.order_status=1 end
+        AND CASE WHEN #{maxGroupLevel}  = 0 THEN false
+        when #{maxGroupLevel} = 1 then 1 = 1
+        <if test="juniorIds != null and juniorIds.size() > 0">
+            and base.salesman_id in
+            <foreach item="item" index="index" collection="juniorIds" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        else true end
+
+        and case when #{maxGroupLevel} = 3 then 1=1
+        else 1=1
+        <if test="bizAreaIdList != null and bizAreaIdList.size() > 0">
+            and partner.id in
+            <foreach item="item" index="index" collection="bizAreaIdList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="bankList != null and bankList.size() > 0">
+            and base.bank in
+            <foreach item="item" index="index" collection="bankList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        end
+        <if test="orderId != null">
+            AND main.id = #{orderId}
+        </if>
+        <if test="customer != null and customer != ''">
+            AND customer.name LIKE CONCAT('%', #{customer} ,'%')
+        </if>
+        <if test="partnerId != null">
+            AND partner.id = #{partnerId}
+        </if>
+        <if test="salesmanId != null">
+            AND base.salesman_id = #{salesmanId}
+        </if>
+        <if test="loanBank != null">
+            AND base.bank = #{loanBank}
+        </if>
+        order by main.gmt_create
+    </select>
+    <select id="selectLoanReview" resultType="com.yunche.loan.domain.vo.TaskListVO" parameterType="com.yunche.loan.domain.query.TaskListQuery">
+        SELECT
+        loan.id           as id,
+        cus.NAME          as customer,
+        cus.id_card       as idCard,
+        emp.name          as salesman,
+        par.`name`        as partner,
+        par.partner_code     as partnerCode,
+        loan.id                                               as taskId,
+        task.sendee_name                                      as receiveManName,
+        useGetTaskTypeText(#{taskDefinitionKey},process.loan_review,process.order_status) AS taskTypeText,
+        base.bank                                             as bank
+        FROM
+        loan_order loan
+        LEFT JOIN loan_process process ON process.order_id = loan.id
+        LEFT JOIN `task_distribution` task ON task.`task_id` = loan.id and task.task_key = 'usertask_loan_review'
+        LEFT JOIN `loan_customer` cus ON cus.id = loan.`loan_customer_id`
+        LEFT JOIN loan_base_info base ON base.id = loan.loan_base_info_id
+        LEFT JOIN employee emp ON emp.id = base.salesman_id
+        LEFT JOIN partner par ON par.id = base.partner_id
+        left join current_node_manager node on node.order_id = loan.id
+        where case when #{taskStatus} = 0 then process.loan_review != 0
+        else process.loan_review = #{taskStatus} and process.order_status = 1 end
+        AND CASE WHEN #{maxGroupLevel}  = 0 THEN false
+        when #{maxGroupLevel} = 1 then 1 = 1
+        <if test="juniorIds != null and juniorIds.size() > 0">
+            and base.salesman_id in
+            <foreach item="item" index="index" collection="juniorIds" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        else true end
+
+        and case when #{maxGroupLevel} = 3 then 1=1
+        else 1=1
+        <if test="bizAreaIdList != null and bizAreaIdList.size() > 0">
+            and par.id in
+            <foreach item="item" index="index" collection="bizAreaIdList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="bankList != null and bankList.size() > 0">
+            and base.bank in
+            <foreach item="item" index="index" collection="bankList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        end
+        <if test="orderId != null">
+            AND loan.id = #{orderId}
+        </if>
+        <if test="customer != null and customer != ''">
+            AND cus.name LIKE CONCAT('%', #{customer} ,'%')
+        </if>
+        <if test="idCard != null">
+            AND cus.id_card = #{idCard}
+        </if>
+        <if test="partnerId != null">
+            AND par.id = #{partnerId}
+        </if>
+        <if test="salesmanId != null">
+            AND base.salesman_id = #{salesmanId}
+        </if>
+        <if test="loanAmountType != null">
+            <if test="loanAmountType == 1">
+                AND base.loan_amount &lt;= 100000
+            </if>
+            <if test="loanAmountType == 2">
+                AND base.loan_amount &gt; 100000 AND base.loan_amount &lt;= 300000
+            </if>
+            <if test="loanAmountType == 3">
+                AND base.loan_amount &gt; 300000
+            </if>
+        </if>
+        <if test="bizAreaId != null">
+            AND
+            case
+            when (select level from base_area where area_id = #{bizAreaId}) = 0 then 1=1
+            when (select level from base_area where area_id = #{bizAreaId}) = 1 then base.area_id in (select area_id from base_area where parent_area_id = #{bizAreaId})
+            when (select level from base_area where area_id = #{bizAreaId}) = 2 then base.area_id = #{bizAreaId}
+            else 1=2
+            end
+        </if>
+        <if test="loanBank != null">
+            AND base.bank = #{loanBank}
+        </if>
+        <if test="startLoanGmtCreate != null">
+            AND TO_DAYS(node.usertask_loan_apply_create_time) &gt;= TO_DAYS(#{startLoanGmtCreate})
+        </if>
+        <if test="endLoanGmtCreate != null">
+            AND TO_DAYS(node.usertask_loan_apply_create_time) &lt;= TO_DAYS(#{endLoanGmtCreate})
+        </if>
+        order by node.usertask_loan_apply_create_time
+    </select>
+    <select id="selectRemitReview" resultType="com.yunche.loan.domain.vo.TaskListVO" parameterType="com.yunche.loan.domain.query.TaskListQuery">
+        select
+        loan.id       as id,
+        par.partner_code     as partnerCode,
+        par.name             as partner,
+        cus.`name`      		 as customer,
+        cus.id_card          as idCard,
+        base.bank            as bank,
+        loan.id             as       taskId,
+        useGetTaskTypeText(#{taskDefinitionKey},process.remit_review,process.order_status) AS taskTypeText
+
+        from loan_order loan
+        left join loan_process process on process.order_id = loan.id
+        left join loan_base_info base on base.id = loan.loan_base_info_id
+        left join partner par on par.id = base.partner_id
+        left join loan_customer cus on cus.id = loan.loan_customer_id
+        left join remit_details join_bp on join_bp.id = loan.remit_details_id
+        left join current_node_manager node on node.order_id = loan.id
+        where case when #{taskStatus} = 0 then process.remit_review != 0
+        else process.remit_review = #{taskStatus} and process.order_status = 1 end
+        <if test="remitSatus !=null and remitSatus !=''">
+            and case
+            when #{remitSatus} = 0 then join_bp.remit_status = 0
+            when #{remitSatus} = 1 then join_bp.remit_status = 1
+            when #{remitSatus} = 3 then join_bp.remit_status = 3
+            else 1=1
+            end
+        </if>
+        <if test="remitSatus == 0">
+            and  join_bp.remit_status = 0
+        </if>
+        AND CASE WHEN #{maxGroupLevel}  = 0 THEN false
+        when #{maxGroupLevel} = 1 then 1 = 1
+        <if test="juniorIds != null and juniorIds.size() > 0">
+            and base.salesman_id in
+            <foreach item="item" index="index" collection="juniorIds" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        else true end
+
+        and case when #{maxGroupLevel} = 3 then 1=1
+        else 1=1
+        <if test="bizAreaIdList != null and bizAreaIdList.size() > 0">
+            and par.id in
+            <foreach item="item" index="index" collection="bizAreaIdList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="bankList != null and bankList.size() > 0">
+            and base.bank in
+            <foreach item="item" index="index" collection="bankList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        end
+        <if test="orderId != null">
+            AND loan.id = #{orderId}
+        </if>
+        <if test="customer != null and customer != ''">
+            AND cus.name LIKE CONCAT('%', #{customer} ,'%')
+        </if>
+        <if test="idCard != null">
+            AND cus.id_card = #{idCard}
+        </if>
+        <if test="partnerId != null">
+            AND par.id = #{partnerId}
+        </if>
+        <if test="salesmanId != null">
+            AND base.salesman_id = #{salesmanId}
+        </if>
+        <if test="loanAmountType != null">
+            <if test="loanAmountType == 1">
+                AND base.loan_amount &lt;= 100000
+            </if>
+            <if test="loanAmountType == 2">
+                AND base.loan_amount &gt; 100000 AND base.loan_amount &lt;= 300000
+            </if>
+            <if test="loanAmountType == 3">
+                AND base.loan_amount &gt; 300000
+            </if>
+        </if>
+        <if test="bizAreaId != null">
+            AND
+            case
+            when (select level from base_area where area_id = #{bizAreaId}) = 0 then 1=1
+            when (select level from base_area where area_id = #{bizAreaId}) = 1 then base.area_id in (select area_id from base_area where parent_area_id = #{bizAreaId})
+            when (select level from base_area where area_id = #{bizAreaId}) = 2 then base.area_id = #{bizAreaId}
+            else 1=2
+            end
+        </if>
+        <if test="loanBank != null">
+            AND base.bank = #{loanBank}
+        </if>
+        <if test="startLoanGmtCreate != null">
+            AND TO_DAYS(node.usertask_loan_apply_create_time) &gt;= TO_DAYS(#{startLoanGmtCreate})
+        </if>
+        <if test="endLoanGmtCreate != null">
+            AND TO_DAYS(node.usertask_loan_apply_create_time) &lt;= TO_DAYS(#{endLoanGmtCreate})
+        </if>
+        <if test="startRemitGmtCreate != null">
+            AND TO_DAYS(node.usertask_remit_review_create_time) &gt;= TO_DAYS(#{startRemitGmtCreate})
+        </if>
+        <if test="endRemitGmtCreate != null">
+            AND TO_DAYS(node.usertask_remit_review_create_time) &lt;= TO_DAYS(#{endRemitGmtCreate})
+        </if>
+        <if test="minRemitAmount != null">
+            AND join_bp.remit_amount &gt;=  #{minRemitAmount}
+        </if>
+        <if test="maxRemitAmount != null">
+            AND join_bp.remit_amount &lt;= #{maxRemitAmount}
+        </if>
+        order by node.usertask_loan_apply_create_time
+    </select>
+
+    <select id="queryLoanApplyList" resultType="com.yunche.loan.domain.vo.TaskListVO" parameterType="com.yunche.loan.domain.query.TaskListQuery">
+
+        SELECT
+        main.id AS id,
+        loan_customer.`name` AS customer,
+        loan_customer.id_card AS idCard,
+        partner.name AS partner,
+        b.bank,
+        e.name as salesman,
+        useGetTaskTypeText(#{taskDefinitionKey},loan_process.loan_apply,loan_process.order_status) AS taskTypeText
+
+        FROM
+        loan_order main
+        LEFT JOIN loan_process ON main.id = loan_process.order_id
+        LEFT JOIN loan_customer ON main.loan_customer_id = loan_customer.id
+        LEFT JOIN loan_base_info b ON main.loan_base_info_id = b.id
+        LEFT JOIN employee e ON b.salesman_id = e.id
+        LEFT JOIN partner ON b.partner_id = partner.id
+        <where>
+            <if test="taskStatus !=null" >
+                AND
+                case when #{taskStatus} = 0 then loan_process.loan_apply in (1,2,3,12)
+                when #{taskStatus} = 2 then loan_process.loan_apply = 2 and loan_process.order_status = 1
+                when #{taskStatus} = 3 then loan_process.loan_apply = 3 and loan_process.order_status = 1
+                else 1=1
+                end
+            </if>
+            AND CASE WHEN #{maxGroupLevel}  = 0 THEN false
+            when #{maxGroupLevel} = 1 then 1 = 1
+            <if test="juniorIds != null and juniorIds.size() > 0">
+                and b.salesman_id in
+                <foreach item="item" index="index" collection="juniorIds" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            else true end
+            and
+            case when #{maxGroupLevel} = 3 then 1=1
+            else 1=1
+            <if test="bizAreaIdList != null and bizAreaIdList.size() > 0">
+                and
+                partner.id in
+                <foreach item="item" index="index" collection="bizAreaIdList" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="bankList != null and bankList.size() > 0">
+                and
+                b.bank in
+                <foreach item="item" index="index" collection="bankList" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            end
+            <if test="customer != null and customer!= '' ">
+                AND loan_customer.`name` LIKE CONCAT('%',#{customer},'%')
+            </if>
+            <if test="partnerId != null and partnerId != ''">
+                AND partner.id = #{partnerId}
+            </if>
+            <if test="salesmanId != null and salesmanId !=''">
+                AND e.id = #{salesmanId}
+            </if>
+            <if test="loanBank != null and loanBank != '' ">
+                AND b.bank = #{loanBank}
+            </if>
+            <if test="orderId != null and orderId != '' ">
+                AND main.id = #{orderId}
+            </if>
+            <if test="idCard != null and idCard != '' ">
+                AND loan_customer.id_card = #{idCard}
+            </if>
+        </where>
+        <choose>
+            <when test="taskStatus == 0">
+                order by main.gmt_create DESC
+            </when>
+            <when test="taskStatus == 1">
+                order by main.gmt_create DESC
+            </when>
+            <when test="taskStatus == 2">
+                order by main.gmt_create ASC
+            </when>
+            <when test="taskStatus == 3">
+                order by main.gmt_create ASC
+            </when>
+            <otherwise>
+                order by main.gmt_create DESC
+            </otherwise>
+        </choose>
+
+    </select>
+
+    <select id="queryMaterialManageList" resultType="com.yunche.loan.domain.vo.TaskListVO" parameterType="com.yunche.loan.domain.query.TaskListQuery">
+
+        SELECT
+        main.id AS id,
+        loan_customer.`name` AS customer,
+        loan_customer.id_card AS idCard,
+        loan_customer.mobile,
+        partner.name AS partner,
+        b.bank,
+        e.name as salesman,
+        useGetTaskTypeText(#{taskDefinitionKey},loan_process.material_manage,loan_process.order_status) AS taskTypeText
+
+        FROM
+        loan_order main
+        LEFT JOIN loan_process ON main.id = loan_process.order_id
+        LEFT JOIN loan_customer ON main.loan_customer_id = loan_customer.id
+        LEFT JOIN loan_base_info b ON main.loan_base_info_id = b.id
+        LEFT JOIN employee e ON b.salesman_id = e.id
+        LEFT JOIN partner ON b.partner_id = partner.id
+        <where>
+            <if test="taskStatus !=null" >
+                AND
+                case when #{taskStatus} = 0 then loan_process.material_manage in (1,2,3)
+                when #{taskStatus} = 2 then loan_process.material_manage = 2 and loan_process.order_status = 1
+                when #{taskStatus} = 3 then loan_process.material_manage = 3 and loan_process.order_status = 1
+                else 1=1
+                end
+            </if>
+            AND CASE WHEN #{maxGroupLevel}  = 0 THEN false
+            when #{maxGroupLevel} = 1 then 1 = 1
+            <if test="juniorIds != null and juniorIds.size() > 0">
+                and b.salesman_id in
+                <foreach item="item" index="index" collection="juniorIds" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            else true end
+            and
+            case when #{maxGroupLevel} = 3 then 1=1
+            else 1=1
+            <if test="bizAreaIdList != null and bizAreaIdList.size() > 0">
+                and
+                partner.id in
+                <foreach item="item" index="index" collection="bizAreaIdList" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="bankList != null and bankList.size() > 0">
+                and
+                b.bank in
+                <foreach item="item" index="index" collection="bankList" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            end
+            <if test="customer != null and customer!= '' ">
+                AND loan_customer.`name` LIKE CONCAT('%',#{customer},'%')
+            </if>
+            <if test="partnerId != null and partnerId != ''">
+                AND partner.id = #{partnerId}
+            </if>
+            <if test="salesmanId != null and salesmanId !=''">
+                AND e.id = #{salesmanId}
+            </if>
+            <if test="loanBank != null and loanBank != '' ">
+                AND b.bank = #{loanBank}
+            </if>
+            <if test="orderId != null and orderId != '' ">
+                AND main.id = #{orderId}
+            </if>
+            <if test="idCard != null and idCard != '' ">
+                AND loan_customer.id_card = #{idCard}
+            </if>
+        </where>
+        <choose>
+            <when test="taskStatus == 0">
+                order by main.gmt_create DESC
+            </when>
+            <when test="taskStatus == 1">
+                order by main.gmt_create DESC
+            </when>
+            <when test="taskStatus == 2">
+                order by main.gmt_create ASC
+            </when>
+            <when test="taskStatus == 3">
+                order by main.gmt_create ASC
+            </when>
+            <otherwise>
+                order by main.gmt_create DESC
+            </otherwise>
+        </choose>
+
+    </select>
+
+    <select id="queryMaterialPrintList" resultType="com.yunche.loan.domain.vo.TaskListVO" parameterType="com.yunche.loan.domain.query.TaskListQuery">
+
+        SELECT
+        main.id AS id,
+        loan_customer.`name` AS customer,
+        loan_customer.id_card AS idCard,
+        taskdis.status as taskDisStatus,
+        main.id as taskId,
+        taskdis.sendee_name as receiveManName,
+        (#{taskDefinitionKey}) AS taskKey,
+        loan_process.material_print_review as taskStatus,
+        loan_customer.mobile,
+        partner.name AS partner,
+        b.bank,
+        e.name as salesman,
+        useGetTaskTypeText(#{taskDefinitionKey},loan_process.material_print_review,loan_process.order_status) AS taskTypeText
+
+        FROM
+        loan_order main
+        LEFT JOIN loan_process ON main.id = loan_process.order_id
+        LEFT JOIN loan_customer ON main.loan_customer_id = loan_customer.id
+        LEFT JOIN loan_base_info b ON main.loan_base_info_id = b.id
+        LEFT JOIN employee e ON b.salesman_id = e.id
+        LEFT JOIN partner ON b.partner_id = partner.id
+        left join task_distribution taskdis on main.id = taskdis.task_id and taskdis.task_key = 'usertask_material_print_review'
+        <where>
+            <if test="taskStatus !=null" >
+                AND
+                case when #{taskStatus} = 0 then loan_process.material_print_review in (1,2,3)
+                when #{taskStatus} = 2 then loan_process.material_print_review = 2 and loan_process.order_status = 1
+                when #{taskStatus} = 3 then loan_process.material_print_review = 3 and loan_process.order_status = 1
+                else 1=1
+                end
+            </if>
+            AND CASE WHEN #{maxGroupLevel}  = 0 THEN false
+            when #{maxGroupLevel} = 1 then 1 = 1
+            <if test="juniorIds != null and juniorIds.size() > 0">
+                and b.salesman_id in
+                <foreach item="item" index="index" collection="juniorIds" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            else true end
+            and
+            case when #{maxGroupLevel} = 3 then 1=1
+            else 1=1
+            <if test="bizAreaIdList != null and bizAreaIdList.size() > 0">
+                and
+                partner.id in
+                <foreach item="item" index="index" collection="bizAreaIdList" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="bankList != null and bankList.size() > 0">
+                and
+                b.bank in
+                <foreach item="item" index="index" collection="bankList" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            end
+            <if test="taskStatus != 0">
+                <choose>
+                    <when test="pull == false">
+                        and taskdis.taskId NOT IN ( ( SELECT distinct task_id FROM task_distribution where task_key =
+                        #{taskDefinitionKey} ) )
+                    </when>
+                    <otherwise>
+                        and
+                        case when #{maxGroupLevel} = 3 then 1=1
+                        when taskdis.sendee is not null then
+                        case when taskdis.sendee = #{employeeId} then 1=1 else 1=2 end
+                        else 1=1 end
+                    </otherwise>
+                </choose>
+            </if>
+            <if test="customer != null and customer!= '' ">
+                AND loan_customer.`name` LIKE CONCAT('%',#{customer},'%')
+            </if>
+            <if test="partnerId != null and partnerId != ''">
+                AND partner.id = #{partnerId}
+            </if>
+            <if test="salesmanId != null and salesmanId !=''">
+                AND e.id = #{salesmanId}
+            </if>
+            <if test="loanBank != null and loanBank != '' ">
+                AND b.bank = #{loanBank}
+            </if>
+            <if test="orderId != null and orderId != '' ">
+                AND main.id = #{orderId}
+            </if>
+            <if test="idCard != null and idCard != '' ">
+                AND loan_customer.id_card = #{idCard}
+            </if>
+        </where>
+        <choose>
+            <when test="taskStatus == 0">
+                order by main.gmt_create DESC
+            </when>
+            <when test="taskStatus == 1">
+                order by main.gmt_create DESC
+            </when>
+            <when test="taskStatus == 2">
+                order by main.gmt_create ASC
+            </when>
+            <when test="taskStatus == 3">
+                order by main.gmt_create ASC
+            </when>
+            <otherwise>
+                order by main.gmt_create DESC
+            </otherwise>
+        </choose>
+
+    </select>
+
+    <select id="queryApplyLicensePlateDepositList" resultType="com.yunche.loan.domain.vo.TaskListVO" parameterType="com.yunche.loan.domain.query.TaskListQuery">
+
+        SELECT
+        main.id AS id,
+        loan_customer.`name` AS customer,
+        loan_customer.id_card AS idCard,
+        loan_car_info.car_type as carType,
+        vehicle_information.license_plate_number as licensePlateNumber,
+        partner.name AS partner,
+        partner.partner_code AS partnerCode,
+        b.bank,
+        e.name as salesman,
+        useGetTaskTypeText(#{taskDefinitionKey},loan_process.apply_license_plate_deposit_info,loan_process.order_status) AS taskTypeText
+
+        FROM
+        loan_order main
+        LEFT JOIN loan_process ON main.id = loan_process.order_id
+        LEFT JOIN loan_customer ON main.loan_customer_id = loan_customer.id
+        LEFT JOIN loan_base_info b ON main.loan_base_info_id = b.id
+        LEFT JOIN employee e ON b.salesman_id = e.id
+        LEFT JOIN partner ON b.partner_id = partner.id
+        LEFT JOIN loan_car_info ON main.loan_car_info_id = loan_car_info.id
+        LEFT JOIN vehicle_information ON main.vehicle_information_id = vehicle_information.id
+
+        <where>
+            <if test="taskStatus !=null" >
+                AND
+                case when #{taskStatus} = 0 then loan_process.apply_license_plate_deposit_info in (1,2,3)
+                when #{taskStatus} = 2 then loan_process.apply_license_plate_deposit_info = 2 and loan_process.order_status = 1
+                when #{taskStatus} = 3 then loan_process.apply_license_plate_deposit_info = 3 and loan_process.order_status = 1
+                else 1=1
+                end
+            </if>
+            AND CASE WHEN #{maxGroupLevel}  = 0 THEN false
+            when #{maxGroupLevel} = 1 then 1 = 1
+            <if test="juniorIds != null and juniorIds.size() > 0">
+                and b.salesman_id in
+                <foreach item="item" index="index" collection="juniorIds" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            else true end
+            and
+            case when #{maxGroupLevel} = 3 then 1=1
+            else 1=1
+            <if test="bizAreaIdList != null and bizAreaIdList.size() > 0">
+                and
+                partner.id in
+                <foreach item="item" index="index" collection="bizAreaIdList" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="bankList != null and bankList.size() > 0">
+                and
+                b.bank in
+                <foreach item="item" index="index" collection="bankList" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            end
+            <if test="customer != null and customer!= '' ">
+                AND loan_customer.`name` LIKE CONCAT('%',#{customer},'%')
+            </if>
+            <if test="partnerId != null and partnerId != ''">
+                AND partner.id = #{partnerId}
+            </if>
+            <if test="salesmanId != null and salesmanId !=''">
+                AND e.id = #{salesmanId}
+            </if>
+            <if test="loanBank != null and loanBank != '' ">
+                AND b.bank = #{loanBank}
+            </if>
+            <if test="orderId != null and orderId != '' ">
+                AND main.id = #{orderId}
+            </if>
+            <if test="idCard != null and idCard != '' ">
+                AND loan_customer.id_card = #{idCard}
+            </if>
+            <if test="bizAreaId != null">
+                AND
+                case
+                when (select level from base_area where area_id = #{bizAreaId}) = 0 then 1=1
+                when (select level from base_area where area_id = #{bizAreaId}) = 1 then b.area_id in (select area_id from base_area where parent_area_id = #{bizAreaId})
+                when (select level from base_area where area_id = #{bizAreaId}) = 2 then b.area_id = #{bizAreaId}
+                else 1=2
+                end
+            </if>
+        </where>
+        <choose>
+            <when test="taskStatus == 0">
+                order by main.gmt_create DESC
+            </when>
+            <when test="taskStatus == 1">
+                order by main.gmt_create DESC
+            </when>
+            <when test="taskStatus == 2">
+                order by main.gmt_create ASC
+            </when>
+            <when test="taskStatus == 3">
+                order by main.gmt_create ASC
+            </when>
+            <otherwise>
+                order by main.gmt_create DESC
+            </otherwise>
+        </choose>
+
+    </select>
+    <select id="selectApplyInstalment" resultType="com.yunche.loan.domain.vo.TaskListVO" parameterType="com.yunche.loan.domain.query.TaskListQuery">
+        SELECT
+        loan.id as id,
+        cus.`name` as customer,
+        cus.id_card as idCard,
+        cus.mobile as mobile,
+        emp.`name` as salesman,
+        par.`name` as partner,
+        base.bank as bank,
+        plan.loan_amount as loanAmount,
+        plan.bank_period_principal as bankPeriodPrincipal,
+        plan.loan_time as loanTime,
+        useGetTaskTypeText(#{taskDefinitionKey},process.apply_instalment,process.order_status) AS taskTypeText
+        FROM
+        loan_order loan
+        LEFT JOIN loan_process process ON process.order_id = loan.id
+        left join loan_customer cus on cus.id = loan.loan_customer_id
+        left join loan_base_info base on base.id =loan.loan_base_info_id
+        left join employee emp on emp.id = base.salesman_id
+        left join partner par on par.id = base.partner_id
+        left join loan_financial_plan plan on plan.id = loan.loan_financial_plan_id
+        left join bank_online_trans trans on trans.order_id = loan.id
+        WHERE
+        CASE WHEN #{maxGroupLevel}  = 0 THEN false
+        when #{maxGroupLevel} = 1 then 1 = 1
+        <if test="juniorIds != null and juniorIds.size() > 0">
+            and base.salesman_id in
+            <foreach item="item" index="index" collection="juniorIds" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        else true end
+
+        and case when #{maxGroupLevel} = 3 then 1=1
+        else 1=1
+        <if test="bizAreaIdList != null and bizAreaIdList.size() > 0">
+            and par.id in
+            <foreach item="item" index="index" collection="bizAreaIdList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="bankList != null and bankList.size() > 0">
+            and base.bank in
+            <foreach item="item" index="index" collection="bankList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        end
+        <if test="orderId != null">
+            AND loan.id = #{orderId}
+        </if>
+        <if test="customer != null and customer != ''">
+            AND cus.name LIKE CONCAT('%', #{customer} ,'%')
+        </if>
+        <if test="idCard != null">
+            AND cus.id_card = #{idCard}
+        </if>
+        <if test="partnerId != null">
+            AND par.id = #{partnerId}
+        </if>
+        <if test="salesmanId != null">
+            AND base.salesman_id = #{salesmanId}
+        </if>
+        <if test="bizAreaId != null">
+            AND
+            case
+            when (select level from base_area where area_id = #{bizAreaId}) = 0 then 1=1
+            when (select level from base_area where area_id = #{bizAreaId}) = 1 then base.area_id in (select area_id from base_area where parent_area_id = #{bizAreaId})
+            when (select level from base_area where area_id = #{bizAreaId}) = 2 then base.area_id = #{bizAreaId}
+            else 1=2
+            end
+        </if>
+        <if test="loanBank != null">
+            AND base.bank = #{loanBank}
+        </if>
+        <if test = "taskStatus != null">
+            <choose>
+                <when test="taskStatus == 0">
+                    AND process.apply_instalment != 0
+                </when>
+                <otherwise>
+                    and process.order_status = 1 and process.apply_instalment = 2
+                    <if test="serialStatus != null">
+                        <choose>
+                            <when test="serialStatus == 'except'">
+                                AND 0 =IF( ( SELECT count( 0 ) FROM bank_interface_serial WHERE trans_code = 'applydivigeneral'
+                                AND order_id = loan.id ) > 0, 1, 0 )
+                            </when>
+                        </choose>
+                        <choose>
+                            <when test="transCode == 'applydivigeneral'">
+                                <choose>
+                                    <when test="serialStatus == 'exception'">
+                                       and  trans.common_apply_status = 6
+                                    </when>
+                                    <when test="serialStatus == 'process'">
+                                        and trans.common_apply_status = 4
+                                    </when>
+                                    <when test="serialStatus == 'back'">
+                                       and trans.common_apply_status = 5
+                                    </when>
+                                </choose>
+                            </when>
+                            <when test="transCode == 'multimediaUpload'">
+                                <choose>
+                                    <when test="serialStatus == 'exception'">
+                                       and trans.multimedia_status = 6
+                                    </when>
+                                    <when test="serialStatus == 'process'">
+                                       and trans.multimedia_status = 4
+                                    </when>
+                                    <when test="serialStatus == 'back'">
+                                       and trans.multimedia_status = 5
+                                    </when>
+                                </choose>
+                            </when>
+                        </choose>
+                    </if>
+                </otherwise>
+            </choose>
+        </if>
+
+    </select>
+    <select id="selectApplyInstalmentException"  parameterType="java.lang.String" resultType="java.lang.Long">
+        select  DISTINCT serial.order_id from bank_interface_serial serial
+                        inner join
+                        (
+                          select SUBSTRING_INDEX(GROUP_CONCAT(serial_no order by request_time desc separator ','),',',1)
+                          as serial_no
+                          from bank_interface_serial GROUP BY trans_code,customer_id
+                        ) orderdata on orderdata.serial_no = serial.serial_no and serial.trans_code = #{transCode}
+                        where serial.api_status !=200 or serial.status not in (0,1,2,3)
+    </select>
+    <select id="selectApplyInstalmentProcess"  parameterType="java.lang.String" resultType="java.lang.Long">
+        select DISTINCT serial.order_id from bank_interface_serial serial
+                        inner join
+                        (
+                          select SUBSTRING_INDEX(GROUP_CONCAT(serial_no order by request_time desc separator
+                          ','),',',1)
+                          as serial_no
+                          from bank_interface_serial GROUP BY trans_code,customer_id
+                        ) orderdata on orderdata.serial_no = serial.serial_no and serial.trans_code = #{transCode}
+                        where serial.api_status = 200 and serial.status = 2
+    </select>
+    <select id="selectApplyInstalmentBack"  parameterType="java.lang.String" resultType="java.lang.Long">
+         select DISTINCT serial.order_id from bank_interface_serial serial
+                                inner join
+                                (
+                                select SUBSTRING_INDEX(GROUP_CONCAT(serial_no order by request_time desc separator
+                                ','),',',1)
+                                as serial_no
+                                from bank_interface_serial GROUP BY trans_code,customer_id
+                                ) orderdata on orderdata.serial_no = serial.serial_no and serial.trans_code = #{transCode}
+                                where serial.api_status = 200 and serial.status = 3
+    </select>
+
+    <select id="selectBankOpenCardList" resultType="com.yunche.loan.domain.vo.TaskListVO" parameterType="com.yunche.loan.domain.query.TaskListQuery">
+
+        SELECT
+        main.id,
+        customer.`name` AS customer,
+        customer.id_card AS idCard,
+        customer.mobile AS mobile,
+        employee.`name` AS salesman,
+        partner.`name` AS partner,
+        main.id  AS taskId,
+        base.bank AS bank,
+        partner.partner_code AS partnerCode,
+        deputy.bank_open_card AS taskStatus,
+        useGetTaskTypeText(#{taskDefinitionKey},deputy.bank_open_card,deputy.order_status) AS taskTypeText
+        FROM
+        loan_order main
+        LEFT JOIN loan_process deputy ON main.id = deputy.order_id
+        LEFT JOIN loan_base_info base ON base.id = main.loan_base_info_id
+        LEFT JOIN partner partner ON partner.id = base.partner_id
+        LEFT JOIN employee employee ON employee.id = base.salesman_id
+        LEFT JOIN loan_customer customer ON customer.id = main.loan_customer_id
+        left join current_node_manager node on node.order_id = main.id
+        left join bank_online_trans online on main.id = online.order_id
+        WHERE
+
+        case when #{taskStatus} =0 then deputy.bank_open_card !=0
+        else deputy.bank_open_card= #{taskStatus} and deputy.`order_status` = 1 end
+        AND CASE WHEN #{maxGroupLevel}  = 0 THEN false
+        when #{maxGroupLevel} = 1 then 1 = 1
+        <if test="juniorIds != null and juniorIds.size() > 0">
+            and base.salesman_id in
+            <foreach item="item" index="index" collection="juniorIds" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        else true end
+
+        and case when #{maxGroupLevel} = 3 then 1=1
+        else 1=1
+        <if test="bizAreaIdList != null and bizAreaIdList.size() > 0">
+            and partner.id in
+            <foreach item="item" index="index" collection="bizAreaIdList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="bankList != null and bankList.size() > 0">
+            and base.bank in
+            <foreach item="item" index="index" collection="bankList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        end
+        <if test="orderId != null">
+            AND main.id = #{orderId}
+        </if>
+        <if test="customer != null and customer != ''">
+            AND customer.name LIKE CONCAT('%', #{customer} ,'%')
+        </if>
+        <if test="relevanceCustomerName != null">
+            AND
+            main.id in
+            (
+            (select id from loan_order where loan_customer_id
+            in (select principal_cust_id from loan_customer where name = #{relevanceCustomerName})
+            and loan_customer_id not in (select id from loan_customer where name = #{relevanceCustomerName})
+            )
+            )
+        </if>
+        <if test="loanBank != null">
+            AND base.bank = #{loanBank}
+        </if>
+        <if test="idCard != null">
+            AND customer.id_card = #{idCard}
+        </if>
+        <if test="salesmanId != null">
+            AND base.salesman_id = #{salesmanId}
+        </if>
+        <if test="partnerId != null">
+            AND partner.id = #{partnerId}
+        </if>
+        <if test="bizAreaId != null">
+            AND
+            case
+            when (select level from base_area where area_id = #{bizAreaId}) = 0 then 1=1
+            when (select level from base_area where area_id = #{bizAreaId}) = 1 then base.area_id in (select area_id from base_area where parent_area_id = #{bizAreaId})
+            when (select level from base_area where area_id = #{bizAreaId}) = 2 then base.area_id = #{bizAreaId}
+            else 1=2
+            end
+        </if>
+
+        <if test="serialStatus != null">
+            <choose>
+                <when test="serialStatus == 'except'">
+                    <choose>
+                        <when test="bankOpenCardOrder == 'except'">
+                            AND 0 =IF( ( SELECT count( 0 ) FROM bank_interface_serial WHERE trans_code = 'creditcardapply'
+                            AND order_id = main.id ) > 0, 1, 0 )
+                            AND
+                            case when customer.open_card_order = 1 then true
+                            when customer.open_card_order  = 0 then deputy.telephone_verify = 1
+                            else
+                            false
+                            end
+                        </when>
+                        <when test="bankOpenCardOrder == 'having'">
+                            AND online.open_card_status = 2
+                        </when>
+
+                    </choose>
+                </when>
+                <when test="serialStatus == 'exception'">
+                    AND online.open_card_status = 6
+                </when>
+                <when test="serialStatus == 'success'">
+                    AND online.open_card_status = 4
+                </when>
+                <when test="serialStatus == 'failure'">
+                    AND online.open_card_status = 5
+                </when>
+                <when test="serialStatus == 'back'">
+                    AND online.open_card_status = 5
+                </when>
+                <when test="serialStatus == 'process'">
+                    AND online.open_card_status = 2
+                </when>
+                <otherwise>
+                    AND 1=2
+                </otherwise>
+            </choose>
+        </if>
+        <choose>
+            <when test="taskStatus == 1">
+                order by node.usertask_loan_apply_create_time DESC
+            </when>
+            <otherwise>
+                order by main.gmt_create
+            </otherwise>
+        </choose>
+    </select>
+    <select id="queryBusinessPayList" resultType="com.yunche.loan.domain.vo.TaskListVO" parameterType="com.yunche.loan.domain.query.TaskListQuery">
+
+        SELECT
+        main.id AS id,
+        loan_customer.`name` AS customer,
+        loan_customer.id_card AS idCard,
+        partner.name AS partner,
+        partner.partner_code AS partnerCode,
+        b.bank,
+        e.name as salesman,
+        useGetTaskTypeText(#{taskDefinitionKey},loan_process.business_pay,loan_process.order_status) AS taskTypeText
+
+        FROM
+        loan_order main
+        LEFT JOIN loan_process ON main.id = loan_process.order_id
+        LEFT JOIN loan_customer ON main.loan_customer_id = loan_customer.id
+        LEFT JOIN loan_base_info b ON main.loan_base_info_id = b.id
+        LEFT JOIN employee e ON b.salesman_id = e.id
+        LEFT JOIN partner ON b.partner_id = partner.id
+
+        <where>
+            <if test="taskStatus !=null" >
+                AND
+                case when #{taskStatus} = 0 then loan_process.business_pay in (1,2,3)
+                when #{taskStatus} = 2 then loan_process.business_pay = 2 and loan_process.order_status = 1
+                when #{taskStatus} = 3 then loan_process.business_pay = 3 and loan_process.order_status = 1
+                else 1=1
+                end
+            </if>
+            AND CASE WHEN #{maxGroupLevel}  = 0 THEN false
+            when #{maxGroupLevel} = 1 then 1 = 1
+            <if test="juniorIds != null and juniorIds.size() > 0">
+                and b.salesman_id in
+                <foreach item="item" index="index" collection="juniorIds" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            else true end
+            and
+            case when #{maxGroupLevel} = 3 then 1=1
+            else 1=1
+            <if test="bizAreaIdList != null and bizAreaIdList.size() > 0">
+                and
+                partner.id in
+                <foreach item="item" index="index" collection="bizAreaIdList" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="bankList != null and bankList.size() > 0">
+                and
+                b.bank in
+                <foreach item="item" index="index" collection="bankList" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            end
+            <if test="customer != null and customer!= '' ">
+                AND loan_customer.`name` LIKE CONCAT('%',#{customer},'%')
+            </if>
+            <if test="partnerId != null and partnerId != ''">
+                AND partner.id = #{partnerId}
+            </if>
+            <if test="salesmanId != null and salesmanId !=''">
+                AND e.id = #{salesmanId}
+            </if>
+            <if test="loanBank != null and loanBank != '' ">
+                AND b.bank = #{loanBank}
+            </if>
+            <if test="orderId != null and orderId != '' ">
+                AND main.id = #{orderId}
+            </if>
+            <if test="idCard != null and idCard != '' ">
+                AND loan_customer.id_card = #{idCard}
+            </if>
+            <if test="bizAreaId != null">
+                AND
+                case
+                when (select level from base_area where area_id = #{bizAreaId}) = 0 then 1=1
+                when (select level from base_area where area_id = #{bizAreaId}) = 1 then b.area_id in (select area_id from base_area where parent_area_id = #{bizAreaId})
+                when (select level from base_area where area_id = #{bizAreaId}) = 2 then b.area_id = #{bizAreaId}
+                else 1=2
+                end
+            </if>
+        </where>
+        <choose>
+            <when test="taskStatus == 0">
+                order by main.gmt_create DESC
+            </when>
+            <when test="taskStatus == 1">
+                order by main.gmt_create DESC
+            </when>
+            <when test="taskStatus == 2">
+                order by main.gmt_create ASC
+            </when>
+            <when test="taskStatus == 3">
+                order by main.gmt_create ASC
+            </when>
+            <otherwise>
+                order by main.gmt_create DESC
+            </otherwise>
+        </choose>
+
+    </select>
+    <select id="queryBusinessReviewList" resultType="com.yunche.loan.domain.vo.TaskListVO" parameterType="com.yunche.loan.domain.query.TaskListQuery">
+
+        SELECT
+        main.id AS id,
+        loan_customer.`name` AS customer,
+        loan_customer.id_card AS idCard,
+        partner.name AS partner,
+        partner.partner_code AS partnerCode,
+        b.bank,
+        loan_financial_plan.loan_amount AS loanAmount,
+        loan_financial_plan.bank_period_principal AS bankPeriodPrincipal,
+        e.name as salesman,
+        useGetTaskTypeText(#{taskDefinitionKey},loan_process.business_review,loan_process.order_status) AS taskTypeText
+
+        FROM
+        loan_order main
+        LEFT JOIN loan_process ON main.id = loan_process.order_id
+        LEFT JOIN loan_customer ON main.loan_customer_id = loan_customer.id
+        LEFT JOIN loan_base_info b ON main.loan_base_info_id = b.id
+        LEFT JOIN employee e ON b.salesman_id = e.id
+        LEFT JOIN partner ON b.partner_id = partner.id
+        LEFT JOIN loan_financial_plan ON main.loan_financial_plan_id = loan_financial_plan.id
+
+
+        <where>
+            <if test="taskStatus !=null" >
+                AND
+                case when #{taskStatus} = 0 then loan_process.business_review in (1,2,3)
+                when #{taskStatus} = 2 then loan_process.business_review = 2 and loan_process.order_status = 1
+                when #{taskStatus} = 3 then loan_process.business_review = 3 and loan_process.order_status = 1
+                else 1=1
+                end
+            </if>
+            AND CASE WHEN #{maxGroupLevel}  = 0 THEN false
+            when #{maxGroupLevel} = 1 then 1 = 1
+            <if test="juniorIds != null and juniorIds.size() > 0">
+                and b.salesman_id in
+                <foreach item="item" index="index" collection="juniorIds" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            else true end
+            and
+            case when #{maxGroupLevel} = 3 then 1=1
+            else 1=1
+            <if test="bizAreaIdList != null and bizAreaIdList.size() > 0">
+                and
+                partner.id in
+                <foreach item="item" index="index" collection="bizAreaIdList" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="bankList != null and bankList.size() > 0">
+                and
+                b.bank in
+                <foreach item="item" index="index" collection="bankList" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            end
+            <if test="customer != null and customer!= '' ">
+                AND loan_customer.`name` LIKE CONCAT('%',#{customer},'%')
+            </if>
+            <if test="partnerId != null and partnerId != ''">
+                AND partner.id = #{partnerId}
+            </if>
+            <if test="salesmanId != null and salesmanId !=''">
+                AND e.id = #{salesmanId}
+            </if>
+            <if test="loanBank != null and loanBank != '' ">
+                AND b.bank = #{loanBank}
+            </if>
+            <if test="orderId != null and orderId != '' ">
+                AND main.id = #{orderId}
+            </if>
+            <if test="idCard != null and idCard != '' ">
+                AND loan_customer.id_card = #{idCard}
+            </if>
+            <if test="bizAreaId != null">
+                AND
+                case
+                when (select level from base_area where area_id = #{bizAreaId}) = 0 then 1=1
+                when (select level from base_area where area_id = #{bizAreaId}) = 1 then b.area_id in (select area_id from base_area where parent_area_id = #{bizAreaId})
+                when (select level from base_area where area_id = #{bizAreaId}) = 2 then b.area_id = #{bizAreaId}
+                else 1=2
+                end
+            </if>
+            <if test="loanAmountType != null">
+                <if test="loanAmountType == 1">
+                    AND b.loan_amount = 1
+                </if>
+                <if test="loanAmountType == 2">
+                    AND b.loan_amount = 2
+                </if>
+                <if test="loanAmountType == 3">
+                    AND b.loan_amount = 3
+                </if>
+            </if>
+        </where>
+        <choose>
+            <when test="taskStatus == 0">
+                order by main.gmt_create DESC
+            </when>
+            <when test="taskStatus == 1">
+                order by main.gmt_create DESC
+            </when>
+            <when test="taskStatus == 2">
+                order by main.gmt_create ASC
+            </when>
+            <when test="taskStatus == 3">
+                order by main.gmt_create ASC
+            </when>
+            <otherwise>
+                order by main.gmt_create DESC
+            </otherwise>
+        </choose>
+
+    </select>
+
+    <select id="queryLoanReviewList" resultType="com.yunche.loan.domain.vo.TaskListVO" parameterType="com.yunche.loan.domain.query.TaskListQuery">
+
+        SELECT
+        main.id AS id,
+        loan_customer.`name` AS customer,
+        loan_customer.id_card AS idCard,
+        taskdis.status as taskDisStatus,
+        loan_financial_plan.loan_amount AS loanAmount,
+        loan_financial_plan.bank_period_principal AS bankPeriodPrincipal,
+        loan_financial_plan.loan_time AS loanTime,
+        main.id as taskId,
+        (#{taskDefinitionKey}) AS taskKey,
+        taskdis.sendee_name as receiveManName,
+        loan_process.loan_review as taskStatus,
+        loan_customer.mobile,
+        partner.name AS partner,
+        b.bank,
+        e.name as salesman,
+        useGetTaskTypeText(#{taskDefinitionKey},loan_process.loan_review,loan_process.order_status) AS taskTypeText
+
+        FROM
+        loan_order main
+        LEFT JOIN loan_process ON main.id = loan_process.order_id
+        LEFT JOIN loan_customer ON main.loan_customer_id = loan_customer.id
+        LEFT JOIN loan_base_info b ON main.loan_base_info_id = b.id
+        LEFT JOIN employee e ON b.salesman_id = e.id
+        LEFT JOIN partner ON b.partner_id = partner.id
+        LEFT JOIN loan_financial_plan ON main.loan_financial_plan_id = loan_financial_plan.id
+        left join task_distribution taskdis on main.id = taskdis.task_id and taskdis.task_key = 'usertask_loan_review'
+        <where>
+            <if test="taskStatus !=null" >
+                AND
+                case when #{taskStatus} = 0 then loan_process.loan_review in (1,2,3)
+                when #{taskStatus} = 2 then loan_process.loan_review = 2 and loan_process.order_status = 1
+                when #{taskStatus} = 3 then loan_process.loan_review = 3 and loan_process.order_status = 1
+                else 1=1
+                end
+            </if>
+            AND CASE WHEN #{maxGroupLevel}  = 0 THEN false
+            when #{maxGroupLevel} = 1 then 1 = 1
+            <if test="juniorIds != null and juniorIds.size() > 0">
+                and b.salesman_id in
+                <foreach item="item" index="index" collection="juniorIds" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            else true end
+            and
+            case when #{maxGroupLevel} = 3 then 1=1
+            else 1=1
+            <if test="bizAreaIdList != null and bizAreaIdList.size() > 0">
+                and
+                partner.id in
+                <foreach item="item" index="index" collection="bizAreaIdList" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="bankList != null and bankList.size() > 0">
+                and
+                b.bank in
+                <foreach item="item" index="index" collection="bankList" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            end
+            <if test="taskStatus != 0">
+                <choose>
+                    <when test="pull == false">
+                        and taskdis.taskId NOT IN ( ( SELECT distinct task_id FROM task_distribution where task_key =
+                        #{taskDefinitionKey} ) )
+                    </when>
+                    <otherwise>
+                        and
+                        case when #{maxGroupLevel} = 3 then 1=1
+                        when taskdis.sendee is not null then
+                        case when taskdis.sendee = #{employeeId} then 1=1 else 1=2 end
+                        else 1=1 end
+                    </otherwise>
+                </choose>
+            </if>
+            <if test="customer != null and customer!= '' ">
+                AND loan_customer.`name` LIKE CONCAT('%',#{customer},'%')
+            </if>
+            <if test="partnerId != null and partnerId != ''">
+                AND partner.id = #{partnerId}
+            </if>
+            <if test="salesmanId != null and salesmanId !=''">
+                AND e.id = #{salesmanId}
+            </if>
+            <if test="loanBank != null and loanBank != '' ">
+                AND b.bank = #{loanBank}
+            </if>
+            <if test="orderId != null and orderId != '' ">
+                AND main.id = #{orderId}
+            </if>
+            <if test="idCard != null and idCard != '' ">
+                AND loan_customer.id_card = #{idCard}
+            </if>
+        </where>
+        <choose>
+            <when test="taskStatus == 0">
+                order by main.gmt_create DESC
+            </when>
+            <when test="taskStatus == 1">
+                order by main.gmt_create DESC
+            </when>
+            <when test="taskStatus == 2">
+                order by main.gmt_create ASC
+            </when>
+            <when test="taskStatus == 3">
+                order by main.gmt_create ASC
+            </when>
+            <otherwise>
+                order by main.gmt_create DESC
+            </otherwise>
+        </choose>
+
+    </select>
+    <select id="queryRemitReviewList" resultType="com.yunche.loan.domain.vo.TaskListVO" parameterType="com.yunche.loan.domain.query.TaskListQuery">
+
+        SELECT
+        main.id AS id,
+        loan_customer.`name` AS customer,
+        loan_customer.id_card AS idCard,
+        loan_financial_plan.loan_amount AS loanAmount,
+        partner.name AS partner,
+        b.bank,
+        e.name as salesman,
+        main.id AS taskId,
+        useGetTaskTypeText(#{taskDefinitionKey},loan_process.remit_review,loan_process.order_status) AS taskTypeText
+
+        FROM
+        loan_order main
+        LEFT JOIN loan_process ON main.id = loan_process.order_id
+        LEFT JOIN loan_customer ON main.loan_customer_id = loan_customer.id
+        LEFT JOIN loan_base_info b ON main.loan_base_info_id = b.id
+        LEFT JOIN employee e ON b.salesman_id = e.id
+        LEFT JOIN partner ON b.partner_id = partner.id
+        LEFT JOIN remit_details ON main.remit_details_id = remit_details.id
+        LEFT JOIN loan_financial_plan ON main.loan_financial_plan_id = loan_financial_plan.id
+
+        <where>
+            <if test="taskStatus !=null" >
+                AND
+                case when #{taskStatus} = 0 then loan_process.remit_review in (1,2,3)
+                when #{taskStatus} = 2 then loan_process.remit_review = 2 and loan_process.order_status = 1
+                when #{taskStatus} = 3 then loan_process.remit_review = 3 and loan_process.order_status = 1
+                else 1=1
+                end
+            </if>
+            <if test="remitSatus !=null and remitSatus !=''">
+                and case
+                when #{remitSatus} = 0 then remit_details.remit_status = 0
+                when #{remitSatus} = 1 then remit_details.remit_status = 1
+                when #{remitSatus} = 3 then remit_details.remit_status = 3
+                else 1=1
+                end
+            </if>
+            <if test="remitSatus == 0">
+                and  remit_details.remit_status = 0
+
+            </if>
+            AND CASE WHEN #{maxGroupLevel}  = 0 THEN false
+            when #{maxGroupLevel} = 1 then 1 = 1
+            <if test="juniorIds != null and juniorIds.size() > 0">
+                and b.salesman_id in
+                <foreach item="item" index="index" collection="juniorIds" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            else true end
+            and
+            case when #{maxGroupLevel} = 3 then 1=1
+            else 1=1
+            <if test="bizAreaIdList != null and bizAreaIdList.size() > 0">
+                and
+                partner.id in
+                <foreach item="item" index="index" collection="bizAreaIdList" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="bankList != null and bankList.size() > 0">
+                and
+                b.bank in
+                <foreach item="item" index="index" collection="bankList" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            end
+            <if test="customer != null and customer!= '' ">
+                AND loan_customer.`name` LIKE CONCAT('%',#{customer},'%')
+            </if>
+            <if test="partnerId != null and partnerId != ''">
+                AND partner.id = #{partnerId}
+            </if>
+            <if test="salesmanId != null and salesmanId !=''">
+                AND e.id = #{salesmanId}
+            </if>
+            <if test="loanBank != null and loanBank != '' ">
+                AND b.bank = #{loanBank}
+            </if>
+            <if test="orderId != null and orderId != '' ">
+                AND main.id = #{orderId}
+            </if>
+            <if test="idCard != null and idCard != '' ">
+                AND loan_customer.id_card = #{idCard}
+            </if>
+        </where>
+        <choose>
+            <when test="taskStatus == 0">
+                order by main.gmt_create DESC
+            </when>
+            <when test="taskStatus == 1">
+                order by main.gmt_create DESC
+            </when>
+            <when test="taskStatus == 2">
+                order by main.gmt_create ASC
+            </when>
+            <when test="taskStatus == 3">
+                order by main.gmt_create ASC
+            </when>
+            <otherwise>
+                order by main.gmt_create DESC
+            </otherwise>
+        </choose>
+
+    </select>
+
+    <select id="queryTelephoneVerifyList" parameterType="com.yunche.loan.domain.query.TaskListQuery"
+            resultType="com.yunche.loan.domain.vo.TaskListVO">
+
+        SELECT
+                complex.*,
+                complex_log.usertask_credit_apply_gmt_user_name                                    AS creditMan,
+                DATE_FORMAT( complex_log.usertask_loan_apply_create_time, '%Y-%m-%d %H:%i:%S' ) AS loanGmtCreate,
+                DATE_FORMAT( complex_log.usertask_telephone_verify_create_time, '%Y-%m-%d %H:%i:%S' ) AS telephoneGmtCreate,
+                DATE_FORMAT( complex_log.usertask_visit_verify_create_time, '%Y-%m-%d %H:%i:%S' ) AS visitGmtCreate
+        FROM
+        (
+            SELECT
+                    task.*,
+                    taskdis.STATUS AS taskDisStatus,
+                    taskdis.sendee AS receiveManId,
+                    taskdis.sendee_name AS receiveManName
+            FROM
+            (
+                SELECT
+                        tab.*,
+                        'usertask_telephone_verify' AS taskKey,
+                        tab.taskStatus AS taskType,
+                        useGetTaskTypeText ( 'usertask_telephone_verify', tab.taskStatus, tab.orderStatus ) AS taskTypeText,
+                        useGetCurrentTask ( 'usertask_telephone_verify' ) AS currentTask
+                FROM
+                (
+                    SELECT
+                            main.id AS taskId,
+                            main.id AS id,
+                            join_e.id AS salesmanId,
+                            join_e.name AS salesman,
+                            join_p.id AS partnerId,
+                            join_c.id AS customerId,
+                            join_c.NAME AS customer,
+                            join_c.id_card AS idCard,
+                            join_c.mobile AS mobile,
+                            join_b.bank AS bank,
+                            join_f.loan_amount AS loanAmount,
+                            join_f.bank_period_principal AS bankPeriodPrincipal,
+                            join_f.sign_rate AS signRate,
+                            join_p.NAME AS partner,
+                            join_p.partner_code AS partnerCode,
+                            join_p.partner_group AS partnerGroup,
+                            deputy.order_status AS orderStatus,
+                            deputy.telephone_verify AS telephoneVerifyStatus,
+                            useLevelGetTaskStatus(#{telephoneVerifyLevel}, deputy.telephone_verify) AS taskStatus
+
+                    FROM  loan_order main
+                    INNER JOIN loan_process deputy ON main.id = deputy.order_id
+                    LEFT JOIN loan_customer join_c ON join_c.id = main.loan_customer_id
+                    LEFT JOIN loan_base_info join_b ON join_b.id = main.loan_base_info_id
+                    LEFT JOIN loan_financial_plan join_f ON join_f.id = main.loan_financial_plan_id
+                    LEFT JOIN partner join_p ON join_p.id = join_b.partner_id
+                    LEFT JOIN employee join_e ON join_e.id = join_b.salesman_id
+
+                    WHERE   TRUE
+                    <if test="taskStatus != 0">
+                        AND deputy.order_status = 1
+                    </if>
+
+                    AND useLevelGetTaskStatus(#{telephoneVerifyLevel}, deputy.telephone_verify) != -1
+                    AND
+                        CASE
+                            WHEN #{taskStatus} = 0  THEN
+                                deputy.telephone_verify != 0
+                            ELSE
+                                deputy.telephone_verify = #{taskStatus}
+                        END
+                ) tab
+
+                <where>
+                    AND
+                       CASE
+                            -- maxGroupLevel = 3  --> admin
+                            WHEN #{maxGroupLevel} = 3 THEN
+                                TRUE
+                            ELSE
+                                TRUE
+                            <if test="bizAreaIdList != null and bizAreaIdList.size() > 0">
+                                AND
+                                tab.partnerId IN
+                                <foreach item="item" collection="bizAreaIdList" open="(" separator="," close=")">
+                                    #{item}
+                                </foreach>
+                            </if>
+                            <if test="bankList != null and bankList.size() > 0">
+                                AND
+                                tab.bank IN
+                                <foreach item="item" collection="bankList" open="(" separator="," close=")">
+                                    #{item}
+                                </foreach>
+                            </if>
+                        END
+                        <if test="orderId != null">
+                            AND tab.id = #{orderId}
+                        </if>
+                        <if test="partnerCode != null and partnerCode !=''">
+                            AND tab.partnerCode = #{partnerCode}
+                        </if>
+                        <if test="partnerGroup != null and partnerGroup !=''">
+                            AND tab.partnerGroup = #{partnerGroup}
+                        </if>
+                        <if test="customer != null and customer != ''">
+                            AND tab.customer LIKE CONCAT('%', #{customer} ,'%')
+                        </if>
+                        <if test="mobile != null">
+                            AND tab.mobile = #{mobile}
+                        </if>
+                        <if test="idCard != null">
+                            AND tab.idCard = #{idCard}
+                        </if>
+                        <if test="salesmanId != null">
+                            AND tab.salesmanId = #{salesmanId}
+                        </if>
+                        <if test="startCreditGmtCreate != null">
+                            AND TO_DAYS(complex_log.usertask_credit_apply_create_time) &gt;= TO_DAYS(#{startCreditGmtCreate})
+                        </if>
+                        <if test="endCreditGmtCreate != null">
+                            AND TO_DAYS(complex_log.usertask_credit_apply_create_time) &lt;= TO_DAYS(#{endCreditGmtCreate})
+                        </if>
+                </where>
+
+            AND
+                CASE
+                    WHEN #{maxGroupLevel} = 0 THEN
+                        FALSE
+                    WHEN #{maxGroupLevel} = 1 THEN
+                        tab.salesmanId IN
+                        <foreach collection="juniorIds" item="item" open="(" close=")" separator=",">
+                            #{item}
+                        </foreach>
+                    ELSE TRUE
+                END
+
+            ) task
+
+            LEFT JOIN task_distribution taskdis ON task.taskId = taskdis.task_id
+            AND task.taskKey = taskdis.task_key
+            <if test="taskStatus != 0">
+                <choose>
+                    <when test="pull == false">
+                        <if test="taskDistributionIdSet != null and taskDistributionIdSet.size() > 0">
+                            where task.taskId NOT IN
+                            <foreach collection="taskDistributionIdSet" item="taskId" open="(" close=")" separator=",">
+                                #{taskId}
+                            </foreach>
+                        </if>
+                    </when>
+                    <otherwise>
+                        having
+                        case when #{maxGroupLevel} = 3 then 1=1
+                        when receiveManId is not null then
+                        case when receiveManId = #{employeeId} then 1=1 else 1=2 end
+                        else 1=1 end
+                        <if test="taskStatus == 2">
+                            and
+                            case when #{maxGroupLevel} = 3 then 1=1
+                            else
+                            <choose>
+                                <when test="taskDistributionIdSet != null and taskDistributionIdSet.size() > 0">
+                                    task.taskId IN
+                                    <foreach collection="taskDistributionIdSet" item="taskId" open="(" close=")" separator=",">
+                                        #{taskId}
+                                    </foreach>
+                                </when>
+                                <otherwise>
+                                    1=2
+                                </otherwise>
+                            </choose>
+                            end
+                        </if>
+                    </otherwise>
+                </choose>
+            </if>
+        ) complex
+
+        LEFT JOIN current_node_manager complex_log ON complex_log.order_id = complex.id
+        <choose>
+            <when test="taskStatus == 2 or taskStatus == 4 or taskStatus == 5 or taskStatus == 6  or pull == false ">
+                ORDER BY loanGmtCreate ASC
+            </when>
+            <otherwise>
+                ORDER BY telephoneGmtCreate DESC
+            </otherwise>
+        </choose>
+    </select>
+    <select id="selectSocialCredit" parameterType="com.yunche.loan.domain.query.TaskListQuery"
+            resultType="com.yunche.loan.domain.vo.TaskListVO">
+        SELECT
+        loan.id           as id,
+        cus.NAME          as customer,
+        cus.id_card       as idCard,
+        emp.name          as salesman,
+        par.`name`        as partner,
+        par.partner_code  as partnerCode,
+        ('usertask_social_credit_record') AS taskKey,
+        DATE_FORMAT(loan.gmt_create,'%Y-%m-%d %H:%i:%S')      AS orderGmtCreate,
+        jbds.cat                                              as creditDate,
+        loan.id                                               as taskId,
+        task.sendee_name                                      as receiveManName,
+        useGetTaskTypeText('usertask_social_credit_record',process.social_credit_record,process.order_status) AS taskTypeText,
+        base.bank                                             as bank
+        FROM
+        loan_order loan
+        LEFT JOIN loan_process process ON process.order_id = loan.id
+        LEFT JOIN `task_distribution` task ON task.`task_id` = loan.id and task.task_key = 'usertask_social_credit_record'
+        LEFT JOIN `loan_customer` cus ON cus.id = loan.`loan_customer_id`
+        LEFT JOIN loan_base_info base ON base.id = loan.loan_base_info_id
+        LEFT JOIN employee emp ON emp.id = base.salesman_id
+        LEFT JOIN partner par ON par.id = base.partner_id
+        left join current_node_manager node on node.order_id = loan.id
+        left join (SELECT principal_cust_id, MAX(credit_apply_time) cat
+        FROM
+        (SELECT  allhis.customer_id,allhis.credit_apply_time,loan_customer.principal_cust_id FROM
+        (select customer_id,max(credit_apply_time) AS credit_apply_time FROM loan_credit_info_bank_his GROUP BY customer_id) allhis
+        LEFT JOIN loan_customer ON allhis.customer_id = loan_customer.id) qnmd GROUP BY principal_cust_id) jbds
+        ON jbds.principal_cust_id= loan.loan_customer_id
+        WHERE
+         case when #{taskStatus} = 0 then process.social_credit_record != 0
+        else process.social_credit_record = #{taskStatus} and process.order_status = 1 end
+        AND CASE WHEN #{maxGroupLevel}  = 0 THEN false
+        when #{maxGroupLevel} = 1 then 1 = 1
+        <if test="juniorIds != null and juniorIds.size() > 0">
+            and base.salesman_id in
+            <foreach item="item" index="index" collection="juniorIds" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        else true end
+
+        and case when #{maxGroupLevel} = 3 then 1=1
+        else 1=1
+        <if test="bizAreaIdList != null and bizAreaIdList.size() > 0">
+            and par.id in
+            <foreach item="item" index="index" collection="bizAreaIdList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="bankList != null and bankList.size() > 0">
+            and base.bank in
+            <foreach item="item" index="index" collection="bankList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        end
+        <if test="orderId != null">
+            AND loan.id = #{orderId}
+        </if>
+        <if test="customer != null and customer != ''">
+            AND cus.name LIKE CONCAT('%', #{customer} ,'%')
+        </if>
+        <if test="idCard != null">
+            AND cus.id_card = #{idCard}
+        </if>
+        <if test="partnerId != null">
+            AND par.id = #{partnerId}
+        </if>
+        <if test="salesmanId != null">
+            AND base.salesman_id = #{salesmanId}
+        </if>
+        <if test="bizAreaId != null">
+            AND
+            case
+            when (select level from base_area where area_id = #{bizAreaId}) = 0 then 1=1
+            when (select level from base_area where area_id = #{bizAreaId}) = 1 then base.area_id in (select area_id from base_area where parent_area_id = #{bizAreaId})
+            when (select level from base_area where area_id = #{bizAreaId}) = 2 then base.area_id = #{bizAreaId}
+            else 1=2
+            end
+        </if>
+        <if test="relevanceCustomerName != null">
+            AND
+            main.id in
+            (
+            (select id from loan_order where loan_customer_id
+            in (select principal_cust_id from loan_customer where name = #{relevanceCustomerName})
+            and loan_customer_id not in (select id from loan_customer where name = #{relevanceCustomerName})
+            )
+            )
+        </if>
+        <if test="startCreditGmtCreate != null">
+            AND TO_DAYS(jbds.cat) &gt;= TO_DAYS(#{startCreditGmtCreate})
+        </if>
+        <if test="endCreditGmtCreate != null">
+            AND TO_DAYS(jbds.cat) &lt;= TO_DAYS(#{endCreditGmtCreate})
+        </if>
+        <if test="taskStatus == 0">
+          order by loan.gmt_create desc
+        </if>
+    </select>
+    <select id="selectBankCardSend" parameterType="com.yunche.loan.domain.query.TaskListQuery"
+            resultType="com.yunche.loan.domain.vo.TaskListVO">
+        SELECT
+        loan.id           as id,
+        cus.NAME          as customer,
+        cus.id_card       as idCard,
+		cus.mobile        as mobile,
+		base.bank         as bank,
+        emp.name          as salesman,
+        par.`name`        as partner,
+        par.partner_code  as partnerCode,
+        ('usertask_bank_card_send') AS taskKey,
+        useGetTaskTypeText('usertask_bank_card_send',process.bank_card_send,process.order_status) AS taskTypeText
+
+        FROM
+        loan_order loan
+        LEFT JOIN loan_process process ON process.order_id = loan.id
+        LEFT JOIN `loan_customer` cus ON cus.id = loan.`loan_customer_id`
+        LEFT JOIN loan_base_info base ON base.id = loan.loan_base_info_id
+        LEFT JOIN employee emp ON emp.id = base.salesman_id
+        LEFT JOIN partner par ON par.id = base.partner_id
+        left join current_node_manager node on node.order_id = loan.id
+		where
+        case when #{taskStatus} = 0 then process.bank_card_send != 0
+        else process.bank_card_send = #{taskStatus} and process.order_status = 1 end
+        AND CASE WHEN #{maxGroupLevel}  = 0 THEN false
+        when #{maxGroupLevel} = 1 then 1 = 1
+        <if test="juniorIds != null and juniorIds.size() > 0">
+            and base.salesman_id in
+            <foreach item="item" index="index" collection="juniorIds" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        else true end
+        and case when #{maxGroupLevel} = 3 then 1=1
+        else 1=1
+        <if test="bizAreaIdList != null and bizAreaIdList.size() > 0">
+            and par.id in
+            <foreach item="item" index="index" collection="bizAreaIdList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="bankList != null and bankList.size() > 0">
+            and base.bank in
+            <foreach item="item" index="index" collection="bankList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        end
+        <if test="customer != null and customer != ''">
+            AND cus.name LIKE CONCAT('%', #{customer} ,'%')
+        </if>
+        <if test="idCard != null">
+            AND cus.id_card = #{idCard}
+        </if>
+        <if test="partnerId != null">
+            AND par.id = #{partnerId}
+        </if>
+        <if test="salesmanId != null">
+            AND base.salesman_id = #{salesmanId}
+        </if>
+        <if test="loanBank != null">
+            AND base.bank = #{loanBank}
+        </if>
+        <if test="taskStatus == 0">
+            order by loan.id desc
+        </if>
+    </select>
+    <select id="selectBankCardRecord" parameterType="com.yunche.loan.domain.query.TaskListQuery"
+            resultType="com.yunche.loan.domain.vo.TaskListVO">
+        SELECT
+        loan.id           as id,
+        cus.NAME          as customer,
+        cus.id_card       as idCard,
+        cus.mobile        as mobile,
+        base.bank         as bank,
+        emp.name          as salesman,
+        par.`name`        as partner,
+        par.partner_code  as partnerCode,
+        (#{taskDefinitionKey}) AS taskKey,
+        useGetTaskTypeText(#{taskDefinitionKey},process.bank_card_record,process.order_status) AS taskTypeText
+
+        FROM
+        loan_order loan
+        LEFT JOIN loan_process process ON process.order_id = loan.id
+        LEFT JOIN `loan_customer` cus ON cus.id = loan.`loan_customer_id`
+        LEFT JOIN loan_base_info base ON base.id = loan.loan_base_info_id
+        LEFT JOIN employee emp ON emp.id = base.salesman_id
+        LEFT JOIN partner par ON par.id = base.partner_id
+        left join current_node_manager node on node.order_id = loan.id
+        where
+        case when #{taskStatus} = 0 then process.bank_card_record != 0
+        else process.bank_card_record = #{taskStatus} and process.order_status = 1 end
+        AND CASE WHEN #{maxGroupLevel}  = 0 THEN false
+        when #{maxGroupLevel} = 1 then 1 = 1
+        <if test="juniorIds != null and juniorIds.size() > 0">
+            and base.salesman_id in
+            <foreach item="item" index="index" collection="juniorIds" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        else true end
+        and case when #{maxGroupLevel} = 3 then 1=1
+        else 1=1
+        <if test="bizAreaIdList != null and bizAreaIdList.size() > 0">
+            and par.id in
+            <foreach item="item" index="index" collection="bizAreaIdList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="bankList != null and bankList.size() > 0">
+            and base.bank in
+            <foreach item="item" index="index" collection="bankList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        end
+        <if test="orderId != null">
+            AND loan.id = #{orderId}
+        </if>
+        <if test="customer != null and customer != ''">
+            AND cus.name LIKE CONCAT('%', #{customer} ,'%')
+        </if>
+        <if test="idCard != null">
+            AND cus.id_card = #{idCard}
+        </if>
+        <if test="partnerId != null">
+            AND par.id = #{partnerId}
+        </if>
+        <if test="salesmanId != null">
+            AND base.salesman_id = #{salesmanId}
+        </if>
+        <if test="loanAmountType != null">
+            <if test="loanAmountType == 1">
+                AND base.loan_amount &lt;= 100000
+            </if>
+            <if test="loanAmountType == 2">
+                AND base.loan_amount &gt; 100000 AND base.loan_amount &lt;= 300000
+            </if>
+            <if test="loanAmountType == 3">
+                AND base.loan_amount &gt; 300000
+            </if>
+        </if>
+        <if test="bizAreaId != null">
+            AND
+            case
+            when (select level from base_area where area_id = #{bizAreaId}) = 0 then 1=1
+            when (select level from base_area where area_id = #{bizAreaId}) = 1 then base.area_id in (select area_id from base_area where parent_area_id = #{bizAreaId})
+            when (select level from base_area where area_id = #{bizAreaId}) = 2 then base.area_id = #{bizAreaId}
+            else 1=2
+            end
+        </if>
+        <if test="startLoanGmtCreate != null">
+            AND TO_DAYS(node.usertask_loan_apply_create_time) &gt;= TO_DAYS(#{startLoanGmtCreate})
+        </if>
+        <if test="endLoanGmtCreate != null">
+            AND TO_DAYS(node.usertask_loan_apply_create_time) &lt;= TO_DAYS(#{endLoanGmtCreate})
+        </if>
+        <if test="taskStatus == 0">
+            order by loan.id desc
+        </if>
+    </select>
+    <select id="selectRefundApply" parameterType="com.yunche.loan.domain.query.TaskListQuery"
+            resultType="com.yunche.loan.domain.vo.TaskListVO">
+        SELECT
+        loan.id           as id,
+        cus.NAME          as customer,
+        cus.id_card       as idCard,
+        cus.mobile        as mobile,
+        base.bank         as bank,
+        emp.name          as salesman,
+        par.`name`        as partner,
+        par.partner_code  as partnerCode,
+        refund.id         as refund_id,
+        (#{taskDefinitionKey}) AS taskKey,
+        useGetTaskTypeText(#{taskDefinitionKey},refund.status,process.order_status) AS taskTypeText
+
+        FROM
+        loan_order loan
+        LEFT JOIN loan_process process ON process.order_id = loan.id
+        LEFT JOIN `loan_customer` cus ON cus.id = loan.`loan_customer_id`
+        LEFT JOIN loan_base_info base ON base.id = loan.loan_base_info_id
+        LEFT JOIN employee emp ON emp.id = base.salesman_id
+        LEFT JOIN partner par ON par.id = base.partner_id
+        left join current_node_manager node on node.order_id = loan.id
+		left join loan_refund_apply refund on refund.order_id = loan.id
+        left join loan_car_info join_i on join_i.id = loan.loan_car_info_id
+		where
+        case when #{taskStatus} = 0 then refund.status != 0
+        else refund.status = #{taskStatus} and process.order_status = 1 end
+        AND CASE WHEN #{maxGroupLevel}  = 0 THEN false
+        when #{maxGroupLevel} = 1 then 1 = 1
+        <if test="juniorIds != null and juniorIds.size() > 0">
+            and base.salesman_id in
+            <foreach item="item" index="index" collection="juniorIds" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        else true end
+        and case when #{maxGroupLevel} = 3 then 1=1
+        else 1=1
+        <if test="bizAreaIdList != null and bizAreaIdList.size() > 0">
+            and par.id in
+            <foreach item="item" index="index" collection="bizAreaIdList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="bankList != null and bankList.size() > 0">
+            and base.bank in
+            <foreach item="item" index="index" collection="bankList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        end
+        <if test="orderId != null">
+            AND loan.id = #{orderId}
+        </if>
+        <if test="customer != null and customer != ''">
+            AND cus.name LIKE CONCAT('%', #{customer} ,'%')
+        </if>
+        <if test="idCard != null">
+            AND cus.id_card = #{idCard}
+        </if>
+        <if test="partnerId != null">
+            AND par.id = #{partnerId}
+        </if>
+        <if test="salesmanId != null">
+            AND base.salesman_id = #{salesmanId}
+        </if>
+        <if test="bizAreaId != null">
+            AND
+            case
+            when (select level from base_area where area_id = #{bizAreaId}) = 0 then 1=1
+            when (select level from base_area where area_id = #{bizAreaId}) = 1 then base.area_id in (select area_id from base_area where parent_area_id = #{bizAreaId})
+            when (select level from base_area where area_id = #{bizAreaId}) = 2 then base.area_id = #{bizAreaId}
+            else 1=2
+            end
+        </if>
+        <if test="loanBank != null">
+            AND base.bank = #{loanBank}
+        </if>
+        <if test="carType != null">
+            AND join_i.car_type = #{carType}
+        </if>
+        <if test="taskStatus == 0">
+            order by loan.id desc
+        </if>
+    </select>
+    <select id="selectRefundApplyReview" parameterType="com.yunche.loan.domain.query.TaskListQuery"
+            resultType="com.yunche.loan.domain.vo.TaskListVO">
+        SELECT
+        loan.id           as id,
+        cus.NAME          as customer,
+        cus.id_card       as idCard,
+        cus.mobile        as mobile,
+        base.bank         as bank,
+        emp.name          as salesman,
+        par.`name`        as partner,
+        par.partner_code  as partnerCode,
+		plan.loan_amount  as loanAmount,
+        refund.id         as refund_id,
+		(#{taskDefinitionKey}) AS taskKey,
+        useGetTaskTypeText(#{taskDefinitionKey},refund.status,process.order_status) AS taskTypeText
+
+        FROM
+        loan_order loan
+        LEFT JOIN loan_process process ON process.order_id = loan.id
+        LEFT JOIN `loan_customer` cus ON cus.id = loan.`loan_customer_id`
+        LEFT JOIN loan_base_info base ON base.id = loan.loan_base_info_id
+        LEFT JOIN employee emp ON emp.id = base.salesman_id
+        LEFT JOIN partner par ON par.id = base.partner_id
+        left join current_node_manager node on node.order_id = loan.id
+		left join loan_refund_apply refund on refund.order_id = loan.id
+		left join loan_financial_plan plan on plan.id = loan.loan_financial_plan_id
+        where
+        case when #{taskStatus} = 0 then refund.status != 0
+        else refund.status = #{taskStatus} and process.order_status = 1 end
+        AND CASE WHEN #{maxGroupLevel}  = 0 THEN false
+        when #{maxGroupLevel} = 1 then 1 = 1
+        <if test="juniorIds != null and juniorIds.size() > 0">
+            and base.salesman_id in
+            <foreach item="item" index="index" collection="juniorIds" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        else true end
+        and case when #{maxGroupLevel} = 3 then 1=1
+        else 1=1
+        <if test="bizAreaIdList != null and bizAreaIdList.size() > 0">
+            and par.id in
+            <foreach item="item" index="index" collection="bizAreaIdList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="bankList != null and bankList.size() > 0">
+            and base.bank in
+            <foreach item="item" index="index" collection="bankList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        end
+        <if test="orderId != null">
+            AND loan.id = #{orderId}
+        </if>
+        <if test="customer != null and customer != ''">
+            AND cus.name LIKE CONCAT('%', #{customer} ,'%')
+        </if>
+        <if test="idCard != null">
+            AND cus.id_card = #{idCard}
+        </if>
+        <if test="partnerId != null">
+            AND par.id = #{partnerId}
+        </if>
+        <if test="salesmanId != null">
+            AND base.salesman_id = #{salesmanId}
+        </if>
+        <if test="bizAreaId != null">
+            AND
+            case
+            when (select level from base_area where area_id = #{bizAreaId}) = 0 then 1=1
+            when (select level from base_area where area_id = #{bizAreaId}) = 1 then base.area_id in (select area_id from base_area where parent_area_id = #{bizAreaId})
+            when (select level from base_area where area_id = #{bizAreaId}) = 2 then base.area_id = #{bizAreaId}
+            else 1=2
+            end
+        </if>
+        <if test="loanBank != null">
+            AND base.bank = #{loanBank}
+        </if>
+        <if test="taskStatus == 0">
+            order by loan.id desc
+        </if>
+
+    </select>
+
+    <select id="queryCommitKeyList" resultType="com.yunche.loan.domain.vo.TaskListVO" parameterType="com.yunche.loan.domain.query.TaskListQuery">
+
+        SELECT
+        main.id AS id,
+        loan_customer.`name` AS customer,
+        loan_customer.id_card AS idCard,
+        loan_process.commit_key                       AS taskStatus,
+        (IFNULL(join_ltv.risk_sharing_addition,0)  + IFNULL(partner.risk_bear_rate,0))                    AS orderRisk,
+        useGetSmallCarName(loan_car_info.car_detail_id)     AS carName,
+        loan_car_info.car_type                              AS carType,
+        join_h.license_plate_number                  AS licensePlateNumber,
+        partner.name AS partner,
+        b.bank
+
+
+        FROM
+        loan_order main
+        LEFT JOIN loan_process ON main.id = loan_process.order_id
+        LEFT JOIN loan_customer ON main.loan_customer_id = loan_customer.id
+        LEFT JOIN loan_base_info b ON main.loan_base_info_id = b.id
+        LEFT JOIN employee e ON b.salesman_id = e.id
+        LEFT JOIN partner ON b.partner_id = partner.id
+        left  join loan_car_info on loan_car_info.id = main.loan_car_info_id
+        left  join vehicle_information join_h        on join_h.id             = main.vehicle_information_id
+        left join loan_telephone_verify join_ltv        on main.id               = join_ltv.order_id
+
+        <where>
+            <if test="taskStatus !=null" >
+                AND
+                case when #{taskStatus} = 0 then loan_process.commit_key in (1,2,3)
+                when #{taskStatus} = 1 then loan_process.loan_review = 1 and loan_process.order_status = 1
+                when #{taskStatus} = 2 then loan_process.commit_key = 2 and loan_process.order_status = 1
+                when #{taskStatus} = 3 then loan_process.commit_key = 3 and loan_process.order_status = 1
+                else 1=1
+                end
+            </if>
+            AND loan_car_info.car_key = 1
+            <if test="keyCollected !=null and keyCollected !=''">
+                and case
+                when #{keyCollected} = 1 then main.key_collected = 1
+                when #{keyCollected} = 2 then main.key_collected = 2
+                else 1=1
+                end
+            </if>
+            AND CASE WHEN #{maxGroupLevel}  = 0 THEN false
+            when #{maxGroupLevel} = 1 then 1 = 1
+            <if test="juniorIds != null and juniorIds.size() > 0">
+                and b.salesman_id in
+                <foreach item="item" index="index" collection="juniorIds" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            else true end
+            and
+            case when #{maxGroupLevel} = 3 then 1=1
+            else 1=1
+            <if test="bizAreaIdList != null and bizAreaIdList.size() > 0">
+                and
+                partner.id in
+                <foreach item="item" index="index" collection="bizAreaIdList" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="bankList != null and bankList.size() > 0">
+                and
+                b.bank in
+                <foreach item="item" index="index" collection="bankList" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            end
+            <if test="customer != null and customer!= '' ">
+                AND loan_customer.`name` LIKE CONCAT('%',#{customer},'%')
+            </if>
+            <if test="partnerId != null and partnerId != ''">
+                AND partner.id = #{partnerId}
+            </if>
+            <if test="salesmanId != null and salesmanId !=''">
+                AND e.id = #{salesmanId}
+            </if>
+            <if test="loanBank != null and loanBank != '' ">
+                AND b.bank = #{loanBank}
+            </if>
+            <if test="carType != null">
+                AND loan_car_info.car_type = #{carType}
+            </if>
+            <if test="orderId != null and orderId != '' ">
+                AND main.id = #{orderId}
+            </if>
+            <if test="idCard != null and idCard != '' ">
+                AND loan_customer.id_card = #{idCard}
+            </if>
+            <if test="bizAreaId != null">
+                AND
+                case
+                when (select level from base_area where area_id = #{bizAreaId}) = 0 then 1=1
+                when (select level from base_area where area_id = #{bizAreaId}) = 1 then b.area_id in (select area_id from base_area where parent_area_id = #{bizAreaId})
+                when (select level from base_area where area_id = #{bizAreaId}) = 2 then b.area_id = #{bizAreaId}
+                else 1=2
+                end
+            </if>
+        </where>
+        <choose>
+            <when test="taskStatus == 0">
+                order by main.gmt_create DESC
+            </when>
+            <when test="taskStatus == 1">
+                order by main.gmt_create DESC
+            </when>
+            <when test="taskStatus == 2">
+                order by main.gmt_create ASC
+            </when>
+            <when test="taskStatus == 3">
+                order by main.gmt_create ASC
+            </when>
+            <otherwise>
+                order by main.gmt_create DESC
+            </otherwise>
+        </choose>
+
+    </select>
+
+    <select id="selectBridgeHandle" parameterType="com.yunche.loan.domain.query.TaskListQuery"
+            resultType="com.yunche.loan.domain.vo.TaskListVO">
+        SELECT
+        loan.id           as id,
+        cus.NAME          as customer,
+        cus.id_card       as idCard,
+		useGetSmallCarName(car.car_detail_id)     AS carName,
+		plan.car_price    as car_price,
+		case when plan.loan_amount &gt;= remit.remit_amount
+         then floor(remit.remit_amount/100)*100
+         else floor(plan.loan_amount/100)*100 end   AS confThirdLoanMoney,
+		cus.mobile                                AS mobile,
+		plan.down_payment_money                    AS downPaymentMoney,
+		plan.loan_amount     as loanAmount,
+		plan.loan_time       as loanTime,
+        base.bank         as bank,
+        remit.remit_amount  as remitAmount,
+        DATE_FORMAT(third_party.lend_date, '%Y-%m-%d') AS bridgeLendDate,
+		join_r.lend_date  as lendDate,
+		bridge.id         as processId
+        from loan_order loan
+        left join loan_customer cus on cus.id =loan.loan_customer_id
+        left join loan_base_info base on base.id = loan.loan_base_info_id
+        LEFT JOIN employee emp ON emp.id = base.salesman_id
+        LEFT JOIN partner par ON par.id = base.partner_id
+        left join loan_financial_plan plan on plan.id = loan.loan_financial_plan_id
+        left join loan_process_bridge bridge on bridge.order_id = loan.id
+        left join conf_third_real_bridge_process real_b on bridge.id = real_b.bridge_process_id
+        left join conf_third_party_money conf_t on real_b.conf_third_party_id = conf_t.id
+        left join third_party_fund_business third_party on third_party.bridge_procecss_id  = bridge.id
+        left join loan_car_info car on car.id = loan.loan_car_info_id
+        left join remit_details remit on loan.remit_details_id  = remit.id
+        left  join bank_lend_record join_r on join_r.id = loan.bank_lend_record_id
+        left join loan_process process on process.order_id = loan.id
+        where process.order_status = 1 and
+        case when #{lendStatus} = 1 then bridge.bridge_handle in (2,3) and bridge.order_status = 1
+					and if((select count(*) from third_party_fund_business where bridge_procecss_id=bridge.id and bridge.order_status = 1 and lend_status in(3,4,5,6,7,8,9))=1,false,true)
+					when #{lendStatus} = 2 then bridge.bridge_handle = 1 and bridge.order_status = 1
+					when #{lendStatus} = 3 then bridge.bridge_handle = 2 and third_party.lend_status in(3,8) and bridge.order_status = 1
+					when #{lendStatus} = 4 then bridge.bridge_handle = 2 and third_party.lend_status in(5,6,9) and bridge.order_status = 1
+					when #{lendStatus} = 5 then bridge.bridge_handle = 2 and third_party.lend_status in(4,7) and bridge.order_status = 1
+					end
+        <if test="startLendDate !=null">
+            AND third_party.lend_date &gt;= #{startLendDate}
+        </if>
+        <if test="endLendDate !=null">
+            AND third_party.lend_date &lt;= #{endLendDate}
+        </if>
+        AND CASE WHEN #{maxGroupLevel}  = 0 THEN false
+        when #{maxGroupLevel} = 1 then 1 = 1
+        <if test="juniorIds != null and juniorIds.size() > 0">
+            and base.salesman_id in
+            <foreach item="item" index="index" collection="juniorIds" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        else true end
+        and case when #{maxGroupLevel} = 3 then 1=1
+        else 1=1
+        <if test="bizAreaIdList != null and bizAreaIdList.size() > 0">
+            and par.id in
+            <foreach item="item" index="index" collection="bizAreaIdList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="bankList != null and bankList.size() > 0">
+            and base.bank in
+            <foreach item="item" index="index" collection="bankList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        end
+        <if test="orderId != null">
+            AND loan.id = #{orderId}
+        </if>
+        <if test="customer != null and customer != ''">
+            AND cus.name LIKE CONCAT('%', #{customer} ,'%')
+        </if>
+    </select>
+    <select id="selectBridgeRepayRecord" parameterType="com.yunche.loan.domain.query.TaskListQuery"
+            resultType="com.yunche.loan.domain.vo.TaskListVO">
+        SELECT
+        loan.id           as id,
+		third_party.lend_amount as bridgeLendAmount,
+		third_party.lend_date   as bridgeLendDate,
+		plan.bank_period_principal as bankPeriodPrincipal,
+        cus.NAME          as customer,
+        cus.id_card       as idCard,
+		useGetSmallCarName(car.car_detail_id)     AS carName,
+		car.car_type      as carType,
+		bridge.id         as processId
+        from loan_order loan
+        left join loan_customer cus on cus.id =loan.loan_customer_id
+        left join loan_financial_plan plan on plan.id = loan.loan_financial_plan_id
+        left join loan_process_bridge bridge on bridge.order_id = loan.id
+        left join conf_third_real_bridge_process real_b on bridge.id = real_b.bridge_process_id
+        left join conf_third_party_money conf_t on real_b.conf_third_party_id = conf_t.id
+        left join third_party_fund_business third_party on third_party.bridge_procecss_id  = bridge.id
+        left join loan_car_info car on car.id = loan.loan_car_info_id
+        left join loan_base_info base on base.id = loan.loan_base_info_id
+        LEFT JOIN employee emp ON emp.id = base.salesman_id
+        LEFT JOIN partner par ON par.id = base.partner_id
+        left join loan_process process on process.order_id = loan.id
+        where
+        case when #{taskStatus} = 0 then bridge.bridge_repay_record !=0 else bridge.bridge_repay_record = #{taskStatus} and bridge.order_status = 1 and process.order_status = 1 end
+        <if test="startLendDate !=null">
+            AND third_party.lend_date &gt;= #{startLendDate}
+        </if>
+        <if test="endLendDate !=null">
+            AND third_party.lend_date &lt;= #{endLendDate}
+        </if>
+
+        <if test="startRepayDate !=null">
+            AND third_party.repay_date &gt;= #{startRepayDate}
+        </if>
+        <if test="endRepayDate !=null">
+            AND third_party.repay_date &lt;= #{endRepayDate}
+        </if>
+        AND CASE WHEN #{maxGroupLevel}  = 0 THEN false
+        when #{maxGroupLevel} = 1 then 1 = 1
+        <if test="juniorIds != null and juniorIds.size() > 0">
+            and base.salesman_id in
+            <foreach item="item" index="index" collection="juniorIds" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        else true end
+        and case when #{maxGroupLevel} = 3 then 1=1
+        else 1=1
+        <if test="bizAreaIdList != null and bizAreaIdList.size() > 0">
+            and par.id in
+            <foreach item="item" index="index" collection="bizAreaIdList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="bankList != null and bankList.size() > 0">
+            and base.bank in
+            <foreach item="item" index="index" collection="bankList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        end
+        <if test="orderId != null">
+            AND loan.id = #{orderId}
+        </if>
+        <if test="customer != null and customer != ''">
+            AND cus.name LIKE CONCAT('%', #{customer} ,'%')
+        </if>
+
+    </select>
+    <select id="selectBridgeRepayInfo" parameterType="com.yunche.loan.domain.query.TaskListQuery"
+            resultType="com.yunche.loan.domain.vo.TaskListVO">
+    SELECT
+        loan.id           as id,
+        third_party.lend_amount as bridgeLendAmount,
+        third_party.lend_date   as bridgeLendDate,
+        third_party.repay_date as bridgeRepayDate,
+		third_party.repay_remark AS bridgeRepayRemark,
+		third_party.repay_type   AS bridgeRepayType,
+        third_party.interest     AS bridgeInterest,
+        third_party.poundage     AS bridgePoundage,
+		plan.bank_period_principal as bankPeriodPrincipal,
+        cus.NAME          as customer,
+        cus.id_card       as idCard,
+		bridge.id         as processId
+        from loan_order loan
+        left join loan_customer cus on cus.id =loan.loan_customer_id
+        left join loan_financial_plan plan on plan.id = loan.loan_financial_plan_id
+        left join loan_process_bridge bridge on bridge.order_id = loan.id
+        left join conf_third_real_bridge_process real_b on bridge.id = real_b.bridge_process_id
+        left join conf_third_party_money conf_t on real_b.conf_third_party_id = conf_t.id
+        left join third_party_fund_business third_party on third_party.bridge_procecss_id  = bridge.id
+        left join loan_base_info base on base.id = loan.loan_base_info_id
+        LEFT JOIN employee emp ON emp.id = base.salesman_id
+        LEFT JOIN partner par ON par.id = base.partner_id
+        left join loan_process process on process.order_id = loan.id
+        where process.order_status = 1 and
+        case when #{taskStatus} = 0 then bridge.bridge_repay_info !=0 else bridge.bridge_repay_info = #{taskStatus} and bridge.order_status = 1 end
+        <if test="startRepayDate !=null">
+            AND third_party.repay_date &gt;= #{startRepayDate}
+        </if>
+        <if test="endRepayDate !=null">
+            AND third_party.repay_date &lt;= #{endRepayDate}
+        </if>
+        AND CASE WHEN #{maxGroupLevel}  = 0 THEN false
+        when #{maxGroupLevel} = 1 then 1 = 1
+        <if test="juniorIds != null and juniorIds.size() > 0">
+            and base.salesman_id in
+            <foreach item="item" index="index" collection="juniorIds" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        else true end
+        and case when #{maxGroupLevel} = 3 then 1=1
+        else 1=1
+        <if test="bizAreaIdList != null and bizAreaIdList.size() > 0">
+            and par.id in
+            <foreach item="item" index="index" collection="bizAreaIdList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="bankList != null and bankList.size() > 0">
+            and base.bank in
+            <foreach item="item" index="index" collection="bankList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        end
+        <if test="orderId != null">
+            AND loan.id = #{orderId}
+        </if>
+        <if test="customer != null and customer != ''">
+            AND cus.name LIKE CONCAT('%', #{customer} ,'%')
+        </if>
+    </select>
+
+    <select id="selectVideoReviewList" resultType="com.yunche.loan.domain.vo.TaskListVO" parameterType="com.yunche.loan.domain.query.TaskListQuery">
+        SELECT
+                main.id,
+                customer.`name` AS customer,
+                customer.id_card AS idCard,
+                customer.mobile AS mobile,
+                employee.`name` AS salesman,
+                partner.`name` AS partner,
+                partner.partner_code     as partnerCode,
+                main.id  AS taskId,
+                base.bank AS bank,
+                'usertask_video_review'  AS taskKey,
+                taskdis.status as taskDisStatus,
+                taskdis.sendee_name as receiveManName
+        FROM
+           loan_order main
+            LEFT JOIN loan_process deputy ON main.id = deputy.order_id
+            LEFT JOIN loan_base_info base ON base.id = main.loan_base_info_id
+            LEFT JOIN partner partner ON partner.id = base.partner_id
+            LEFT JOIN employee employee ON employee.id = base.salesman_id
+            LEFT JOIN loan_customer customer ON customer.id = main.loan_customer_id
+            LEFT JOIN video_face_num videonum  on videonum.order_id = main.id
+            left join task_distribution taskdis   on main.id = taskdis.task_id and  taskdis.task_key='usertask_video_review'
+        WHERE 1=1
+         AND case when #{taskStatus} = 0 then deputy.video_review != 0
+        else deputy.video_review        = #{taskStatus} AND deputy.order_status = 1 end
+        AND  case when base.bank = '中国工商银行哈尔滨顾乡支行' then true
+        when base.bank = '中国工商银行南京江宁支行' then true
+        else
+        1 = if( (SELECT count( id ) FROM video_face_log WHERE order_id = main.id) > 0, 1, 0 )
+        end
+
+        AND CASE WHEN #{maxGroupLevel}  = 0 THEN false
+        when #{maxGroupLevel} = 1 then 1 = 1
+        <if test="juniorIds != null and juniorIds.size() > 0">
+            and base.salesman_id in
+            <foreach item="item" index="index" collection="juniorIds" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        else true end
+
+        and case when #{maxGroupLevel} = 3 then 1=1
+        else 1=1
+        <if test="bizAreaIdList != null and bizAreaIdList.size() > 0">
+            and partner.id in
+            <foreach item="item" index="index" collection="bizAreaIdList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="bankList != null and bankList.size() > 0">
+            and base.bank in
+            <foreach item="item" index="index" collection="bankList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        end
+        <if test="orderId != null">
+            AND main.id = #{orderId}
+        </if>
+        <if test="customer != null and customer != ''">
+            AND customer.name LIKE CONCAT('%', #{customer} ,'%')
+        </if>
+        <if test="partnerId != null">
+            AND partner.id = #{partnerId}
+        </if>
+        <if test="idCard != null">
+            AND customer.id_card = #{idCard}
+        </if>
+        <if test="partnerGroup != null and partnerGroup !=''">
+            AND partner.partner_group = #{partnerGroup}
+        </if>
+        <if test="partnerCode != null and partnerCode !=''">
+            AND partner.partner_code= #{partnerCode}
+        </if>
+        <if test="bizAreaId != null">
+            AND
+            case
+            when (select level from base_area where area_id = #{bizAreaId}) = 0 then 1=1
+            when (select level from base_area where area_id = #{bizAreaId}) = 1 then base.area_id in (select area_id from base_area where parent_area_id = #{bizAreaId})
+            when (select level from base_area where area_id = #{bizAreaId}) = 2 then base.area_id = #{bizAreaId}
+            else 1=2
+            end
+        </if>
+        <if test="videoFaceFlag != null">
+            and case when #{videoFaceFlag} = '1' then taskdis.status = 1
+            when #{videoFaceFlag} = '2'          then taskdis.status = 2
+            else (taskdis.status != 1
+            AND taskdis.status != 2 ) or taskdis.status is null
+            end
+        </if>
+        order by main.gmt_create
+    </select>
+
+    <select id="selectUnderLineVideoReview" resultType="com.yunche.loan.domain.vo.TaskListVO" parameterType="com.yunche.loan.domain.query.TaskListQuery">
+        SELECT
+            main.id,
+            customer.`name` AS customer,
+            customer.id_card AS idCard,
+            customer.mobile AS mobile,
+            employee.`name` AS salesman,
+            partner.`name` AS partner,
+            partner.partner_code     as partnerCode,
+            main.id  AS taskId,
+            'usertask_under_line_video_review'  AS taskKey,
+            taskdis.status as taskDisStatus,
+            taskdis.sendee_name as receiveManName,
+            base.bank AS bank
+        FROM
+        loan_order main
+        LEFT JOIN loan_process deputy ON main.id = deputy.order_id
+        LEFT JOIN loan_base_info base ON base.id = main.loan_base_info_id
+        LEFT JOIN partner partner ON partner.id = base.partner_id
+        LEFT JOIN employee employee ON employee.id = base.salesman_id
+        LEFT JOIN loan_customer customer ON customer.id = main.loan_customer_id
+        LEFT JOIN video_face_num videonum  on videonum.order_id = main.id
+        left join task_distribution taskdis   on main.id = taskdis.task_id and  taskdis.task_key='usertask_video_review'
+        WHERE 1=1
+        AND case when #{taskStatus} = 0 then deputy.under_line_video_review != 0
+        else deputy.under_line_video_review        = #{taskStatus} AND deputy.order_status = 1 end
+        AND CASE WHEN #{maxGroupLevel}  = 0 THEN false
+        when #{maxGroupLevel} = 1 then 1 = 1
+        <if test="juniorIds != null and juniorIds.size() > 0">
+            and base.salesman_id in
+            <foreach item="item" index="index" collection="juniorIds" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        else true end
+
+        and case when #{maxGroupLevel} = 3 then 1=1
+        else 1=1
+        <if test="bizAreaIdList != null and bizAreaIdList.size() > 0">
+            and partner.id in
+            <foreach item="item" index="index" collection="bizAreaIdList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="bankList != null and bankList.size() > 0">
+            and base.bank in
+            <foreach item="item" index="index" collection="bankList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        end
+        <if test="orderId != null">
+            AND main.id = #{orderId}
+        </if>
+        <if test="customer != null and customer != ''">
+            AND customer.name LIKE CONCAT('%', #{customer} ,'%')
+        </if>
+        <if test="partnerId != null">
+            AND partner.id = #{partnerId}
+        </if>
+        <if test="idCard != null">
+            AND customer.id_card = #{idCard}
+        </if>
+        <if test="partnerGroup != null and partnerGroup !=''">
+            AND partner.partner_group = #{partnerGroup}
+        </if>
+        <if test="partnerCode != null and partnerCode !=''">
+            AND partner.partner_code= #{partnerCode}
+        </if>
+        <if test="bizAreaId != null">
+            AND
+            case
+            when (select level from base_area where area_id = #{bizAreaId}) = 0 then 1=1
+            when (select level from base_area where area_id = #{bizAreaId}) = 1 then base.area_id in (select area_id from base_area where parent_area_id = #{bizAreaId})
+            when (select level from base_area where area_id = #{bizAreaId}) = 2 then base.area_id = #{bizAreaId}
+            else 1=2
+            end
+        </if>
+        <if test="videoFaceFlag != null">
+            and case when #{videoFaceFlag} = '1' then taskdis.status = 1
+            when #{videoFaceFlag} = '2'          then taskdis.status = 2
+            else (taskdis.status != 1
+            AND taskdis.status != 2 ) or taskdis.status is null
+            end
+        </if>
+        order by main.gmt_create
+    </select>
+
+    <select id="selectBankLendRecordList" resultType="com.yunche.loan.domain.vo.TaskListVO" parameterType="com.yunche.loan.domain.query.TaskListQuery">
+        SELECT
+            main.id,
+            customer.`name`             AS customer,
+            customer.id_card            AS idCard,
+            customer.mobile             AS mobile,
+            employee.`name`             AS salesman,
+            partner.`name`              AS partner,
+            partner.partner_code        AS partnerCode,
+            main.id                     AS taskId,
+            base.bank                   AS bank,
+            node.usertask_remit_review_create_time  AS remitGmtCreate
+        FROM
+        loan_order main
+        LEFT JOIN loan_process deputy ON main.id = deputy.order_id
+        LEFT JOIN loan_financial_plan  financial ON main.loan_financial_plan_id =financial.id
+        LEFT JOIN loan_base_info base ON base.id = main.loan_base_info_id
+        LEFT JOIN partner partner ON partner.id = base.partner_id
+        LEFT JOIN employee employee ON employee.id = base.salesman_id
+        LEFT JOIN loan_customer customer ON customer.id = main.loan_customer_id
+        LEFT JOIN current_node_manager node ON node.order_id = main.id
+        WHERE 1=1
+        AND case when #{taskStatus} = 0 then deputy.bank_lend_record != 0
+        else deputy.bank_lend_record        = #{taskStatus} AND deputy.order_status = 1 end
+
+        AND CASE WHEN #{maxGroupLevel}  = 0 THEN false
+        when #{maxGroupLevel} = 1 then 1 = 1
+        <if test="juniorIds != null and juniorIds.size() > 0">
+            and base.salesman_id in
+            <foreach item="item" index="index" collection="juniorIds" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        else true end
+
+        and case when #{maxGroupLevel} = 3 then 1=1
+        else 1=1
+        <if test="bizAreaIdList != null and bizAreaIdList.size() > 0">
+            and partner.id in
+            <foreach item="item" index="index" collection="bizAreaIdList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="bankList != null and bankList.size() > 0">
+            and base.bank in
+            <foreach item="item" index="index" collection="bankList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        end
+        <if test="orderId != null">
+            AND main.id = #{orderId}
+        </if>
+        <if test="customer != null and customer != ''">
+            AND customer.name LIKE CONCAT('%', #{customer} ,'%')
+        </if>
+        <if test="partnerId != null">
+            AND partner.id = #{partnerId}
+        </if>
+        <if test="idCard != null">
+            AND customer.id_card = #{idCard}
+        </if>
+        <if test="salesmanId != null">
+            AND base.salesman_id = #{salesmanId}
+        </if>
+
+        <if test="loanAmountType != null">
+            <if test="loanAmountType == 1">
+                AND financial.loan_amount &lt;= 100000
+            </if>
+            <if test="loanAmountType == 2">
+                AND financial.loan_amount &gt; 100000 AND financial.loan_amount &lt;= 300000
+            </if>
+            <if test="loanAmountType == 3">
+                AND financial.loan_amount &gt; 300000
+            </if>
+        </if>
+
+        order by main.gmt_create
+    </select>
+
+    <select id="queryMaterialReviewList" resultType="com.yunche.loan.domain.vo.TaskListVO" parameterType="com.yunche.loan.domain.query.TaskListQuery">
+
+        SELECT
+        main.id AS id,
+        loan_customer.`name` AS customer,
+        loan_customer.id_card AS idCard,
+        taskdis.status as taskDisStatus,
+        main.id as taskId,
+        taskdis.sendee_name as receiveManName,
+        (#{taskDefinitionKey})AS taskKey,
+        loan_process.material_review as taskStatus,
+        loan_customer.mobile,
+        partner.name AS partner,
+        partner.partner_code AS partnerCode,
+        partner.partner_group AS partnerGroup,
+        b.bank,
+        e.name as salesman,
+        useGetTaskTypeText(#{taskDefinitionKey},loan_process.material_review,loan_process.order_status) AS taskTypeText
+
+        FROM
+        loan_order main
+        LEFT JOIN loan_process ON main.id = loan_process.order_id
+        LEFT JOIN loan_customer ON main.loan_customer_id = loan_customer.id
+        LEFT JOIN loan_base_info b ON main.loan_base_info_id = b.id
+        LEFT JOIN employee e ON b.salesman_id = e.id
+        LEFT JOIN partner ON b.partner_id = partner.id
+        left join task_distribution taskdis on main.id = taskdis.task_id and taskdis.task_key = 'usertask_material_review'
+
+        <where>
+            <if test="taskStatus !=null" >
+                AND
+                case when #{taskStatus} = 0 then loan_process.material_review in (1,2,3)
+                when #{taskStatus} = 1 then loan_process.material_review = 1 and loan_process.order_status = 1
+                when #{taskStatus} = 2 then loan_process.material_review = 2 and loan_process.order_status = 1
+                when #{taskStatus} = 3 then loan_process.material_review = 3 and loan_process.order_status = 1
+                else 1=1
+                end
+            </if>
+            AND CASE WHEN #{maxGroupLevel}  = 0 THEN false
+            when #{maxGroupLevel} = 1 then 1 = 1
+            <if test="juniorIds != null and juniorIds.size() > 0">
+                and b.salesman_id in
+                <foreach item="item" index="index" collection="juniorIds" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            else true end
+            and
+            case when #{maxGroupLevel} = 3 then 1=1
+            else 1=1
+            <if test="bizAreaIdList != null and bizAreaIdList.size() > 0">
+                and
+                partner.id in
+                <foreach item="item" index="index" collection="bizAreaIdList" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="bankList != null and bankList.size() > 0">
+                and
+                b.bank in
+                <foreach item="item" index="index" collection="bankList" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            end
+            <if test="customer != null and customer!= '' ">
+                AND loan_customer.`name` LIKE CONCAT('%',#{customer},'%')
+            </if>
+            <if test="partnerId != null and partnerId != ''">
+                AND partner.id = #{partnerId}
+            </if>
+            <if test="salesmanId != null and salesmanId !=''">
+                AND e.id = #{salesmanId}
+            </if>
+            <if test="loanBank != null and loanBank != '' ">
+                AND b.bank = #{loanBank}
+            </if>
+            <if test="carType != null">
+                AND loan_car_info.car_type = #{carType}
+            </if>
+            <if test="orderId != null and orderId != '' ">
+                AND main.id = #{orderId}
+            </if>
+            <if test="idCard != null and idCard != '' ">
+                AND loan_customer.id_card = #{idCard}
+            </if>
+            <if test="partnerGroup != null and partnerGroup !=''">
+                AND partner.partner_group = #{partnerGroup}
+            </if>
+            <if test="partnerCode != null and partnerCode !=''">
+                AND partner.partner_code= #{partnerCode}
+            </if>
+            <if test="bizAreaId != null">
+                AND
+                case
+                when (select level from base_area where area_id = #{bizAreaId}) = 0 then 1=1
+                when (select level from base_area where area_id = #{bizAreaId}) = 1 then b.area_id in (select area_id from base_area where parent_area_id = #{bizAreaId})
+                when (select level from base_area where area_id = #{bizAreaId}) = 2 then b.area_id = #{bizAreaId}
+                else 1=2
+                end
+            </if>
+        </where>
+        <choose>
+            <when test="taskStatus == 0">
+                order by main.gmt_create DESC
+            </when>
+            <when test="taskStatus == 1">
+                order by main.gmt_create DESC
+            </when>
+            <when test="taskStatus == 2">
+                order by main.gmt_create ASC
+            </when>
+            <when test="taskStatus == 3">
+                order by main.gmt_create ASC
+            </when>
+            <otherwise>
+                order by main.gmt_create DESC
+            </otherwise>
+        </choose>
+
+    </select>
+
+    <select id="selectFinancialSchemeModifyApplyReviewList" resultType="com.yunche.loan.domain.vo.TaskListVO" parameterType="com.yunche.loan.domain.query.TaskListQuery">
+        SELECT
+        main.id,
+        task.status as taskDisStatus,
+        customer.`name` AS customer,
+        customer.id_card AS idCard,
+        customer.mobile AS mobile,
+        employee.`name` AS salesman,
+        partner.`name` AS partner,
+        partner.partner_code     AS partnerCode,
+        join_his.id  AS taskId,
+        base.bank AS bank,
+        join_his.id   AS his_id,
+        useGetTaskTypeText(#{taskDefinitionKey},useLevelGetTaskStatus(#{telephoneVerifyLevel},join_his.status),loan_process.order_status) AS taskTypeText,
+        useLevelGetTaskStatus(#{telephoneVerifyLevel},join_his.status)   AS taskStatus
+
+        FROM
+        loan_financial_plan_temp_his join_his
+        INNER JOIN loan_order main   on main.id          = join_his.order_id
+        LEFT JOIN loan_process ON main.id = loan_process.order_id
+        LEFT JOIN loan_base_info base ON base.id = main.loan_base_info_id
+        LEFT JOIN partner partner ON partner.id = base.partner_id
+        LEFT JOIN employee employee ON employee.id = base.salesman_id
+        LEFT JOIN loan_customer customer ON customer.id = main.loan_customer_id
+        left join current_node_manager node on node.order_id = main.id
+        LEFT JOIN `task_distribution` task ON task.`task_id` = join_his.id and task.task_key = 'usertask_financial_scheme_modify_apply_review'
+        WHERE 1=1 AND
+        case when #{taskStatus} = 0 then join_his.status !=0
+        else join_his.status = #{taskStatus} end
+        AND useLevelGetTaskStatus(#{telephoneVerifyLevel},join_his.status) !=-1
+        AND CASE WHEN #{maxGroupLevel}  = 0 THEN false
+        when #{maxGroupLevel} = 1 then 1 = 1
+        <if test="juniorIds != null and juniorIds.size() > 0">
+            and base.salesman_id in
+            <foreach item="item" index="index" collection="juniorIds" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        else true end
+        <if test="taskStatus != 0">
+            <choose>
+                <when test="pull == false">
+                    and join_his.id NOT IN ( ( SELECT distinct task_id FROM task_distribution where task_key =
+                    #{taskDefinitionKey} ) )
+                </when>
+                <otherwise>
+                    and
+                    case when #{maxGroupLevel} = 3 then 1=1
+                    when task.sendee is not null then
+                    case when task.sendee = #{employeeId} then 1=1 else 1=2 end
+                    else 1=1 end
+                    <if test="taskStatus == 2">
+                        and
+                        case when #{maxGroupLevel} = 3 then 1=1
+                        else
+                        join_his.id IN ( ( SELECT distinct task_id FROM task_distribution where task_key =
+                        #{taskDefinitionKey} ) )
+                        end
+                    </if>
+                </otherwise>
+            </choose>
+        </if>
+        and case when #{maxGroupLevel} = 3 then 1=1
+        else 1=1
+        <if test="bizAreaIdList != null and bizAreaIdList.size() > 0">
+            and partner.id in
+            <foreach item="item" index="index" collection="bizAreaIdList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="bankList != null and bankList.size() > 0">
+            and base.bank in
+            <foreach item="item" index="index" collection="bankList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        end
+        <if test="orderId != null">
+            AND main.id = #{orderId}
+        </if>
+        <if test="partnerGroup != null and partnerGroup !=''">
+            AND partner.partner_group = #{partnerGroup}
+        </if>
+        <if test="partnerCode != null and partnerCode !=''">
+            AND partner.partner_code= #{partnerCode}
+        </if>
+        <if test="customer != null and customer != ''">
+            AND customer.name LIKE CONCAT('%', #{customer} ,'%')
+        </if>
+        <if test="partnerId != null">
+            AND partner.id = #{partnerId}
+        </if>
+        <if test="salesmanId != null">
+            AND base.salesman_id = #{salesmanId}
+        </if>
+        <if test="loanBank != null">
+            AND base.bank = #{loanBank}
+        </if>
+        order by main.gmt_create
+    </select>
+</mapper>

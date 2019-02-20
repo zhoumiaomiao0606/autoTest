@@ -991,6 +991,9 @@
             car.car_key                                                            AS car_key,
             car.distributor_name                                                    AS car_distributor_name,
             car.distributor_id                                                      AS car_distributor_id,
+            car.mileage                                                             AS mileage,
+            DATE_FORMAT(car.first_register_date,'%Y-%m-%d %H:%i:%S')                AS car_first_register_date,
+            car.city_id                                                             AS car_city_id,
             CASE
         WHEN car.car_key  = 0 THEN
         '不收'
