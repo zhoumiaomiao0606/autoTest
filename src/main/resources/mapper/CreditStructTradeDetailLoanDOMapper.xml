@@ -1,0 +1,266 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunche.loan.mapper.CreditStructTradeDetailLoanDOMapper">
+    <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.CreditStructTradeDetailLoanDO">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="customer_id" jdbcType="BIGINT" property="customerId"/>
+        <result column="type" jdbcType="TINYINT" property="type"/>
+        <result column="loan_amount" jdbcType="DECIMAL" property="loanAmount"/>
+        <result column="principal_balance" jdbcType="DECIMAL" property="principalBalance"/>
+        <result column="current_month_reapy" jdbcType="DECIMAL" property="currentMonthReapy"/>
+        <result column="period" jdbcType="INTEGER" property="period"/>
+        <result column="expire_date" jdbcType="DATE" property="expireDate"/>
+        <result column="repay_way" jdbcType="TINYINT" property="repayWay"/>
+        <result column="overdue_total_num_last_month_12" jdbcType="INTEGER" property="overdueTotalNumLastMonth12"/>
+        <result column="overdue_max_num_last_month_12" jdbcType="INTEGER" property="overdueMaxNumLastMonth12"/>
+        <result column="overdue_total_num_last_month_24" jdbcType="INTEGER" property="overdueTotalNumLastMonth24"/>
+        <result column="overdue_max_num_last_month_24" jdbcType="INTEGER" property="overdueMaxNumLastMonth24"/>
+        <result column="current_overdue_money" jdbcType="DECIMAL" property="currentOverdueMoney"/>
+        <result column="account_status" jdbcType="TINYINT" property="accountStatus"/>
+        <result column="account_type" jdbcType="TINYINT" property="accountType"/>
+        <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate"/>
+        <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        id, customer_id, type, loan_amount, principal_balance, current_month_reapy, period,
+        expire_date, repay_way, overdue_total_num_last_month_12, overdue_max_num_last_month_12,
+        overdue_total_num_last_month_24, overdue_max_num_last_month_24, current_overdue_money,
+        account_status, account_type, gmt_create, gmt_modify
+    </sql>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from credit_struct_trade_detail_loan
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from credit_struct_trade_detail_loan
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+
+    <insert id="insert" parameterType="com.yunche.loan.domain.entity.CreditStructTradeDetailLoanDO">
+    insert into credit_struct_trade_detail_loan (id, customer_id, type, 
+      loan_amount, principal_balance, current_month_reapy, 
+      period, expire_date, repay_way, 
+      overdue_total_num_last_month_12, overdue_max_num_last_month_12, 
+      overdue_total_num_last_month_24, overdue_max_num_last_month_24, 
+      current_overdue_money, account_status, account_type, 
+      gmt_create, gmt_modify)
+    values (#{id,jdbcType=BIGINT}, #{customerId,jdbcType=BIGINT}, #{type,jdbcType=TINYINT}, 
+      #{loanAmount,jdbcType=DECIMAL}, #{principalBalance,jdbcType=DECIMAL}, #{currentMonthReapy,jdbcType=DECIMAL}, 
+      #{period,jdbcType=INTEGER}, #{expireDate,jdbcType=DATE}, #{repayWay,jdbcType=TINYINT}, 
+      #{overdueTotalNumLastMonth12,jdbcType=INTEGER}, #{overdueMaxNumLastMonth12,jdbcType=INTEGER}, 
+      #{overdueTotalNumLastMonth24,jdbcType=INTEGER}, #{overdueMaxNumLastMonth24,jdbcType=INTEGER}, 
+      #{currentOverdueMoney,jdbcType=DECIMAL}, #{accountStatus,jdbcType=TINYINT}, #{accountType,jdbcType=TINYINT}, 
+      #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModify,jdbcType=TIMESTAMP})
+  </insert>
+    <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.CreditStructTradeDetailLoanDO">
+        insert into credit_struct_trade_detail_loan
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="customerId != null">
+                customer_id,
+            </if>
+            <if test="type != null">
+                type,
+            </if>
+            <if test="loanAmount != null">
+                loan_amount,
+            </if>
+            <if test="principalBalance != null">
+                principal_balance,
+            </if>
+            <if test="currentMonthReapy != null">
+                current_month_reapy,
+            </if>
+            <if test="period != null">
+                period,
+            </if>
+            <if test="expireDate != null">
+                expire_date,
+            </if>
+            <if test="repayWay != null">
+                repay_way,
+            </if>
+            <if test="overdueTotalNumLastMonth12 != null">
+                overdue_total_num_last_month_12,
+            </if>
+            <if test="overdueMaxNumLastMonth12 != null">
+                overdue_max_num_last_month_12,
+            </if>
+            <if test="overdueTotalNumLastMonth24 != null">
+                overdue_total_num_last_month_24,
+            </if>
+            <if test="overdueMaxNumLastMonth24 != null">
+                overdue_max_num_last_month_24,
+            </if>
+            <if test="currentOverdueMoney != null">
+                current_overdue_money,
+            </if>
+            <if test="accountStatus != null">
+                account_status,
+            </if>
+            <if test="accountType != null">
+                account_type,
+            </if>
+            <if test="gmtCreate != null">
+                gmt_create,
+            </if>
+            <if test="gmtModify != null">
+                gmt_modify,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=BIGINT},
+            </if>
+            <if test="customerId != null">
+                #{customerId,jdbcType=BIGINT},
+            </if>
+            <if test="type != null">
+                #{type,jdbcType=TINYINT},
+            </if>
+            <if test="loanAmount != null">
+                #{loanAmount,jdbcType=DECIMAL},
+            </if>
+            <if test="principalBalance != null">
+                #{principalBalance,jdbcType=DECIMAL},
+            </if>
+            <if test="currentMonthReapy != null">
+                #{currentMonthReapy,jdbcType=DECIMAL},
+            </if>
+            <if test="period != null">
+                #{period,jdbcType=INTEGER},
+            </if>
+            <if test="expireDate != null">
+                #{expireDate,jdbcType=DATE},
+            </if>
+            <if test="repayWay != null">
+                #{repayWay,jdbcType=TINYINT},
+            </if>
+            <if test="overdueTotalNumLastMonth12 != null">
+                #{overdueTotalNumLastMonth12,jdbcType=INTEGER},
+            </if>
+            <if test="overdueMaxNumLastMonth12 != null">
+                #{overdueMaxNumLastMonth12,jdbcType=INTEGER},
+            </if>
+            <if test="overdueTotalNumLastMonth24 != null">
+                #{overdueTotalNumLastMonth24,jdbcType=INTEGER},
+            </if>
+            <if test="overdueMaxNumLastMonth24 != null">
+                #{overdueMaxNumLastMonth24,jdbcType=INTEGER},
+            </if>
+            <if test="currentOverdueMoney != null">
+                #{currentOverdueMoney,jdbcType=DECIMAL},
+            </if>
+            <if test="accountStatus != null">
+                #{accountStatus,jdbcType=TINYINT},
+            </if>
+            <if test="accountType != null">
+                #{accountType,jdbcType=TINYINT},
+            </if>
+            <if test="gmtCreate != null">
+                #{gmtCreate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="gmtModify != null">
+                #{gmtModify,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective"
+            parameterType="com.yunche.loan.domain.entity.CreditStructTradeDetailLoanDO">
+        update credit_struct_trade_detail_loan
+        <set>
+            <if test="customerId != null">
+                customer_id = #{customerId,jdbcType=BIGINT},
+            </if>
+            <if test="type != null">
+                type = #{type,jdbcType=TINYINT},
+            </if>
+            <if test="loanAmount != null">
+                loan_amount = #{loanAmount,jdbcType=DECIMAL},
+            </if>
+            <if test="principalBalance != null">
+                principal_balance = #{principalBalance,jdbcType=DECIMAL},
+            </if>
+            <if test="currentMonthReapy != null">
+                current_month_reapy = #{currentMonthReapy,jdbcType=DECIMAL},
+            </if>
+            <if test="period != null">
+                period = #{period,jdbcType=INTEGER},
+            </if>
+            <if test="expireDate != null">
+                expire_date = #{expireDate,jdbcType=DATE},
+            </if>
+            <if test="repayWay != null">
+                repay_way = #{repayWay,jdbcType=TINYINT},
+            </if>
+            <if test="overdueTotalNumLastMonth12 != null">
+                overdue_total_num_last_month_12 = #{overdueTotalNumLastMonth12,jdbcType=INTEGER},
+            </if>
+            <if test="overdueMaxNumLastMonth12 != null">
+                overdue_max_num_last_month_12 = #{overdueMaxNumLastMonth12,jdbcType=INTEGER},
+            </if>
+            <if test="overdueTotalNumLastMonth24 != null">
+                overdue_total_num_last_month_24 = #{overdueTotalNumLastMonth24,jdbcType=INTEGER},
+            </if>
+            <if test="overdueMaxNumLastMonth24 != null">
+                overdue_max_num_last_month_24 = #{overdueMaxNumLastMonth24,jdbcType=INTEGER},
+            </if>
+            <if test="currentOverdueMoney != null">
+                current_overdue_money = #{currentOverdueMoney,jdbcType=DECIMAL},
+            </if>
+            <if test="accountStatus != null">
+                account_status = #{accountStatus,jdbcType=TINYINT},
+            </if>
+            <if test="accountType != null">
+                account_type = #{accountType,jdbcType=TINYINT},
+            </if>
+            <if test="gmtCreate != null">
+                gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="gmtModify != null">
+                gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.CreditStructTradeDetailLoanDO">
+    update credit_struct_trade_detail_loan
+    set customer_id = #{customerId,jdbcType=BIGINT},
+      type = #{type,jdbcType=TINYINT},
+      loan_amount = #{loanAmount,jdbcType=DECIMAL},
+      principal_balance = #{principalBalance,jdbcType=DECIMAL},
+      current_month_reapy = #{currentMonthReapy,jdbcType=DECIMAL},
+      period = #{period,jdbcType=INTEGER},
+      expire_date = #{expireDate,jdbcType=DATE},
+      repay_way = #{repayWay,jdbcType=TINYINT},
+      overdue_total_num_last_month_12 = #{overdueTotalNumLastMonth12,jdbcType=INTEGER},
+      overdue_max_num_last_month_12 = #{overdueMaxNumLastMonth12,jdbcType=INTEGER},
+      overdue_total_num_last_month_24 = #{overdueTotalNumLastMonth24,jdbcType=INTEGER},
+      overdue_max_num_last_month_24 = #{overdueMaxNumLastMonth24,jdbcType=INTEGER},
+      current_overdue_money = #{currentOverdueMoney,jdbcType=DECIMAL},
+      account_status = #{accountStatus,jdbcType=TINYINT},
+      account_type = #{accountType,jdbcType=TINYINT},
+      gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+      gmt_modify = #{gmtModify,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+    <!-- deleteByCustomerId -->
+    <delete id="deleteByCustomerId" parameterType="java.lang.Long">
+        delete from credit_struct_trade_detail_loan
+        where customer_id = #{customerId,jdbcType=BIGINT}
+    </delete>
+
+    <!-- listByCustomerId -->
+    <select id="listByCustomerId" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from credit_struct_trade_detail_loan
+        where customer_id = #{customerId,jdbcType=BIGINT}
+    </select>
+
+</mapper>

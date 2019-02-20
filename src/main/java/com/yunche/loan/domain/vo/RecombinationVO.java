@@ -126,4 +126,9 @@ public class RecombinationVO<T> {
     private FinanceResult financeResult1;
 
     private List<InsuranceRelevanceInfoVO> insuranceInfo = Lists.newArrayList();
+
+    /**
+     * 结构化征信
+     */
+    private List<UniversalCreditStructVO> creditStruct = Lists.newArrayList();
 }

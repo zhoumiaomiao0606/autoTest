@@ -61,4 +61,12 @@ public interface LoanQueryService {
      * @return
      */
     UniversalVideoFaceLogVO selectVideoFaceLog(Long orderId);
+
+    /**
+     * 征信结构化信息
+     *
+     * @param orderId
+     * @return
+     */
+    List<UniversalCreditStructVO> selectUniversalCreditStruct(Long orderId);
 }
