@@ -381,13 +381,13 @@
 
 -->
 
-
         <table tableName="credit_struct_black_ash_sign" domainObjectName="CreditStructBlackAshSignDO"
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
         </table>
 
-        <table tableName="credit_struct_guarantee_credit_card_detail" domainObjectName="CreditStructGuaranteeCreditCardDetailDO"
+        <table tableName="credit_struct_guarantee_credit_card_detail"
+               domainObjectName="CreditStructGuaranteeCreditCardDetailDO"
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
         </table>
@@ -416,6 +416,12 @@
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
         </table>
+
+
+        <!--<table tableName="bank_online_trans" domainObjectName="BankOnlineTransDO"
+            enableCountByExample="false" enableUpdateByExample="false"
+            enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+        </table>-->
 
         <!--<table tableName="conf_video_face_machine" domainObjectName="ConfVideoFaceMachineDO"
                enableCountByExample="false" enableUpdateByExample="false"

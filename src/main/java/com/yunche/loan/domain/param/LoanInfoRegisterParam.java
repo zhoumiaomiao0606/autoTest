@@ -4,6 +4,8 @@ import com.yunche.loan.domain.entity.LoanCustomerDO;
 import com.yunche.loan.domain.vo.BaseVO;
 import lombok.Data;
 
+import java.util.Date;
+
 @Data
 public class LoanInfoRegisterParam {
     /**
@@ -53,5 +55,11 @@ public class LoanInfoRegisterParam {
 
 
     private String monthIncome;
+
+
+    private String  cityName;
+    private String  mileage;
+    private Long cityId;
+    private Date firstRegisterDate;
 
 }

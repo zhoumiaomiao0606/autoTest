@@ -11,6 +11,7 @@ import com.yunche.loan.domain.entity.LoanOrderDO;
 import com.yunche.loan.mapper.BankInterfaceSerialDOMapper;
 import com.yunche.loan.mapper.LoanOrderDOMapper;
 import com.yunche.loan.mapper.LoanProcessLogDOMapper;
+import com.yunche.loan.service.BankOnlineTransService;
 import com.yunche.loan.service.LoanQueryService;
 import feign.*;
 import feign.codec.DecodeException;
@@ -51,6 +52,9 @@ public class FeignConfig {
 
     @Autowired
     LoanProcessLogDOMapper loanProcessLogDOMapper;
+
+    @Autowired
+    private BankOnlineTransService bankOnlineTransService;
 
     @Bean
     public RequestInterceptor basicAuthRequestInterceptor() {
@@ -126,6 +130,10 @@ public class FeignConfig {
                 } else {
                     bankInterfaceSerialDOMapper.insertSelective(DO);
                 }
+                // 银行交互优化
+
+                bankOnlineTransService.registerransStatus(Long.valueOf(orderno.toString()),transCode,IDict.K_BANK_JYZT.PROCESS);
+                bankOnlineTransService.addActionTimes(Long.valueOf(orderno.toString()));
             }
         };
     }
@@ -203,7 +211,7 @@ public class FeignConfig {
                 } else {
                     bankInterfaceSerialDOMapper.insertSelective(DO);
                 }
-
+                bankOnlineTransService.registerransStatus(Long.valueOf(orderIdList.get(0).toString()),transCode.toString(),IDict.K_BANK_JYZT.FAIL);
                 throw new BizException(methodKey + "接口请求失败");
             }
         };
@@ -318,6 +326,8 @@ public class FeignConfig {
                         } else {
                             bankInterfaceSerialDOMapper.insertSelective(DO);
                         }
+
+                        bankOnlineTransService.registerransStatus(Long.valueOf(orderIdList.get(0).toString()),transCode.toString(),IDict.K_BANK_JYZT.PROCESS);
                         return obj;
                     } else {
                         BankInterfaceSerialDO DO = new BankInterfaceSerialDO();
@@ -334,6 +344,8 @@ public class FeignConfig {
                         } else {
                             bankInterfaceSerialDOMapper.insertSelective(DO);
                         }
+                        bankOnlineTransService.registerransStatus(Long.valueOf(orderIdList.get(0).toString()),transCode.toString(),IDict.K_BANK_JYZT.FAIL);
+
 //                        return  obj;
                         throw new BizException(returnMsg);
                     }

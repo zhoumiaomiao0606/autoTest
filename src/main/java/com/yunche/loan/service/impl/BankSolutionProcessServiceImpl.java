@@ -21,12 +21,14 @@ import com.yunche.loan.domain.entity.LoanCreditInfoDO;
 import com.yunche.loan.domain.param.ICBCApiCallbackParam;
 import com.yunche.loan.domain.vo.UniversalBankInterfaceFileSerialDO;
 import com.yunche.loan.mapper.*;
+import com.yunche.loan.service.BankOnlineTransService;
 import com.yunche.loan.service.BankSolutionProcessService;
 import com.yunche.loan.service.LoanCreditInfoService;
 import com.yunche.loan.service.LoanProcessService;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -78,6 +80,9 @@ public class BankSolutionProcessServiceImpl implements BankSolutionProcessServic
 
     @Resource
     private BankInterfaceFileSerialDOMapper bankInterfaceFileSerialDOMapper;
+
+    @Autowired
+    private BankOnlineTransService  bankOnlineTransService;
 
 
     @Override
@@ -138,6 +143,9 @@ public class BankSolutionProcessServiceImpl implements BankSolutionProcessServic
 
         if (IDict.K_RESULT.PASS.equals(applyCreditCallback.getReq().getResult())) {
 
+            //先减
+            bankOnlineTransService.subActionTimes(Long.valueOf(applyCreditCallback.getPub().getOrderno()));
+
             bankInterfaceSerialDO.setStatus(new Byte(IDict.K_JYZT.SUCCESS));
 
             LoanCreditInfoDO up = new LoanCreditInfoDO();
@@ -151,6 +159,13 @@ public class BankSolutionProcessServiceImpl implements BankSolutionProcessServic
 
             loanCreditInfoService.save(up);
 
+            // TODO
+            if(bankOnlineTransService.check(Long.valueOf(applyCreditCallback.getPub().getOrderno()),IDict.K_TRANS_CODE.APPLYCREDIT)){
+                bankOnlineTransService.registerransStatus(Long.valueOf(applyCreditCallback.getPub().getOrderno()),IDict.K_TRANS_CODE.APPLYCREDIT,IDict.K_BANK_JYZT.FULL_SUCC);
+            }else{
+                bankOnlineTransService.registerransStatus(Long.valueOf(applyCreditCallback.getPub().getOrderno()),IDict.K_TRANS_CODE.APPLYCREDIT,IDict.K_BANK_JYZT.PART_SUCC);
+            }
+
         } else if (IDict.K_RESULT.NOPASS.equals(applyCreditCallback.getReq().getResult())) {
 
             bankInterfaceSerialDO.setStatus(new Byte(IDict.K_JYZT.SUCCESS_ERROR));
@@ -161,7 +176,7 @@ public class BankSolutionProcessServiceImpl implements BankSolutionProcessServic
                 up.setResult(CreditEnum.getValueByKey(applyCreditCallback.getReq().getResult()));
             }
             up.setType(new Byte("1"));
-            up.setStatus(new Byte("0"));
+
             up.setGmtCreate(new Date());
 
             loanCreditInfoService.save(up);
@@ -182,6 +197,7 @@ public class BankSolutionProcessServiceImpl implements BankSolutionProcessServic
 
 //            logger.info("征信查询回调 自动打回成功 ==============================================================="+applyCreditCallback.getPub().getCmpseq()+"："+applyCreditCallback.getReq().getResult());
 
+            bankOnlineTransService.registerransStatus(Long.valueOf(applyCreditCallback.getPub().getOrderno()),IDict.K_TRANS_CODE.APPLYCREDIT,IDict.K_BANK_JYZT.FAIL);
 
         } else if (IDict.K_RESULT.BACK.equals(applyCreditCallback.getReq().getResult())) {
 
@@ -198,6 +214,9 @@ public class BankSolutionProcessServiceImpl implements BankSolutionProcessServic
             up.setGmtCreate(new Date());
 
             loanCreditInfoService.save(up);
+
+            bankOnlineTransService.registerransStatus(Long.valueOf(applyCreditCallback.getPub().getOrderno()),IDict.K_TRANS_CODE.APPLYCREDIT,IDict.K_BANK_JYZT.FAIL);
+
 
 //            logger.info("征信查询回调 自动打回开始 ==============================================================="+applyCreditCallback.getPub().getCmpseq()+"："+applyCreditCallback.getReq().getResult());
 
@@ -284,6 +303,8 @@ public class BankSolutionProcessServiceImpl implements BankSolutionProcessServic
         bankInterfaceSerialDO.setStatus(new Byte(IDict.K_JYZT.BACK));
         bankInterfaceSerialDO.setRejectReason(applyDiviGeneralCallback.getReq().getBacknote());
         bankInterfaceSerialDOMapper.updateByPrimaryKeySelective(bankInterfaceSerialDO);
+        bankOnlineTransService.registerransStatus(Long.valueOf(applyDiviGeneralCallback.getPub().getOrderno()),IDict.K_TRANS_CODE.MULTIMEDIAUPLOAD,IDict.K_BANK_JYZT.FAIL);
+
         logger.info("分期退回回调结束===============================================================");
     }
 
@@ -308,6 +329,8 @@ public class BankSolutionProcessServiceImpl implements BankSolutionProcessServic
         bankInterfaceSerialDO.setStatus(new Byte(IDict.K_JYZT.BACK));
         bankInterfaceSerialDO.setRejectReason(multimediaUploadCallback.getReq().getBacknote());
         bankInterfaceSerialDOMapper.updateByPrimaryKeySelective(bankInterfaceSerialDO);
+        bankOnlineTransService.registerransStatus(Long.valueOf(multimediaUploadCallback.getPub().getOrderno()),IDict.K_TRANS_CODE.MULTIMEDIAUPLOAD,IDict.K_BANK_JYZT.FAIL);
+
         logger.info("多媒体退回回调结束===============================================================");
     }
 
@@ -339,6 +362,7 @@ public class BankSolutionProcessServiceImpl implements BankSolutionProcessServic
         bankInterfaceSerialDO.setStatus(new Byte(IDict.K_JYZT.BACK));
         bankInterfaceSerialDO.setRejectReason(creditCardApplyCallback.getReq().getBacknote());
         bankInterfaceSerialDOMapper.updateByPrimaryKeySelective(bankInterfaceSerialDO);
+        bankOnlineTransService.registerransStatus(Long.valueOf(creditCardApplyCallback.getPub().getOrderno()),IDict.K_TRANS_CODE.CREDITCARDAPPLY,IDict.K_BANK_JYZT.FAIL);
         logger.info("开卡退回回调结束===============================================================");
     }
 
