@@ -68,30 +68,39 @@ public class CreditStructServiceImpl implements CreditStructService {
 
         Long customerId = param.getCustomerId();
 
-        CreditStructBlackAshSignDO creditStructBlackAshSignDO = creditStructBlackAshSignDOMapper.selectByPrimaryKey(customerId);
-        if (null == creditStructBlackAshSignDO) {
-            int count = creditStructBlackAshSignDOMapper.insertSelective(creditStructBlackAshSignDO);
-            Assert.isTrue(count > 0, "保存失败");
+        CreditStructBlackAshSignDO exist_1 = creditStructBlackAshSignDOMapper.selectByPrimaryKey(customerId);
+        CreditStructBlackAshSignDO creditStructBlackAshSign = param.getCreditStructBlackAshSign();
+        if (null == exist_1) {
+            if (null != creditStructBlackAshSign) {
+                int count = creditStructBlackAshSignDOMapper.insertSelective(creditStructBlackAshSign);
+                Assert.isTrue(count > 0, "保存失败");
+            }
         } else {
-            int count = creditStructBlackAshSignDOMapper.updateByPrimaryKeySelective(creditStructBlackAshSignDO);
+            int count = creditStructBlackAshSignDOMapper.updateByPrimaryKeySelective(creditStructBlackAshSign);
             Assert.isTrue(count > 0, "保存失败");
         }
 
-        CreditStructQueryCountDO creditStructQueryCountDO = creditStructQueryCountDOMapper.selectByPrimaryKey(customerId);
-        if (null == creditStructQueryCountDO) {
-            int count = creditStructQueryCountDOMapper.insertSelective(creditStructQueryCountDO);
-            Assert.isTrue(count > 0, "保存失败");
+        CreditStructQueryCountDO exist_2 = creditStructQueryCountDOMapper.selectByPrimaryKey(customerId);
+        CreditStructQueryCountDO creditStructQueryCount = param.getCreditStructQueryCount();
+        if (null == exist_2) {
+            if (null != creditStructQueryCount) {
+                int count = creditStructQueryCountDOMapper.insertSelective(creditStructQueryCount);
+                Assert.isTrue(count > 0, "保存失败");
+            }
         } else {
-            int count = creditStructQueryCountDOMapper.updateByPrimaryKeySelective(creditStructQueryCountDO);
+            int count = creditStructQueryCountDOMapper.updateByPrimaryKeySelective(creditStructQueryCount);
             Assert.isTrue(count > 0, "保存失败");
         }
 
-        CreditStructSumDO creditStructSumDO = creditStructSumDOMapper.selectByPrimaryKey(customerId);
-        if (null == creditStructSumDO) {
-            int count = creditStructSumDOMapper.insertSelective(creditStructSumDO);
-            Assert.isTrue(count > 0, "保存失败");
+        CreditStructSumDO exist_3 = creditStructSumDOMapper.selectByPrimaryKey(customerId);
+        CreditStructSumDO creditStructSum = param.getCreditStructSum();
+        if (null == exist_3) {
+            if (null != creditStructSum) {
+                int count = creditStructSumDOMapper.insertSelective(creditStructSum);
+                Assert.isTrue(count > 0, "保存失败");
+            }
         } else {
-            int count = creditStructSumDOMapper.updateByPrimaryKeySelective(creditStructSumDO);
+            int count = creditStructSumDOMapper.updateByPrimaryKeySelective(creditStructSum);
             Assert.isTrue(count > 0, "保存失败");
         }
 
