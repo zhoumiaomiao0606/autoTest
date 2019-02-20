@@ -1035,7 +1035,7 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
             bankInterfaceSerialOrderidList = taskSchedulingDOMapper.selectBankInterfaceSerialOrderidList(taskListQuery);
             taskListQuery.setBankInterfaceSerialOrderidList(bankInterfaceSerialOrderidList);
 
-        } else if (LoanProcessEnum.TELEPHONE_VERIFY.getCode().equals(taskDefinitionKey)) {
+        } else if (LoanProcessEnum.TELEPHONE_VERIFY.getCode().equals(taskDefinitionKey) || LoanProcessEnum.FINANCIAL_SCHEME_MODIFY_APPLY_REVIEW.getCode().equals(taskDefinitionKey)) {
 
             Long telephoneVerifyLevel = taskSchedulingDOMapper.selectTelephoneVerifyLevel(loginUser.getId());
             taskListQuery.setTelephoneVerifyLevel(telephoneVerifyLevel);
@@ -1071,6 +1071,10 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         } else if (LoanProcessEnum.VIDEO_REVIEW.getCode().equals(taskDefinitionKey)) {
             count = PageHelper.count(() -> {
                 totalQueryListDOMapper.selectVideoReviewList(taskListQuery);
+            });
+        } else if (LoanProcessEnum.FINANCIAL_SCHEME_MODIFY_APPLY_REVIEW.getCode().equals(taskDefinitionKey)) {
+            count = PageHelper.count(() -> {
+                totalQueryListDOMapper.selectFinancialSchemeModifyApplyReviewList(taskListQuery);
             });
         }
 

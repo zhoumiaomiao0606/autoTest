@@ -3878,6 +3878,8 @@
         SELECT
         main.id,
         task.status as taskDisStatus,
+        task.sendee_name as receiveManName,
+        (#{taskDefinitionKey}) AS taskKey,
         customer.`name` AS customer,
         customer.id_card AS idCard,
         customer.mobile AS mobile,
