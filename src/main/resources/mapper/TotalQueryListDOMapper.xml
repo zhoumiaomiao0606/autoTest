@@ -649,6 +649,8 @@
         cus.`name`      		 as customer,
         cus.id_card          as idCard,
         base.bank            as bank,
+        r1.start_date        as cIStartTime,
+        r2.start_date        as cTALIStartTime,
         useGetTaskTypeText(#{taskDefinitionKey},process.car_insurance,process.order_status) AS taskTypeText
 
         from loan_order loan
@@ -657,6 +659,14 @@
         left join partner par on par.id = base.partner_id
         left join loan_customer cus on cus.id = loan.loan_customer_id
         left join current_node_manager node on node.order_id = loan.id
+        LEFT JOIN
+        (SELECT id,order_id FROM
+        (
+        SELECT * FROM insurance_info order by order_id,insurance_year DESC limit 10000000000
+        ) t GROUP BY t.order_id
+        ) i ON i.order_id = loan.id
+        LEFT JOIN insurance_relevance r1 ON i.id = r1.insurance_info_id and r1.insurance_type = 1
+        LEFT JOIN insurance_relevance r2 ON i.id = r2.insurance_info_id and r2.insurance_type = 2
         where case when #{taskStatus} = 0 then process.car_insurance != 0
         else process.car_insurance = #{taskStatus} and process.order_status = 1 end
         AND CASE WHEN #{maxGroupLevel}  = 0 THEN false
@@ -686,6 +696,12 @@
         end
         <if test="orderId != null">
             AND loan.id = #{orderId}
+        </if>
+        <if test="cIFromTime !=null and cIToTime !=null and cIFromTime !='' and cIToTime !=''">
+            and r1.start_date &gt;= #{cIFromTime} and  r1.start_date &lt;= #{cIToTime}
+        </if>
+        <if test="cTALIFromTime !=null and cTALIToTime !=null and cTALIFromTime !='' and cTALIToTime !=''">
+            and r2.start_date &gt;= #{cTALIFromTime} and  r2.start_date &lt;= #{cTALIToTime}
         </if>
         <if test="customer != null and customer != ''">
             AND cus.name LIKE CONCAT('%', #{customer} ,'%')

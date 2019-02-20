@@ -178,6 +178,12 @@ public class TaskListVO {
     private String orderRisk;
 
     private String confThirdLoanMoney;
+
+    //商业险
+    private String cIStartTime;
+
+    //交强险
+    private String cTALIStartTime;
 }
 
 
