@@ -7,6 +7,10 @@ import lombok.Data;
 @Data
 public class DrivinglicensePara
 {
+
+    //ocr信息保存id
+    private Long orcId;
+
     private String face;
 
     private String back;
