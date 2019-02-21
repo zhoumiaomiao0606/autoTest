@@ -180,10 +180,10 @@ public class TaskListVO {
     private String confThirdLoanMoney;
 
     //商业险
-    private String cIStartTime;
+    private String cIEndTime;
 
     //交强险
-    private String cTALIStartTime;
+    private String cTALIEndTime;
 }
 
 
