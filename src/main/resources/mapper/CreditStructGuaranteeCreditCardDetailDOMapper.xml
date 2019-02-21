@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunche.loan.mapper.CreditStructGuaranteeCreditCardDetailDOMapper">
+    <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.CreditStructGuaranteeCreditCardDetailDO">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="customer_id" jdbcType="BIGINT" property="customerId"/>
+        <result column="open_account_date" jdbcType="DATE" property="openAccountDate"/>
+        <result column="credit_line" jdbcType="DECIMAL" property="creditLine"/>
+        <result column="account_status" jdbcType="TINYINT" property="accountStatus"/>
+        <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate"/>
+        <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+    id, customer_id, open_account_date, credit_line, account_status, gmt_create, gmt_modify
+  </sql>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from credit_struct_guarantee_credit_card_detail
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from credit_struct_guarantee_credit_card_detail
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+    <insert id="insert" parameterType="com.yunche.loan.domain.entity.CreditStructGuaranteeCreditCardDetailDO">
+    insert into credit_struct_guarantee_credit_card_detail (id, customer_id, open_account_date, 
+      credit_line, account_status, gmt_create, 
+      gmt_modify)
+    values (#{id,jdbcType=BIGINT}, #{customerId,jdbcType=BIGINT}, #{openAccountDate,jdbcType=DATE}, 
+      #{creditLine,jdbcType=DECIMAL}, #{accountStatus,jdbcType=TINYINT}, #{gmtCreate,jdbcType=TIMESTAMP}, 
+      #{gmtModify,jdbcType=TIMESTAMP})
+  </insert>
+    <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.CreditStructGuaranteeCreditCardDetailDO">
+        insert into credit_struct_guarantee_credit_card_detail
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="customerId != null">
+                customer_id,
+            </if>
+            <if test="openAccountDate != null">
+                open_account_date,
+            </if>
+            <if test="creditLine != null">
+                credit_line,
+            </if>
+            <if test="accountStatus != null">
+                account_status,
+            </if>
+            <if test="gmtCreate != null">
+                gmt_create,
+            </if>
+            <if test="gmtModify != null">
+                gmt_modify,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=BIGINT},
+            </if>
+            <if test="customerId != null">
+                #{customerId,jdbcType=BIGINT},
+            </if>
+            <if test="openAccountDate != null">
+                #{openAccountDate,jdbcType=DATE},
+            </if>
+            <if test="creditLine != null">
+                #{creditLine,jdbcType=DECIMAL},
+            </if>
+            <if test="accountStatus != null">
+                #{accountStatus,jdbcType=TINYINT},
+            </if>
+            <if test="gmtCreate != null">
+                #{gmtCreate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="gmtModify != null">
+                #{gmtModify,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective"
+            parameterType="com.yunche.loan.domain.entity.CreditStructGuaranteeCreditCardDetailDO">
+        update credit_struct_guarantee_credit_card_detail
+        <set>
+            <if test="customerId != null">
+                customer_id = #{customerId,jdbcType=BIGINT},
+            </if>
+            <if test="openAccountDate != null">
+                open_account_date = #{openAccountDate,jdbcType=DATE},
+            </if>
+            <if test="creditLine != null">
+                credit_line = #{creditLine,jdbcType=DECIMAL},
+            </if>
+            <if test="accountStatus != null">
+                account_status = #{accountStatus,jdbcType=TINYINT},
+            </if>
+            <if test="gmtCreate != null">
+                gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="gmtModify != null">
+                gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+    <update id="updateByPrimaryKey"
+            parameterType="com.yunche.loan.domain.entity.CreditStructGuaranteeCreditCardDetailDO">
+    update credit_struct_guarantee_credit_card_detail
+    set customer_id = #{customerId,jdbcType=BIGINT},
+      open_account_date = #{openAccountDate,jdbcType=DATE},
+      credit_line = #{creditLine,jdbcType=DECIMAL},
+      account_status = #{accountStatus,jdbcType=TINYINT},
+      gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+      gmt_modify = #{gmtModify,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+    <!-- deleteByCustomerId -->
+    <delete id="deleteByCustomerId" parameterType="java.lang.Long">
+        delete from credit_struct_guarantee_credit_card_detail
+        where customer_id = #{customerId,jdbcType=BIGINT}
+    </delete>
+
+    <!-- listByCustomerId -->
+    <select id="listByCustomerId" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from credit_struct_guarantee_credit_card_detail
+        where customer_id = #{customerId,jdbcType=BIGINT}
+    </select>
+
+</mapper>

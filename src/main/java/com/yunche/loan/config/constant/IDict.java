@@ -543,5 +543,36 @@ public class IDict {
         public static final Byte PAY_FAIL=3;
 
     }
+
+
+    public static abstract interface K_BANK_JYZT{
+        /**
+         * 处理中
+         */
+        public static final String PROCESS="2";
+        /**
+         * 部分成功
+         */
+        public static final String PART_SUCC="3";
+
+        /**
+         * 全部成功
+         */
+        public static final String FULL_SUCC="4";
+        /**
+         * 失败
+         */
+        public static final String FAIL="5";
+
+
+        /**
+         * 推送应答失败
+         */
+        public static final String PUSH_FAIL="6";
+
+
+
+
+    }
 }
 

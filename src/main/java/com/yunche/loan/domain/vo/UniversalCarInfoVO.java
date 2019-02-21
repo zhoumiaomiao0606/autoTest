@@ -2,6 +2,8 @@ package com.yunche.loan.domain.vo;
 
 import lombok.Data;
 
+import java.util.Date;
+
 @Data
 public class UniversalCarInfoVO {
 
@@ -40,6 +42,11 @@ public class UniversalCarInfoVO {
     private String vehicle_car_category;
     private String car_distributor_name;
     private String car_distributor_id;
+
+    private String  car_city_name;
+    private String  mileage;
+    private Long car_city_id;
+    private Date car_first_register_date;
 
 
 }

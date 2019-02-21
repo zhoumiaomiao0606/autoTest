@@ -51,9 +51,15 @@ public class LoanInfoRegisterServiceImpl implements LoanInfoRegisterService {
     private SecondHandCarEvaluateDOMapper secondHandCarEvaluateDOMapper;
 
 
+    @Autowired
+    private BaseAreaDOMapper baseAreaDOMapper;
+
+
     @Override
     public ResultBean detail(Long orderId) {
         Preconditions.checkNotNull(orderId, "参数有误");
+
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
 
         //客户基本信息
         UniversalInfoVO universalInfoVO = loanQueryDOMapper.selectUniversalInfo(orderId);
@@ -61,15 +67,29 @@ public class LoanInfoRegisterServiceImpl implements LoanInfoRegisterService {
         UniversalCarInfoVO universalCarInfoVO = loanQueryDOMapper.selectUniversalCarInfo(orderId);
 
         //判断估价类型
-        if (universalCarInfoVO!=null && universalCarInfoVO.getCar_type()!=null && !"".equals(universalCarInfoVO.getCar_type()) && Byte.valueOf(universalCarInfoVO.getCar_type())==1)
-        {
-            if (universalCarInfoVO.getEvaluation_type()!=null && universalCarInfoVO.getEvaluation_type() ==2)
-            {
+        if (universalCarInfoVO!=null
+                && universalCarInfoVO.getCar_type()!=null
+                && !"".equals(universalCarInfoVO.getCar_type())
+                && Byte.valueOf(universalCarInfoVO.getCar_type())==1) {
+            if (universalCarInfoVO.getEvaluation_type() != null && universalCarInfoVO.getEvaluation_type() == 2) {
                 universalCarInfoVO.setVin(universalCarInfoVO.getVehicle_vehicle_identification_number());
+                BaseAreaDO baseAreaDO = baseAreaDOMapper.selectByPrimaryKey(universalCarInfoVO.getCar_city_id(), null);
+                if(baseAreaDO!=null){
+                    universalCarInfoVO.setCar_city_name(baseAreaDO.getAreaName());
+                }
+
+            }else{
+                if(loanOrderDO.getSecond_hand_car_evaluate_id()!=null){
+                    SecondHandCarEvaluateDO secondHandCarEvaluateDO = secondHandCarEvaluateDOMapper.selectByPrimaryKey(loanOrderDO.getSecond_hand_car_evaluate_id());
+                    if(secondHandCarEvaluateDO!=null){
+                        universalCarInfoVO.setCar_city_name(secondHandCarEvaluateDO.getCity_id());
+                        universalCarInfoVO.setMileage(secondHandCarEvaluateDO.getMileage());
+                    }
+
+                }
             }
 
         }
-
         //金融方案信息
         FinancialSchemeVO financialSchemeVO = loanQueryDOMapper.selectFinancialScheme(orderId);
 
@@ -146,6 +166,11 @@ public class LoanInfoRegisterServiceImpl implements LoanInfoRegisterService {
         carInfoDO.setEvaluationType(loanInfoRegisterParam.getEvaluationType());
         carInfoDO.setCarDetailId(loanInfoRegisterParam.getCarDetail().getId());
         carInfoDO.setCarDetailName(loanInfoRegisterParam.getCarDetail().getName());
+
+        carInfoDO.setFirstRegisterDate(loanInfoRegisterParam.getFirstRegisterDate());
+        carInfoDO.setMileage(loanInfoRegisterParam.getMileage());
+        carInfoDO.setCityId(loanInfoRegisterParam.getCityId());
+        carInfoDO.setVin(loanInfoRegisterParam.getVin());
 
         if (null != loanCarInfoId) {
 

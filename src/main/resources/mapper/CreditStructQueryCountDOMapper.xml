@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunche.loan.mapper.CreditStructQueryCountDOMapper">
+    <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.CreditStructQueryCountDO">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="loan_query_count_last_month_1" jdbcType="INTEGER" property="loanQueryCountLastMonth1"/>
+        <result column="credit_query_count_card_last_month_1" jdbcType="INTEGER"
+                property="creditQueryCountCardLastMonth1"/>
+        <result column="oneself_query_count_last_month_1" jdbcType="INTEGER" property="oneselfQueryCountLastMonth1"/>
+        <result column="loan_query_count_last_month_2" jdbcType="INTEGER" property="loanQueryCountLastMonth2"/>
+        <result column="credit_query_count_card_last_month_2" jdbcType="INTEGER"
+                property="creditQueryCountCardLastMonth2"/>
+        <result column="oneself_query_count_last_month_2" jdbcType="INTEGER" property="oneselfQueryCountLastMonth2"/>
+        <result column="loan_query_count_last_month_6" jdbcType="INTEGER" property="loanQueryCountLastMonth6"/>
+        <result column="credit_query_count_card_last_month_6" jdbcType="INTEGER"
+                property="creditQueryCountCardLastMonth6"/>
+        <result column="oneself_query_count_last_month_6" jdbcType="INTEGER" property="oneselfQueryCountLastMonth6"/>
+        <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate"/>
+        <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+    id, loan_query_count_last_month_1, credit_query_count_card_last_month_1, oneself_query_count_last_month_1, 
+    loan_query_count_last_month_2, credit_query_count_card_last_month_2, oneself_query_count_last_month_2, 
+    loan_query_count_last_month_6, credit_query_count_card_last_month_6, oneself_query_count_last_month_6, 
+    gmt_create, gmt_modify
+  </sql>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from credit_struct_query_count
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from credit_struct_query_count
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+    <insert id="insert" parameterType="com.yunche.loan.domain.entity.CreditStructQueryCountDO">
+    insert into credit_struct_query_count (id, loan_query_count_last_month_1, credit_query_count_card_last_month_1, 
+      oneself_query_count_last_month_1, loan_query_count_last_month_2, 
+      credit_query_count_card_last_month_2, oneself_query_count_last_month_2, 
+      loan_query_count_last_month_6, credit_query_count_card_last_month_6, 
+      oneself_query_count_last_month_6, gmt_create, 
+      gmt_modify)
+    values (#{id,jdbcType=BIGINT}, #{loanQueryCountLastMonth1,jdbcType=INTEGER}, #{creditQueryCountCardLastMonth1,jdbcType=INTEGER}, 
+      #{oneselfQueryCountLastMonth1,jdbcType=INTEGER}, #{loanQueryCountLastMonth2,jdbcType=INTEGER}, 
+      #{creditQueryCountCardLastMonth2,jdbcType=INTEGER}, #{oneselfQueryCountLastMonth2,jdbcType=INTEGER}, 
+      #{loanQueryCountLastMonth6,jdbcType=INTEGER}, #{creditQueryCountCardLastMonth6,jdbcType=INTEGER}, 
+      #{oneselfQueryCountLastMonth6,jdbcType=INTEGER}, #{gmtCreate,jdbcType=TIMESTAMP}, 
+      #{gmtModify,jdbcType=TIMESTAMP})
+  </insert>
+    <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.CreditStructQueryCountDO">
+        insert into credit_struct_query_count
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="loanQueryCountLastMonth1 != null">
+                loan_query_count_last_month_1,
+            </if>
+            <if test="creditQueryCountCardLastMonth1 != null">
+                credit_query_count_card_last_month_1,
+            </if>
+            <if test="oneselfQueryCountLastMonth1 != null">
+                oneself_query_count_last_month_1,
+            </if>
+            <if test="loanQueryCountLastMonth2 != null">
+                loan_query_count_last_month_2,
+            </if>
+            <if test="creditQueryCountCardLastMonth2 != null">
+                credit_query_count_card_last_month_2,
+            </if>
+            <if test="oneselfQueryCountLastMonth2 != null">
+                oneself_query_count_last_month_2,
+            </if>
+            <if test="loanQueryCountLastMonth6 != null">
+                loan_query_count_last_month_6,
+            </if>
+            <if test="creditQueryCountCardLastMonth6 != null">
+                credit_query_count_card_last_month_6,
+            </if>
+            <if test="oneselfQueryCountLastMonth6 != null">
+                oneself_query_count_last_month_6,
+            </if>
+            <if test="gmtCreate != null">
+                gmt_create,
+            </if>
+            <if test="gmtModify != null">
+                gmt_modify,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=BIGINT},
+            </if>
+            <if test="loanQueryCountLastMonth1 != null">
+                #{loanQueryCountLastMonth1,jdbcType=INTEGER},
+            </if>
+            <if test="creditQueryCountCardLastMonth1 != null">
+                #{creditQueryCountCardLastMonth1,jdbcType=INTEGER},
+            </if>
+            <if test="oneselfQueryCountLastMonth1 != null">
+                #{oneselfQueryCountLastMonth1,jdbcType=INTEGER},
+            </if>
+            <if test="loanQueryCountLastMonth2 != null">
+                #{loanQueryCountLastMonth2,jdbcType=INTEGER},
+            </if>
+            <if test="creditQueryCountCardLastMonth2 != null">
+                #{creditQueryCountCardLastMonth2,jdbcType=INTEGER},
+            </if>
+            <if test="oneselfQueryCountLastMonth2 != null">
+                #{oneselfQueryCountLastMonth2,jdbcType=INTEGER},
+            </if>
+            <if test="loanQueryCountLastMonth6 != null">
+                #{loanQueryCountLastMonth6,jdbcType=INTEGER},
+            </if>
+            <if test="creditQueryCountCardLastMonth6 != null">
+                #{creditQueryCountCardLastMonth6,jdbcType=INTEGER},
+            </if>
+            <if test="oneselfQueryCountLastMonth6 != null">
+                #{oneselfQueryCountLastMonth6,jdbcType=INTEGER},
+            </if>
+            <if test="gmtCreate != null">
+                #{gmtCreate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="gmtModify != null">
+                #{gmtModify,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.CreditStructQueryCountDO">
+        update credit_struct_query_count
+        <set>
+            <if test="loanQueryCountLastMonth1 != null">
+                loan_query_count_last_month_1 = #{loanQueryCountLastMonth1,jdbcType=INTEGER},
+            </if>
+            <if test="creditQueryCountCardLastMonth1 != null">
+                credit_query_count_card_last_month_1 = #{creditQueryCountCardLastMonth1,jdbcType=INTEGER},
+            </if>
+            <if test="oneselfQueryCountLastMonth1 != null">
+                oneself_query_count_last_month_1 = #{oneselfQueryCountLastMonth1,jdbcType=INTEGER},
+            </if>
+            <if test="loanQueryCountLastMonth2 != null">
+                loan_query_count_last_month_2 = #{loanQueryCountLastMonth2,jdbcType=INTEGER},
+            </if>
+            <if test="creditQueryCountCardLastMonth2 != null">
+                credit_query_count_card_last_month_2 = #{creditQueryCountCardLastMonth2,jdbcType=INTEGER},
+            </if>
+            <if test="oneselfQueryCountLastMonth2 != null">
+                oneself_query_count_last_month_2 = #{oneselfQueryCountLastMonth2,jdbcType=INTEGER},
+            </if>
+            <if test="loanQueryCountLastMonth6 != null">
+                loan_query_count_last_month_6 = #{loanQueryCountLastMonth6,jdbcType=INTEGER},
+            </if>
+            <if test="creditQueryCountCardLastMonth6 != null">
+                credit_query_count_card_last_month_6 = #{creditQueryCountCardLastMonth6,jdbcType=INTEGER},
+            </if>
+            <if test="oneselfQueryCountLastMonth6 != null">
+                oneself_query_count_last_month_6 = #{oneselfQueryCountLastMonth6,jdbcType=INTEGER},
+            </if>
+            <if test="gmtCreate != null">
+                gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="gmtModify != null">
+                gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.CreditStructQueryCountDO">
+    update credit_struct_query_count
+    set loan_query_count_last_month_1 = #{loanQueryCountLastMonth1,jdbcType=INTEGER},
+      credit_query_count_card_last_month_1 = #{creditQueryCountCardLastMonth1,jdbcType=INTEGER},
+      oneself_query_count_last_month_1 = #{oneselfQueryCountLastMonth1,jdbcType=INTEGER},
+      loan_query_count_last_month_2 = #{loanQueryCountLastMonth2,jdbcType=INTEGER},
+      credit_query_count_card_last_month_2 = #{creditQueryCountCardLastMonth2,jdbcType=INTEGER},
+      oneself_query_count_last_month_2 = #{oneselfQueryCountLastMonth2,jdbcType=INTEGER},
+      loan_query_count_last_month_6 = #{loanQueryCountLastMonth6,jdbcType=INTEGER},
+      credit_query_count_card_last_month_6 = #{creditQueryCountCardLastMonth6,jdbcType=INTEGER},
+      oneself_query_count_last_month_6 = #{oneselfQueryCountLastMonth6,jdbcType=INTEGER},
+      gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+      gmt_modify = #{gmtModify,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

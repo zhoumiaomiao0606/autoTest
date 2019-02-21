@@ -6,10 +6,7 @@ import com.google.common.collect.Maps;
 import com.yunche.loan.config.constant.IDict;
 import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.util.SessionUtils;
-import com.yunche.loan.domain.entity.LoanCustomerDO;
-import com.yunche.loan.domain.entity.LoanOrderDO;
-import com.yunche.loan.domain.entity.LoanProcessDO;
-import com.yunche.loan.domain.entity.VideoFaceLogDO;
+import com.yunche.loan.domain.entity.*;
 import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.DictService;
@@ -41,6 +38,27 @@ public class LoanQueryServiceImpl implements LoanQueryService {
 
     @Autowired
     private VideoFaceLogDOMapper videoFaceLogDOMapper;
+
+    @Autowired
+    private CreditStructSumDOMapper creditStructSumDOMapper;
+
+    @Autowired
+    private CreditStructTradeDetailDOMapper creditStructTradeDetailDOMapper;
+
+    @Autowired
+    private CreditStructQueryCountDOMapper creditStructQueryCountDOMapper;
+
+    @Autowired
+    private CreditStructBlackAshSignDOMapper creditStructBlackAshSignDOMapper;
+
+    @Autowired
+    private CreditStructTradeDetailLoanDOMapper creditStructTradeDetailLoanDOMapper;
+
+    @Autowired
+    private CreditStructGuaranteeLoanDetailDOMapper creditStructGuaranteeLoanDetailDOMapper;
+
+    @Autowired
+    private CreditStructGuaranteeCreditCardDetailDOMapper creditStructGuaranteeCreditCardDetailDOMapper;
 
     @Autowired
     private DictService dictService;
@@ -272,6 +290,42 @@ public class LoanQueryServiceImpl implements LoanQueryService {
         }
 
         return universalVideoFaceLogVO;
+    }
+
+    @Override
+    public List<UniversalCreditStructVO> selectUniversalCreditStruct(Long orderId) {
+
+        List<UniversalCreditStructVO> creditStructList = Lists.newCopyOnWriteArrayList();
+
+        List<UniversalCustomerVO> customers = loanQueryDOMapper.selectUniversalCustomer(orderId);
+
+        if (!CollectionUtils.isEmpty(customers)) {
+
+            customers.parallelStream()
+                    .forEach(customer -> {
+
+                        Long customerId = Long.valueOf(customer.getCustomer_id());
+
+                        UniversalCreditStructVO universalCreditStructVO = new UniversalCreditStructVO();
+
+                        universalCreditStructVO.setCustomerId(customerId);
+                        universalCreditStructVO.setCustomerName(customer.getName());
+                        universalCreditStructVO.setCustomerType(Byte.valueOf(customer.getCust_type()));
+
+                        universalCreditStructVO.setCreditStructBlackAshSign(creditStructBlackAshSignDOMapper.selectByPrimaryKey(customerId));
+                        universalCreditStructVO.setCreditStructQueryCount(creditStructQueryCountDOMapper.selectByPrimaryKey(customerId));
+                        universalCreditStructVO.setCreditStructSum(creditStructSumDOMapper.selectByPrimaryKey(customerId));
+
+                        universalCreditStructVO.setCreditStructTradeDetail(creditStructTradeDetailDOMapper.listByCustomerId(customerId));
+                        universalCreditStructVO.setCreditStructTradeDetailLoan(creditStructTradeDetailLoanDOMapper.listByCustomerId(customerId));
+                        universalCreditStructVO.setCreditStructGuaranteeLoanDetail(creditStructGuaranteeLoanDetailDOMapper.listByCustomerId(customerId));
+                        universalCreditStructVO.setCreditStructGuaranteeCreditCardDetail(creditStructGuaranteeCreditCardDetailDOMapper.listByCustomerId(customerId));
+
+                        creditStructList.add(universalCreditStructVO);
+                    });
+        }
+
+        return creditStructList;
     }
 
     /**
