@@ -16,10 +16,11 @@
         <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate" />
         <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify" />
         <result column="lend_amount" jdbcType="DECIMAL" property="lendAmount" />
+        <result column="operation_man" jdbcType="VARCHAR" property="operationMan" />
     </resultMap>
     <sql id="Base_Column_List">
         bridge_procecss_id, order_id, lend_date, repay_type, repay_date, repay_remark, interest,
-        poundage, repay_interest_date, repay_register_remark, lend_status, gmt_create, gmt_modify,lend_amount
+        poundage, repay_interest_date, repay_register_remark, lend_status, gmt_create, gmt_modify,lend_amount,operation_man
     </sql>
     <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
         select
@@ -36,12 +37,12 @@
         repay_type, repay_date, repay_remark,
         interest, poundage, repay_interest_date,
         repay_register_remark, lend_status, gmt_create,
-        gmt_modify,lend_amount)
+        gmt_modify,lend_amount,operation_man)
         values (#{bridgeProcecssId,jdbcType=BIGINT}, #{orderId,jdbcType=BIGINT}, #{lendDate,jdbcType=TIMESTAMP},
         #{repayType,jdbcType=TINYINT}, #{repayDate,jdbcType=TIMESTAMP}, #{repayRemark,jdbcType=VARCHAR},
         #{interest,jdbcType=DECIMAL}, #{poundage,jdbcType=DECIMAL}, #{repayInterestDate,jdbcType=TIMESTAMP},
         #{repayRegisterRemark,jdbcType=VARCHAR}, #{lendStatus,jdbcType=TINYINT}, #{gmtCreate,jdbcType=TIMESTAMP},
-        #{gmtModify,jdbcType=TIMESTAMP},#{lendAmount,jdbcType=DECIMAL})
+        #{gmtModify,jdbcType=TIMESTAMP},#{lendAmount,jdbcType=DECIMAL}, #{operationMan,jdbcType=VARCHAR})
     </insert>
     <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.ThirdPartyFundBusinessDO">
         insert into third_party_fund_business
@@ -88,6 +89,9 @@
             <if test="lendAmount != null">
                 lend_amount,
             </if>
+            <if test="operationMan != null">
+                operation_man,
+            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="bridgeProcecssId != null">
@@ -131,6 +135,9 @@
             </if>
             <if test="lendAmount != null">
                 #{lendAmount,jdbcType=DECIMAL},
+            </if>
+            <if test="operationMan != null">
+                #{operation_man,jdbcType=VARCHAR},
             </if>
         </trim>
     </insert>
@@ -176,6 +183,9 @@
             <if test="lendAmount != null">
                 lend_amount = #{lendAmount,jdbcType=DECIMAL},
             </if>
+            <if test="operationMan != null">
+                operation_man = #{operationMan,jdbcType=VARCHAR},
+            </if>
         </set>
         where bridge_procecss_id = #{bridgeProcecssId,jdbcType=BIGINT}
     </update>
@@ -193,7 +203,8 @@
         lend_status = #{lendStatus,jdbcType=TINYINT},
         gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
         gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
-        lend_amount = #{lendAmount,jdbcType=DECIMAL}
+        lend_amount = #{lendAmount,jdbcType=DECIMAL},
+        operation_man = #{operationMan,jdbcType=VARCHAR}
         where bridge_procecss_id = #{bridgeProcecssId,jdbcType=BIGINT}
     </update>
 
@@ -213,7 +224,7 @@
         insert into third_party_fund_business (bridge_procecss_id, order_id, lend_date, repay_type,
         repay_date, repay_remark, interest,
         poundage, repay_interest_date, repay_register_remark,lend_status,
-        gmt_create, gmt_modify,lend_amount)
+        gmt_create, gmt_modify,lend_amount,operation_man)
         values
         <foreach collection="list" item="item" index="index">
             (#{item.bridgeProcecssId,jdbcType=BIGINT},
@@ -224,7 +235,7 @@
             #{item.poundage,jdbcType=DECIMAL},#{item.repayInterestDate,jdbcType=TIMESTAMP},
             #{item.repayRegisterRemark,jdbcType=VARCHAR}, #{lendStatus,jdbcType=TINYINT},
             #{item.gmtCreate,jdbcType=TIMESTAMP}, #{item.gmtModify,jdbcType=TIMESTAMP},
-            #{item.lendAmount,jdbcType=DECIMAL})
+            #{item.lendAmount,jdbcType=DECIMAL},#{item.operationMan,jdbcType=VARCHAR})
         </foreach>
     </insert>
 
@@ -256,6 +267,87 @@
         </if>
         <if test="endDate != null and endDate != ''">
             <![CDATA[ AND third.lend_date <= #{endDate} ]]>
+        </if>
+    </select>
+
+    <select id="exportRefuseToLend" parameterType="com.yunche.loan.domain.query.TaskListQuery"
+            resultType="com.yunche.loan.domain.vo.JtxExportRefuseToLendVO">
+        SELECT
+        loan.id           as id,
+        cus.NAME          as customer,
+        cus.id_card       as idCard,
+        useGetSmallCarName(car.car_detail_id)     AS carName,
+        plan.car_price    as car_price,
+        case when plan.loan_amount &gt;= remit.remit_amount
+        then floor(remit.remit_amount/100)*100
+        else floor(plan.loan_amount/100)*100 end   AS confThirdLoanMoney,
+        cus.mobile                                AS mobile,
+        plan.down_payment_money                    AS downPaymentMoney,
+        plan.loan_amount     as loanAmount,
+        plan.loan_time       as loanTime,
+        base.bank         as bank,
+        remit.remit_amount  as remitAmount,
+        DATE_FORMAT(third_party.lend_date, '%Y-%m-%d') AS bridgeLendDate,
+        join_r.lend_date  as lendDate,
+        third_party.operation_man as refuseToLendMan,
+        bridge.id         as processId
+        from loan_order loan
+        left join loan_customer cus on cus.id =loan.loan_customer_id
+        left join loan_base_info base on base.id = loan.loan_base_info_id
+        LEFT JOIN employee emp ON emp.id = base.salesman_id
+        LEFT JOIN partner par ON par.id = base.partner_id
+        left join loan_financial_plan plan on plan.id = loan.loan_financial_plan_id
+        left join loan_process_bridge bridge on bridge.order_id = loan.id
+        left join conf_third_real_bridge_process real_b on bridge.id = real_b.bridge_process_id
+        left join conf_third_party_money conf_t on real_b.conf_third_party_id = conf_t.id
+        left join third_party_fund_business third_party on third_party.bridge_procecss_id  = bridge.id
+        left join loan_car_info car on car.id = loan.loan_car_info_id
+        left join remit_details remit on loan.remit_details_id  = remit.id
+        left  join bank_lend_record join_r on join_r.id = loan.bank_lend_record_id
+        left join loan_process process on process.order_id = loan.id
+        where process.order_status = 1 and
+        case when #{lendStatus} = 1 then bridge.bridge_handle in (2,3) and bridge.order_status = 1
+        and if((select count(*) from third_party_fund_business where bridge_procecss_id=bridge.id and bridge.order_status = 1 and lend_status in(3,4,5,6,7,8,9))=1,false,true)
+        when #{lendStatus} = 2 then bridge.bridge_handle = 1 and bridge.order_status = 1
+        when #{lendStatus} = 3 then bridge.bridge_handle = 2 and third_party.lend_status in(3,8) and bridge.order_status = 1
+        when #{lendStatus} = 4 then bridge.bridge_handle = 2 and third_party.lend_status in(5,6,9) and bridge.order_status = 1
+        when #{lendStatus} = 5 then bridge.bridge_handle = 2 and third_party.lend_status in(4,7) and bridge.order_status = 1
+        end
+        <if test="startLendDate !=null">
+            AND third_party.lend_date &gt;= #{startLendDate}
+        </if>
+        <if test="endLendDate !=null">
+            AND third_party.lend_date &lt;= #{endLendDate}
+        </if>
+        AND CASE WHEN #{maxGroupLevel}  = 0 THEN false
+        when #{maxGroupLevel} = 1 then 1 = 1
+        <if test="juniorIds != null and juniorIds.size() > 0">
+            and base.salesman_id in
+            <foreach item="item" index="index" collection="juniorIds" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        else true end
+        and case when #{maxGroupLevel} = 3 then 1=1
+        else 1=1
+        <if test="bizAreaIdList != null and bizAreaIdList.size() > 0">
+            and par.id in
+            <foreach item="item" index="index" collection="bizAreaIdList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="bankList != null and bankList.size() > 0">
+            and base.bank in
+            <foreach item="item" index="index" collection="bankList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        end
+        <if test="orderId != null">
+            AND loan.id = #{orderId}
+        </if>
+        <if test="customer != null and customer != ''">
+            AND cus.name LIKE CONCAT('%', #{customer} ,'%')
         </if>
     </select>
 </mapper>

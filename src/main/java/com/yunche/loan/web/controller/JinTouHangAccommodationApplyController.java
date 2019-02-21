@@ -3,6 +3,7 @@ package com.yunche.loan.web.controller;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.param.AccommodationApplyParam;
 import com.yunche.loan.domain.param.ExportApplyLoanPushParam;
+import com.yunche.loan.domain.query.TaskListQuery;
 import com.yunche.loan.service.JinTouHangAccommodationApplyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -206,6 +207,12 @@ public class JinTouHangAccommodationApplyController {
     @PostMapping(value = "/exportloanbutnotrepay", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     ResultBean exportLoanButNotRepay(@RequestBody ExportApplyLoanPushParam param){
         return accommodationApplyService.exportLoanButNotRepay(param);
+    }
+
+    //导出已拒借
+    @PostMapping(value = "/exportRefuseToLend", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    ResultBean exportRefuseToLend(@RequestBody TaskListQuery param){
+        return accommodationApplyService.exportRefuseToLend(param);
     }
 
 }
