@@ -73,19 +73,36 @@ public class LoanInfoRegisterServiceImpl implements LoanInfoRegisterService {
                 && Byte.valueOf(universalCarInfoVO.getCar_type())==1) {
             if (universalCarInfoVO.getEvaluation_type() != null && universalCarInfoVO.getEvaluation_type() == 2) {
                 universalCarInfoVO.setVin(universalCarInfoVO.getVehicle_vehicle_identification_number());
-                BaseAreaDO baseAreaDO = baseAreaDOMapper.selectByPrimaryKey(universalCarInfoVO.getCar_city_id(), null);
-                if(baseAreaDO!=null){
-                    universalCarInfoVO.setCar_city_name(baseAreaDO.getAreaName());
+                BaseAreaDO county = baseAreaDOMapper.selectByPrimaryKey(universalCarInfoVO.getCar_city_id(), null);
+
+                if(county!=null){
+                    if (county.getLevel().toString().equals("3")) {
+                        BaseAreaDO city = baseAreaDOMapper.selectByPrimaryKey(county.getParentAreaId(), null);
+                        universalCarInfoVO.setCar_city_name(city.getParentAreaName()+city.getAreaName()+county.getAreaName());
+                    } else if (county.getLevel().toString().equals("2")) {
+                        universalCarInfoVO.setCar_city_name(county.getParentAreaName()+county.getAreaName());
+                    }
+
                 }
 
             }else{
                 if(loanOrderDO.getSecond_hand_car_evaluate_id()!=null){
                     SecondHandCarEvaluateDO secondHandCarEvaluateDO = secondHandCarEvaluateDOMapper.selectByPrimaryKey(loanOrderDO.getSecond_hand_car_evaluate_id());
                     if(secondHandCarEvaluateDO!=null){
-                        universalCarInfoVO.setCar_city_name(secondHandCarEvaluateDO.getCity_id());
+
+                        if(secondHandCarEvaluateDO.getArea_id()!=null){
+                            BaseAreaDO county = baseAreaDOMapper.selectByPrimaryKey(secondHandCarEvaluateDO.getArea_id(), null);
+                            if(county!=null){
+                                if (county.getLevel().toString().equals("3")) {
+                                    BaseAreaDO city = baseAreaDOMapper.selectByPrimaryKey(county.getParentAreaId(), null);
+                                    universalCarInfoVO.setCar_city_name(city.getParentAreaName()+city.getAreaName()+county.getAreaName());
+                                } else if (county.getLevel().toString().equals("2")) {
+                                    universalCarInfoVO.setCar_city_name(county.getParentAreaName()+county.getAreaName());
+                                }
+                            }
+                        }
                         universalCarInfoVO.setMileage(secondHandCarEvaluateDO.getMileage());
                     }
-
                 }
             }
 
