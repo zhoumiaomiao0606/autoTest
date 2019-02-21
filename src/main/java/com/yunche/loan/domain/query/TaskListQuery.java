@@ -161,6 +161,14 @@ public class TaskListQuery {
 
     private String endRepayDate;
 
+    private String cIFromTime;
+
+    private String cIToTime;
+
+    private String cTALIFromTime;
+
+    private String cTALIToTime;
+
     /**
      * 区域合伙人ID列表
      */
