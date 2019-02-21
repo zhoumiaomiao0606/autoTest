@@ -9,7 +9,7 @@ public class DrivinglicensePara
 {
 
     //ocr信息保存id
-    private Long orcId;
+    private Long ocrId;
 
     private String face;
 
