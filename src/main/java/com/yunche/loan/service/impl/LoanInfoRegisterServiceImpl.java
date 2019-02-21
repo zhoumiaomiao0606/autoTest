@@ -98,6 +98,8 @@ public class LoanInfoRegisterServiceImpl implements LoanInfoRegisterService {
                                     universalCarInfoVO.setCar_city_name(city.getParentAreaName()+city.getAreaName()+county.getAreaName());
                                 } else if (county.getLevel().toString().equals("2")) {
                                     universalCarInfoVO.setCar_city_name(county.getParentAreaName()+county.getAreaName());
+                                }else if(county.getLevel().toString().equals("1")){
+                                    universalCarInfoVO.setCar_city_name(county.getAreaName());
                                 }
                             }
                         }
