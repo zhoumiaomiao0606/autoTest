@@ -287,8 +287,12 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         if (bankId == null) {
             throw new BizException("贷款银行不存在");
         }
-        if((!String.valueOf(bankId).equals(IDict.K_BANK.ICBC_HZCZ)&&!String.valueOf(bankId).equals(IDict.K_BANK.ICBC_TZLQ))){
-            return ResultBean.ofSuccess("非城站/台州支行无需调用");
+        //目前只有台州需要调用
+//        if((!String.valueOf(bankId).equals(IDict.K_BANK.ICBC_HZCZ)&&!String.valueOf(bankId).equals(IDict.K_BANK.ICBC_TZLQ))){
+//            return ResultBean.ofSuccess("非城站/台州支行无需调用");
+//        }
+        if(!String.valueOf(bankId).equals(IDict.K_BANK.ICBC_TZLQ)){
+            return ResultBean.ofSuccess("非台州支行无需调用");
         }
         Long carDetailId = loanCarInfoDO.getCarDetailId();
         if (carDetailId == null) {
