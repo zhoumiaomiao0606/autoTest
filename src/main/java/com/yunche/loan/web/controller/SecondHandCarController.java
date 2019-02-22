@@ -43,12 +43,18 @@ public class SecondHandCarController
             e.printStackTrace();
         }*/
 
-        String faceBase64 = getOsspictureBase64(evaluationPara.getFace());
+        if (evaluationPara.getFace()!=null && !"".equals(evaluationPara.getFace()))
+        {
+            String faceBase64 = getOsspictureBase64(evaluationPara.getFace());
+            evaluationPara.setFace(faceBase64);
+        }
 
-        String backBase64 = getOsspictureBase64(evaluationPara.getBack());
+        if (evaluationPara.getBack()!=null && !"".equals(evaluationPara.getBack()))
+        {
+            String backBase64 = getOsspictureBase64(evaluationPara.getBack());
+            evaluationPara.setBack(backBase64);
+        }
 
-        evaluationPara.setFace(faceBase64);
-        evaluationPara.setBack(backBase64);
 
         return secondHandCarService.drivinglicense(evaluationPara);
 
