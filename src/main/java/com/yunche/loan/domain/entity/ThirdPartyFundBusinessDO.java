@@ -35,4 +35,6 @@ public class ThirdPartyFundBusinessDO {
     private Date gmtCreate;
 
     private Date gmtModify;
+
+    private String operationMan;
 }

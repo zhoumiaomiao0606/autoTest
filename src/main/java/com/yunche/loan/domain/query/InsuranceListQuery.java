@@ -31,4 +31,12 @@ public class InsuranceListQuery {
 
     private Long partnerName;
 
+    private String cIFromTime;
+
+    private String cIToTime;
+
+    private String cTALIFromTime;
+
+    private String cTALIToTime;
+
 }

@@ -5,6 +5,7 @@ import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.param.AccommodationApplyParam;
 import com.yunche.loan.domain.param.ApprovalParam;
 import com.yunche.loan.domain.param.ExportApplyLoanPushParam;
+import com.yunche.loan.domain.query.TaskListQuery;
 
 import java.util.Date;
 
@@ -56,4 +57,6 @@ public interface JinTouHangAccommodationApplyService {
     ResultBean batchEnd(AccommodationApplyParam accommodationApplyParam);
 
     ResultBean exportLoanButNotRepay(ExportApplyLoanPushParam param);
+
+    ResultBean exportRefuseToLend(TaskListQuery param);
 }

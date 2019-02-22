@@ -17,6 +17,7 @@ import com.yunche.loan.domain.entity.*;
 import com.yunche.loan.domain.param.AccommodationApplyParam;
 import com.yunche.loan.domain.param.ApprovalParam;
 import com.yunche.loan.domain.param.ExportApplyLoanPushParam;
+import com.yunche.loan.domain.query.TaskListQuery;
 import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.JinTouHangAccommodationApplyService;
@@ -156,6 +157,11 @@ public class JinTouHangAccommodationApplyServiceImpl implements JinTouHangAccomm
         int count;
         ThirdPartyFundBusinessDO thirdPartyFundBusinessDO = thirdPartyFundBusinessDOMapper.selectByPrimaryKey(param.getIdPair().getBridgeProcessId());
         ThirdPartyFundBusinessDO fundBusinessDO = new ThirdPartyFundBusinessDO();
+
+        //记录操作人
+        String name = SessionUtils.getLoginUser().getName();
+        fundBusinessDO.setOperationMan(name);
+
         fundBusinessDO.setOrderId(param.getIdPair().getOrderId());
         fundBusinessDO.setBridgeProcecssId(param.getIdPair().getBridgeProcessId());
         fundBusinessDO.setLendStatus(param.getLendStatus());
@@ -915,6 +921,18 @@ public class JinTouHangAccommodationApplyServiceImpl implements JinTouHangAccomm
                 "出借时间", "借款期限","最终放款银行"
         );
         String ossResultKey = POIUtil.createExcelFile("JtxLoanNotRepay",list,header,JtxExportVO.class,ossConfig);
+        return ResultBean.ofSuccess(ossResultKey);
+    }
+
+    @Override
+    public ResultBean exportRefuseToLend(TaskListQuery param)
+    {
+        List<JtxExportRefuseToLendVO> list = thirdPartyFundBusinessDOMapper.exportRefuseToLend(param);
+
+        ArrayList<String> header = Lists.newArrayList("委托人", "身份证号","车型","车价", "首付款", "垫资金额",
+                 "借款期限","最终放款银行","拒借人"
+        );
+        String ossResultKey = POIUtil.createExcelFile("JtxRefuseToLend",list,header,JtxExportRefuseToLendVO.class,ossConfig);
         return ResultBean.ofSuccess(ossResultKey);
     }
 

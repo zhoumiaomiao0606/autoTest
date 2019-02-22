@@ -22,6 +22,7 @@ import com.yunche.loan.service.EmployeeService;
 import com.yunche.loan.service.SecondHandCarService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -126,7 +127,18 @@ public class SecondHandCarServiceImpl implements SecondHandCarService
 
             financeResult1.getDatas().setSaleman_id(SessionUtils.getLoginUser().getId());
 
-            secondHandCarVinDOMapper.insertSelective(financeResult1.getDatas());
+            //判断前端传过来的有没有orcId，有则查出来再赋值
+            if (evaluationPara.getOcrId()!=null)
+            {
+                SecondHandCarVinDO secondHandCarVinDO = secondHandCarVinDOMapper.selectByPrimaryKey(evaluationPara.getOcrId());
+                Preconditions.checkNotNull(secondHandCarVinDO,"ocrId有误！！");
+                financeResult1.getDatas().setId(evaluationPara.getOcrId());
+                secondHandCarVinDOMapper.updateByPrimaryKeySelective(financeResult1.getDatas());
+            }else
+                {
+                    secondHandCarVinDOMapper.insertSelective(financeResult1.getDatas());
+                }
+
 
             SecondHandCarVinDO datas = financeResult1.getDatas();
             if(datas!=null && datas.getRegister_date()!=null && !"".equals(datas.getRegister_date()) && datas.getRegister_date().length() !=8)

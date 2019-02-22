@@ -248,9 +248,24 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         if(!StringUtil.isEmpty(param) && IDict.K_YORN.K_YORN_NO.toString().equals(param)){
             return ResultBean.ofSuccess("【系统设置】：无需查询二手车评估预审");
         }
+
+
         LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
         if (loanOrderDO == null) {
             throw new BizException("此订单不存在");
+        }
+
+        Long carId = loanOrderDO.getLoanCarInfoId();
+        if (carId == null) {
+            throw new BizException("贷款车辆不存在");
+        }
+        LoanCarInfoDO loanCarInfoDO = loanCarInfoDOMapper.selectByPrimaryKey(carId);
+        if (loanCarInfoDO == null) {
+            throw new BizException("贷款车辆不存在");
+        }
+        //不是二手车 不需要调用
+        if(!Byte.valueOf("1").equals(loanCarInfoDO.getCarType())){
+            return  ResultBean.ofSuccess("非二手车无需调用");
         }
 
         LoanFinancialPlanDO loanFinancialPlanDO = loanFinancialPlanDOMapper.selectByPrimaryKey(loanOrderDO.getLoanFinancialPlanId());
@@ -263,14 +278,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         }
 
 
-        Long carId = loanOrderDO.getLoanCarInfoId();
-        if (carId == null) {
-            throw new BizException("贷款车辆不存在");
-        }
-        LoanCarInfoDO loanCarInfoDO = loanCarInfoDOMapper.selectByPrimaryKey(carId);
-        if (loanCarInfoDO == null) {
-            throw new BizException("贷款车辆不存在");
-        }
+
 
         Long baseId = loanOrderDO.getLoanBaseInfoId();
         if (baseId == null) {
@@ -287,8 +295,12 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         if (bankId == null) {
             throw new BizException("贷款银行不存在");
         }
-        if((!String.valueOf(bankId).equals(IDict.K_BANK.ICBC_HZCZ)&&!String.valueOf(bankId).equals(IDict.K_BANK.ICBC_TZLQ))){
-            return ResultBean.ofSuccess("非城站/台州支行无需调用");
+        //目前只有台州需要调用，后续需要增加城站
+//        if((!String.valueOf(bankId).equals(IDict.K_BANK.ICBC_HZCZ)&&!String.valueOf(bankId).equals(IDict.K_BANK.ICBC_TZLQ))){
+//            return ResultBean.ofSuccess("非城站/台州支行无需调用");
+//        }
+        if(!String.valueOf(bankId).equals(IDict.K_BANK.ICBC_TZLQ)){
+            return ResultBean.ofSuccess("非台州支行无需调用");
         }
         Long carDetailId = loanCarInfoDO.getCarDetailId();
         if (carDetailId == null) {
