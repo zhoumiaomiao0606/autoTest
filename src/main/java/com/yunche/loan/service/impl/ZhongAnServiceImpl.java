@@ -13,7 +13,10 @@ import com.zhongan.scorpoin.biz.common.CommonRequest;
 import com.zhongan.scorpoin.biz.common.CommonResponse;
 import com.zhongan.scorpoin.common.ZhongAnOpenException;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
+import org.springframework.util.CollectionUtils;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -47,16 +50,35 @@ public class ZhongAnServiceImpl implements ZhongAnService {
         CommonRequest request = new CommonRequest(serviceName);
         request.setParams(params);
 
-        log.info("众安接口：request  >>>  {}", JSON.toJSONString(request));
+        log.info("众安接口xdecision：request  >>>  {}", JSON.toJSONString(request));
         long startTime = System.currentTimeMillis();
 
         CommonResponse response = (CommonResponse) ZhongAnConfig.getClient().call(request);
 
         long totalTime = System.currentTimeMillis() - startTime;
-        log.info("众安接口：totalTime : {}s  ,   response  >>>  {}",
+        log.info("众安接口xdecision：totalTime : {}s  ,   response  >>>  {}",
                 new Double(totalTime) / 1000, JSON.toJSONString(response));
 
+        parseResponse(response.getBizContent());
+
         return null;
+    }
+
+    private void parseResponse(String bizContent) {
+
+        if (StringUtils.isNotBlank(bizContent)) {
+
+            JSONObject bizContJson = JSON.parseObject(bizContent);
+            JSONObject param_ = bizContJson.getJSONObject("param");
+
+            if (!CollectionUtils.isEmpty(param_)) {
+
+                Boolean success = param_.getBoolean("success");
+                String message = param_.getString("message");
+
+                Assert.isTrue(success, message);
+            }
+        }
     }
 
     /**
