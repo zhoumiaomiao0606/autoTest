@@ -12,7 +12,7 @@ import static com.yunche.loan.web.aspect.GlobalExceptionHandler.doGlobalExceptio
  */
 @Aspect
 @Component
-public class WebsocketGlobalExceptionHandler {
+public class WebSocketGlobalExceptionHandler {
 
 
     @Around(value = "@annotation(org.springframework.messaging.handler.annotation.MessageMapping)")
