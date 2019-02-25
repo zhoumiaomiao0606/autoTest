@@ -39,6 +39,11 @@
     where id = #{id,jdbcType=BIGINT}
   </delete>
 
+    <delete id="deleteByOrderId" parameterType="java.lang.Long">
+    delete from insurance_info
+    where order_id = #{orderId,jdbcType=BIGINT}
+  </delete>
+
     <insert id="insertSelective" useGeneratedKeys="true" keyProperty="id"
             parameterType="com.yunche.loan.domain.entity.InsuranceInfoDO">
         <selectKey resultType="java.lang.Long" keyProperty="id"

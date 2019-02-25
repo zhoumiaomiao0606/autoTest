@@ -10,8 +10,6 @@ import java.util.Date;
 public class InsuranceRelevanceUpdateParam {
 
     @NotBlank
-    private Byte year;//年次
-    @NotBlank
     private String insuranceCompanyName;// 保险公司名称
     @NotBlank
     private String insuranceNumber;//  保单号

@@ -1828,18 +1828,24 @@
               i.insurance_year                  AS insurance_year,
               i.issue_bills_date                AS issue_bills_date,
               c.address                         AS residential_address,
-              (select sum(insurance_amount) from insurance_relevance where insurance_info_id = id )
+              (select sum(insurance_amount) from insurance_relevance where insurance_info_id = i.id )
                                                 AS total_insurance_amount
 
       from
             (select * from loan_order where id = #{orderId,jdbcType=BIGINT}) o
-                left join insurance_info i on i.order_id = o.id
+            LEFT JOIN
+
+                (SELECT id,order_id,insurance_year,issue_bills_date FROM
+        (
+        SELECT * FROM insurance_info order by order_id,insurance_year DESC limit 10000000000
+        ) t GROUP BY t.order_id
+        ) i ON i.order_id = o.id
                 left join loan_customer c on c.id = o.loan_customer_id
                 left join loan_base_info b on b.id = o.loan_base_info_id
                 left join employee e on e.id = b.salesman_id
                 left join partner p on p.id = b.partner_id
 
-    ORDER BY i.issue_bills_date asc
+
 
 
   </select>

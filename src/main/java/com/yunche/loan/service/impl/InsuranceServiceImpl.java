@@ -8,6 +8,7 @@ import com.yunche.loan.domain.entity.InsuranceInfoDO;
 import com.yunche.loan.domain.entity.InsuranceRelevanceDO;
 import com.yunche.loan.domain.entity.InsuranceRiskDO;
 import com.yunche.loan.domain.entity.LoanOrderDO;
+import com.yunche.loan.domain.param.InsuranceInfoParam;
 import com.yunche.loan.domain.param.InsuranceRelevanceUpdateParam;
 import com.yunche.loan.domain.param.InsuranceRisksParam;
 import com.yunche.loan.domain.param.InsuranceUpdateParam;
@@ -16,6 +17,7 @@ import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.InsuranceService;
 import com.yunche.loan.service.LoanQueryService;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -176,17 +178,20 @@ public class InsuranceServiceImpl implements InsuranceService {
 
     @Override
     public RecombinationVO detail(Long orderId) {
-        List<InsuranceCustomerVO> insuranceCustomerVOList = loanQueryDOMapper.selectInsuranceCustomer(orderId);
-        for (InsuranceCustomerVO obj : insuranceCustomerVOList) {
-            if (obj != null) {
-                if (obj.getInsurance_info_id() != null) {
+        InsuranceCustomerVO insuranceCustomerVOList = loanQueryDOMapper.selectInsuranceCustomer(orderId);
+        /*for (InsuranceCustomerVO obj : insuranceCustomerVOList)
+        {
+            if (obj != null)
+            {
+                if (obj.getInsurance_info_id() != null)
+                {
                     List<InsuranceRelevanceVO> insurance_relevance_list = loanQueryDOMapper.selectInsuranceRelevance(Long.valueOf(obj.getInsurance_info_id()));
                     obj.setInsurance_relevance_list(insurance_relevance_list);
                 }
             }
-        }
+        }*/
         UniversalCarInfoVO universalCarInfoVO = loanQueryDOMapper.selectUniversalCarInfo(orderId);
-        RecombinationVO<List<InsuranceCustomerVO>> recombinationVO = new RecombinationVO<List<InsuranceCustomerVO>>();
+        RecombinationVO<InsuranceCustomerVO> recombinationVO = new RecombinationVO<InsuranceCustomerVO>();
         List<InsuranceInfoDO> insuranceInfoDOS = insuranceInfoDOMapper.listByOrderId(orderId);
 
         List<UniversalInsuranceVO> insuranceDetail = Lists.newArrayList();
@@ -226,36 +231,47 @@ public class InsuranceServiceImpl implements InsuranceService {
         LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(Long.valueOf(param.getOrderId()));
         Preconditions.checkNotNull(loanOrderDO, "业务单不存在");
 
-        List<InsuranceRelevanceUpdateParam> insuranceRelevanceList = param.getInsuranceRelevanceList();
-        insuranceRelevanceList.stream().forEach(e -> {
-            InsuranceInfoDO insuranceInfoDO = insuranceInfoDOMapper.selectByInsuranceYear(param.getOrderId(), e.getYear());
-            if (insuranceInfoDO == null) {
-                //新增所有关联数据
-                insuranceInfoDO = new InsuranceInfoDO();
-                insuranceInfoDO.setOrder_id(param.getOrderId());
-                insuranceInfoDO.setIssue_bills_date(new Date());
-                insuranceInfoDO.setInsurance_year(e.getYear());
-                int i = insuranceInfoDOMapper.insertSelective(insuranceInfoDO);
-                Preconditions.checkArgument(i > 0, "保险信息保存失败");
-                //开始新增保险公司关联表
-                //先删除保险公司关联数据在进行新增-保持保险公司的关联信息是最新的`
-                insuranceRelevanceDOMapper.deleteByInsuranceInfoIdAndType(insuranceInfoDO.getId(), e.getInsuranceType());
-                InsuranceRelevanceDO insuranceRelevanceDO = new InsuranceRelevanceDO();
-                insuranceRelevanceDO.setInsurance_info_id(insuranceInfoDO.getId());
-                parseDao(e, insuranceRelevanceDO);
-                insuranceRelevanceDOMapper.insertSelective(insuranceRelevanceDO);
-            } else {
-                //代表存在
-                //开始更新保险公司关联表
-                //先删除保险公司关联数据在进行新增-保持保险公司的关联信息是最新的
-                insuranceRelevanceDOMapper.deleteByInsuranceInfoIdAndType(insuranceInfoDO.getId(), e.getInsuranceType());
-                InsuranceRelevanceDO insuranceRelevanceDO = new InsuranceRelevanceDO();
-                insuranceRelevanceDO.setInsurance_info_id(insuranceInfoDO.getId());
-                parseDao(e, insuranceRelevanceDO);
-                int count = insuranceRelevanceDOMapper.insertSelective(insuranceRelevanceDO);
-                Preconditions.checkArgument(count > 0, "新增失败");
-            }
-        });
+        List<InsuranceInfoParam> insuranceInfoList = param.getInsuranceInfoList();
+
+        //清表
+        //先清子表
+        List<InsuranceRelevanceInfoVO> insuranceRelevanceInfoVOS = insuranceInfoDOMapper.selectInsuranceByOrderId(param.getOrderId());
+        if (CollectionUtils.isNotEmpty(insuranceRelevanceInfoVOS))
+        {
+            insuranceRelevanceInfoVOS.stream()
+                    .forEach(
+                            e ->
+                            {
+                                insuranceRelevanceDOMapper.deleteByInsuranceInfoId(Long.parseLong(e.getInsurance_info_id()));
+                            }
+                    );
+        }
+        insuranceInfoDOMapper.deleteByOrderId(param.getOrderId());
+        if (CollectionUtils.isNotEmpty(insuranceInfoList))
+        {
+            insuranceInfoList.stream().forEach(e -> {
+                    //新增所有关联数据
+                    InsuranceInfoDO insuranceInfoDO = new InsuranceInfoDO();
+                    insuranceInfoDO.setOrder_id(param.getOrderId());
+                    insuranceInfoDO.setIssue_bills_date(new Date());
+                    insuranceInfoDO.setInsurance_year(e.getYear());
+                    int i = insuranceInfoDOMapper.insertSelective(insuranceInfoDO);
+                    Preconditions.checkArgument(i > 0, "保险信息保存失败");
+                    //开始新增保险公司关联表
+                    if (CollectionUtils.isNotEmpty(e.getInsuranceRelevanceList()))
+                    {
+                        for (InsuranceRelevanceUpdateParam insuranceRelevanceUpdateParam :e.getInsuranceRelevanceList())
+                        {
+                            insuranceRelevanceDOMapper.deleteByInsuranceInfoIdAndType(insuranceInfoDO.getId(), insuranceRelevanceUpdateParam.getInsuranceType());
+                            InsuranceRelevanceDO insuranceRelevanceDO = new InsuranceRelevanceDO();
+                            insuranceRelevanceDO.setInsurance_info_id(insuranceInfoDO.getId());
+                            parseDao(insuranceRelevanceUpdateParam, insuranceRelevanceDO);
+                            insuranceRelevanceDOMapper.insertSelective(insuranceRelevanceDO);
+                        }
+                    }
+            });
+        }
+
 
 
     }

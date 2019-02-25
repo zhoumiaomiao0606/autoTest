@@ -23,4 +23,6 @@ public interface InsuranceInfoDOMapper {
 
 
     List<InsuranceRelevanceInfoVO> selectInsuranceByOrderId(@Param("orderId") Long orderId);
+
+    int deleteByOrderId(Long orderId);
 }
