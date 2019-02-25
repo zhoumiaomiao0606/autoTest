@@ -3596,6 +3596,21 @@
             AND taskdis.status != 2 ) or taskdis.status is null
             end
         </if>
+        <if test="taskStatus != 0">
+            <choose>
+                <when test="pull == false">
+                    and taskdis.taskId NOT IN ( ( SELECT distinct task_id FROM task_distribution where task_key =
+                    #{taskDefinitionKey} ) )
+                </when>
+                <otherwise>
+                    and
+                    case when #{maxGroupLevel} = 3 then 1=1
+                    when taskdis.sendee is not null then
+                    case when taskdis.sendee = #{employeeId} then 1=1 else 1=2 end
+                    else 1=1 end
+                </otherwise>
+            </choose>
+        </if>
         order by main.gmt_create
     </select>
 
@@ -3683,6 +3698,21 @@
             else (taskdis.status != 1
             AND taskdis.status != 2 ) or taskdis.status is null
             end
+        </if>
+        <if test="taskStatus != 0">
+            <choose>
+                <when test="pull == false">
+                    and taskdis.taskId NOT IN ( ( SELECT distinct task_id FROM task_distribution where task_key =
+                    #{taskDefinitionKey} ) )
+                </when>
+                <otherwise>
+                    and
+                    case when #{maxGroupLevel} = 3 then 1=1
+                    when taskdis.sendee is not null then
+                    case when taskdis.sendee = #{employeeId} then 1=1 else 1=2 end
+                    else 1=1 end
+                </otherwise>
+            </choose>
         </if>
         order by main.gmt_create
     </select>
