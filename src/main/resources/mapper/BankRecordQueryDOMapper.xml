@@ -248,6 +248,7 @@
                     ) loan
                 </when>
             </choose>
+        left join
                 (SELECT id,order_id,insurance_year FROM
         (
         SELECT * FROM insurance_info order by order_id,insurance_year DESC limit 10000000000

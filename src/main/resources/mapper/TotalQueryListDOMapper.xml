@@ -3179,6 +3179,7 @@
         loan_car_info.car_type                              AS carType,
         join_h.license_plate_number                  AS licensePlateNumber,
         partner.name AS partner,
+        t.hasRimitDays,
         b.bank
 
 
@@ -3192,6 +3193,17 @@
         left  join loan_car_info on loan_car_info.id = main.loan_car_info_id
         left  join vehicle_information join_h        on join_h.id             = main.vehicle_information_id
         left join loan_telephone_verify join_ltv        on main.id               = join_ltv.order_id
+        left join (
+        SELECT
+        floor(
+        ( UNIX_TIMESTAMP( DATE_FORMAT( now( ), '%Y-%m-%d' )) - UNIX_TIMESTAMP( DATE_FORMAT( MAX(create_time), '%Y-%m-%d' ) ) ) / ( 24 * 60 * 60 )
+        ) AS hasRimitDays,
+        order_id
+        FROM
+        loan_process_log
+        WHERE loan_process_log.task_definition_key = 'usertask_remit_review' and loan_process_log.action =1
+        GROUP BY order_id
+        ) t on main.id = t.order_id
 
         <where>
             <if test="taskStatus !=null" >

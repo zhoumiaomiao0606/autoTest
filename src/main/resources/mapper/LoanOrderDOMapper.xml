@@ -25,6 +25,7 @@
         <result column="second_hand_car_evaluate_id" jdbcType="BIGINT" property="second_hand_car_evaluate_id" />
         <result column="second_hand_car_first_site_id" jdbcType="BIGINT" property="second_hand_car_first_site_id" />
         <result column="key_collected" jdbcType="TINYINT" property="keyCollected" />
+        <result column="key_special_commit" jdbcType="TINYINT" property="keySpecialCommit" />
     </resultMap>
 
     <sql id="Base_Column_List">
@@ -32,7 +33,7 @@
         loan_home_visit_id, material_audit_id, cost_details_id, remit_details_id, vehicle_information_id,
         apply_license_plate_deposit_info_id, bank_card_record_id, bank_lend_record_id, status,
         gmt_create, gmt_modify, feature, rebate_entry,rebate_periods,
-        second_hand_car_evaluate_id,second_hand_car_first_site_id, key_collected
+        second_hand_car_evaluate_id,second_hand_car_first_site_id, key_collected,key_special_commit
     </sql>
 
     <!--getCustIdById-->
@@ -104,7 +105,7 @@
         remit_details_id, vehicle_information_id, apply_license_plate_deposit_info_id,
         bank_card_record_id, bank_lend_record_id, status,
         gmt_create, gmt_modify, feature, rebate_entry,rebate_periods,
-        second_hand_car_evaluate_id,second_hand_car_first_site_id, key_collected
+        second_hand_car_evaluate_id,second_hand_car_first_site_id, key_collected,key_special_commit
         )
         values (#{id,jdbcType=BIGINT}, #{processInstId,jdbcType=VARCHAR}, #{loanBaseInfoId,jdbcType=BIGINT},
         #{loanCustomerId,jdbcType=BIGINT}, #{loanCarInfoId,jdbcType=BIGINT}, #{loanFinancialPlanId,jdbcType=BIGINT},
@@ -113,7 +114,7 @@
         #{bankCardRecordId,jdbcType=BIGINT}, #{bankLendRecordId,jdbcType=BIGINT}, #{status,jdbcType=TINYINT},
         #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModify,jdbcType=TIMESTAMP}, #{feature,jdbcType=VARCHAR},
         #{rebateEntry,jdbcType=TINYINT},#{rebatePeriods,jdbcType=INTEGER},
-        #{second_hand_car_evaluate_id,jdbcType=BIGINT}, #{second_hand_car_first_site_id,jdbcType=BIGINT}, #{keyCollected,jdbcType=TINYINT}
+        #{second_hand_car_evaluate_id,jdbcType=BIGINT}, #{second_hand_car_first_site_id,jdbcType=BIGINT}, #{keyCollected,jdbcType=TINYINT}, #{keySpecialCommit,jdbcType=TINYINT}
         )
     </insert>
 
@@ -189,6 +190,9 @@
             <if test="keyCollected != null">
                 key_collected,
             </if>
+            <if test="keySpecialCommit != null">
+                key_special_commit,
+            </if>
 
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
@@ -260,6 +264,9 @@
             </if>
             <if test="keyCollected != null">
                 #{keyCollected,jdbcType=TINYINT},
+            </if>
+            <if test="keySpecialCommit != null">
+                #{key_special_commit,jdbcType=TINYINT},
             </if>
         </trim>
     </insert>
@@ -334,6 +341,9 @@
             <if test="keyCollected != null">
                 key_collected = #{keyCollected,jdbcType=TINYINT},
             </if>
+            <if test="keySpecialCommit != null">
+                key_special_commit = #{keySpecialCommit,jdbcType=TINYINT},
+            </if>
         </set>
         where id = #{id,jdbcType=BIGINT}
     </update>
@@ -361,7 +371,8 @@
         rebate_periods = #{rebatePeriods,jdbcType=INTEGER},
         second_hand_car_evaluate_id = #{second_hand_car_evaluate_id,jdbcType=BIGINT},
         second_hand_car_first_site_id = #{second_hand_car_first_site_id,jdbcType=BIGINT},
-        key_collected = #{keyCollected,jdbcType=TINYINT}
+        key_collected = #{keyCollected,jdbcType=TINYINT},
+        key_special_commit = #{keySpecialCommit,jdbcType=TINYINT}
         where id = #{id,jdbcType=BIGINT}
     </update>
 

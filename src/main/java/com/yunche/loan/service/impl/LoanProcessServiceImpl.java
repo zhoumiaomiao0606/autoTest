@@ -45,6 +45,7 @@ import static com.yunche.loan.config.constant.ApplyOrderStatusConst.*;
 import static com.yunche.loan.config.constant.BankConst.*;
 import static com.yunche.loan.config.constant.BaseConst.*;
 import static com.yunche.loan.config.constant.CarConst.CAR_KEY_FALSE;
+import static com.yunche.loan.config.constant.CarConst.CAR_KEY_TRUE;
 import static com.yunche.loan.config.constant.LoanAmountConst.*;
 import static com.yunche.loan.config.constant.LoanCustomerConst.*;
 import static com.yunche.loan.config.constant.LoanOrderProcessConst.*;
@@ -203,6 +204,9 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
     @Autowired
     private KeyCommitTask keyCommitTask;
+
+    @Autowired
+    private PartnerWhiteListDOMapper partnerWhiteListDOMapper;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -1608,6 +1612,9 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         if (TELEPHONE_VERIFY.getCode().equals(approval.getTaskDefinitionKey())) {
             // 执行电审任务
             execTelephoneVerifyTask(task, variables, approval, loanOrderDO, loanProcessDO);
+
+            //待收钥匙-白名单标记
+
         } else {
             // 其他任务：直接提交
             loanProcessApprovalCommonService.completeTask(task.getId(), variables);
@@ -1618,6 +1625,31 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
         // 业务申请 & 上门调查 拦截
         execLoanApplyVisitVerifyFilterTask(task, loanOrderDO.getProcessInstId(), approval, variables, loanOrderDO, loanProcessDO);
+    }
+
+    /**
+     * 执行白名单标记
+     *
+     * @param loanOrderDO
+     */
+    private void markWhiteListKeyCommit(LoanOrderDO loanOrderDO)
+    {
+        Byte carKey = loanCarInfoDOMapper.getCarKeyByOrderId(loanOrderDO.getId());
+        // 留备用钥匙
+        if (CAR_KEY_TRUE.equals(carKey))
+        {
+           //查询该订单合伙人是否在不收钥匙白名单中--状态为开启
+            PartnerDO partnerDO = partnerDOMapper.queryPartnerInfoByOrderId(loanOrderDO.getId());
+            PartnerWhiteListDO partnerWhiteListDO = partnerWhiteListDOMapper.selectByPrimaryKey(new PartnerWhiteListDOKey(partnerDO.getId(), COMMIT_KEY.getCode()));
+
+            if (partnerWhiteListDO.getStatus().equals(WHITE_OPEN))
+            {
+                loanOrderDO.setKeySpecialCommit(WHITE_OPEN);
+
+                loanOrderDOMapper.updateByPrimaryKeySelective(loanOrderDO);
+            }
+
+        }
     }
 
     /**

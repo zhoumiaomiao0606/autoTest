@@ -38,6 +38,8 @@ public class LoanCommitKeyServiceImpl implements LoanCommitKeyService
 
     private static final Byte UNCOLLECTEDKEY = 2;
 
+    private static final Byte COLLECTEDKEY = 1;
+
 
     @Autowired
     private LoanProcessService loanProcessService;
@@ -125,5 +127,38 @@ public class LoanCommitKeyServiceImpl implements LoanCommitKeyService
 
 
         return ResultBean.ofSuccess(loanFileDOS);
+    }
+
+    @Override
+    public ResultBean uncollected(Long orderId)
+    {
+        Preconditions.checkNotNull(orderId, "orderId不能为空");
+
+        // 待收钥匙新增按钮“未收，风险100%”，点击后，视同待办完成，但订单的风险承担比例改为100%
+
+        // 1、提交任务
+        ApprovalParam approvalParam = new ApprovalParam();
+        approvalParam.setOrderId(orderId);
+        approvalParam.setTaskDefinitionKey(COMMIT_KEY.getCode());
+        approvalParam.setAction(ACTION_PASS);
+        approvalParam.setKeyCollected(UNCOLLECTEDKEY);
+        ResultBean<Void> approvalResult = loanProcessService.approval(approvalParam);
+        Preconditions.checkArgument(approvalResult.getSuccess(), approvalResult.getSuccess());
+        return ResultBean.ofSuccess(null, "成功");
+    }
+
+    @Override
+    public ResultBean collected(Long e)
+    {
+        // 1、提交任务
+        ApprovalParam approvalParam = new ApprovalParam();
+        approvalParam.setOrderId(e);
+        approvalParam.setTaskDefinitionKey(COMMIT_KEY.getCode());
+        approvalParam.setAction(ACTION_PASS);
+        approvalParam.setKeyCollected(COLLECTEDKEY);
+        ResultBean<Void> approvalResult = loanProcessService.approval(approvalParam);
+        Preconditions.checkArgument(approvalResult.getSuccess(), approvalResult.getSuccess());
+
+        return ResultBean.ofSuccess(null, "成功");
     }
 }

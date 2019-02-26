@@ -372,4 +372,6 @@ public interface LoanQueryDOMapper {
     List<CreditApplyListVO> queryCreditApplyrList(CreditApplyListQuery param);
 
     List<BankOpenCardExportVO> openCardExport(BankOpenCardExportParam bankOpenCardExportParam);
+
+    List<Long> selectNeedAutoKeyCommitOrderByPartnerId(Long partnerId);
 }

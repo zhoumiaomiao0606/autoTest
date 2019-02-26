@@ -2982,4 +2982,24 @@ SELECT
 
     </select>
 
+    <select id="selectNeedAutoKeyCommitOrderByPartnerId" resultType="java.lang.Long" parameterType="java.lang.Long">
+
+        SELECT
+        main.id AS id
+        FROM
+        loan_order main
+        LEFT JOIN loan_process ON main.id = loan_process.order_id
+        LEFT JOIN loan_base_info b ON main.loan_base_info_id = b.id
+        LEFT JOIN partner ON b.partner_id = partner.id
+        left  join loan_car_info on loan_car_info.id = main.loan_car_info_id
+
+        <where>
+            loan_process.commit_key = 2 and loan_process.order_status = 1
+            AND loan_car_info.car_key = 1 and main.key_special_commit = 1
+            and b.partner_id = #{partnerId}
+
+        </where>
+
+    </select>
+
 </mapper>

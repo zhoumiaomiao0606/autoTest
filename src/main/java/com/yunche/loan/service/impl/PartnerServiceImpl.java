@@ -38,6 +38,7 @@ import java.util.stream.Collectors;
 import static com.yunche.loan.config.constant.BaseConst.INVALID_STATUS;
 import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
 import static com.yunche.loan.config.constant.EmployeeConst.TYPE_WB;
+import static com.yunche.loan.config.constant.LoanProcessEnum.COMMIT_KEY;
 import static com.yunche.loan.service.impl.CarServiceImpl.NEW_LINE;
 import static com.yunche.loan.service.impl.EmployeeServiceImpl.initPassword;
 
@@ -102,6 +103,9 @@ public class PartnerServiceImpl implements PartnerService {
     @Autowired
     private BankCodeDOMapper bankCodeDOMapper;
 
+    @Autowired
+    private PartnerWhiteListDOMapper partnerWhiteListDOMapper;
+
     @Override
     @Transactional
     public ResultBean<Long> create(PartnerParam partnerParam) {
@@ -129,6 +133,28 @@ public class PartnerServiceImpl implements PartnerService {
 
         // 绑定财务合作信息
         bindPartnerBankAccount(partnerParam.getBankAccountList(), partnerId);
+
+        //更新关联待收钥匙-白名单信息
+
+        PartnerWhiteListDO partnerWhiteListDO = partnerWhiteListDOMapper.selectByPrimaryKey(new PartnerWhiteListDOKey(partnerId, COMMIT_KEY.getCode()));
+        if (partnerWhiteListDO !=null)
+        {
+            partnerWhiteListDO.setStatus(partnerParam.getKeyWhiteListStatus());
+            partnerWhiteListDO.setGmtModify(new Date());
+            partnerWhiteListDOMapper.updateByPrimaryKeySelective(partnerWhiteListDO);
+        }else
+        {
+            PartnerWhiteListDO p = new PartnerWhiteListDO();
+            p.setStatus(partnerParam.getKeyWhiteListStatus());
+            p.setGmtCreate(new Date());
+            p.setGmtModify(new Date());
+            //默认等级0
+            //p.setWhiteLevel(new Byte("1"));
+            p.setOperationType(COMMIT_KEY.getCode());
+            p.setPartnerId(partnerId);
+
+            partnerWhiteListDOMapper.insertSelective(p);
+        }
 
         // 绑定业务产品列表
         bindBizModel(partnerId, partnerParam.getAreaId(), partnerParam.getBizModelIdList());
@@ -292,6 +318,30 @@ public class PartnerServiceImpl implements PartnerService {
         int count = partnerDOMapper.updateByPrimaryKeySelective(partnerDO);
         Preconditions.checkArgument(count > 0, "编辑失败");
 
+
+        //更新关联待收钥匙-白名单信息
+
+        PartnerWhiteListDO partnerWhiteListDO = partnerWhiteListDOMapper.selectByPrimaryKey(new PartnerWhiteListDOKey(partnerParam.getId(), COMMIT_KEY.getCode()));
+        if (partnerWhiteListDO !=null)
+        {
+            partnerWhiteListDO.setStatus(partnerParam.getKeyWhiteListStatus());
+            partnerWhiteListDO.setGmtModify(new Date());
+            partnerWhiteListDOMapper.updateByPrimaryKeySelective(partnerWhiteListDO);
+        }else
+            {
+                PartnerWhiteListDO p = new PartnerWhiteListDO();
+                p.setStatus(partnerParam.getKeyWhiteListStatus());
+                p.setGmtCreate(new Date());
+                p.setGmtModify(new Date());
+                //默认等级0
+                //p.setWhiteLevel(new Byte("1"));
+                p.setOperationType(COMMIT_KEY.getCode());
+                p.setPartnerId(partnerParam.getId());
+
+                partnerWhiteListDOMapper.insertSelective(p);
+            }
+
+
         // 先清空
         int delCount = partnerBankAccountDOMapper.deleteByPartnerId(partnerParam.getId());
         // 再绑定
@@ -388,6 +438,12 @@ public class PartnerServiceImpl implements PartnerService {
         if (!CollectionUtils.isEmpty(areaIdList)) {
             List<BaseAreaDO> hasApplyLicensePlateArea = baseAreaDOMapper.selectByIdList(areaIdList, VALID_STATUS);
             partnerVO.setHasApplyLicensePlateArea(hasApplyLicensePlateArea);
+        }
+
+        PartnerWhiteListDO partnerWhiteListDO = partnerWhiteListDOMapper.selectByPrimaryKey(new PartnerWhiteListDOKey(id, COMMIT_KEY.getCode()));
+        if (partnerWhiteListDO !=null)
+        {
+            partnerVO.setKeyWhiteListStatus(partnerWhiteListDO.getStatus());
         }
         return ResultBean.ofSuccess(partnerVO);
     }
