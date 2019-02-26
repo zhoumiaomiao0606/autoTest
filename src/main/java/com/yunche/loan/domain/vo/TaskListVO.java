@@ -184,6 +184,8 @@ public class TaskListVO {
 
     //交强险
     private String cTALIEndTime;
+
+    private String hasRimitDays;
 }
 
 
