@@ -1,6 +1,7 @@
 package com.yunche.loan.mapper;
 
 import com.yunche.loan.domain.query.TaskListQuery;
+import com.yunche.loan.domain.vo.DataManagementDetailVO;
 import com.yunche.loan.domain.vo.TaskListVO;
 import org.apache.ibatis.annotations.Param;
 
@@ -126,5 +127,10 @@ public interface TotalQueryListDOMapper {
 
     //金融方案修改审核
     List<TaskListVO> selectFinancialSchemeModifyApplyReviewList(TaskListQuery taskListQuery);
+
+    //资料管理
+    List<TaskListVO> selectDataManagement(TaskListQuery taskListQuery);
+
+    DataManagementDetailVO selectDataManagementDetail(@Param("orderId")String orderId);
 
 }

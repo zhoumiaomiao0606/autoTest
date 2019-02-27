@@ -1,6 +1,7 @@
 package com.yunche.loan.web.controller;
 
 import com.yunche.loan.config.result.ResultBean;
+import com.yunche.loan.domain.entity.DataManagementInfoDO;
 import com.yunche.loan.domain.param.LoanDataFlowParam;
 import com.yunche.loan.domain.query.TaskListQuery;
 import com.yunche.loan.domain.vo.BaseVO;
@@ -84,5 +85,20 @@ public class LoanDataFlowController {
     public ResultBean<Long> getDataFlowId(@RequestParam Long orderId,
                                           @RequestParam String taskDefinitionKey) {
         return loanDataFlowService.getDataFlowId(orderId, taskDefinitionKey);
+    }
+
+    @GetMapping("/dataManagementDetail")
+    public ResultBean dataManagementDetail(@RequestParam String orderId){
+        return loanDataFlowService.dataManagementDetail(orderId);
+    }
+
+    @PostMapping(value = "/dataManagementUpdate", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResultBean dataManagementUpdate(@RequestBody DataManagementInfoDO dataManagementInfoDO){
+        return loanDataFlowService.dataManagementUpdate(dataManagementInfoDO);
+    }
+
+    @GetMapping(value = "/dataManagementImp")
+    public ResultBean importFile(@RequestParam("key") String ossKey){
+        return loanDataFlowService.importFile(ossKey);
     }
 }
