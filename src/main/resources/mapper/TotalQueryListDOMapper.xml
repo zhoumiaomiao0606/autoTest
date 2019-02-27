@@ -4034,4 +4034,50 @@
         </if>
         order by main.gmt_create
     </select>
+    <select id="selectDataManagement" parameterType="com.yunche.loan.domain.query.TaskListQuery" resultType="com.yunche.loan.domain.vo.TaskListVO">
+        select process.order_id   as id,
+        cus.`name`    as customer,
+        cus.id_card   as idCard,
+        par.`name`    as partner,
+        base.bank			as bank,
+        plan.loan_amount  as loanAmount
+        from loan_process process
+        left join loan_order loan on loan.id = process.order_id
+        left join loan_base_info base on base.id = loan.loan_base_info_id
+        left join loan_customer cus on cus.id = loan.loan_customer_id
+        left join partner par on par.id = base.partner_id
+        left join loan_financial_plan plan on plan.id = loan.loan_financial_plan_id
+        where process.order_status =1 and process.material_print_review=1
+        <if test="partnerId != null">
+            AND par.id = #{partnerId}
+        </if>
+        <if test="customer != null and customer != ''">
+            AND cus.name LIKE CONCAT('%', #{customer} ,'%')
+        </if>
+        <if test="bankList != null and bankList.size() > 0">
+            and base.bank in
+            <foreach item="item" index="index" collection="bankList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+    </select>
+    <select id="selectDataManagementDetail" parameterType="java.lang.String" resultType="com.yunche.loan.domain.vo.DataManagementDetailVO">
+        select loan.id  as id,
+        cus.name as customer,
+        cus.id_card as idCard,
+        cus.mobile  as mobile,
+        base.bank   as bank,
+        par.name    as partner,
+        emp.name    salement,
+        info.contract_hand_date  as contractHandDate,
+        info.mortgage_hand_date  as mortgageHandDate,
+        info.mortgage_send_date  as mortgageSendDate
+        from loan_order loan
+        left join loan_base_info base on base.id = loan.loan_base_info_id
+        left join loan_customer cus on cus.id = loan.loan_customer_id
+        left join partner par on par.id = base.partner_id
+        left join employee emp on emp.id = base.salesman_id
+        left join data_management_info info on info.order_id = loan.id
+        where loan.id = #{orderId}
+    </select>
 </mapper>

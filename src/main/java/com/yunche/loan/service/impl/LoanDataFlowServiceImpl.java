@@ -1,5 +1,6 @@
 package com.yunche.loan.service.impl;
 
+import com.github.pagehelper.util.StringUtil;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -10,6 +11,7 @@ import com.yunche.loan.config.util.DateTimeFormatUtils;
 import com.yunche.loan.config.util.OSSUnit;
 import com.yunche.loan.config.util.POIUtil;
 import com.yunche.loan.config.util.SessionUtils;
+import com.yunche.loan.domain.entity.DataManagementInfoDO;
 import com.yunche.loan.domain.entity.EmployeeDO;
 import com.yunche.loan.domain.entity.LoanDataFlowDO;
 import com.yunche.loan.domain.entity.LoanOrderDO;
@@ -18,10 +20,7 @@ import com.yunche.loan.domain.param.LoanDataFlowParam;
 import com.yunche.loan.domain.param.MaterialUpdateParam;
 import com.yunche.loan.domain.query.TaskListQuery;
 import com.yunche.loan.domain.vo.*;
-import com.yunche.loan.mapper.LoanDataFlowDOMapper;
-import com.yunche.loan.mapper.LoanOrderDOMapper;
-import com.yunche.loan.mapper.LoanQueryDOMapper;
-import com.yunche.loan.mapper.TaskSchedulingDOMapper;
+import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.*;
 import org.activiti.engine.TaskService;
 import org.activiti.engine.task.Task;
@@ -93,6 +92,12 @@ public class LoanDataFlowServiceImpl implements LoanDataFlowService {
 
     @Autowired
     private MaterialService materialService;
+
+    @Autowired
+    TotalQueryListDOMapper totalQueryListDOMapper;
+
+    @Autowired
+    DataManagementInfoDOMapper dataManagementInfoDOMapper;
 
 
     @Override
@@ -568,6 +573,72 @@ public class LoanDataFlowServiceImpl implements LoanDataFlowService {
         Preconditions.checkNotNull(loanDataFlowDO, "资料流转单不存在");
 
         return ResultBean.ofSuccess(loanDataFlowDO.getId());
+    }
+
+    @Override
+    public ResultBean dataManagementDetail(String orderId) {
+        return ResultBean.ofSuccess(totalQueryListDOMapper.selectDataManagementDetail(orderId));
+    }
+
+    @Override
+    public ResultBean dataManagementUpdate(DataManagementInfoDO dataManagementInfoDO) {
+        DataManagementInfoDO d = dataManagementInfoDOMapper.selectByPrimaryKey(dataManagementInfoDO.getOrderId());
+        if(d ==null){
+            dataManagementInfoDOMapper.insertSelective(dataManagementInfoDO);
+        }else{
+            dataManagementInfoDOMapper.updateByPrimaryKeySelective(dataManagementInfoDO);
+        }
+        return ResultBean.ofSuccess();
+    }
+
+    @Override
+    @Transactional
+    public ResultBean<ImporFileVO> importFile(String key) {
+        ImporFileVO vo = new ImporFileVO();
+        List<String[]> returnList;
+        int success = 0;
+        int error = 0;
+        List<String> info = new ArrayList<>();
+        try{
+            returnList = POIUtil.readExcelFromOSS(0, 1, key);
+            for (String[] tmp : returnList) {
+                String name = StringUtil.isEmpty(tmp[0].trim()) ? null : tmp[0].trim();
+                String idCard = StringUtil.isEmpty(tmp[1].trim()) ? null : tmp[1].trim();
+                String contractHandDate = StringUtil.isEmpty(tmp[2].trim()) ? null : tmp[2].trim();
+                String mortgageHandDate = StringUtil.isEmpty(tmp[3].trim()) ? null : tmp[3].trim();
+                String mortgageSendDate = StringUtil.isEmpty(tmp[4].trim()) ? null : tmp[4].trim();
+                List<String> list = dataManagementInfoDOMapper.selectOrderByIdCard(idCard);
+                if(list != null){
+                    if(list.size()>1){
+                        info.add(name+idCard+"合同已上交的订单存在多个，手动处理");
+                        error++;
+                    }else{
+                        String orderId = list.get(0);
+                        DataManagementInfoDO d = dataManagementInfoDOMapper.selectByPrimaryKey(Long.valueOf(orderId));
+                        DataManagementInfoDO dataManagementInfoDO = new DataManagementInfoDO();
+                        dataManagementInfoDO.setOrderId(Long.valueOf(orderId));
+                        dataManagementInfoDO.setContractHandDate(contractHandDate);
+                        dataManagementInfoDO.setMortgageHandDate(mortgageHandDate);
+                        dataManagementInfoDO.setMortgageSendDate(mortgageSendDate);
+                        if(d == null){
+                            dataManagementInfoDOMapper.insertSelective(dataManagementInfoDO);
+                        }else{
+                            dataManagementInfoDOMapper.updateByPrimaryKeySelective(dataManagementInfoDO);
+                        }
+                        success++;
+                    }
+                }else{
+                    info.add(name+idCard+"不存在合同已上交的订单");
+                    error++;
+                }
+            }
+        }catch(Exception e){
+            throw new RuntimeException(e.getMessage(), e);
+        }
+        vo.setError(error);
+        vo.setInfo(info);
+        vo.setSuccess(success);
+        return ResultBean.ofSuccess(vo);
     }
 
     /**

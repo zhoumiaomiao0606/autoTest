@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yunche.loan.mapper.DataManagementInfoDOMapper" >
+  <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.DataManagementInfoDO" >
+    <id column="order_id" property="orderId" jdbcType="BIGINT" />
+    <result column="contract_hand_date" property="contractHandDate" jdbcType="VARCHAR" />
+    <result column="mortgage_hand_date" property="mortgageHandDate" jdbcType="VARCHAR" />
+    <result column="mortgage_send_date" property="mortgageSendDate" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    order_id, contract_hand_date, mortgage_hand_date, mortgage_send_date
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from data_management_info
+    where order_id = #{orderId,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from data_management_info
+    where order_id = #{orderId,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.yunche.loan.domain.entity.DataManagementInfoDO" >
+    insert into data_management_info (order_id, contract_hand_date, mortgage_hand_date, 
+      mortgage_send_date)
+    values (#{orderId,jdbcType=BIGINT}, #{contractHandDate,jdbcType=VARCHAR}, #{mortgageHandDate,jdbcType=VARCHAR}, 
+      #{mortgageSendDate,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.DataManagementInfoDO" >
+    insert into data_management_info
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="orderId != null" >
+        order_id,
+      </if>
+      <if test="contractHandDate != null" >
+        contract_hand_date,
+      </if>
+      <if test="mortgageHandDate != null" >
+        mortgage_hand_date,
+      </if>
+      <if test="mortgageSendDate != null" >
+        mortgage_send_date,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="orderId != null" >
+        #{orderId,jdbcType=BIGINT},
+      </if>
+      <if test="contractHandDate != null" >
+        #{contractHandDate,jdbcType=VARCHAR},
+      </if>
+      <if test="mortgageHandDate != null" >
+        #{mortgageHandDate,jdbcType=VARCHAR},
+      </if>
+      <if test="mortgageSendDate != null" >
+        #{mortgageSendDate,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.DataManagementInfoDO" >
+    update data_management_info
+    <set >
+      <if test="contractHandDate != null" >
+        contract_hand_date = #{contractHandDate,jdbcType=VARCHAR},
+      </if>
+      <if test="mortgageHandDate != null" >
+        mortgage_hand_date = #{mortgageHandDate,jdbcType=VARCHAR},
+      </if>
+      <if test="mortgageSendDate != null" >
+        mortgage_send_date = #{mortgageSendDate,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where order_id = #{orderId,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.DataManagementInfoDO" >
+    update data_management_info
+    set contract_hand_date = #{contractHandDate,jdbcType=VARCHAR},
+      mortgage_hand_date = #{mortgageHandDate,jdbcType=VARCHAR},
+      mortgage_send_date = #{mortgageSendDate,jdbcType=VARCHAR}
+    where order_id = #{orderId,jdbcType=BIGINT}
+  </update>
+  <select id="selectOrderByIdCard" parameterType="java.lang.String" resultType="java.lang.String">
+    select loan.id from loan_order loan
+    left join loan_customer cus on cus.id = loan.loan_customer_id
+    left join loan_process process on process.order_id = loan.id
+    where process.order_status =1 and process.material_print_review =1
+    and cus.id_card = #{idCard}
+  </select>
+</mapper>
