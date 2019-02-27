@@ -36,12 +36,12 @@
         <logger name="org.springframework" level="warn"></logger>
         <logger name="org.mybatis" level="warn"></logger>
         <!--启用异步，提升性能-->
-        <Asynclogger level="INFO" name="com.yunche.loan">
+        <AsyncLogger level="INFO" name="com.yunche.loan">
             <AppenderRef ref="App-File-Appender"/>
-        </Asynclogger>
-        <Asynclogger level="INFO" name="org.activiti.engine.impl.persistence.entity">
+        </AsyncLogger>
+        <AsyncLogger level="INFO" name="org.activiti.engine.impl.persistence.entity">
             <AppenderRef ref="App-File-Appender"/>
-        </Asynclogger>
+        </AsyncLogger>
         <AsyncRoot level="INFO">
             <AppenderRef ref="Console"/>
         </AsyncRoot>
