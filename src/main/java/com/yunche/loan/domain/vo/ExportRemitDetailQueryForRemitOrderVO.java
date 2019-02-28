@@ -39,6 +39,9 @@ public class ExportRemitDetailQueryForRemitOrderVO
     //车价
     private String price;
 
+    //车价
+    private String loan_time;
+
     //执行利率
     private String sign_rate;
 
