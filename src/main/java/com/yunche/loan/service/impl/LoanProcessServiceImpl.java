@@ -1614,6 +1614,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             execTelephoneVerifyTask(task, variables, approval, loanOrderDO, loanProcessDO);
 
             //待收钥匙-白名单标记
+            markWhiteListKeyCommit(loanOrderDO.getId());
 
         } else {
             // 其他任务：直接提交
@@ -1630,20 +1631,21 @@ public class LoanProcessServiceImpl implements LoanProcessService {
     /**
      * 执行白名单标记
      *
-     * @param loanOrderDO
+     * @param orderId
      */
-    private void markWhiteListKeyCommit(LoanOrderDO loanOrderDO)
+    private void markWhiteListKeyCommit(Long orderId)
     {
-        Byte carKey = loanCarInfoDOMapper.getCarKeyByOrderId(loanOrderDO.getId());
+        Byte carKey = loanCarInfoDOMapper.getCarKeyByOrderId(orderId);
         // 留备用钥匙
         if (CAR_KEY_TRUE.equals(carKey))
         {
            //查询该订单合伙人是否在不收钥匙白名单中--状态为开启
-            PartnerDO partnerDO = partnerDOMapper.queryPartnerInfoByOrderId(loanOrderDO.getId());
+            PartnerDO partnerDO = partnerDOMapper.queryPartnerInfoByOrderId(orderId);
             PartnerWhiteListDO partnerWhiteListDO = partnerWhiteListDOMapper.selectByPrimaryKey(new PartnerWhiteListDOKey(partnerDO.getId(), COMMIT_KEY.getCode()));
 
             if (partnerWhiteListDO.getStatus().equals(WHITE_OPEN))
             {
+                LoanOrderDO loanOrderDO = new LoanOrderDO();
                 loanOrderDO.setKeySpecialCommit(WHITE_OPEN);
 
                 loanOrderDOMapper.updateByPrimaryKeySelective(loanOrderDO);
