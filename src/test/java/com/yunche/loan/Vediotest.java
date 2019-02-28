@@ -99,9 +99,6 @@ public class Vediotest
 
 
         //测试
-        LoanOrderDO loanOrderDO = new LoanOrderDO();
-        loanOrderDO.setId(Long.valueOf(zhongAnQueryParam.getOrder_id()));
-        loanOrderDO.setZhongAnHighRiskHit(new Byte("1"));
 
         try {
             for (ZhongAnCusParam zhongAnCusParam : customers) {

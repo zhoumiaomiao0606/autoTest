@@ -1939,7 +1939,7 @@
         c.ctelzone AS customer_ctelzone,
         f.financial_product_name AS financial_product_name,
         f.financial_product_id AS financial_product_id,
-        m.material_num                    AS materialNum,
+        lm.material_num                    AS materialNum,
         h.license_plate_number AS license_plate_number,
         h.registration_certificate_number AS registration_certificate_number,
         h.apply_license_plate_date AS apply_license_plate_date,
@@ -1996,7 +1996,7 @@
 
         left join product_rate p on (p.prod_id = f.financial_product_id and p.loan_time = f.loan_time)
 
-        LEFT JOIN   loan_material_manage    m        ON  o.id = m.order_id
+        LEFT JOIN   loan_material_manage    lm        ON  o.id = lm.order_id
 
 
     </select>
@@ -2019,7 +2019,7 @@
         a.apply_license_plate_deposit_date AS apply_license_plate_deposit_date,
         f.loan_time AS loan_time,
         f.car_price AS car_price,
-        m.material_num                    AS materialNum,
+        lm.material_num                    AS materialNum,
         f.actual_car_price AS actual_car_price,
         b.bank AS bank,
         f.sign_rate AS sign_rate,
@@ -2068,7 +2068,8 @@
         left join financial_product product on f.financial_product_id = product.prod_id
 
         left join product_rate p on (p.prod_id = f.financial_product_id and p.loan_time = f.loan_time)
-        LEFT JOIN   loan_material_manage    m        ON  o.id = m.order_id
+
+        LEFT JOIN   loan_material_manage    lm        ON  o.id = lm.order_id
 
 
     </select>
