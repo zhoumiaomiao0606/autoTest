@@ -3180,6 +3180,7 @@
         join_h.license_plate_number                  AS licensePlateNumber,
         partner.name AS partner,
         t.hasRimitDays,
+        node.usertask_remit_review_create_time  AS remitGmtCreate,
         b.bank
 
 
@@ -3193,6 +3194,7 @@
         left  join loan_car_info on loan_car_info.id = main.loan_car_info_id
         left  join vehicle_information join_h        on join_h.id             = main.vehicle_information_id
         left join loan_telephone_verify join_ltv        on main.id               = join_ltv.order_id
+        LEFT JOIN current_node_manager node ON node.order_id = main.id
         left join (
         SELECT
         floor(
