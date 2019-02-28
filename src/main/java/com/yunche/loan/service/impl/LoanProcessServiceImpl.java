@@ -1646,6 +1646,8 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             if (partnerWhiteListDO.getStatus().equals(WHITE_OPEN))
             {
                 LoanOrderDO loanOrderDO = new LoanOrderDO();
+
+                loanOrderDO.setId(orderId);
                 loanOrderDO.setKeySpecialCommit(WHITE_OPEN);
 
                 loanOrderDOMapper.updateByPrimaryKeySelective(loanOrderDO);
