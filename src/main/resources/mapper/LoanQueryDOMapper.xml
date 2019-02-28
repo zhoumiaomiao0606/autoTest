@@ -1136,6 +1136,8 @@
             remit.beneficiary_bank                                                                  AS remit_beneficiary_bank,
             remit.beneficiary_account                                                               AS remit_beneficiary_account,
             remit.beneficiary_account_number                                                        AS remit_beneficiary_account_number,
+            remit.child_bank                                                                  AS remit_child_bank,
+            remit.child_bank_code                                                                  AS remit_child_bank_code,
             remit.remit_amount                                                                      AS remit_amount,
             remit.return_rate_amount                                                                AS remit_return_rate_amount,
             remit.insurance_situation                                                               AS remit_insurance_situation,
