@@ -277,7 +277,7 @@
         cus.NAME          as customer,
         cus.id_card       as idCard,
         useGetSmallCarName(car.car_detail_id)     AS carName,
-        plan.car_price    as car_price,
+        plan.car_price    as carPrice,
         case when plan.loan_amount &gt;= remit.remit_amount
         then floor(remit.remit_amount/100)*100
         else floor(plan.loan_amount/100)*100 end   AS confThirdLoanMoney,
