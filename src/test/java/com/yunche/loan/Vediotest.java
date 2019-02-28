@@ -8,6 +8,7 @@ import com.google.gson.reflect.TypeToken;
 import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.util.OSSUnit;
 import com.yunche.loan.config.util.ZhongAnHttpUtil;
+import com.yunche.loan.domain.entity.LoanOrderDO;
 import com.yunche.loan.domain.param.ZhongAnCusParam;
 import com.yunche.loan.domain.param.ZhongAnQueryParam;
 import com.yunche.loan.domain.vo.BankCodeVO;
@@ -95,6 +96,12 @@ public class Vediotest
         zhongAnQueryParam = gson.fromJson(param, type);
 
         List<ZhongAnCusParam> customers = zhongAnQueryParam.getCustomers();
+
+
+        //测试
+        LoanOrderDO loanOrderDO = new LoanOrderDO();
+        loanOrderDO.setId(Long.valueOf(zhongAnQueryParam.getOrder_id()));
+        loanOrderDO.setZhongAnHighRiskHit(new Byte("1"));
 
         try {
             for (ZhongAnCusParam zhongAnCusParam : customers) {

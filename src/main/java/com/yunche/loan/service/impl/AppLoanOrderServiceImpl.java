@@ -34,6 +34,8 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.yunche.loan.config.constant.BaseConst.K_YORN_NO;
+import static com.yunche.loan.config.constant.BaseConst.K_YORN_YES;
 import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
 import static com.yunche.loan.config.constant.CarConst.CAR_DETAIL;
 import static com.yunche.loan.config.constant.CarConst.CAR_TYPE_MAP;
@@ -1021,7 +1023,11 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
 
     @Override
     @Transactional
-    public ZhonganReturnVO zhongAnQuery(ZhongAnQueryParam zhongAnQueryParam) {
+    public ZhonganReturnVO zhongAnQuery(ZhongAnQueryParam zhongAnQueryParam)
+    {
+        Preconditions.checkNotNull(zhongAnQueryParam.getOrder_id(),"订单号不能为空！");
+
+        Boolean stopCredit = false;
 
         ZhonganReturnVO zhonganReturnVO = new ZhonganReturnVO();
         zhonganReturnVO.setFlag(true);
@@ -1193,6 +1199,34 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
 
                             }
                         }
+
+                        //.命中强规则
+                        String highRisk_Remind = creditResultMap.getString("HighRisk_Remind");
+                        zhongAnInfoDO.setHighRiskRemind(highRisk_Remind);
+
+                        if (!"".equals(highRisk_Remind) && highRisk_Remind !=null)
+                        {
+                            //关闭该订单查询征信权限 ----  文案提示
+                            stopCredit = true;
+
+                        }
+
+
+
+
+                        //命中置顶规则
+                        String lowRisk_Remind = creditResultMap.getString("LowRisk_Remind");
+
+                        if (!"".equals(lowRisk_Remind) && lowRisk_Remind !=null)
+                        {
+                            // ----  文案提示
+                        }
+
+                        zhongAnInfoDO.setLowRiskRemind(lowRisk_Remind);
+
+
+
+
                         zhongAnInfoDO.setIdCard(zhongAnCusParam.getIdcard());
                         zhongAnInfoDO.setAge(creditResultMap.getString("age"));
                         zhongAnInfoDO.setGender(creditResultMap.getString("gender"));
@@ -1351,6 +1385,22 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
             logger.error("大数据风控查询失败", e);
             throw new BizException("大数据风控查询延误，请再次查询");
         }
+
+        //停该订单征信
+        if (stopCredit)
+        {
+           // LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(Long.valueOf(zhongAnQueryParam.getOrder_id()));
+            LoanOrderDO loanOrderDO = new LoanOrderDO();
+            loanOrderDO.setId(Long.valueOf(zhongAnQueryParam.getOrder_id()));
+            loanOrderDO.setZhongAnHighRiskHit(K_YORN_YES);
+            loanOrderDOMapper.updateByPrimaryKeySelective(loanOrderDO);
+        }else
+            {
+                LoanOrderDO loanOrderDO = new LoanOrderDO();
+                loanOrderDO.setId(Long.valueOf(zhongAnQueryParam.getOrder_id()));
+                loanOrderDO.setZhongAnHighRiskHit(K_YORN_NO);
+                loanOrderDOMapper.updateByPrimaryKeySelective(loanOrderDO);
+            }
         return zhonganReturnVO;
     }
 
