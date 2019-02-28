@@ -3,8 +3,13 @@ package com.yunche.loan;
 import com.alibaba.fastjson.JSON;
 import com.aliyun.oss.model.OSSObject;
 import com.google.common.collect.Lists;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.util.OSSUnit;
+import com.yunche.loan.config.util.ZhongAnHttpUtil;
+import com.yunche.loan.domain.param.ZhongAnCusParam;
+import com.yunche.loan.domain.param.ZhongAnQueryParam;
 import com.yunche.loan.domain.vo.BankCodeVO;
 import com.yunche.loan.domain.vo.SDCOrders;
 import net.bramp.ffmpeg.FFmpeg;
@@ -22,11 +27,14 @@ import org.junit.Test;
 import sun.misc.BASE64Encoder;
 
 import java.io.*;
+import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -79,12 +87,33 @@ public class Vediotest
         System.out.println("====="+collect.size()+ JSON.toJSONString(collect));*/
         //System.out.println("====="+(null==2));
 
-        BigDecimal a1 = new BigDecimal("0");
+        String param = "{\"order_id\":\"1901291042140362363\",\"customers\":[{\"name\":\"贺千柳测试\",\"tel\":\"18899990003\",\"idcard\":\"430623197009223067\",\"customertype\":\"特殊关联人\",\"ralationship\":\"1\",\"loanmoney\":\"1\"}]}";
+        ZhongAnQueryParam zhongAnQueryParam = new ZhongAnQueryParam();
 
-        BigDecimal a = new BigDecimal("1.111");
+        Type type =new TypeToken<ZhongAnQueryParam>(){}  .getType();
+        Gson gson = new Gson();
+        zhongAnQueryParam = gson.fromJson(param, type);
 
-        a1.add(a);
-        System.out.println("===="+a1.add(a));
+        List<ZhongAnCusParam> customers = zhongAnQueryParam.getCustomers();
+
+        try {
+            for (ZhongAnCusParam zhongAnCusParam : customers) {
+
+                Random random = new Random();
+
+                Map map = ZhongAnHttpUtil.queryInfo(zhongAnCusParam.getName(), zhongAnCusParam.getTel(), zhongAnCusParam.getIdcard(),
+                        zhongAnQueryParam.getOrder_id(), zhongAnCusParam.getLoanmoney(), zhongAnCusParam.getCustomertype(), zhongAnCusParam.getRalationship(),
+                        System.currentTimeMillis() + "" + random.nextInt(10000));
+
+                System.out.println("map内容="+gson.toJson(map));
+
+
+
+            }
+        }catch (Exception ex)
+        {
+            System.out.println("====错误");
+        }
 
 
 

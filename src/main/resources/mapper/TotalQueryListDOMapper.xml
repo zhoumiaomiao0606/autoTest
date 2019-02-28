@@ -3210,7 +3210,7 @@
                 AND
                 case when #{taskStatus} = 0 then loan_process.commit_key in (1,2,3)
                 when #{taskStatus} = 1 then loan_process.loan_review = 1 and loan_process.order_status = 1
-                when #{taskStatus} = 2 then loan_process.commit_key = 2 and loan_process.order_status = 1
+                when #{taskStatus} = 2 then loan_process.commit_key = 2 and loan_process.order_status = 1 and main.key_special_commit = 0
                 when #{taskStatus} = 3 then loan_process.commit_key = 3 and loan_process.order_status = 1
                 else 1=1
                 end

@@ -2,6 +2,7 @@ package com.yunche.loan.config.util;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.google.gson.Gson;
 import com.zhongan.scorpoin.biz.common.CommonRequest;
 import com.zhongan.scorpoin.biz.common.CommonResponse;
 import com.zhongan.scorpoin.common.ZhongAnApiClient;
@@ -71,8 +72,15 @@ public class ZhongAnHttpUtil {
         logger.info("众安大数据返回信息:"+retMsg);
         if(retMsg !=null&&!"".equals(retMsg)){
             returnMap = (Map)JSON.parse(retMsg);
+
+            Gson gson = new Gson();
+            System.out.println("returnMap内容="+gson.toJson(returnMap));
+
+
             String param1 = (String)returnMap.get("param");
             returnMap1 = (Map)JSON.parse(param1);
+
+            System.out.println("returnMap1内容="+gson.toJson(returnMap1));
         }else{
            // Thread.sleep(1000);
             returnMap1 = queryInfo(name,tel,idcard,appNo,loanPeriod,appRole,ralationship,applyNo);
