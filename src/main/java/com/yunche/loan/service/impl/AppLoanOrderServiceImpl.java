@@ -1204,15 +1204,6 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
                         String highRisk_Remind = creditResultMap.getString("HighRisk_Remind");
                         zhongAnInfoDO.setHighRiskRemind(highRisk_Remind);
 
-                        if (!"".equals(highRisk_Remind) && highRisk_Remind !=null)
-                        {
-                            //关闭该订单查询征信权限 ----  文案提示
-                            stopCredit = true;
-
-                        }
-
-
-
 
                         //命中置顶规则
                         String lowRisk_Remind = creditResultMap.getString("LowRisk_Remind");
@@ -1384,6 +1375,25 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
         } catch (Exception e) {
             logger.error("大数据风控查询失败", e);
             throw new BizException("大数据风控查询延误，请再次查询");
+        }
+
+
+        List<ZhonganInfoDO> list = zhongAnInfoDOMapper.selectByCreaditOrderId(Long.parseLong(zhongAnQueryParam.getOrder_id()));
+
+        if (!CollectionUtils.isEmpty(list))
+        {
+            for (ZhonganInfoDO zhonganInfoDO :list)
+            {
+
+                if (!"".equals(zhonganInfoDO.getHighRiskRemind()) && zhonganInfoDO.getHighRiskRemind() !=null)
+                {
+                    //关闭该订单查询征信权限 ----  文案提示
+                    stopCredit = true;
+
+                    break;
+
+                }
+            }
         }
 
         //停该订单征信

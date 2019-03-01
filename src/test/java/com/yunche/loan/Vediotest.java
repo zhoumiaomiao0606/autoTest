@@ -88,7 +88,7 @@ public class Vediotest
         System.out.println("====="+collect.size()+ JSON.toJSONString(collect));*/
         //System.out.println("====="+(null==2));
 
-        String param = "{\"order_id\":\"1901291042140362363\",\"customers\":[{\"name\":\"马安定\",\"tel\":\"15880744089\",\"idcard\":\"410401197405291018\",\"customertype\":\"特殊关联人\",\"ralationship\":\"1\",\"loanmoney\":\"1\"}]}";
+        String param = "{\"order_id\":\"1901291042140362363\",\"customers\":[{\"name\":\"杨璐嘉\",\"tel\":\"13677347959\",\"idcard\":\"430521198412249220\",\"customertype\":\"特殊关联人\",\"ralationship\":\"1\",\"loanmoney\":\"1\"}]}";
         ZhongAnQueryParam zhongAnQueryParam = new ZhongAnQueryParam();
 
         Type type =new TypeToken<ZhongAnQueryParam>(){}  .getType();
