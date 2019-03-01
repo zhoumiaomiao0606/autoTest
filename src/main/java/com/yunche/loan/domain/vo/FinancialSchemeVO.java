@@ -47,7 +47,7 @@ public class FinancialSchemeVO {
     private String each_month_repay;
 
     //档案编号
-    private Long materialNum;
+    private String materialNum;
 
 
     private String order_id;//订单id

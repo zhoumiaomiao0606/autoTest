@@ -45,7 +45,7 @@ public class UniversalMaterialManageVO {
     private String bankName;
 
 
-    private Long materialNum;
+    private String materialNum;
 
     private Date completeDate;
 
