@@ -258,7 +258,14 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         ////////////////////////////////////////// ↓↓↓↓↓ 特殊处理  ↓↓↓↓↓ ////////////////////////////////////////////////
 
         // 【征信申请】
-        if (isCreditApplyTask(approval.getTaskDefinitionKey(), approval.getAction())) {
+        if (isCreditApplyTask(approval.getTaskDefinitionKey(), approval.getAction()))
+        {
+            //判断大数据风控是否命中高风险
+            if (K_YORN_YES.equals(loanOrderDO.getZhongAnHighRiskHit()))
+            {
+                throw  new BizException("该订单有客户未通过大数据风控，无法申请查征信");
+            }
+
             //判断合伙人没有被禁止进件
             List<Long> shutdownQuerycreditPartners = keyCommitTask.getShutdownQuerycreditPartners();
             if (!CollectionUtils.isEmpty(shutdownQuerycreditPartners)) {
