@@ -245,27 +245,13 @@ public class BankSolutionServiceImpl implements BankSolutionService {
     public ResultBean applyevaluate(Long orderId) {
 
         String param = paramCache.getParam(IConstant.IS_NEED_APPLYEVALUATE);
+        Set<String> blackPartner = paramCache.getParam2List(IConstant.BLACKLIST_PARTNER);
         if(!StringUtil.isEmpty(param) && IDict.K_YORN.K_YORN_NO.toString().equals(param)){
             return ResultBean.ofSuccess("【系统设置】：无需查询二手车评估预审");
         }
-
-
         LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
         if (loanOrderDO == null) {
             throw new BizException("此订单不存在");
-        }
-
-        Long carId = loanOrderDO.getLoanCarInfoId();
-        if (carId == null) {
-            throw new BizException("贷款车辆不存在");
-        }
-        LoanCarInfoDO loanCarInfoDO = loanCarInfoDOMapper.selectByPrimaryKey(carId);
-        if (loanCarInfoDO == null) {
-            throw new BizException("贷款车辆不存在");
-        }
-        //不是二手车 不需要调用
-        if(!Byte.valueOf("1").equals(loanCarInfoDO.getCarType())){
-            return  ResultBean.ofSuccess("非二手车无需调用");
         }
 
         LoanFinancialPlanDO loanFinancialPlanDO = loanFinancialPlanDOMapper.selectByPrimaryKey(loanOrderDO.getLoanFinancialPlanId());
@@ -278,7 +264,14 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         }
 
 
-
+        Long carId = loanOrderDO.getLoanCarInfoId();
+        if (carId == null) {
+            throw new BizException("贷款车辆不存在");
+        }
+        LoanCarInfoDO loanCarInfoDO = loanCarInfoDOMapper.selectByPrimaryKey(carId);
+        if (loanCarInfoDO == null) {
+            throw new BizException("贷款车辆不存在");
+        }
 
         Long baseId = loanOrderDO.getLoanBaseInfoId();
         if (baseId == null) {
@@ -289,17 +282,20 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         if (loanBaseInfoDO == null) {
             throw new BizException("征信信息不存在");
         }
-
+        //不是二手车 不需要调用
+        if(!Byte.valueOf("1").equals(loanCarInfoDO.getCarType())){
+            return  ResultBean.ofSuccess("非二手车无需调用");
+        }
         //征信银行
         Long bankId = bankDOMapper.selectIdByName(loanBaseInfoDO.getBank());
         if (bankId == null) {
             throw new BizException("贷款银行不存在");
         }
-        //目前只有台州需要调用，后续需要增加城站
 //        if((!String.valueOf(bankId).equals(IDict.K_BANK.ICBC_HZCZ)&&!String.valueOf(bankId).equals(IDict.K_BANK.ICBC_TZLQ))){
 //            return ResultBean.ofSuccess("非城站/台州支行无需调用");
 //        }
-        if(!String.valueOf(bankId).equals(IDict.K_BANK.ICBC_TZLQ)){
+
+        if((!String.valueOf(bankId).equals(IDict.K_BANK.ICBC_TZLQ))){
             return ResultBean.ofSuccess("非台州支行无需调用");
         }
         Long carDetailId = loanCarInfoDO.getCarDetailId();
@@ -363,9 +359,18 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         applyevaluate.setDecorateLevel(" ");//非必填，可为空
 
         violationUtil.violation(applyevaluate);
-        ApplycreditstatusResponse response = icbcFeignClient.applyevaluate(applyevaluate);
-
+        ApplycreditstatusResponse response=null;
+        try{
+            response = icbcFeignClient.applyevaluate(applyevaluate);
+        }catch (Exception e){
+            String partnerIdStr = loanBaseInfoDO.getPartnerId().toString();
+            if(!blackPartner.contains(partnerIdStr)){
+                LOG.info(partnerIdStr+":白名单合伙人");
+                return ResultBean.ofSuccess(partnerIdStr+":白名单合伙人【"+e.getMessage()+"】");
+            }
+        }
         return ResultBean.ofSuccess(response);
+
     }
 
     @Override

@@ -23,6 +23,8 @@ public class IConstant {
 
     //是否需要查询二手车评估预审
     public static final String IS_NEED_APPLYEVALUATE ="IS_NEED_APPLYEVALUATE";
+    //合伙人黑名单列表
+    public static final String BLACKLIST_PARTNER ="BLACKLIST_PARTNER";
 
 
 
