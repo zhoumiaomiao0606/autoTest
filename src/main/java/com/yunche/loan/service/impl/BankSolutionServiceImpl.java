@@ -328,9 +328,10 @@ public class BankSolutionServiceImpl implements BankSolutionService {
 
         ICBCApiRequest.Applyevaluate applyevaluate = new ICBCApiRequest.Applyevaluate();
 
+        String serialNo=GeneratorIDUtil.execute();
         applyevaluate.setPlatno(sysConfig.getPlatno());
         applyevaluate.setOrderno(String.valueOf(orderId));
-        applyevaluate.setCmpseq(GeneratorIDUtil.execute());
+        applyevaluate.setCmpseq(serialNo);
         applyevaluate.setCmpdate(DateUtil.getDate());
         applyevaluate.setCmptime(DateUtil.getTime());
         applyevaluate.setFileNum("0");
@@ -367,8 +368,17 @@ public class BankSolutionServiceImpl implements BankSolutionService {
             if(!blackPartner.contains(partnerIdStr)){
                 LOG.info(partnerIdStr+":白名单合伙人");
                 return ResultBean.ofSuccess(partnerIdStr+":白名单合伙人【"+e.getMessage()+"】");
+            }else{
+                return ResultBean.ofError(partnerIdStr+":合伙人订单【"+e.getMessage()+"】");
             }
+        }finally {
+            BankInterfaceSerialDO bankInterfaceSerialDO = new BankInterfaceSerialDO();
+            bankInterfaceSerialDO.setSerialNo(serialNo);
+            bankInterfaceSerialDO.setStatus(new Byte(IDict.K_JJSTS.SUCCESS));
+            int count = bankInterfaceSerialDOMapper.updateByPrimaryKeySelective(bankInterfaceSerialDO);
         }
+
+
         return ResultBean.ofSuccess(response);
 
     }

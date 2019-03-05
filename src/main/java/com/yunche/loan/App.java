@@ -68,7 +68,7 @@ public class App {
     }
 
 
-    //    @Bean
+//    @Bean
 //    public CommandLineRunner init(RepositoryService repositoryService,
 //                                  ActivitiCache activitiCache,
 //                                  ActivitiService activitiService) {
