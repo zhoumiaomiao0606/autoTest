@@ -2815,7 +2815,7 @@
         </if>
         <if test="relevanceCustomerName != null">
             AND
-            main.id in
+            loan.id in
             (
             (select id from loan_order where loan_customer_id
             in (select principal_cust_id from loan_customer where name = #{relevanceCustomerName})
