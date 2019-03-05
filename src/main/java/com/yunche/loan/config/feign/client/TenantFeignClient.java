@@ -8,7 +8,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+//生产
 @FeignClient(name = "tenantFeignClient", url = "http://47.110.7.61:8016")
+
+//测试
 //@FeignClient(name = "tenantFeignClient", url = "http://47.96.78.20:8016")
 public interface TenantFeignClient {
 
