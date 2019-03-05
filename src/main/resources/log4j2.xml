@@ -32,14 +32,18 @@
 
 
     <Loggers>
-        <logger level="INFO" name="com.yunche.loan">
+        <!--过滤掉spring和mybatis的一些无用的DEBUG信息-->
+        <logger name="org.springframework" level="warn"></logger>
+        <logger name="org.mybatis" level="warn"></logger>
+        <!--启用异步，提升性能-->
+        <AsyncLogger level="INFO" name="com.yunche.loan">
             <AppenderRef ref="App-File-Appender"/>
-        </logger>
-        <logger level="INFO" name="org.activiti.engine.impl.persistence.entity">
+        </AsyncLogger>
+        <AsyncLogger level="INFO" name="org.activiti.engine.impl.persistence.entity">
             <AppenderRef ref="App-File-Appender"/>
-        </logger>
-        <Root level="INFO">
+        </AsyncLogger>
+        <AsyncRoot level="INFO">
             <AppenderRef ref="Console"/>
-        </Root>
+        </AsyncRoot>
     </Loggers>
 </Configuration>

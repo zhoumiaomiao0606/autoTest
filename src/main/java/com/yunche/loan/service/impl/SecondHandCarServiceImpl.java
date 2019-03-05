@@ -352,7 +352,7 @@ public class SecondHandCarServiceImpl implements SecondHandCarService
             secondHandCarEvaluateDO.setCity_id(evaluateWebParam.getCity_id());
 
             //设置查询的评估价
-            secondHandCarEvaluateDO.setEvaluate_price(new BigDecimal(financeResult1.getDatas().getB2CPrices().getB().getMid()));
+            secondHandCarEvaluateDO.setEvaluate_price(new BigDecimal(financeResult1.getDatas().getB2CPrices().getA().getMid()));
 
             //设置当前查询时间
             secondHandCarEvaluateDO.setQuery_time(new Date());

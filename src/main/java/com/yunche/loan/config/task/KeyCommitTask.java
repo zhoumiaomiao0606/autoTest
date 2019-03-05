@@ -95,7 +95,12 @@ public class KeyCommitTask
                                                     f ->
                                                     {
                                                         //订单自动提交
-                                                        loanCommitKeyService.uncollected(f);
+                                                        try {
+                                                            loanCommitKeyService.uncollected(f);
+                                                        }catch (Exception ex)
+                                                        {
+                                                            LOG.info(f+"订单自动提交不交钥匙失败，请查看详情！");
+                                                        }
                                                     }
                                             );
                                 }

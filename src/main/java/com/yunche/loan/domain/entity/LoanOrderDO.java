@@ -67,4 +67,6 @@ public class LoanOrderDO {
 
     private Byte keySpecialCommit;
 
+    private Byte zhongAnHighRiskHit;
+
 }

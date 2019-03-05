@@ -70,7 +70,7 @@
     <sequenceFlow id="flow63" sourceRef="parallelgateway3" targetRef="usertask_car_insurance"></sequenceFlow>
     <userTask id="usertask_install_gps" name="GPS安装" activiti:candidateGroups="管理员,总经理,培训经理,台州主管,业务内勤,大区经理,浙江区大区经理,华中区大区经理,华东区大区经理,华南区大区经理,华北区大区经理,西南区大区经理,西北区大区经理,看车网大区经理,催收主管,GPS专员,哈尔滨GPS专员,大区经理"></userTask>
     <sequenceFlow id="flow65" sourceRef="parallelgateway3" targetRef="usertask_install_gps"></sequenceFlow>
-    <userTask id="usertask_commit_key" name="待收钥匙" activiti:candidateGroups="管理员,总经理,培训经理,台州主管,催收主管,收钥匙专员,哈尔滨收钥匙专员"></userTask>
+    <userTask id="usertask_commit_key" name="待收钥匙" activiti:candidateGroups="管理员,总经理,培训经理,台州主管,催收主管,收钥匙专员,哈尔滨收钥匙专员,看车网大区经理,东北大区经理,西北大区经理,西南大区经理,华北大区经理,华南大区经理,华东大区经理,华中大区经理,江浙大区经理,大区助理,大区经理"></userTask>
     <sequenceFlow id="flow66" sourceRef="parallelgateway3" targetRef="usertask_commit_key">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${car_key == 1}]]></conditionExpression>
     </sequenceFlow>

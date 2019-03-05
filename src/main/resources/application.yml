@@ -17,7 +17,7 @@ spring:
     host: 47.97.122.31
     port: 6380
     password: yunche@1234
-    timeout: 3000
+    timeout: 5000
     lettuce:
       pool:
         max-active: 200

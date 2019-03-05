@@ -5,7 +5,7 @@ import lombok.Data;
 @Data
 public class JtxExportRefuseToLendVO
 {
-    private String name;
+    private String customer;
 
     private String idCard;
 
@@ -15,7 +15,7 @@ public class JtxExportRefuseToLendVO
 
     private String downPaymentMoney;
 
-    private String lendAmount;
+    private String confThirdLoanMoney;
 
 
     private String loanTime;

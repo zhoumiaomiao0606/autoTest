@@ -23,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.util.List;
 
+import static com.yunche.loan.config.constant.BaseConst.WHITE_OPEN;
 import static com.yunche.loan.config.constant.LoanFileConst.UPLOAD_TYPE_NORMAL;
 import static com.yunche.loan.config.constant.LoanFileEnum.LETTER_OF_RISK_COMMITMENT;
 import static com.yunche.loan.config.constant.LoanProcessEnum.COMMIT_KEY;
@@ -76,6 +77,12 @@ public class LoanCommitKeyServiceImpl implements LoanCommitKeyService
         approvalParam.setKeyCollected(UNCOLLECTEDKEY);
         ResultBean<Void> approvalResult = loanProcessService.approval(approvalParam);
         Preconditions.checkArgument(approvalResult.getSuccess(), approvalResult.getSuccess());
+
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
+        if (WHITE_OPEN.equals(loanOrderDO.getKeySpecialCommit()))
+        {
+            return ResultBean.ofSuccess(null, "成功");
+        }
 
 
         // 2、订单的风险承担比例改为100%      partner -> risk_bear_rate           loan_apply_competition -> risk_taking_ratio
@@ -134,7 +141,7 @@ public class LoanCommitKeyServiceImpl implements LoanCommitKeyService
     {
         Preconditions.checkNotNull(orderId, "orderId不能为空");
 
-        // 待收钥匙新增按钮“未收，风险100%”，点击后，视同待办完成，但订单的风险承担比例改为100%
+        // 待收钥匙新增按钮“未收，风险不变”，点击后，视同待办完成，但订单的风险承担比例不变
 
         // 1、提交任务
         ApprovalParam approvalParam = new ApprovalParam();

@@ -3,6 +3,7 @@ package com.yunche.loan.web.controller;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.yunche.loan.config.result.ResultBean;
+import com.yunche.loan.domain.param.OrderListParam;
 import com.yunche.loan.domain.param.RiskCommitmentPara;
 import com.yunche.loan.service.LoanCommitKeyService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,12 +39,12 @@ public class LoanCommitKeyController {
 
     //批量不收钥匙
     @PostMapping("/batchRiskUncollected")
-    public ResultBean<Void> batchRiskUncollected(@RequestBody List<Long> orderIds)
+    public ResultBean<Void> batchRiskUncollected(@RequestBody OrderListParam orderListParam)
     {
         List<Long> notSuccess = Lists.newArrayList();
-        if (!CollectionUtils.isEmpty(orderIds))
+        if (!CollectionUtils.isEmpty(orderListParam.getOrderIds()))
         {
-            orderIds
+            orderListParam.getOrderIds()
                     .stream()
                     .forEach(
                             e ->{
@@ -73,12 +74,12 @@ public class LoanCommitKeyController {
 
     //批量收钥匙
     @PostMapping("/batchCollected")
-    public ResultBean<Void> batchCollected(@RequestBody List<Long> orderIds)
+    public ResultBean<Void> batchCollected(@RequestBody OrderListParam orderListParam)
     {
         List<Long> notSuccess = Lists.newArrayList();
-        if (!CollectionUtils.isEmpty(orderIds))
+        if (!CollectionUtils.isEmpty(orderListParam.getOrderIds()))
         {
-            orderIds
+            orderListParam.getOrderIds()
                     .stream()
                     .forEach(
                             e ->{

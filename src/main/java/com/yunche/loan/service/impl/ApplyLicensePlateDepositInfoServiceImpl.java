@@ -89,6 +89,7 @@ public class ApplyLicensePlateDepositInfoServiceImpl implements ApplyLicensePlat
         Set<Byte> types = new HashSet<>();
         types.add(new Byte("23"));
         types.add(new Byte("20"));
+        types.add(new Byte("22"));
         recombinationVO.setMaterials(loanQueryDOMapper.selectUniversalCustomerFileByTypes(orderId, types));
         return recombinationVO;
     }

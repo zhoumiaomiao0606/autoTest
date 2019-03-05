@@ -1349,6 +1349,7 @@
         loan_financial_plan.car_price AS price,
         loan_financial_plan.sign_rate,
         loan_financial_plan.loan_amount,
+        loan_financial_plan.loan_time,
         loan_financial_plan.down_payment_money,
         loan_financial_plan.bank_period_principal,
         remit_details.remit_amount,
