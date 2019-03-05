@@ -45,6 +45,7 @@ import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
 import static com.yunche.loan.config.constant.LoanCustomerConst.CUST_TYPE_GUARANTOR;
 import static com.yunche.loan.config.constant.LoanCustomerConst.GUARANTEE_TYPE_INSIDE;
 import static com.yunche.loan.config.constant.LoanCustomerEnum.*;
+import static com.yunche.loan.config.constant.LoanProcessEnum.FINANCIAL_SCHEME_MODIFY_APPLY;
 
 @Service
 @Transactional
@@ -132,6 +133,8 @@ public class BankSolutionServiceImpl implements BankSolutionService {
     @Autowired
     private ParamCache paramCache;
 
+    @Autowired
+    private LoanFinancialPlanTempHisDOMapper loanFinancialPlanTempHisDOMapper;
 
 
     /**
@@ -242,7 +245,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
      * @return
      */
     @Override
-    public ResultBean applyevaluate(Long orderId) {
+    public ResultBean applyevaluate(Long orderId,String taskDefinitionKey) {
 
         String param = paramCache.getParam(IConstant.IS_NEED_APPLYEVALUATE);
         Set<String> blackPartner = paramCache.getParam2List(IConstant.BLACKLIST_PARTNER);
@@ -258,6 +261,8 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         if(loanFinancialPlanDO == null){
             throw new BizException("金融方案不存在");
         }
+
+
         LoanCustomerDO loanCustomerDO = loanCustomerDOMapper.selectByPrimaryKey(loanOrderDO.getLoanCustomerId(), null);
         if(loanCustomerDO == null){
             throw new BizException("客户信息不存在");
@@ -342,7 +347,15 @@ public class BankSolutionServiceImpl implements BankSolutionService {
 
         applyevaluate.setIdno(loanCustomerDO.getIdCard());
         applyevaluate.setCarType(carFullName);
-        applyevaluate.setPrice(BigDecimalUtil.format(loanFinancialPlanDO.getBankPeriodPrincipal(),2));
+        if(FINANCIAL_SCHEME_MODIFY_APPLY.getCode().equals(taskDefinitionKey)){
+            LoanFinancialPlanTempHisDO loanFinancialPlanTempHisDO = loanFinancialPlanTempHisDOMapper.lastByOrderId(orderId);
+            applyevaluate.setPrice(BigDecimalUtil.format(loanFinancialPlanTempHisDO.getFinancial_bank_period_principal(),2));
+            applyevaluate.setAssessPrice(BigDecimalUtil.format(loanFinancialPlanTempHisDO.getFinancial_appraisal(),2));
+        }else{
+            applyevaluate.setPrice(BigDecimalUtil.format(loanFinancialPlanDO.getBankPeriodPrincipal(),2));
+            applyevaluate.setAssessPrice(BigDecimalUtil.format(loanFinancialPlanDO.getAppraisal(),2));
+        }
+
         applyevaluate.setCarNo1(vehicleInformationDO.getVehicle_identification_number());
 
         if(loanCarInfoDO.getEvaluationType().equals(IDict.K_EVALUATION_TYPE.ONLINE)){
@@ -355,7 +368,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         }
 
         applyevaluate.setCarDate(DateUtil.getDateTo8(loanCarInfoDO.getFirstRegisterDate()));
-        applyevaluate.setAssessPrice(BigDecimalUtil.format(loanFinancialPlanDO.getAppraisal(),2));
+
         applyevaluate.setEvaluateOrg("0");//默认送0：加我科技评估机构(银行默认)
         applyevaluate.setDecorateLevel(" ");//非必填，可为空
 
