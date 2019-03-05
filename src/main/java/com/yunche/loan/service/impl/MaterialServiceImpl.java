@@ -9,6 +9,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Sets;
 import com.yunche.loan.config.common.OSSConfig;
 import com.yunche.loan.config.constant.BaseConst;
+import com.yunche.loan.config.constant.IDict;
 import com.yunche.loan.config.constant.LoanCustomerEnum;
 import com.yunche.loan.config.constant.LoanFileEnum;
 import com.yunche.loan.config.exception.BizException;
@@ -30,6 +31,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -162,6 +164,13 @@ public class MaterialServiceImpl implements MaterialService {
         recombinationVO.setLoanreview_msg(loanQueryDOMapper.selectUniversalApprovalInfo(LOAN_REVIEW.getCode(), orderId));
         recombinationVO.setBusinessreview_msg(loanQueryDOMapper.selectUniversalApprovalInfo(BUSINESS_REVIEW.getCode(), orderId));
 
+        BankInterfaceSerialVO bankInterfaceSerialVO = new BankInterfaceSerialVO();
+        BankInterfaceSerialDO serialDO = bankInterfaceSerialDOMapper.selectByCustomerIdAndTransCode(Long.valueOf(universalInfoVO.getCustomer_id()), IDict.K_TRANS_CODE.CREDITCARDAPPLY);
+        if (null != serialDO) {
+            BeanUtils.copyProperties(serialDO, bankInterfaceSerialVO);
+        }
+        recombinationVO.setBankSerial(bankInterfaceSerialVO);
+
         UniversalApprovalInfo universalApprovalInfo = loanQueryDOMapper.selectUniversalApprovalInfo(TELEPHONE_VERIFY.getCode(), orderId);
         if (universalApprovalInfo != null) {
             LoanTelephoneVerifyDO loanTelephoneVerifyDO = loanTelephoneVerifyDOMapper.selectByPrimaryKey(orderId);
@@ -258,7 +267,7 @@ public class MaterialServiceImpl implements MaterialService {
 
     @Override
     public ResultBean<String> downSupplementFiles2OSS(Long orderId, Boolean reGenerateZip, Long infoSupplementId) {
-        return materialDownClient.downSup2OSS(orderId,infoSupplementId);
+        return materialDownClient.downSup2OSS(orderId, infoSupplementId);
 //        Preconditions.checkNotNull(orderId, "订单编号不能为空");
 //
 //        Long customerId = null;

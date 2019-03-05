@@ -15,11 +15,9 @@ import com.yunche.loan.domain.vo.CommonFinanceResult;
 import com.yunche.loan.domain.vo.NeedSendMesOrders;
 import com.yunche.loan.domain.vo.SDCOrders;
 import com.yunche.loan.manager.finance.BusinessReviewManager;
-import com.yunche.loan.mapper.CarBrandDOMapper;
-import com.yunche.loan.mapper.CarDetailDOMapper;
-import com.yunche.loan.mapper.CarModelDOMapper;
-import com.yunche.loan.mapper.LoanQueryDOMapper;
+import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.InsuranceUrgeService;
+import com.yunche.loan.service.LoanCommitKeyService;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,6 +40,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.yunche.loan.config.constant.LoanProcessEnum.COMMIT_KEY;
+
 @Component
 public class KeyCommitTask
 {
@@ -62,6 +62,59 @@ public class KeyCommitTask
 
     @Resource
     private InsuranceUrgeService insuranceUrgeService;
+
+
+    @Autowired
+    private PartnerWhiteListDOMapper partnerWhiteListDOMapper;
+
+    @Autowired
+    private LoanCommitKeyService loanCommitKeyService;
+
+
+    //配置白名单后的合伙人，配置之后产生的待收钥匙流程自动提交--风险分担比不变
+    @Scheduled(cron = "0 59 23 * * ?")
+    @DistributedLock(200)
+    public void keyWhiteListOrderAutoCommit()
+    {
+
+        //
+        List<PartnerWhiteListDO> partnerWhiteListDOS = partnerWhiteListDOMapper.selectByOperationType(COMMIT_KEY.getCode());
+        if (!CollectionUtils.isEmpty(partnerWhiteListDOS))
+        {
+            //找出合伙人下，待收钥匙单子，且生成待收钥匙代办时间>白名单修改时间
+            partnerWhiteListDOS
+                    .stream()
+                    .forEach(
+                            e ->
+                            {
+                                List<Long> longs = loanQueryDOMapper.selectNeedAutoKeyCommitOrderByPartnerId(e.getPartnerId());
+                                if (!CollectionUtils.isEmpty(longs))
+                                {
+                                    longs.stream()
+                                            .forEach(
+                                                    f ->
+                                                    {
+                                                        //订单自动提交
+                                                        try {
+                                                            loanCommitKeyService.uncollected(f);
+                                                        }catch (Exception ex)
+                                                        {
+                                                            LOG.info(f+"订单自动提交不交钥匙失败，请查看详情！");
+                                                        }
+                                                    }
+                                            );
+                                }
+
+                            }
+                    );
+
+
+        }
+
+
+    }
+
+
 
     @Scheduled(cron = "0 0 1 * * ?")
     @DistributedLock(200)

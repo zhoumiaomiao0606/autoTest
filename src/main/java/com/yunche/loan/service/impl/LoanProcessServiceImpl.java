@@ -45,6 +45,7 @@ import static com.yunche.loan.config.constant.ApplyOrderStatusConst.*;
 import static com.yunche.loan.config.constant.BankConst.*;
 import static com.yunche.loan.config.constant.BaseConst.*;
 import static com.yunche.loan.config.constant.CarConst.CAR_KEY_FALSE;
+import static com.yunche.loan.config.constant.CarConst.CAR_KEY_TRUE;
 import static com.yunche.loan.config.constant.LoanAmountConst.*;
 import static com.yunche.loan.config.constant.LoanCustomerConst.*;
 import static com.yunche.loan.config.constant.LoanOrderProcessConst.*;
@@ -204,6 +205,9 @@ public class LoanProcessServiceImpl implements LoanProcessService {
     @Autowired
     private KeyCommitTask keyCommitTask;
 
+    @Autowired
+    private PartnerWhiteListDOMapper partnerWhiteListDOMapper;
+
     @Override
     @Transactional(rollbackFor = Exception.class)
     public ResultBean<Void> approval(ApprovalParam approval) {
@@ -254,7 +258,14 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         ////////////////////////////////////////// ↓↓↓↓↓ 特殊处理  ↓↓↓↓↓ ////////////////////////////////////////////////
 
         // 【征信申请】
-        if (isCreditApplyTask(approval.getTaskDefinitionKey(), approval.getAction())) {
+        if (isCreditApplyTask(approval.getTaskDefinitionKey(), approval.getAction()))
+        {
+            //判断大数据风控是否命中高风险
+           /* if (K_YORN_YES.equals(loanOrderDO.getZhongAnHighRiskHit()))
+            {
+                throw  new BizException("该订单有客户未通过大数据风控，无法申请查征信");
+            }*/
+
             //判断合伙人没有被禁止进件
             List<Long> shutdownQuerycreditPartners = keyCommitTask.getShutdownQuerycreditPartners();
             if (!CollectionUtils.isEmpty(shutdownQuerycreditPartners)) {
@@ -1608,6 +1619,10 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         if (TELEPHONE_VERIFY.getCode().equals(approval.getTaskDefinitionKey())) {
             // 执行电审任务
             execTelephoneVerifyTask(task, variables, approval, loanOrderDO, loanProcessDO);
+
+            //待收钥匙-白名单标记
+            markWhiteListKeyCommit(loanOrderDO.getId());
+
         } else {
             // 其他任务：直接提交
             loanProcessApprovalCommonService.completeTask(task.getId(), variables);
@@ -1618,6 +1633,34 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
         // 业务申请 & 上门调查 拦截
         execLoanApplyVisitVerifyFilterTask(task, loanOrderDO.getProcessInstId(), approval, variables, loanOrderDO, loanProcessDO);
+    }
+
+    /**
+     * 执行白名单标记
+     *
+     * @param orderId
+     */
+    private void markWhiteListKeyCommit(Long orderId)
+    {
+        Byte carKey = loanCarInfoDOMapper.getCarKeyByOrderId(orderId);
+        // 留备用钥匙
+        if (CAR_KEY_TRUE.equals(carKey))
+        {
+           //查询该订单合伙人是否在不收钥匙白名单中--状态为开启
+            PartnerDO partnerDO = partnerDOMapper.queryPartnerInfoByOrderId(orderId);
+            PartnerWhiteListDO partnerWhiteListDO = partnerWhiteListDOMapper.selectByPrimaryKey(new PartnerWhiteListDOKey(partnerDO.getId(), COMMIT_KEY.getCode()));
+
+            if (partnerWhiteListDO!=null && WHITE_OPEN.equals(partnerWhiteListDO.getStatus()))
+            {
+                LoanOrderDO loanOrderDO = new LoanOrderDO();
+
+                loanOrderDO.setId(orderId);
+                loanOrderDO.setKeySpecialCommit(WHITE_OPEN);
+
+                loanOrderDOMapper.updateByPrimaryKeySelective(loanOrderDO);
+            }
+
+        }
     }
 
     /**

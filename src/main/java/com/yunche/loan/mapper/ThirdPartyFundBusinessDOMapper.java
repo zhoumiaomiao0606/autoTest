@@ -1,6 +1,8 @@
 package com.yunche.loan.mapper;
 
 import com.yunche.loan.domain.entity.ThirdPartyFundBusinessDO;
+import com.yunche.loan.domain.query.TaskListQuery;
+import com.yunche.loan.domain.vo.JtxExportRefuseToLendVO;
 import com.yunche.loan.domain.vo.JtxExportVO;
 import org.apache.ibatis.annotations.Param;
 
@@ -31,4 +33,5 @@ public interface ThirdPartyFundBusinessDOMapper {
 
     List<JtxExportVO> exportLoanButNotRepay(@Param("startDate")String startDate, @Param("endDate")String endDate);
 
+    List<JtxExportRefuseToLendVO> exportRefuseToLend(TaskListQuery param);
 }

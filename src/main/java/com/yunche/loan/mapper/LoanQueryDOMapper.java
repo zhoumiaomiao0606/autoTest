@@ -304,7 +304,7 @@ public interface LoanQueryDOMapper {
 
     //=======================================================================
 
-    List<InsuranceCustomerVO> selectInsuranceCustomer(Long orderId);
+    InsuranceCustomerVO selectInsuranceCustomer(Long orderId);
 
     List<InsuranceCustomerVO> selectInsuranceCustomerByYear(@Param("orderId") Long orderId,
                                                             @Param("insuranceYear") Byte insuranceYear);
@@ -372,4 +372,6 @@ public interface LoanQueryDOMapper {
     List<CreditApplyListVO> queryCreditApplyrList(CreditApplyListQuery param);
 
     List<BankOpenCardExportVO> openCardExport(BankOpenCardExportParam bankOpenCardExportParam);
+
+    List<Long> selectNeedAutoKeyCommitOrderByPartnerId(Long partnerId);
 }

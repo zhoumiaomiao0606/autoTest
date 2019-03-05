@@ -13,6 +13,15 @@ public class BaseConst {
      * 无效
      */
     public static final Byte INVALID_STATUS = 1;
+
+    /**
+     * 有效
+     */
+    public static final Byte WHITE_CLONE = 0;
+    /**
+     * 无效
+     */
+    public static final Byte WHITE_OPEN = 1;
     /**
      * 已删除
      */

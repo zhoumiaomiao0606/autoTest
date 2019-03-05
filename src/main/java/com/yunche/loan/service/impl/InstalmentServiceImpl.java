@@ -91,6 +91,20 @@ public class InstalmentServiceImpl implements InstalmentService {
                 loanFileDO.setGmtCreate(new Date());
                 loanFileDOMapper.insertSelective(loanFileDO);
             }
+
+            //申请分期登记证书
+            // CERTIFICATE((byte) 20, "合格证/登记证书"), S9020((byte) 84, "机动车登记证书（权证）复印件"),
+            List<LoanFileDO> certificateLists = loanFileDOMapper.listByCustomerIdAndType(orderDO.getLoanCustomerId(), S9020.getType(), LoanFileConst.UPLOAD_TYPE_NORMAL);
+            if(CollectionUtils.isEmpty(certificateLists)){
+                String path = getPath(orderDO.getLoanCustomerId(), CERTIFICATE.getType());
+                LoanFileDO loanFileDO = new LoanFileDO();
+                loanFileDO.setCustomerId(orderDO.getLoanCustomerId());
+                loanFileDO.setPath(path);
+                loanFileDO.setType(S9020.getType());
+                loanFileDO.setUploadType(LoanFileConst.UPLOAD_TYPE_NORMAL);
+                loanFileDO.setGmtCreate(new Date());
+                loanFileDOMapper.insertSelective(loanFileDO);
+            }
         }
 
 //        set.add(S9016.getType());

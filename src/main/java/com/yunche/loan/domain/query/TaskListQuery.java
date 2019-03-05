@@ -1,5 +1,6 @@
 package com.yunche.loan.domain.query;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import lombok.Data;
@@ -160,6 +161,18 @@ public class TaskListQuery {
     private String startRepayDate;//还款时间
 
     private String endRepayDate;
+
+    @JsonProperty(value = "cIFromTime")
+    private String cIFromTime;
+
+    @JsonProperty(value = "cIToTime")
+    private String cIToTime;
+
+    @JsonProperty(value = "cTALIFromTime")
+    private String cTALIFromTime;
+
+    @JsonProperty(value = "cTALIToTime")
+    private String cTALIToTime;
 
     /**
      * 区域合伙人ID列表

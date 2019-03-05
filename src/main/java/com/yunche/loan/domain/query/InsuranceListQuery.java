@@ -1,5 +1,6 @@
 package com.yunche.loan.domain.query;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import org.hibernate.validator.constraints.NotBlank;
 
@@ -30,5 +31,18 @@ public class InsuranceListQuery {
     private String bankName;
 
     private Long partnerName;
+
+    @JsonProperty(value = "cIFromTime")
+    private String cIFromTime;
+
+    @JsonProperty(value = "cIToTime")
+    private String cIToTime;
+
+    @JsonProperty(value = "cTALIFromTime")
+    private String cTALIFromTime;
+
+    @JsonProperty(value = "cTALIToTime")
+    private String cTALIToTime;
+
 
 }

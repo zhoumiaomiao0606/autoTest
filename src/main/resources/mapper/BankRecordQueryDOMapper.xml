@@ -173,23 +173,29 @@
                 base.bank,
                 employee.`name`                   AS employeeName,
                 financial.car_price               AS carPrice,
-                info.insurance_year               AS insuranceYear,
-                insurance.insurance_type          AS insuranceType,
-                insurance.start_date              AS startDate,
-                insurance.end_date                AS endDate,
-                datediff(insurance.end_date,insurance.start_date) AS days,
-                (select start_date from insurance_relevance where insurance_info_id=info.id and insurance_type=2) AS businessStartDate,
-                (select end_date from insurance_relevance where insurance_info_id=info.id and insurance_type=2) AS businessEndDate
+                i.insurance_year               AS insuranceYear,
+                r2.insurance_type          AS insuranceType,
+                r2.start_date              AS startDate,
+                r2.end_date                AS endDate,
+                datediff(r1.end_date,now()) AS days,
+                r1.start_date AS businessStartDate,
+                r1.end_date AS businessEndDate
         FROM
                 (select * from loan_order where id=#{orderId}) loan
-                LEFT JOIN insurance_info info on loan.id = info.order_id
-                LEFT JOIN insurance_relevance insurance ON (info.id = insurance.insurance_info_id and insurance.insurance_type=1 )
+                 LEFT JOIN
+        (SELECT id,order_id,insurance_year FROM
+        (
+        SELECT * FROM insurance_info order by order_id,insurance_year DESC limit 10000000000
+        ) t GROUP BY t.order_id
+        ) i ON i.order_id = loan.id
+        LEFT JOIN insurance_relevance r1 ON i.id = r1.insurance_info_id and r1.insurance_type = 1
+        LEFT JOIN insurance_relevance r2 ON i.id = r2.insurance_info_id and r2.insurance_type = 2
                 LEFT JOIN loan_customer customer ON loan.loan_customer_id=customer.id
                 LEFT JOIN loan_base_info base ON loan.loan_base_info_id=base.id
                 LEFT JOIN employee ON base.salesman_id=employee.id
                 LEFT JOIN partner ON base.partner_id=partner.id
                 LEFT JOIN loan_financial_plan financial ON loan.loan_financial_plan_id=financial.id
-        where datediff(insurance.end_date,insurance.start_date)&lt;=31;
+        where datediff(r1.end_date,now())&lt;=31
     </select>
 
     <select id="selectInsuranceUrgeTaskList" resultType="com.yunche.loan.domain.vo.InsuranceUrgeVO" parameterType="com.yunche.loan.domain.query.InsuranceListQuery">
@@ -203,13 +209,13 @@
                 employee.`name`                             AS employeeName,
                 employee.id                                 AS employeeId,
                 financial.car_price                         AS carPrice,
-                info.insurance_year                         AS insuranceYear,
-                insurance.insurance_type                    AS insuranceType,
-                insurance.start_date                        AS startDate,
-                insurance.end_date                          AS endDate,
-                datediff(insurance.end_date,insurance.start_date) AS days,
-                (select start_date from insurance_relevance where insurance_info_id=info.id and insurance_type=2) AS businessStartDate,
-                (select end_date from insurance_relevance where insurance_info_id=info.id and insurance_type=2) AS businessEndDate,
+                i.insurance_year                         AS insuranceYear,
+                r2.insurance_type                    AS insuranceType,
+                r2.start_date                        AS startDate,
+                r2.end_date                          AS endDate,
+                datediff(r1.end_date,now()) AS days,
+                r1.start_date  AS businessStartDate,
+                r1.end_date AS businessEndDate,
                 case when
                     (select renew_insurance_status from renew_insurance where loan.id=order_id order by remind_date desc LIMIT 1) is null
                 then
@@ -242,14 +248,20 @@
                     ) loan
                 </when>
             </choose>
-                LEFT JOIN insurance_info info on loan.id = info.order_id
-                LEFT JOIN insurance_relevance insurance ON (info.id = insurance.insurance_info_id and insurance.insurance_type=1 )
+        left join
+                (SELECT id,order_id,insurance_year FROM
+        (
+        SELECT * FROM insurance_info order by order_id,insurance_year DESC limit 10000000000
+        ) t GROUP BY t.order_id
+        ) i ON i.order_id = loan.id
+        LEFT JOIN insurance_relevance r1 ON i.id = r1.insurance_info_id and r1.insurance_type = 1
+        LEFT JOIN insurance_relevance r2 ON i.id = r2.insurance_info_id and r2.insurance_type = 2
                 LEFT JOIN loan_customer customer ON loan.loan_customer_id=customer.id
                 LEFT JOIN loan_base_info base ON loan.loan_base_info_id=base.id
                 LEFT JOIN employee ON base.salesman_id=employee.id
                 LEFT JOIN partner ON base.partner_id=partner.id
                 LEFT JOIN loan_financial_plan financial ON loan.loan_financial_plan_id=financial.id
-        where datediff(insurance.end_date,now())&lt;=31
+        where datediff(r1.end_date,now())&lt;=31
         <if test="customerName != null and  customerName !=''">
             and customer.name like concat(concat('%',#{customerName}),'%')
         </if>
@@ -258,6 +270,12 @@
         </if>
         <if test="partnerName != null and  partnerName !=''">
             and partner.id =#{partnerName}
+        </if>
+        <if test="cIFromTime !=null and cIToTime !=null and cIFromTime !='' and cIToTime !=''">
+            and r1.end_date &gt;= #{cIFromTime} and  r1.end_date &lt;= #{cIToTime}
+        </if>
+        <if test="cTALIFromTime !=null and cTALIToTime !=null and cTALIFromTime !='' and cTALIToTime !=''">
+            and r2.end_date &gt;= #{cTALIFromTime} and  r2.end_date &lt;= #{cTALIToTime}
         </if>
     </select>
 

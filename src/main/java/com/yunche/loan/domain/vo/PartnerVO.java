@@ -90,4 +90,6 @@ public class PartnerVO {
     private List<BaseAreaDO> hasApplyLicensePlateArea = Collections.EMPTY_LIST;
 
     private String gpsCompany;
+
+    private Byte keyWhiteListStatus = 0;
 }

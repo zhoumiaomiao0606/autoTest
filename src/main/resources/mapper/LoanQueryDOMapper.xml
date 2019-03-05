@@ -1136,6 +1136,8 @@
             remit.beneficiary_bank                                                                  AS remit_beneficiary_bank,
             remit.beneficiary_account                                                               AS remit_beneficiary_account,
             remit.beneficiary_account_number                                                        AS remit_beneficiary_account_number,
+            remit.child_bank                                                                  AS remit_child_bank,
+            remit.child_bank_code                                                                  AS remit_child_bank_code,
             remit.remit_amount                                                                      AS remit_amount,
             remit.return_rate_amount                                                                AS remit_return_rate_amount,
             remit.insurance_situation                                                               AS remit_insurance_situation,
@@ -1828,18 +1830,24 @@
               i.insurance_year                  AS insurance_year,
               i.issue_bills_date                AS issue_bills_date,
               c.address                         AS residential_address,
-              (select sum(insurance_amount) from insurance_relevance where insurance_info_id = id )
+              (select sum(insurance_amount) from insurance_relevance where insurance_info_id = i.id )
                                                 AS total_insurance_amount
 
       from
             (select * from loan_order where id = #{orderId,jdbcType=BIGINT}) o
-                left join insurance_info i on i.order_id = o.id
+            LEFT JOIN
+
+                (SELECT id,order_id,insurance_year,issue_bills_date FROM
+        (
+        SELECT * FROM insurance_info order by order_id,insurance_year DESC limit 10000000000
+        ) t GROUP BY t.order_id
+        ) i ON i.order_id = o.id
                 left join loan_customer c on c.id = o.loan_customer_id
                 left join loan_base_info b on b.id = o.loan_base_info_id
                 left join employee e on e.id = b.salesman_id
                 left join partner p on p.id = b.partner_id
 
-    ORDER BY i.issue_bills_date asc
+
 
 
   </select>
@@ -1931,6 +1939,7 @@
         c.ctelzone AS customer_ctelzone,
         f.financial_product_name AS financial_product_name,
         f.financial_product_id AS financial_product_id,
+        lm.material_num                    AS materialNum,
         h.license_plate_number AS license_plate_number,
         h.registration_certificate_number AS registration_certificate_number,
         h.apply_license_plate_date AS apply_license_plate_date,
@@ -1987,6 +1996,8 @@
 
         left join product_rate p on (p.prod_id = f.financial_product_id and p.loan_time = f.loan_time)
 
+        LEFT JOIN   loan_material_manage    lm        ON  o.id = lm.order_id
+
 
     </select>
 
@@ -2008,6 +2019,7 @@
         a.apply_license_plate_deposit_date AS apply_license_plate_deposit_date,
         f.loan_time AS loan_time,
         f.car_price AS car_price,
+        lm.material_num                    AS materialNum,
         f.actual_car_price AS actual_car_price,
         b.bank AS bank,
         f.sign_rate AS sign_rate,
@@ -2056,6 +2068,8 @@
         left join financial_product product on f.financial_product_id = product.prod_id
 
         left join product_rate p on (p.prod_id = f.financial_product_id and p.loan_time = f.loan_time)
+
+        LEFT JOIN   loan_material_manage    lm        ON  o.id = lm.order_id
 
 
     </select>
@@ -2973,6 +2987,26 @@ SELECT
                 #{item}
             </foreach>
         </if>
+
+    </select>
+
+    <select id="selectNeedAutoKeyCommitOrderByPartnerId" resultType="java.lang.Long" parameterType="java.lang.Long">
+
+        SELECT
+        main.id AS id
+        FROM
+        loan_order main
+        LEFT JOIN loan_process ON main.id = loan_process.order_id
+        LEFT JOIN loan_base_info b ON main.loan_base_info_id = b.id
+        LEFT JOIN partner ON b.partner_id = partner.id
+        left  join loan_car_info on loan_car_info.id = main.loan_car_info_id
+
+        <where>
+            loan_process.commit_key = 2 and loan_process.order_status = 1
+            AND loan_car_info.car_key = 1 and main.key_special_commit = 1
+            and b.partner_id = #{partnerId}
+
+        </where>
 
     </select>
 

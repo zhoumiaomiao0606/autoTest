@@ -42,5 +42,7 @@ public class PartnerParam extends PartnerDO {
 
     private String partnerCode;
 
+    private Byte keyWhiteListStatus = 0;
+
     /*private String partnerGroup;*/
 }

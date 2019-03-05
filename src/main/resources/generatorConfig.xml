@@ -381,38 +381,7 @@
 
 -->
 
-        <table tableName="credit_struct_black_ash_sign" domainObjectName="CreditStructBlackAshSignDO"
-               enableCountByExample="false" enableUpdateByExample="false"
-               enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
-        </table>
-
-        <table tableName="credit_struct_guarantee_credit_card_detail"
-               domainObjectName="CreditStructGuaranteeCreditCardDetailDO"
-               enableCountByExample="false" enableUpdateByExample="false"
-               enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
-        </table>
-
-        <table tableName="credit_struct_guarantee_loan_detail" domainObjectName="CreditStructGuaranteeLoanDetailDO"
-               enableCountByExample="false" enableUpdateByExample="false"
-               enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
-        </table>
-
-        <table tableName="credit_struct_query_count" domainObjectName="CreditStructQueryCountDO"
-               enableCountByExample="false" enableUpdateByExample="false"
-               enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
-        </table>
-
-        <table tableName="credit_struct_sum" domainObjectName="CreditStructSumDO"
-               enableCountByExample="false" enableUpdateByExample="false"
-               enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
-        </table>
-
-        <table tableName="credit_struct_trade_detail" domainObjectName="CreditStructTradeDetailDO"
-               enableCountByExample="false" enableUpdateByExample="false"
-               enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
-        </table>
-
-        <table tableName="credit_struct_trade_detail_loan" domainObjectName="CreditStructTradeDetailLoanDO"
+        <table tableName="partner_white_list" domainObjectName="PartnerWhiteListDO"
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
         </table>

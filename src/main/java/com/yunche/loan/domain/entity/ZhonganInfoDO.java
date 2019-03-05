@@ -58,6 +58,10 @@ public class ZhonganInfoDO {
 
     private String tel;
 
+    private String highRiskRemind;
+
+    private String lowRiskRemind;
+
     private List<ZhonganOverdueDO> overDueList = Lists.newArrayList();
     private List<RspCreditDO> creditList = Lists.newArrayList();
     private List<RspLawsuitDO> lawSuitList = Lists.newArrayList();

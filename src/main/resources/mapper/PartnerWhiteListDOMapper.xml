@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunche.loan.mapper.PartnerWhiteListDOMapper">
+  <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.PartnerWhiteListDO">
+    <id column="partner_id" jdbcType="BIGINT" property="partnerId" />
+    <id column="operation_type" jdbcType="VARCHAR" property="operationType" />
+    <result column="white_level" jdbcType="TINYINT" property="whiteLevel" />
+    <result column="status" jdbcType="TINYINT" property="status" />
+    <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate" />
+    <result column="gmt_modify" jdbcType="TIMESTAMP" property="gmtModify" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    partner_id, operation_type, white_level, status, gmt_create, gmt_modify
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="com.yunche.loan.domain.entity.PartnerWhiteListDOKey" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from partner_white_list
+    where partner_id = #{partnerId,jdbcType=BIGINT}
+      and operation_type = #{operationType,jdbcType=VARCHAR}
+  </select>
+
+  <select id="selectByOperationType" parameterType="String" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from partner_white_list
+    where operation_type = #{operationType,jdbcType=VARCHAR} and status = 1
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="com.yunche.loan.domain.entity.PartnerWhiteListDOKey">
+    delete from partner_white_list
+    where partner_id = #{partnerId,jdbcType=BIGINT}
+      and operation_type = #{operationType,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.yunche.loan.domain.entity.PartnerWhiteListDO">
+    insert into partner_white_list (partner_id, operation_type, white_level, 
+      status, gmt_create, gmt_modify
+      )
+    values (#{partnerId,jdbcType=BIGINT}, #{operationType,jdbcType=VARCHAR}, #{whiteLevel,jdbcType=TINYINT}, 
+      #{status,jdbcType=TINYINT}, #{gmtCreate,jdbcType=TIMESTAMP}, #{gmtModify,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.PartnerWhiteListDO">
+    insert into partner_white_list
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="partnerId != null">
+        partner_id,
+      </if>
+      <if test="operationType != null">
+        operation_type,
+      </if>
+      <if test="whiteLevel != null">
+        white_level,
+      </if>
+      <if test="status != null">
+        status,
+      </if>
+      <if test="gmtCreate != null">
+        gmt_create,
+      </if>
+      <if test="gmtModify != null">
+        gmt_modify,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="partnerId != null">
+        #{partnerId,jdbcType=BIGINT},
+      </if>
+      <if test="operationType != null">
+        #{operationType,jdbcType=VARCHAR},
+      </if>
+      <if test="whiteLevel != null">
+        #{whiteLevel,jdbcType=TINYINT},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=TINYINT},
+      </if>
+      <if test="gmtCreate != null">
+        #{gmtCreate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="gmtModify != null">
+        #{gmtModify,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.PartnerWhiteListDO">
+    update partner_white_list
+    <set>
+      <if test="whiteLevel != null">
+        white_level = #{whiteLevel,jdbcType=TINYINT},
+      </if>
+      <if test="status != null">
+        status = #{status,jdbcType=TINYINT},
+      </if>
+      <if test="gmtCreate != null">
+        gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="gmtModify != null">
+        gmt_modify = #{gmtModify,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where partner_id = #{partnerId,jdbcType=BIGINT}
+      and operation_type = #{operationType,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.PartnerWhiteListDO">
+    update partner_white_list
+    set white_level = #{whiteLevel,jdbcType=TINYINT},
+      status = #{status,jdbcType=TINYINT},
+      gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+      gmt_modify = #{gmtModify,jdbcType=TIMESTAMP}
+    where partner_id = #{partnerId,jdbcType=BIGINT}
+      and operation_type = #{operationType,jdbcType=VARCHAR}
+  </update>
+</mapper>

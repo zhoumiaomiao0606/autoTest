@@ -459,6 +459,12 @@
         </dependency>
         <!--Http 请求-->
 
+        <dependency>
+            <groupId>com.lmax</groupId>
+            <artifactId>disruptor</artifactId>
+            <version>3.4.2</version>
+        </dependency>
+
     </dependencies>
 
 

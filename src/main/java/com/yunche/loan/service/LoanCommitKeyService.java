@@ -14,4 +14,8 @@ public interface LoanCommitKeyService {
     ResultBean letterOfRiskCommitment(RiskCommitmentPara riskCommitmentPara);
 
     ResultBean detail(Long orderId);
+
+    ResultBean uncollected(Long orderId);
+
+    ResultBean collected(Long e);
 }
