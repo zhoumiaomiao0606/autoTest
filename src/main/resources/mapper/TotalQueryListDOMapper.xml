@@ -569,6 +569,9 @@
         <if test="salesmanId != null">
             AND base.salesman_id = #{salesmanId}
         </if>
+        <if test="loanBank != null">
+            AND base.bank = #{loanBank}
+        </if>
         order by main.gmt_create
     </select>
 
