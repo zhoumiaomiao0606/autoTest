@@ -368,7 +368,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
                 LOG.info(partnerIdStr+":白名单合伙人");
                 return ResultBean.ofSuccess(partnerIdStr+":白名单合伙人【"+e.getMessage()+"】");
             }else{
-                return ResultBean.ofSuccess(partnerIdStr+":合伙人订单【"+e.getMessage()+"】");
+                return ResultBean.ofError(partnerIdStr+":合伙人订单【"+e.getMessage()+"】");
             }
         }
         return ResultBean.ofSuccess(response);
