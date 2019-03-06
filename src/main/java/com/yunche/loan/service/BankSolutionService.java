@@ -15,7 +15,7 @@ public interface BankSolutionService {
 
 
      //银行二手车评估
-     ResultBean applyevaluate(Long orderId);
+     ResultBean applyevaluate(Long orderId,String taskDefinitionKey);
      //视频推送
      void multimediaUpload(Long orderId);
 
