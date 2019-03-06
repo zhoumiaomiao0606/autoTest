@@ -79,4 +79,10 @@ public class AppLoanFinancialPlanVO {
     private String financialServiceFee;//金融服务费
 
     private String loanRate;//贷款比例
+
+
+    /**
+     * 区域对象
+     */
+    private BaseVO area;
 }
