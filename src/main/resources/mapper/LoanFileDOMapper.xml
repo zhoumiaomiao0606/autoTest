@@ -304,4 +304,10 @@
             b.id
     </select>
 
+    <select id="selectCreditFilesByCusId" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List" />
+        from loan_file WHERE customer_id = #{cusId}
+        and type in (2,3,4,5)
+    </select>
 </mapper>

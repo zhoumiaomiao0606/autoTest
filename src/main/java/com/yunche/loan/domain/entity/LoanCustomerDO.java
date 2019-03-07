@@ -4,6 +4,7 @@ import lombok.Data;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 @Data
 public class LoanCustomerDO {
@@ -220,4 +221,7 @@ public class LoanCustomerDO {
      * 银行征信打回（拒绝）标记：0-否；1-是；
      */
     private Byte bankCreditReject;
+
+    private List<LoanFileDO> loanFileDOS;
+
 }
