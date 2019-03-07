@@ -14,6 +14,10 @@ public class BaseConst {
      */
     public static final Byte INVALID_STATUS = 1;
 
+    public static final Byte UNCOLLECTEDKEY = 2;
+
+    public static final Byte COLLECTEDKEY = 1;
+
     /**
      * 有效
      */
