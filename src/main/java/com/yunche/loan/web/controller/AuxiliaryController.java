@@ -66,7 +66,7 @@ public class AuxiliaryController {
     }
 
     /**
-     *
+     * gps可用查询
      */
     @PostMapping(value = "/gpsAvailable")
     public ResultBean gpsAvailable(@RequestBody InstallUpdateParam param) {
