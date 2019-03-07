@@ -40,6 +40,9 @@ public class ApprovalParam {
      * 审核备注信息
      */
     private String info;
+
+    //电审打回原因--下啦选择--1.个人信息、2.车辆信息、3.金融方案
+    private Byte opt;
     /**
      * 是否为自动任务
      */

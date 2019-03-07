@@ -34,8 +34,13 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.yunche.loan.config.constant.BaseConst.*;
-import static com.yunche.loan.config.constant.CarConst.*;
+import static com.yunche.loan.config.constant.AreaConst.LEVEL_AREA;
+import static com.yunche.loan.config.constant.AreaConst.LEVEL_CITY;
+import static com.yunche.loan.config.constant.BaseConst.K_YORN_NO;
+import static com.yunche.loan.config.constant.BaseConst.K_YORN_YES;
+import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
+import static com.yunche.loan.config.constant.CarConst.CAR_DETAIL;
+import static com.yunche.loan.config.constant.CarConst.CAR_TYPE_MAP;
 import static com.yunche.loan.config.constant.InsuranceTypeConst.*;
 import static com.yunche.loan.config.constant.LoanCustomerConst.*;
 import static com.yunche.loan.config.constant.LoanCustomerEnum.COMMON_LENDER;
@@ -48,7 +53,6 @@ import static com.yunche.loan.config.constant.LoanProcessEnum.CREDIT_APPLY;
 import static com.yunche.loan.config.constant.LoanProcessEnum.TELEPHONE_VERIFY;
 import static com.yunche.loan.config.constant.LoanProcessVariableConst.PROCESS_VARIABLE_INFO;
 import static com.yunche.loan.config.constant.LoanProcessVariableConst.PROCESS_VARIABLE_USER_NAME;
-import static com.yunche.loan.config.constant.ProcessApprovalConst.ACTION_PASS;
 import static com.yunche.loan.config.constant.ProcessApprovalConst.TASK_USER_GROUP_MAP;
 import static com.yunche.loan.service.impl.LoanProcessServiceImpl.convertActionText;
 
@@ -502,6 +506,26 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
             }
         }
 
+        // 区域
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
+        LoanBaseInfoDO loanBaseInfoDO = loanBaseInfoDOMapper.selectByPrimaryKey(loanOrderDO.getLoanBaseInfoId());
+
+        //设置城市id--用于判断是否是台州
+        BaseAreaDO baseAreaDO = baseAreaDOMapper.selectByPrimaryKey(loanBaseInfoDO.getAreaId(), null);
+        if (null != baseAreaDO) {
+            if(LEVEL_AREA.equals(baseAreaDO.getLevel())){
+                Long parentAreaId = baseAreaDO.getParentAreaId();
+                BaseAreaDO cityDO = baseAreaDOMapper.selectByPrimaryKey(parentAreaId, null);
+                loanFinancialPlanVO.setCityId(cityDO.getAreaId());
+            }
+            if (LEVEL_CITY.equals(baseAreaDO.getLevel())) {
+                BaseAreaDO parentAreaDO = baseAreaDOMapper.selectByPrimaryKey(baseAreaDO.getParentAreaId(), null);
+                if (null != parentAreaDO) {
+                    loanFinancialPlanVO.setCityId(baseAreaDO.getAreaId());
+                }
+            }
+        }
+
         return ResultBean.ofSuccess(loanFinancialPlanVO);
     }
 
@@ -765,21 +789,21 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
                 businessInfoVO.setCarKey(loanCarInfoDO.getCarKey());
 
                 //待收钥匙
-                if (CAR_KEY_FALSE.equals(loanCarInfoDO.getCarKey()))
+                if (loanCarInfoDO.getCarKey() == 0 )
                 {
                     businessInfoVO.setNeedCollectKey("不收");
                 }
-                else if (CAR_KEY_TRUE.equals(loanCarInfoDO.getCarKey()))
+                else if (loanCarInfoDO.getCarKey() == 1)
                 {
                     //查询是否已收钥匙
                     LoanProcessLogDO loanProcessLogDO = loanProcessLogDOMapper.selectNeedCollectKey(orderId);
-                    if (loanProcessLogDO != null && ACTION_PASS.equals(loanProcessLogDO.getAction()))
+                    if (loanProcessLogDO != null && loanProcessLogDO.getAction() == 1 )
                     {
                         //判断已收还是不收
-                        if (COLLECTEDKEY.equals(loanOrderDO.getKeyCollected()))
+                        if (loanOrderDO.getKeyCollected() == 1)
                         {
                             businessInfoVO.setNeedCollectKey("已收");
-                        }else if (UNCOLLECTEDKEY.equals(loanOrderDO.getKeyCollected()))
+                        }else if (loanOrderDO.getKeyCollected() == 2)
                         {
                             businessInfoVO.setNeedCollectKey("不收");
                         }else

@@ -74,7 +74,7 @@ public interface LoanProcessApprovalCommonService {
      * @param taskDefinitionKey
      * @param info
      */
-    void createRejectLog(List<Task> newTaskList, Long orderId, String taskDefinitionKey, String info);
+    void createRejectLog(List<Task> newTaskList, Long orderId, String taskDefinitionKey, String info,Byte opt);
 
     /**
      * 获取主订单

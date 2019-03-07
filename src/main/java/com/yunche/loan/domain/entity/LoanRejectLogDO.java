@@ -18,4 +18,6 @@ public class LoanRejectLogDO {
     private Date gmtCreate;
 
     private String reason;
+
+    private Byte opt;
 }

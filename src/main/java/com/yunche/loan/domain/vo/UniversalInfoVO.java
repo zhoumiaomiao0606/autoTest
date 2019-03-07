@@ -137,4 +137,9 @@ public class UniversalInfoVO {
 
 
     private BigDecimal riskBearRate;
+
+    /**
+     * 城市id---用于判断是否城市是台州
+     */
+    private Long cityId;
 }

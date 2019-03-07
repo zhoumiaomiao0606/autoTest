@@ -702,7 +702,7 @@ public class LoanProcessApprovalCommonServiceImpl implements LoanProcessApproval
      * @param reason
      */
     @Override
-    public void createRejectLog(List<Task> newTaskList, Long orderId, String rejectOriginTask, String reason) {
+    public void createRejectLog(List<Task> newTaskList, Long orderId, String rejectOriginTask, String reason,Byte opt) {
 
         if (!CollectionUtils.isEmpty(newTaskList)) {
 
@@ -717,6 +717,7 @@ public class LoanProcessApprovalCommonServiceImpl implements LoanProcessApproval
                         loanRejectLogDO.setRejectOriginTask(rejectOriginTask);
                         loanRejectLogDO.setRejectToTask(rejectToTask);
                         loanRejectLogDO.setReason(reason);
+                        loanRejectLogDO.setOpt(opt);
                         loanRejectLogDO.setGmtCreate(new Date());
 
                         int count = loanRejectLogDOMapper.insertSelective(loanRejectLogDO);
