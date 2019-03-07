@@ -603,10 +603,10 @@ public class LoanDataFlowServiceImpl implements LoanDataFlowService {
             returnList = POIUtil.readExcelFromOSS(0, 1, key);
             for (String[] tmp : returnList) {
                 String name = StringUtil.isEmpty(tmp[0].trim()) ? null : tmp[0].trim();
-                String idCard = StringUtil.isEmpty(tmp[1].trim()) ? null : tmp[1].trim();
-                String contractHandDate = StringUtil.isEmpty(tmp[2].trim()) ? null : tmp[2].trim();
-                String mortgageHandDate = StringUtil.isEmpty(tmp[3].trim()) ? null : tmp[3].trim();
-                String mortgageSendDate = StringUtil.isEmpty(tmp[4].trim()) ? null : tmp[4].trim();
+                String idCard = StringUtil.isEmpty(tmp[4].trim()) ? null : tmp[4].trim();
+                String contractHandDate = StringUtil.isEmpty(tmp[1].trim()) ? null : tmp[1].trim();
+                String mortgageHandDate = StringUtil.isEmpty(tmp[2].trim()) ? null : tmp[2].trim();
+                String mortgageSendDate = StringUtil.isEmpty(tmp[3].trim()) ? null : tmp[3].trim();
                 List<String> list = dataManagementInfoDOMapper.selectOrderByIdCard(idCard);
                 if(list != null){
                     if(list.size()>1){

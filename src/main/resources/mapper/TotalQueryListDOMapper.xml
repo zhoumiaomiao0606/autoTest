@@ -569,6 +569,9 @@
         <if test="salesmanId != null">
             AND base.salesman_id = #{salesmanId}
         </if>
+        <if test="loanBank != null">
+            AND base.bank = #{loanBank}
+        </if>
         order by main.gmt_create
     </select>
 
@@ -2658,12 +2661,6 @@
                         <if test="salesmanId != null">
                             AND tab.salesmanId = #{salesmanId}
                         </if>
-                        <if test="startCreditGmtCreate != null">
-                            AND TO_DAYS(complex_log.usertask_credit_apply_create_time) &gt;= TO_DAYS(#{startCreditGmtCreate})
-                        </if>
-                        <if test="endCreditGmtCreate != null">
-                            AND TO_DAYS(complex_log.usertask_credit_apply_create_time) &lt;= TO_DAYS(#{endCreditGmtCreate})
-                        </if>
                 </where>
 
             AND
@@ -2721,6 +2718,14 @@
         ) complex
 
         LEFT JOIN current_node_manager complex_log ON complex_log.order_id = complex.id
+        <where>
+            <if test="startCreditGmtCreate != null">
+                AND TO_DAYS(complex_log.usertask_credit_apply_create_time) &gt;= TO_DAYS(#{startCreditGmtCreate})
+            </if>
+            <if test="endCreditGmtCreate != null">
+                AND TO_DAYS(complex_log.usertask_credit_apply_create_time) &lt;= TO_DAYS(#{endCreditGmtCreate})
+            </if>
+        </where>
         <choose>
             <when test="taskStatus == 2 or taskStatus == 4 or taskStatus == 5 or taskStatus == 6  or pull == false ">
                 ORDER BY loanGmtCreate ASC
@@ -2815,7 +2820,7 @@
         </if>
         <if test="relevanceCustomerName != null">
             AND
-            main.id in
+            loan.id in
             (
             (select id from loan_order where loan_customer_id
             in (select principal_cust_id from loan_customer where name = #{relevanceCustomerName})
@@ -4056,11 +4061,8 @@
         <if test="customer != null and customer != ''">
             AND cus.name LIKE CONCAT('%', #{customer} ,'%')
         </if>
-        <if test="bankList != null and bankList.size() > 0">
-            and base.bank in
-            <foreach item="item" index="index" collection="bankList" open="(" separator="," close=")">
-                #{item}
-            </foreach>
+        <if test="loanBank != null">
+            and base.bank = #{loanBank}
         </if>
     </select>
     <select id="selectDataManagementDetail" parameterType="java.lang.String" resultType="com.yunche.loan.domain.vo.DataManagementDetailVO">
