@@ -84,7 +84,7 @@ public class BizShiroRealm extends AuthorizingRealm {
 
         // 自己做密码校验   通过：给当前输入明文密码   不通过：给数据库加密密码
         boolean verify = MD5Utils.verify(password, employeeDO.getPassword());
-        String verifyPassword = verify ? password : employeeDO.getPassword();
+        String verifyPassword = verify ? password : password + employeeDO.getPassword();
 
         // shiro认证
         SimpleAuthenticationInfo info = new SimpleAuthenticationInfo(
