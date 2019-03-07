@@ -346,7 +346,7 @@ public class LoanProcessLegalServiceImpl implements LoanProcessLegalService {
 
             // 打回记录
             loanProcessApprovalCommonService.createRejectLog(newTaskList, approval.getOrderId(),
-                    approval.getTaskDefinitionKey(), approval.getInfo());
+                    approval.getTaskDefinitionKey(), approval.getInfo(),approval.getOpt());
 
         } else if (ACTION_CANCEL.equals(action)) {
             // nothing

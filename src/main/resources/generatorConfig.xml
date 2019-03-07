@@ -381,7 +381,7 @@
 
 -->
 
-        <table tableName="partner_white_list" domainObjectName="PartnerWhiteListDO"
+        <table tableName="loan_reject_log" domainObjectName="LoanRejectLogDO"
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
         </table>

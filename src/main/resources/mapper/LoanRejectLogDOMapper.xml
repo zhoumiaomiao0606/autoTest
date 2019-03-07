@@ -8,10 +8,11 @@
         <result column="reject_to_task" property="rejectToTask" jdbcType="VARCHAR"/>
         <result column="gmt_create" property="gmtCreate" jdbcType="TIMESTAMP"/>
         <result column="reason" property="reason" jdbcType="VARCHAR"/>
+        <result column="opt" jdbcType="TINYINT" property="opt" />
     </resultMap>
 
     <sql id="Base_Column_List">
-    id, order_id, reject_origin_task, reject_to_task, gmt_create, reason
+    id, order_id, reject_origin_task, reject_to_task, gmt_create, reason, opt
   </sql>
 
     <!--lastByOrderIdAndTaskDefinitionKey-->
@@ -25,9 +26,9 @@
         LIMIT 1
     </select>
 
-    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
+    <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
         select
-        <include refid="Base_Column_List"/>
+        <include refid="Base_Column_List" />
         from loan_reject_log
         where id = #{id,jdbcType=BIGINT}
     </select>
@@ -36,12 +37,12 @@
     where id = #{id,jdbcType=BIGINT}
   </delete>
     <insert id="insert" parameterType="com.yunche.loan.domain.entity.LoanRejectLogDO">
-    insert into loan_reject_log (id, order_id, reject_origin_task, 
-      reject_to_task, gmt_create, reason
-      )
-    values (#{id,jdbcType=BIGINT}, #{orderId,jdbcType=BIGINT}, #{rejectOriginTask,jdbcType=VARCHAR}, 
-      #{rejectToTask,jdbcType=VARCHAR}, #{gmtCreate,jdbcType=TIMESTAMP}, #{reason,jdbcType=VARCHAR}
-      )
+    insert into loan_reject_log (id, order_id, reject_origin_task,
+      reject_to_task, gmt_create, reason,
+      opt)
+    values (#{id,jdbcType=BIGINT}, #{orderId,jdbcType=BIGINT}, #{rejectOriginTask,jdbcType=VARCHAR},
+      #{rejectToTask,jdbcType=VARCHAR}, #{gmtCreate,jdbcType=TIMESTAMP}, #{reason,jdbcType=VARCHAR},
+      #{opt,jdbcType=TINYINT})
   </insert>
     <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.LoanRejectLogDO">
         insert into loan_reject_log
@@ -64,6 +65,9 @@
             <if test="reason != null">
                 reason,
             </if>
+            <if test="opt != null">
+                opt,
+            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="id != null">
@@ -83,6 +87,9 @@
             </if>
             <if test="reason != null">
                 #{reason,jdbcType=VARCHAR},
+            </if>
+            <if test="opt != null">
+                #{opt,jdbcType=TINYINT},
             </if>
         </trim>
     </insert>
@@ -104,6 +111,9 @@
             <if test="reason != null">
                 reason = #{reason,jdbcType=VARCHAR},
             </if>
+            <if test="opt != null">
+                opt = #{opt,jdbcType=TINYINT},
+            </if>
         </set>
         where id = #{id,jdbcType=BIGINT}
     </update>
@@ -113,7 +123,8 @@
       reject_origin_task = #{rejectOriginTask,jdbcType=VARCHAR},
       reject_to_task = #{rejectToTask,jdbcType=VARCHAR},
       gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
-      reason = #{reason,jdbcType=VARCHAR}
+      reason = #{reason,jdbcType=VARCHAR},
+      opt = #{opt,jdbcType=TINYINT}
     where id = #{id,jdbcType=BIGINT}
   </update>
 </mapper>
