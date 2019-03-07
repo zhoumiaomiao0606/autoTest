@@ -25,6 +25,9 @@ public class FinanceReturnFee
     //实际返利
     private String rebateReality;
 
+    //剩余月返金额
+    private String remainingMonthReturnAmount;
+
     //公司收益
    /* private String rebateCompany;*/
 
