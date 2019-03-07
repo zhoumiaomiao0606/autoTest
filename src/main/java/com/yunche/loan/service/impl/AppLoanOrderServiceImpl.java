@@ -510,32 +510,21 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
         LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
         LoanBaseInfoDO loanBaseInfoDO = loanBaseInfoDOMapper.selectByPrimaryKey(loanOrderDO.getLoanBaseInfoId());
 
-        List<Long> cascadeAreaId = Lists.newArrayList();
+        //设置城市id--用于判断是否是台州
         BaseAreaDO baseAreaDO = baseAreaDOMapper.selectByPrimaryKey(loanBaseInfoDO.getAreaId(), null);
-        BaseVO area = new BaseVO();
         if (null != baseAreaDO) {
-            area.setId(baseAreaDO.getAreaId());
-            String areaName = baseAreaDO.getAreaName();
-            cascadeAreaId.add(baseAreaDO.getAreaId());
             if(LEVEL_AREA.equals(baseAreaDO.getLevel())){
                 Long parentAreaId = baseAreaDO.getParentAreaId();
                 BaseAreaDO cityDO = baseAreaDOMapper.selectByPrimaryKey(parentAreaId, null);
-                areaName = cityDO.getParentAreaName() + areaName;
-                cascadeAreaId.add(cityDO.getParentAreaId());
-                Collections.reverse(cascadeAreaId);
+                loanFinancialPlanVO.setCityId(cityDO.getAreaId());
             }
             if (LEVEL_CITY.equals(baseAreaDO.getLevel())) {
                 BaseAreaDO parentAreaDO = baseAreaDOMapper.selectByPrimaryKey(baseAreaDO.getParentAreaId(), null);
                 if (null != parentAreaDO) {
-                    areaName = parentAreaDO.getAreaName() + areaName;
-
-                    cascadeAreaId.add(parentAreaDO.getAreaId());
-                    Collections.reverse(cascadeAreaId);
+                    loanFinancialPlanVO.setCityId(baseAreaDO.getAreaId());
                 }
             }
-            area.setName(areaName);
         }
-        loanFinancialPlanVO.setArea(area);
 
         return ResultBean.ofSuccess(loanFinancialPlanVO);
     }

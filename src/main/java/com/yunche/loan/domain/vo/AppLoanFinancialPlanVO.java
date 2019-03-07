@@ -81,8 +81,9 @@ public class AppLoanFinancialPlanVO {
     private String loanRate;//贷款比例
 
 
+
     /**
-     * 区域对象
+     * 城市id---用于判断是否城市是台州
      */
-    private BaseVO area;
+    private Long cityId;
 }

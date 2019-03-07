@@ -5,10 +5,7 @@ import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.entity.*;
 import com.yunche.loan.domain.param.LoanInfoRegisterParam;
-import com.yunche.loan.domain.vo.FinancialSchemeVO;
-import com.yunche.loan.domain.vo.RecombinationVO;
-import com.yunche.loan.domain.vo.UniversalCarInfoVO;
-import com.yunche.loan.domain.vo.UniversalInfoVO;
+import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.LoanCustomerService;
 import com.yunche.loan.service.LoanInfoRegisterService;
@@ -18,7 +15,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.Collections;
 import java.util.Date;
+
+import static com.yunche.loan.config.constant.AreaConst.LEVEL_AREA;
+import static com.yunche.loan.config.constant.AreaConst.LEVEL_CITY;
 
 @Service
 public class LoanInfoRegisterServiceImpl implements LoanInfoRegisterService {
@@ -114,8 +115,29 @@ public class LoanInfoRegisterServiceImpl implements LoanInfoRegisterService {
         //金融方案信息
         FinancialSchemeVO financialSchemeVO = loanQueryDOMapper.selectFinancialScheme(orderId);
 
+
+
+
         RecombinationVO recombinationVO = new RecombinationVO<>();
+
+        //设置城市id--用于判断是否是台州
+        BaseAreaDO baseAreaDO = baseAreaDOMapper.selectByPrimaryKey(Long.parseLong(universalInfoVO.getBase_apply_license_plate_area_id()), null);
+        if (null != baseAreaDO) {
+            if(LEVEL_AREA.equals(baseAreaDO.getLevel())){
+                Long parentAreaId = baseAreaDO.getParentAreaId();
+                BaseAreaDO cityDO = baseAreaDOMapper.selectByPrimaryKey(parentAreaId, null);
+                universalInfoVO.setCityId(cityDO.getAreaId());
+            }
+            if (LEVEL_CITY.equals(baseAreaDO.getLevel())) {
+                BaseAreaDO parentAreaDO = baseAreaDOMapper.selectByPrimaryKey(baseAreaDO.getParentAreaId(), null);
+                if (null != parentAreaDO) {
+                    universalInfoVO.setCityId(baseAreaDO.getAreaId());
+                }
+            }
+        }
+
         recombinationVO.setInfo(universalInfoVO);
+
         recombinationVO.setCar(universalCarInfoVO);
         recombinationVO.setFinancial(financialSchemeVO);
 

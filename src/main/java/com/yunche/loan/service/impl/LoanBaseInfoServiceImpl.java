@@ -145,6 +145,7 @@ public class LoanBaseInfoServiceImpl implements LoanBaseInfoService {
                 Long parentAreaId = baseAreaDO.getParentAreaId();
                 BaseAreaDO cityDO = baseAreaDOMapper.selectByPrimaryKey(parentAreaId, null);
                 areaName = cityDO.getParentAreaName() + areaName;
+                loanBaseInfoVO.setCityId(cityDO.getAreaId());
                 cascadeAreaId.add(cityDO.getParentAreaId());
                 Collections.reverse(cascadeAreaId);
             }
@@ -152,7 +153,7 @@ public class LoanBaseInfoServiceImpl implements LoanBaseInfoService {
                 BaseAreaDO parentAreaDO = baseAreaDOMapper.selectByPrimaryKey(baseAreaDO.getParentAreaId(), null);
                 if (null != parentAreaDO) {
                     areaName = parentAreaDO.getAreaName() + areaName;
-
+                    loanBaseInfoVO.setCityId(baseAreaDO.getAreaId());
                     cascadeAreaId.add(parentAreaDO.getAreaId());
                     Collections.reverse(cascadeAreaId);
                 }
