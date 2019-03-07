@@ -34,11 +34,8 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.yunche.loan.config.constant.BaseConst.K_YORN_NO;
-import static com.yunche.loan.config.constant.BaseConst.K_YORN_YES;
-import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
-import static com.yunche.loan.config.constant.CarConst.CAR_DETAIL;
-import static com.yunche.loan.config.constant.CarConst.CAR_TYPE_MAP;
+import static com.yunche.loan.config.constant.BaseConst.*;
+import static com.yunche.loan.config.constant.CarConst.*;
 import static com.yunche.loan.config.constant.InsuranceTypeConst.*;
 import static com.yunche.loan.config.constant.LoanCustomerConst.*;
 import static com.yunche.loan.config.constant.LoanCustomerEnum.COMMON_LENDER;
@@ -51,6 +48,7 @@ import static com.yunche.loan.config.constant.LoanProcessEnum.CREDIT_APPLY;
 import static com.yunche.loan.config.constant.LoanProcessEnum.TELEPHONE_VERIFY;
 import static com.yunche.loan.config.constant.LoanProcessVariableConst.PROCESS_VARIABLE_INFO;
 import static com.yunche.loan.config.constant.LoanProcessVariableConst.PROCESS_VARIABLE_USER_NAME;
+import static com.yunche.loan.config.constant.ProcessApprovalConst.ACTION_PASS;
 import static com.yunche.loan.config.constant.ProcessApprovalConst.TASK_USER_GROUP_MAP;
 import static com.yunche.loan.service.impl.LoanProcessServiceImpl.convertActionText;
 
@@ -767,21 +765,21 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
                 businessInfoVO.setCarKey(loanCarInfoDO.getCarKey());
 
                 //待收钥匙
-                if (loanCarInfoDO.getCarKey() == 0 )
+                if (CAR_KEY_FALSE.equals(loanCarInfoDO.getCarKey()))
                 {
                     businessInfoVO.setNeedCollectKey("不收");
                 }
-                else if (loanCarInfoDO.getCarKey() == 1)
+                else if (CAR_KEY_TRUE.equals(loanCarInfoDO.getCarKey()))
                 {
                     //查询是否已收钥匙
                     LoanProcessLogDO loanProcessLogDO = loanProcessLogDOMapper.selectNeedCollectKey(orderId);
-                    if (loanProcessLogDO != null && loanProcessLogDO.getAction() == 1 )
+                    if (loanProcessLogDO != null && ACTION_PASS.equals(loanProcessLogDO.getAction()))
                     {
                         //判断已收还是不收
-                        if (loanOrderDO.getKeyCollected() == 1)
+                        if (COLLECTEDKEY.equals(loanOrderDO.getKeyCollected()))
                         {
                             businessInfoVO.setNeedCollectKey("已收");
-                        }else if (loanOrderDO.getKeyCollected() == 2)
+                        }else if (UNCOLLECTEDKEY.equals(loanOrderDO.getKeyCollected()))
                         {
                             businessInfoVO.setNeedCollectKey("不收");
                         }else
