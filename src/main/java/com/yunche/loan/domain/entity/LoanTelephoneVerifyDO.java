@@ -35,4 +35,6 @@ public class LoanTelephoneVerifyDO {
      * 钥匙风险金-确认---钥匙风险金---默认-0-未确认--1-确认
      */
     private Byte keyRiskPremiumConfirm;
+
+    private Byte passLevel;
 }
