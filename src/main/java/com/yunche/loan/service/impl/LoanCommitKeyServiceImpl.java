@@ -23,6 +23,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.util.List;
 
+import static com.yunche.loan.config.constant.BaseConst.COLLECTEDKEY;
+import static com.yunche.loan.config.constant.BaseConst.UNCOLLECTEDKEY;
 import static com.yunche.loan.config.constant.BaseConst.WHITE_OPEN;
 import static com.yunche.loan.config.constant.LoanFileConst.UPLOAD_TYPE_NORMAL;
 import static com.yunche.loan.config.constant.LoanFileEnum.LETTER_OF_RISK_COMMITMENT;
@@ -36,10 +38,6 @@ import static com.yunche.loan.config.constant.ProcessApprovalConst.ACTION_PASS;
 @Service
 public class LoanCommitKeyServiceImpl implements LoanCommitKeyService
 {
-
-    private static final Byte UNCOLLECTEDKEY = 2;
-
-    private static final Byte COLLECTEDKEY = 1;
 
 
     @Autowired

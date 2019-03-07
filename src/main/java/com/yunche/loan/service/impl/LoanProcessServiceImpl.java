@@ -261,10 +261,10 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         if (isCreditApplyTask(approval.getTaskDefinitionKey(), approval.getAction()))
         {
             //判断大数据风控是否命中高风险
-            if (K_YORN_YES.equals(loanOrderDO.getZhongAnHighRiskHit()))
+           /* if (K_YORN_YES.equals(loanOrderDO.getZhongAnHighRiskHit()))
             {
                 throw  new BizException("该订单有客户未通过大数据风控，无法申请查征信");
-            }
+            }*/
 
             //判断合伙人没有被禁止进件
             List<Long> shutdownQuerycreditPartners = keyCommitTask.getShutdownQuerycreditPartners();
@@ -1650,7 +1650,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             PartnerDO partnerDO = partnerDOMapper.queryPartnerInfoByOrderId(orderId);
             PartnerWhiteListDO partnerWhiteListDO = partnerWhiteListDOMapper.selectByPrimaryKey(new PartnerWhiteListDOKey(partnerDO.getId(), COMMIT_KEY.getCode()));
 
-            if (WHITE_OPEN.equals(partnerWhiteListDO.getStatus()))
+            if (partnerWhiteListDO!=null && WHITE_OPEN.equals(partnerWhiteListDO.getStatus()))
             {
                 LoanOrderDO loanOrderDO = new LoanOrderDO();
 
