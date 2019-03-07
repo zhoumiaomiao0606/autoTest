@@ -26,6 +26,8 @@ import java.util.Set;
 
 import static com.yunche.loan.config.constant.ApplyOrderStatusConst.APPLY_ORDER_INIT;
 import static com.yunche.loan.config.constant.ApplyOrderStatusConst.APPLY_ORDER_PASS;
+import static com.yunche.loan.config.constant.AreaConst.LEVEL_AREA;
+import static com.yunche.loan.config.constant.AreaConst.LEVEL_CITY;
 import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
 import static com.yunche.loan.config.constant.LoanOrderProcessConst.*;
 
@@ -148,10 +150,56 @@ public class FinancialSchemeServiceImpl implements FinancialSchemeService {
         RecombinationVO recombinationVO = new RecombinationVO();
         /*recombinationVO.setInfo(loanQueryDOMapper.selectUniversalInfo(orderId));
         recombinationVO.setDiff(loanQueryDOMapper.selectUniversalLoanFinancialPlanTempHis(hisId));*/
+
+
         if (hisId == null) {
-            recombinationVO.setInfo(loanQueryDOMapper.selectUniversalInfo(orderId));
+            UniversalInfoVO universalInfoVO = loanQueryDOMapper.selectUniversalInfo(orderId);
+
+            // 区域
+            LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
+            LoanBaseInfoDO loanBaseInfoDO = loanBaseInfoDOMapper.selectByPrimaryKey(loanOrderDO.getLoanBaseInfoId());
+
+            //设置城市id--用于判断是否是台州
+            BaseAreaDO baseAreaDO = baseAreaDOMapper.selectByPrimaryKey(loanBaseInfoDO.getAreaId(), null);
+            if (null != baseAreaDO) {
+                if(LEVEL_AREA.equals(baseAreaDO.getLevel())){
+                    Long parentAreaId = baseAreaDO.getParentAreaId();
+                    BaseAreaDO cityDO = baseAreaDOMapper.selectByPrimaryKey(parentAreaId, null);
+                    universalInfoVO.setCityId(cityDO.getAreaId());
+                }
+                if (LEVEL_CITY.equals(baseAreaDO.getLevel())) {
+                    BaseAreaDO parentAreaDO = baseAreaDOMapper.selectByPrimaryKey(baseAreaDO.getParentAreaId(), null);
+                    if (null != parentAreaDO) {
+                        universalInfoVO.setCityId(baseAreaDO.getAreaId());
+                    }
+                }
+            }
+
+            recombinationVO.setInfo(universalInfoVO);
         } else {
-            recombinationVO.setInfo(loanQueryDOMapper.selectUniversalLoanFinancialPlanTempHis(orderId, hisId));
+
+            UniversalLoanFinancialPlanTempHisVO universalLoanFinancialPlanTempHisVO = loanQueryDOMapper.selectUniversalLoanFinancialPlanTempHis(orderId, hisId);
+
+            // 区域
+            LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
+            LoanBaseInfoDO loanBaseInfoDO = loanBaseInfoDOMapper.selectByPrimaryKey(loanOrderDO.getLoanBaseInfoId());
+
+            //设置城市id--用于判断是否是台州
+            BaseAreaDO baseAreaDO = baseAreaDOMapper.selectByPrimaryKey(loanBaseInfoDO.getAreaId(), null);
+            if (null != baseAreaDO) {
+                if(LEVEL_AREA.equals(baseAreaDO.getLevel())){
+                    Long parentAreaId = baseAreaDO.getParentAreaId();
+                    BaseAreaDO cityDO = baseAreaDOMapper.selectByPrimaryKey(parentAreaId, null);
+                    universalLoanFinancialPlanTempHisVO.setCityId(cityDO.getAreaId());
+                }
+                if (LEVEL_CITY.equals(baseAreaDO.getLevel())) {
+                    BaseAreaDO parentAreaDO = baseAreaDOMapper.selectByPrimaryKey(baseAreaDO.getParentAreaId(), null);
+                    if (null != parentAreaDO) {
+                        universalLoanFinancialPlanTempHisVO.setCityId(baseAreaDO.getAreaId());
+                    }
+                }
+            }
+            recombinationVO.setInfo(universalLoanFinancialPlanTempHisVO);
         }
         return recombinationVO;
     }
