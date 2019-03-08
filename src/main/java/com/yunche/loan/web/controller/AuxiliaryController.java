@@ -45,7 +45,7 @@ public class AuxiliaryController {
      */
     @PostMapping(value = "/install", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean install(@RequestBody @Validated InstallUpdateParam param) {
-        auxiliaryService.install(param);
+        auxiliaryService.install(param,0);
         return ResultBean.ofSuccess(null,"安装成功");
     }
 
@@ -65,4 +65,11 @@ public class AuxiliaryController {
         return ResultBean.ofSuccess(auxiliaryService.appDetail(Long.valueOf(order_id)));
     }
 
+    /**
+     * gps可用查询
+     */
+    @PostMapping(value = "/gpsAvailable")
+    public ResultBean gpsAvailable(@RequestBody InstallUpdateParam param) {
+        return auxiliaryService.gpsAvailable(param);
+    }
 }
