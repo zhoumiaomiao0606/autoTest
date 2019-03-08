@@ -4061,11 +4061,8 @@
         <if test="customer != null and customer != ''">
             AND cus.name LIKE CONCAT('%', #{customer} ,'%')
         </if>
-        <if test="bankList != null and bankList.size() > 0">
-            and base.bank in
-            <foreach item="item" index="index" collection="bankList" open="(" separator="," close=")">
-                #{item}
-            </foreach>
+        <if test="loanBank != null">
+            and base.bank = #{loanBank}
         </if>
     </select>
     <select id="selectDataManagementDetail" parameterType="java.lang.String" resultType="com.yunche.loan.domain.vo.DataManagementDetailVO">

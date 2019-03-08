@@ -62,4 +62,13 @@ public class BaseConst {
 //    public static final Byte REMIT_STATUS_TWO = 2;
 //
 //    public static final Byte REMIT_STATUS_THREE = 3;
+
+    public static final String OSS_PREFIX = "http://yunche-2018.oss-cn-hangzhou.aliyuncs.com";
+
+    // 主贷人
+    public static final Byte MASTER_CUST = 1;
+    // 共还人
+    public static final Byte COMM_CUST = 2;
+    // 担保人
+    public static final Byte ASSURE_CUST = 3;
 }
