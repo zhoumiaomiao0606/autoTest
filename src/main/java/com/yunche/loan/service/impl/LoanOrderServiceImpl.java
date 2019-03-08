@@ -940,6 +940,12 @@ public class LoanOrderServiceImpl implements LoanOrderService {
                     secondCityArea.setProvinceId(county.getParentAreaId());
                     secondCityArea.setProvinceName(county.getParentAreaName());
 
+                    //判断是否是直辖市
+                    if (new Long("100000000000").equals(county.getParentAreaId()))
+                    {
+                        secondCityArea.setProvinceName(county.getAreaName());
+                    }
+
                     loanCarInfoVO.setSecondCityArea(secondCityArea);
                     loanCarInfoVO.setHasCityName(county.getAreaName());
                 }
