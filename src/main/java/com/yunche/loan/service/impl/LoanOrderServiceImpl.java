@@ -944,6 +944,7 @@ public class LoanOrderServiceImpl implements LoanOrderService {
                     if (new Long("100000000000").equals(county.getParentAreaId()))
                     {
                         secondCityArea.setProvinceName(county.getAreaName());
+                        secondCityArea.setCityName(null);
                     }
 
                     loanCarInfoVO.setSecondCityArea(secondCityArea);
