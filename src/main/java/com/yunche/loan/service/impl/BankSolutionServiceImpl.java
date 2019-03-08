@@ -1,10 +1,10 @@
 package com.yunche.loan.service.impl;
 
-import
-        com.github.pagehelper.util.StringUtil;
+import com.github.pagehelper.util.StringUtil;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.yunche.loan.config.cache.BankCache;
 import com.yunche.loan.config.cache.DictMapCache;
 import com.yunche.loan.config.cache.ParamCache;
 import com.yunche.loan.config.common.SysConfig;
@@ -13,6 +13,7 @@ import com.yunche.loan.config.exception.BizException;
 import com.yunche.loan.config.feign.client.ICBCFeignClient;
 import com.yunche.loan.config.feign.request.ICBCApiRequest;
 import com.yunche.loan.config.feign.request.group.*;
+import com.yunche.loan.config.feign.response.ApplyMediaStatusResponse;
 import com.yunche.loan.config.feign.response.ApplyStatusResponse;
 import com.yunche.loan.config.feign.response.ApplycreditstatusResponse;
 import com.yunche.loan.config.feign.response.CreditCardApplyResponse;
@@ -33,6 +34,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
@@ -129,7 +131,10 @@ public class BankSolutionServiceImpl implements BankSolutionService {
 
     @Autowired
     private BaseAreaDOMapper baseAreaDOMapper;
-    
+
+    @Autowired
+    private BankCache bankCache;
+
     @Autowired
     private ParamCache paramCache;
 
@@ -241,15 +246,16 @@ public class BankSolutionServiceImpl implements BankSolutionService {
 
     /**
      * 银行二手车评估
+     *
      * @param orderId
      * @return
      */
     @Override
-    public ResultBean applyevaluate(Long orderId,String taskDefinitionKey) {
+    public ResultBean applyevaluate(Long orderId, String taskDefinitionKey) {
 
         String param = paramCache.getParam(IConstant.IS_NEED_APPLYEVALUATE);
         Set<String> blackPartner = paramCache.getParam2List(IConstant.BLACKLIST_PARTNER);
-        if(!StringUtil.isEmpty(param) && IDict.K_YORN.K_YORN_NO.toString().equals(param)){
+        if (!StringUtil.isEmpty(param) && IDict.K_YORN.K_YORN_NO.toString().equals(param)) {
             return ResultBean.ofSuccess("【系统设置】：无需查询二手车评估预审");
         }
         LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
@@ -258,13 +264,13 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         }
 
         LoanFinancialPlanDO loanFinancialPlanDO = loanFinancialPlanDOMapper.selectByPrimaryKey(loanOrderDO.getLoanFinancialPlanId());
-        if(loanFinancialPlanDO == null){
+        if (loanFinancialPlanDO == null) {
             throw new BizException("金融方案不存在");
         }
 
 
         LoanCustomerDO loanCustomerDO = loanCustomerDOMapper.selectByPrimaryKey(loanOrderDO.getLoanCustomerId(), null);
-        if(loanCustomerDO == null){
+        if (loanCustomerDO == null) {
             throw new BizException("客户信息不存在");
         }
 
@@ -288,8 +294,8 @@ public class BankSolutionServiceImpl implements BankSolutionService {
             throw new BizException("征信信息不存在");
         }
         //不是二手车 不需要调用
-        if(!Byte.valueOf("1").equals(loanCarInfoDO.getCarType())){
-            return  ResultBean.ofSuccess("非二手车无需调用");
+        if (!Byte.valueOf("1").equals(loanCarInfoDO.getCarType())) {
+            return ResultBean.ofSuccess("非二手车无需调用");
         }
         //征信银行
         Long bankId = bankDOMapper.selectIdByName(loanBaseInfoDO.getBank());
@@ -300,7 +306,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
 //            return ResultBean.ofSuccess("非城站/台州支行无需调用");
 //        }
 
-        if((!String.valueOf(bankId).equals(IDict.K_BANK.ICBC_TZLQ))){
+        if ((!String.valueOf(bankId).equals(IDict.K_BANK.ICBC_TZLQ))) {
             return ResultBean.ofSuccess("非台州支行无需调用");
         }
         Long carDetailId = loanCarInfoDO.getCarDetailId();
@@ -333,7 +339,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
 
         ICBCApiRequest.Applyevaluate applyevaluate = new ICBCApiRequest.Applyevaluate();
 
-        String serialNo=GeneratorIDUtil.execute();
+        String serialNo = GeneratorIDUtil.execute();
         applyevaluate.setPlatno(sysConfig.getPlatno());
         applyevaluate.setOrderno(String.valueOf(orderId));
         applyevaluate.setCmpseq(serialNo);
@@ -344,25 +350,24 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         applyevaluate.setIdtype(IDict.K_JJLX.IDCARD);
 
 
-
         applyevaluate.setIdno(loanCustomerDO.getIdCard());
         applyevaluate.setCarType(carFullName);
-        if(FINANCIAL_SCHEME_MODIFY_APPLY.getCode().equals(taskDefinitionKey)){
+        if (FINANCIAL_SCHEME_MODIFY_APPLY.getCode().equals(taskDefinitionKey)) {
             LoanFinancialPlanTempHisDO loanFinancialPlanTempHisDO = loanFinancialPlanTempHisDOMapper.lastByOrderId(orderId);
-            applyevaluate.setPrice(BigDecimalUtil.format(loanFinancialPlanTempHisDO.getFinancial_bank_period_principal(),2));
-            applyevaluate.setAssessPrice(BigDecimalUtil.format(loanFinancialPlanTempHisDO.getFinancial_appraisal(),2));
-        }else{
-            applyevaluate.setPrice(BigDecimalUtil.format(loanFinancialPlanDO.getBankPeriodPrincipal(),2));
-            applyevaluate.setAssessPrice(BigDecimalUtil.format(loanFinancialPlanDO.getAppraisal(),2));
+            applyevaluate.setPrice(BigDecimalUtil.format(loanFinancialPlanTempHisDO.getFinancial_bank_period_principal(), 2));
+            applyevaluate.setAssessPrice(BigDecimalUtil.format(loanFinancialPlanTempHisDO.getFinancial_appraisal(), 2));
+        } else {
+            applyevaluate.setPrice(BigDecimalUtil.format(loanFinancialPlanDO.getBankPeriodPrincipal(), 2));
+            applyevaluate.setAssessPrice(BigDecimalUtil.format(loanFinancialPlanDO.getAppraisal(), 2));
         }
 
         applyevaluate.setCarNo1(vehicleInformationDO.getVehicle_identification_number());
 
-        if(loanCarInfoDO.getEvaluationType().equals(IDict.K_EVALUATION_TYPE.ONLINE)){
+        if (loanCarInfoDO.getEvaluationType().equals(IDict.K_EVALUATION_TYPE.ONLINE)) {
             SecondHandCarEvaluateDO secondHandCarEvaluateDO = secondHandCarEvaluateDOMapper.selectByPrimaryKey(loanOrderDO.getSecond_hand_car_evaluate_id());
             applyevaluate.setCarZone(secondHandCarEvaluateDO.getArea_id() == null ? null : secondHandCarEvaluateDO.getArea_id().toString().substring(0, 4));
             applyevaluate.setCarMile(String.valueOf(new BigDecimal(secondHandCarEvaluateDO.getMileage()).intValue()));
-        }else if(loanCarInfoDO.getEvaluationType().equals(IDict.K_EVALUATION_TYPE.ARTIFICIAL)){
+        } else if (loanCarInfoDO.getEvaluationType().equals(IDict.K_EVALUATION_TYPE.ARTIFICIAL)) {
             applyevaluate.setCarZone(loanCarInfoDO.getCityId() == null ? null : loanCarInfoDO.getCityId().toString().substring(0, 4));
             applyevaluate.setCarMile(String.valueOf(new BigDecimal(loanCarInfoDO.getMileage()).intValue()));
         }
@@ -373,18 +378,18 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         applyevaluate.setDecorateLevel(" ");//非必填，可为空
 
         violationUtil.violation(applyevaluate);
-        ApplycreditstatusResponse response=null;
-        try{
+        ApplycreditstatusResponse response = null;
+        try {
             response = icbcFeignClient.applyevaluate(applyevaluate);
-        }catch (Exception e){
+        } catch (Exception e) {
             String partnerIdStr = loanBaseInfoDO.getPartnerId().toString();
-            if(!blackPartner.contains(partnerIdStr)){
-                LOG.info(partnerIdStr+":白名单合伙人");
-                return ResultBean.ofSuccess(partnerIdStr+":白名单合伙人【"+e.getMessage()+"】");
-            }else{
-                return ResultBean.ofError(partnerIdStr+":合伙人订单【"+e.getMessage()+"】");
+            if (!blackPartner.contains(partnerIdStr)) {
+                LOG.info(partnerIdStr + ":白名单合伙人");
+                return ResultBean.ofSuccess(partnerIdStr + ":白名单合伙人【" + e.getMessage() + "】");
+            } else {
+                return ResultBean.ofError(partnerIdStr + ":合伙人订单【" + e.getMessage() + "】");
             }
-        }finally {
+        } finally {
             BankInterfaceSerialDO bankInterfaceSerialDO = new BankInterfaceSerialDO();
             bankInterfaceSerialDO.setSerialNo(serialNo);
             bankInterfaceSerialDO.setStatus(new Byte(IDict.K_JJSTS.SUCCESS));
@@ -790,6 +795,9 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         applyDiviGeneral.setBusitype(busitype);
         applyDiviGeneral.setCustomerId(customerId.toString());
         applyDiviGeneral.setFileNum(String.valueOf(pictures.size()));
+        // TODO
+        applyDiviGeneral.setDcCorpno("");
+        applyDiviGeneral.setSellerno("");
 
         //resultsum
         boolean check = bankInterfaceSerialDOMapper.checkRequestBussIsSucessByTransCodeOrderId(customerId, IDict.K_TRANS_CODE.APPLYDIVIGENERAL);
@@ -797,7 +805,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         if (bankId.intValue() == 1) {
             info.setNote(" ");
         } else if (bankId.intValue() == 3) {
-            info.setNote("汽车附加消费分期  " + danBaoFee + "  元，其中担保服务费  " + danBaoFee + "  元。具体经营地址："+loanCustomerDO.getCcounty()+loanCustomerDO.getIncomeCertificateCompanyAddress());
+            info.setNote("汽车附加消费分期  " + danBaoFee + "  元，其中担保服务费  " + danBaoFee + "  元。具体经营地址：" + loanCustomerDO.getCcounty() + loanCustomerDO.getIncomeCertificateCompanyAddress());
         }
 
         //customer
@@ -859,12 +867,9 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         //记录日志
         bankInterfaceLog(orderId, IDict.K_TRANS_CODE.APPLYDIVIGENERAL);
 
-        asyncUpload.execute(new Process() {
-            @Override
-            public void process() {
-                asyncUpload.upload(serNo, queue);
-                icbcFeignClient.applyDiviGeneral(applyDiviGeneral);
-            }
+        asyncUpload.execute(() -> {
+            asyncUpload.upload(serNo, queue);
+            icbcFeignClient.applyDiviGeneral(applyDiviGeneral);
         });
     }
 
@@ -1221,14 +1226,14 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         //联系人一
         customer.setReltname1(emergencys.get(0).getName());//姓名
         customer.setReltsex1(String.valueOf(emergencys.get(0).getSex()));//性别
-        customer.setReltship1(dictMapCache.getValue(IConstant.RELT_SHIP,String.valueOf(emergencys.get(0).getCustRelation()).trim()));//与主卡申请关系
+        customer.setReltship1(dictMapCache.getValue(IConstant.RELT_SHIP, String.valueOf(emergencys.get(0).getCustRelation()).trim()));//与主卡申请关系
         customer.setReltmobl1(StringUtil.isEmpty(emergencys.get(0).getMobile()) ? "0" : emergencys.get(0).getMobile());//联系人一手机
         customer.setReltmobl1(StringUtil.isEmpty(emergencys.get(0).getMobile()) ? "0" : emergencys.get(0).getMobile());//联系人一手机
         customer.setRelaphone1(StringUtil.isEmpty(emergencys.get(0).getMobile()) ? "0" : emergencys.get(0).getMobile());//联系人一联系电话号
         //联系人二
         customer.setReltname2(emergencys.get(1).getName());//姓名
         customer.setReltsex2(String.valueOf(emergencys.get(1).getSex()));//性别
-        customer.setReltship2(dictMapCache.getValue(IConstant.RELT_SHIP,String.valueOf(emergencys.get(1).getCustRelation()).trim()));//与主卡申请关系
+        customer.setReltship2(dictMapCache.getValue(IConstant.RELT_SHIP, String.valueOf(emergencys.get(1).getCustRelation()).trim()));//与主卡申请关系
         customer.setReltmobl2(StringUtil.isEmpty(emergencys.get(1).getMobile()) ? "0" : emergencys.get(1).getMobile());//联系人二手机
         customer.setRtcophon2(StringUtil.isEmpty(emergencys.get(1).getMobile()) ? "0" : emergencys.get(1).getMobile());//联系人二联系电话号
 
@@ -1334,6 +1339,50 @@ public class BankSolutionServiceImpl implements BankSolutionService {
     @Override
     public ApplycreditstatusResponse applycreditstatus(ICBCApiRequest.Applycreditstatus applycreditstatus) {
         ApplycreditstatusResponse response = icbcFeignClient.applycreditstatus(applycreditstatus);
+        return response;
+    }
+
+    @Override
+    public ApplyMediaStatusResponse applyMediaStatus(Long orderId) {
+        Assert.notNull(orderId, "订单号不能为空");
+
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
+        Assert.notNull(loanOrderDO, "此订单不存在");
+
+        Long baseId = loanOrderDO.getLoanBaseInfoId();
+        Assert.notNull(baseId, "征信信息不存在");
+
+        LoanBaseInfoDO loanBaseInfoDO = loanBaseInfoDOMapper.selectByPrimaryKey(baseId);
+        Assert.notNull(loanBaseInfoDO, "征信信息不存在");
+
+        Long bankId = bankCache.getIdByName(loanBaseInfoDO.getBank());
+        Assert.notNull(bankId, "贷款银行不存在");
+
+        // 业务受理网点
+        String phybrno = null;
+        if (IDict.K_BANK.ICBC_HZCZ.equals(String.valueOf(bankId))) {
+            phybrno = sysConfig.getHzphybrno();
+        } else if (IDict.K_BANK.ICBC_TZLQ.equals(String.valueOf(bankId))) {
+            phybrno = sysConfig.getTzphybrno();
+        }
+
+        LoanCustomerDO loanCustomerDO = loanCustomerDOMapper.selectByPrimaryKey(loanOrderDO.getLoanCustomerId(), null);
+        Assert.notNull(loanCustomerDO, "贷款客户不存在");
+        Assert.notNull(loanCustomerDO.getIdCard(), "贷款客户身份证不存在");
+
+
+        ICBCApiRequest.ApplyMediaStatus param = new ICBCApiRequest.ApplyMediaStatus();
+
+        param.setPlatno(sysConfig.getPlatno()); // 平台编号
+        param.setZoneno(loanBaseInfoDO.getAreaId() == null ? null : loanBaseInfoDO.getAreaId().toString().substring(0, 4)); // 业务发生地
+        param.setPhybrno(phybrno); // 业务受理网点
+        param.setOrderno(String.valueOf(loanOrderDO.getId())); // 合作机构订单号
+        param.setAssurerno(sysConfig.getAssurerno()); // 合作机构编号
+        param.setIdno(loanCustomerDO.getIdCard()); // 证件编号
+        param.setCmpdate(DateUtil.getDate()); // 合作机构日期
+        param.setCmptime(DateUtil.getDate()); // 合作机构时间
+
+        ApplyMediaStatusResponse response = icbcFeignClient.applyMediaStatus(param);
         return response;
     }
 
