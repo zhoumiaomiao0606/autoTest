@@ -382,19 +382,27 @@ public class VideoFaceServiceImpl implements VideoFaceService {
         String question_12 = "12、你现在所处位置？   参考答案：" + redText(address);
         String question_13 = "13、请问您购买的是什么品牌的汽车？（参考答案） 车辆品牌：" + redText(videoFaceQuestionAnswerVO.getCarBrandName());
         String question_14 = "14、请问您所购车辆是否自用？   参考答案：是";
-        String question_19 = "14、您所购车辆是否已经提到？   参考答案：是";
-        String question_20 = "14、您了解该笔贷款是由浙江鑫宝行融资担保有限公司提供担保的吗？   参考答案：了解";
-        String question_15 = "15、请您务必在合同上填写正确的手机号码和联系地址";
-        String question_16 = "16、请您现在在信用卡申请书、分期付款合同以及客户告知书上签名";
-        String question_17 = "17、银行：请您认真仔细阅读担保方签署相关协议，该协议内容以及协议中约定的在您未按时、足额清偿债务时担保方可采取的措施等，" +
+        String question_15 = "15、您所购车辆是否已经提到？   参考答案：是";
+
+        String question_16 = "16、您所购买车辆车价是多少？   参考答案：车价："+ redText(videoFaceQuestionAnswerVO.getCarPrice());
+        String question_17 = "17、您的银行分期付款业务分期金额是多少？（该金额包含金融服务费）"+ redText(videoFaceQuestionAnswerVO.getBankPeriodPrincipal()) + "元。";
+        String question_18 = "18、您的贷款期数是？参考答案："+ redText(videoFaceQuestionAnswerVO.getLoanTime());
+
+        String question_19 = "19、您是否知晓该笔贷款是由#合作机构名称"+redText(videoFaceQuestionAnswerVO.getLoanTime())+"#提供担保的吗？参考答案：是";
+        String question_20 = "20、我行审批通过后将根据您的授权对您的信用卡进行激活并将您的分期款项汇给"+ redText(videoFaceQuestionAnswerVO.getLoanTime())+"(每家合作机构对应的放款账户名称)账户，您是否有异议？参考答案：没有异议";
+        String question_21 = "21、请您务必在合同上填写正确的手机号码和联系地址方便寄送合同。参考答案：好的。";
+        String question_22 = "22、请您现在在信用卡申请书、分期付款合同以及客户告知书上签名。。参考答案：好的。";
+
+        String question_23 = "23、银行：请您认真仔细阅读担保方签署相关协议，该协议内容以及协议中约定的在您未按时、足额清偿债务时担保方可采取的措施等，" +
                 "均与工商银行无关。您办理该笔分期业务无需向我行和担保公司缴纳任何保证金和押金。" + HTML_NEW_LINE +
                 "银行：请您务必下载和使用工银融E联，通过申请时预留手机号注册登录后，即可享受相应服务。" + HTML_NEW_LINE +
-                "银行：感谢您的配合，业务办理成功后，请您留意查收合同及客户告知书并仔细阅读，后续如有问题，欢迎致电我行告知书上的汽车分期服务专线电话。";
+                "银行：感谢您的配合，业务办理成功后，请您留意查收合同及客户告知书并仔细阅读，后续如有问题，欢迎致电我行告知书上的汽车分期服务专线电话。"+ HTML_NEW_LINE +
+                "银行：感谢您的配合，再见！";
 
         List<String> questionList = Lists.newArrayList(question_1, question_2, question_3, question_4, question_5,
                 question_6, question_7, question_8, question_9, question_10,
                 question_11, question_12, question_13, question_14, question_15,
-                question_16, question_17);
+                question_16, question_17, question_18, question_19, question_20, question_21, question_22, question_23);
 
         return questionList;
     }
