@@ -936,6 +936,10 @@ public class LoanOrderServiceImpl implements LoanOrderService {
                     secondCityArea.setCityId(county.getAreaId());
                     secondCityArea.setCityName(county.getAreaName());
 
+                    //省
+                    secondCityArea.setProvinceId(county.getParentAreaId());
+                    secondCityArea.setProvinceName(county.getParentAreaName());
+
                     loanCarInfoVO.setSecondCityArea(secondCityArea);
                     loanCarInfoVO.setHasCityName(county.getAreaName());
                 }
