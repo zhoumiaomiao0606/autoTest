@@ -352,9 +352,9 @@ public class VideoFaceServiceImpl implements VideoFaceService {
 
         VideoFaceQuestionAnswerVO videoFaceQuestionAnswerVO = setAndGetVideoFaceQuestionAnswerVO(bankId, orderId);
 
-        String question_1 = "1、你好，这里是工商银行路桥支行，请问是" + redText(videoFaceQuestionAnswerVO.getCustomerName()) + "先生/女士吗？（参考答案）是";
-        String question_2 = "2、我是工商银行路桥支行的工作人员，请问您现在是否需要在我行申请一笔信用卡购车分期付款业务？您对此分期付款业务情况是否了解（参考答案）是";
-        String question_3 = "3、下面需要核对一下您的身份信息（选问项，选三个或以上）";
+        String question_1 = "1、你好，这里是工商银行台州路桥支行，请问您的姓名是？"  + "（参考答案）"+ redText(videoFaceQuestionAnswerVO.getCustomerName());
+        String question_2 = "2、我是工商银行**支行的工作人员，请问您现在是否需要在我行申请一笔信用卡购车分期付款业务？（参考答案）是";
+        String question_3 = "3、下面需要核对一下您的身份信息";
 
         String yyyy_MM_dd = "";
         String idCard_last_six_num = "";
@@ -370,16 +370,20 @@ public class VideoFaceServiceImpl implements VideoFaceService {
         }
 
         String question_4 = "4、Q1请问您的出生年月日是？   参考答案：" + redText(yyyy_MM_dd);
-        String question_5 = "5、Q2你的身份证号码后六位是什么？   参考答案：" + redText(idCard_last_six_num);
-        String question_6 = "6、Q3你所购车辆的型号是什么？   参考答案：" + redText(videoFaceQuestionAnswerVO.getCarName());
-        String question_7 = "7、Q4您现在的工作单位是什么？（面签人员无法核实）";
-        String question_8 = "8、Q5您单位地址是？   （面签人员无法核实）";
-        String question_9 = "9、Q6您家庭住址是哪里？   （面签人员无法核实）";
-        String question_10 = "10、Q7您身份证上的地址是哪里？   （面签人员无法核实）";
-        String question_11 = "11、Q8您所购买车辆是什么颜色？   （面签人员无法核实）";
-        String question_12 = "12、Q9你现在所处位置？   参考答案：" + redText(address);
-        String question_13 = "13、请问您购买的是什么品牌的汽车？购买车辆是否自用？   （参考答案）是  车辆品牌：" + redText(videoFaceQuestionAnswerVO.getCarBrandName());
-        String question_14 = "14、您了解该笔贷款是由浙江鑫宝行融资担保有限公司提供担保的吗？   参考答案：了解";
+        String question_5 = "5、Q2请问您的身份证号码是？   参考答案：" + redText(idCard);
+
+        String question_6 = "6、以下问题可选择性提问，但不得少于两个。";
+        String question_7 = "7、Q1：您现在的工作单位是什么？（面签人员无法核实）";
+        String question_8 = "8、Q2：您单位地址是？   （面签人员无法核实）";
+        String question_9 = "9、Q3：您家庭住址是哪里   （面签人员无法核实）";
+        String question_10 = "10、Q4：您身份证上的地址是哪里   （面签人员无法核实）";
+        String question_11 = "11、Q5：您所购车辆是什么颜色的？   （面签人员无法核实）";
+
+        String question_12 = "12、你现在所处位置？   参考答案：" + redText(address);
+        String question_13 = "13、请问您购买的是什么品牌的汽车？（参考答案） 车辆品牌：" + redText(videoFaceQuestionAnswerVO.getCarBrandName());
+        String question_14 = "14、请问您所购车辆是否自用？   参考答案：是";
+        String question_19 = "14、您所购车辆是否已经提到？   参考答案：是";
+        String question_20 = "14、您了解该笔贷款是由浙江鑫宝行融资担保有限公司提供担保的吗？   参考答案：了解";
         String question_15 = "15、请您务必在合同上填写正确的手机号码和联系地址";
         String question_16 = "16、请您现在在信用卡申请书、分期付款合同以及客户告知书上签名";
         String question_17 = "17、银行：请您认真仔细阅读担保方签署相关协议，该协议内容以及协议中约定的在您未按时、足额清偿债务时担保方可采取的措施等，" +
