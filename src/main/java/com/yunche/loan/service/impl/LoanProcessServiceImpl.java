@@ -276,11 +276,18 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         }
 
         // 【电审】
-        if (isTelephoneVerifyTask(approval.getTaskDefinitionKey(), approval.getAction())) {
+        if (isTelephoneVerifyTask(approval.getTaskDefinitionKey(), approval.getAction()))
+        {
             LoanTelephoneVerifyDO loanTelephoneVerifyDO = loanTelephoneVerifyDOMapper.selectByPrimaryKey(approval.getOrderId());
             if (loanTelephoneVerifyDO != null && loanTelephoneVerifyDO.getKeyRiskPremium() > 0 && !K_YORN_YES.equals(loanTelephoneVerifyDO.getKeyRiskPremiumConfirm())) {
                 throw new BizException("钥匙风险金--没有确认");
             }
+
+            //设置电审信息 ---
+            LoanTelephoneVerifyDO ltv = new LoanTelephoneVerifyDO();
+            ltv.setOrderId(loanTelephoneVerifyDO.getOrderId());
+            ltv.setPassLevel(approval.getPassLevel());
+            loanTelephoneVerifyDOMapper.updateByPrimaryKeySelective(ltv);
         }
 
         // 【待收钥匙】
