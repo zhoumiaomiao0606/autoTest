@@ -171,4 +171,10 @@ public class LoanProcessDO implements LoanProcessDO_ {
     private Byte underLineVideoReview;
 
     //////////////////// 资料流转 /////////////////////
+
+    private Byte materialPrintReview1;
+
+    private Byte applyInstalment1;
+
+    private Byte applyInstalmentReview;
 }
