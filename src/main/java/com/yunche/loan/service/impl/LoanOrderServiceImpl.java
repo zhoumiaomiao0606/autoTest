@@ -911,7 +911,7 @@ public class LoanOrderServiceImpl implements LoanOrderService {
                 if (area_id != null) {
                     LoanCarInfoVO.SecondCityArea secondCityArea = new LoanCarInfoVO.SecondCityArea();
                     BaseAreaDO county = baseAreaDOMapper.selectByPrimaryKey(area_id, null);
-                    if (county.getLevel().toString().equals("3")) {
+                    /*if (county.getLevel().toString().equals("3")) {
                         BaseAreaDO city = baseAreaDOMapper.selectByPrimaryKey(county.getParentAreaId(), null);
                         //区
                         secondCityArea.setCountyId(county.getAreaId());
@@ -930,7 +930,22 @@ public class LoanOrderServiceImpl implements LoanOrderService {
                         secondCityArea.setCountyName(county.getAreaName());
                         secondCityArea.setProvinceId(county.getParentAreaId());
                         secondCityArea.setProvinceName(county.getParentAreaName());
+                    }*/
+
+                    //市
+                    secondCityArea.setCityId(county.getAreaId());
+                    secondCityArea.setCityName(county.getAreaName());
+
+                    //省
+                    secondCityArea.setProvinceId(county.getParentAreaId());
+                    secondCityArea.setProvinceName(county.getParentAreaName());
+
+                    //判断是否是直辖市
+                    if (new Long("100000000000").equals(county.getParentAreaId()))
+                    {
+                        secondCityArea.setProvinceName(county.getAreaName());
                     }
+
                     loanCarInfoVO.setSecondCityArea(secondCityArea);
                     loanCarInfoVO.setHasCityName(county.getAreaName());
                 }

@@ -1,7 +1,9 @@
 package com.yunche.loan.service.impl;
 
 import com.yunche.loan.config.cache.TokenCache;
+import com.yunche.loan.config.constant.BaseExceptionEnum;
 import com.yunche.loan.config.exception.BizException;
+import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.BeanPlasticityUtills;
 import com.yunche.loan.domain.entity.InstallGpsDO;
 import com.yunche.loan.domain.entity.LoanCarInfoDO;
@@ -16,6 +18,7 @@ import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.AuxiliaryService;
 import com.yunche.loan.service.LoanQueryService;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.ss.formula.functions.T;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -94,10 +97,25 @@ public class AuxiliaryServiceImpl implements AuxiliaryService {
         return result;
     }
 
+    @Override
+    public ResultBean gpsAvailable(InstallUpdateParam param) {
+        try {
+            install(param,1);
+        } catch (Exception e) {
+            return ResultBean.ofSuccess(false,e.getMessage());
+        }
+        return ResultBean.ofSuccess(true);
+    }
 
+
+    /**
+     *
+     * @param param
+     * @param operation 0-安装 1-可用查询
+     */
     @Override
     @Transactional
-    public void install(InstallUpdateParam param) {
+    public void install(InstallUpdateParam param,Integer operation) {
 
         LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(Long.valueOf(param.getOrder_id()));
         if (loanOrderDO == null) {
@@ -234,10 +252,13 @@ public class AuxiliaryServiceImpl implements AuxiliaryService {
                         throw new BizException(e.getMessage());
                     }
                 }
-                InstallGpsDO T = BeanPlasticityUtills.copy(InstallGpsDO.class, obj);
-                T.setOrder_id(Long.valueOf(param.getOrder_id()));
-                T.setGps_company(param.getGpsCompany());
-                installGpsDOMapper.insertSelective(T);
+                if (operation == 0) {
+                    InstallGpsDO T = BeanPlasticityUtills.copy(InstallGpsDO.class, obj);
+                    T.setOrder_id(Long.valueOf(param.getOrder_id()));
+                    T.setGps_company(param.getGpsCompany());
+                    installGpsDOMapper.insertSelective(T);
+                }
+
             }
         }
     }

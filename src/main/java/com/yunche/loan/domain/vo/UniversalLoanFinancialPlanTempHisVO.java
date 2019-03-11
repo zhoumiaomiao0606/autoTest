@@ -40,4 +40,9 @@ public class UniversalLoanFinancialPlanTempHisVO {
     private String end_time;
     private String status;
     private String financial_bank_staging_ratio;
+
+    /**
+     * 城市id---用于判断是否城市是台州
+     */
+    private Long cityId;
 }

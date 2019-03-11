@@ -11,10 +11,11 @@
         <result column="risk_sharing_addition" property="riskSharingAddition" jdbcType="DECIMAL"/>
         <result column="key_risk_premium" jdbcType="INTEGER" property="keyRiskPremium" />
         <result column="key_risk_premium_confirm" jdbcType="TINYINT" property="keyRiskPremiumConfirm" />
+        <result column="pass_level" jdbcType="TINYINT" property="passLevel" />
     </resultMap>
     <sql id="Base_Column_List">
     order_id, info, gmt_create, gmt_modify, user_name, user_id, risk_sharing_addition,
-    key_risk_premium, key_risk_premium_confirm
+    key_risk_premium, key_risk_premium_confirm, pass_level
   </sql>
     <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
         select
@@ -29,12 +30,12 @@
     <insert id="insert" parameterType="com.yunche.loan.domain.entity.LoanTelephoneVerifyDO">
     insert into loan_telephone_verify (order_id, info, gmt_create,
       gmt_modify, user_name, user_id,
-      risk_sharing_addition, key_risk_premium, key_risk_premium_confirm
-      )
+      risk_sharing_addition, key_risk_premium, key_risk_premium_confirm,
+      pass_level)
     values (#{orderId,jdbcType=BIGINT}, #{info,jdbcType=VARCHAR}, #{gmtCreate,jdbcType=TIMESTAMP},
       #{gmtModify,jdbcType=TIMESTAMP}, #{userName,jdbcType=VARCHAR}, #{userId,jdbcType=BIGINT},
-      #{riskSharingAddition,jdbcType=DECIMAL}, #{keyRiskPremium,jdbcType=INTEGER}, #{keyRiskPremiumConfirm,jdbcType=TINYINT}
-      )
+      #{riskSharingAddition,jdbcType=DECIMAL}, #{keyRiskPremium,jdbcType=INTEGER}, #{keyRiskPremiumConfirm,jdbcType=TINYINT},
+      #{passLevel,jdbcType=TINYINT})
   </insert>
     <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.LoanTelephoneVerifyDO">
         insert into loan_telephone_verify
@@ -66,6 +67,9 @@
             <if test="keyRiskPremiumConfirm != null">
                 key_risk_premium_confirm,
             </if>
+            <if test="passLevel != null">
+                pass_level,
+            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="orderId != null">
@@ -94,6 +98,9 @@
             </if>
             <if test="keyRiskPremiumConfirm != null">
                 #{keyRiskPremiumConfirm,jdbcType=TINYINT},
+            </if>
+            <if test="passLevel != null">
+                #{passLevel,jdbcType=TINYINT},
             </if>
         </trim>
     </insert>
@@ -124,6 +131,9 @@
             <if test="keyRiskPremiumConfirm != null">
                 key_risk_premium_confirm = #{keyRiskPremiumConfirm,jdbcType=TINYINT},
             </if>
+            <if test="passLevel != null">
+                pass_level = #{passLevel,jdbcType=TINYINT},
+            </if>
         </set>
         where order_id = #{orderId,jdbcType=BIGINT}
     </update>
@@ -136,7 +146,8 @@
       user_id = #{userId,jdbcType=BIGINT},
       risk_sharing_addition = #{riskSharingAddition,jdbcType=DECIMAL},
       key_risk_premium = #{keyRiskPremium,jdbcType=INTEGER},
-      key_risk_premium_confirm = #{keyRiskPremiumConfirm,jdbcType=TINYINT}
+      key_risk_premium_confirm = #{keyRiskPremiumConfirm,jdbcType=TINYINT},
+      pass_level = #{passLevel,jdbcType=TINYINT}
     where order_id = #{orderId,jdbcType=BIGINT}
   </update>
 </mapper>

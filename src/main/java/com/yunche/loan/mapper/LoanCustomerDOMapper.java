@@ -111,4 +111,6 @@ public interface LoanCustomerDOMapper {
     long batchUpdateEnable(@Param("idList") List<Long> idList,
                            @Param("enable") Byte enable,
                            @Param("enableType") Byte enableType);
+
+    List<LoanCustomerDO> selectAllcustAndFiles(Long loanCustomerId);
 }

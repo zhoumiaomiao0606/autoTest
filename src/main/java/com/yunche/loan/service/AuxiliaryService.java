@@ -1,5 +1,6 @@
 package com.yunche.loan.service;
 
+import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.param.InstallUpdateParam;
 import com.yunche.loan.domain.vo.GpsJimiInfoVO;
 import com.yunche.loan.domain.vo.GpsVO;
@@ -12,7 +13,7 @@ public interface AuxiliaryService {
 
     public void commit(Long orderId);
 
-    public void install(InstallUpdateParam param);
+    public void install(InstallUpdateParam param,Integer operation);
 
     public List<GpsVO> query(Long orderId);
 
@@ -25,5 +26,7 @@ public interface AuxiliaryService {
     public List<GpsJimiInfoVO> queryOther(String partnerName);
 
     String getGpsAddress(String gpsCode);
+
+    ResultBean gpsAvailable(InstallUpdateParam param);
 }
 

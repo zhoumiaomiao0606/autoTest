@@ -1230,4 +1230,14 @@
         </if>
     </update>
 
+    <resultMap id="withFilesResultMap" type="com.yunche.loan.domain.entity.LoanCustomerDO" extends="BaseResultMap">
+        <collection property="loanFileDOS" javaType="java.util.ArrayList" ofType="com.yunche.loan.domain.entity.LoanFileDO"
+                    column="id" select="com.yunche.loan.mapper.LoanFileDOMapper.selectCreditFilesByCusId"></collection>
+    </resultMap>
+    <select id="selectAllcustAndFiles" resultMap="withFilesResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from loan_customer
+        WHERE principal_cust_id = #{loanCustomerId} and status = 0
+    </select>
 </mapper>

@@ -65,6 +65,7 @@ public class AppLoanCarInfoVO {
 
     private Long second_hand_car_evaluate_id;
     private String distributorName;
+    private String distributorId;
 
     private List<LoanCarInfoVO.BaseArea> ableApplyLicensePlateAreaList = Collections.EMPTY_LIST;
 
