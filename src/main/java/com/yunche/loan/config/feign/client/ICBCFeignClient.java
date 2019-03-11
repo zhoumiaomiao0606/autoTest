@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 //@FeignClient(name = "icbcFeignClient", url = "http://122.225.203.102:9030/", configuration = FeignConfig.class)
 
 //测试
-//@FeignClient(name = "iCBCFeignClient" ,url = "http://122.225.203.102:18080/",configuration = FeignConfig.class)
+//@FeignClient(name = "iCBCFeignClient", url = "http://122.225.203.102:18080/", configuration = FeignConfig.class)
 
 //本地测试
 //@FeignClient(name = "iCBCFeignClient" ,url = "http://127.0.0.1:18080/",configuration = FeignConfig.class)

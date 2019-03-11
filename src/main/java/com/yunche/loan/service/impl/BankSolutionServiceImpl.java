@@ -1382,6 +1382,10 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         param.setCmpdate(DateUtil.getDate()); // 合作机构日期
         param.setCmptime(DateUtil.getDate()); // 合作机构时间
 
+        // 无关参数
+        param.setFileNum("0");
+        param.setCmpseq(GeneratorIDUtil.execute()); // 合作机构交易流水号
+
         ApplyMediaStatusResponse response = icbcFeignClient.applyMediaStatus(param);
         return response;
     }
