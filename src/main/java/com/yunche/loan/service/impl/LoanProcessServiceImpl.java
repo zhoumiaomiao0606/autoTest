@@ -3029,6 +3029,8 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             if (ACTION_PASS.equals(action)) {
                 //设置留备钥匙
                 LoanCarInfoDO loanCarInfoDO = loanCarInfoDOMapper.selectByPrimaryKey(loanOrderDO.getLoanCarInfoId());
+                LoanBaseInfoDO loanBaseInfoDO = loanBaseInfoDOMapper.selectByPrimaryKey(loanOrderDO.getLoanBaseInfoId());
+                variables.put(BANK,loanBaseInfoDO.getBank());
                 variables.put(CAR_KEY, loanCarInfoDO.getCarKey());
                 // 如果为打回
                 if (TASK_PROCESS_REJECT.equals(loanProcessDO.getLoanApply())) {
