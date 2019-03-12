@@ -177,4 +177,6 @@ public class LoanProcessDO implements LoanProcessDO_ {
     private Byte applyInstalment1;
 
     private Byte applyInstalmentReview;
+
+    private Byte overdueInterest;
 }

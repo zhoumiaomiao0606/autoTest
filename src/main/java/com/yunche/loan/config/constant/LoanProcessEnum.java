@@ -95,7 +95,9 @@ public enum LoanProcessEnum {
 
     ROLE_CHANGE("usertask_role_change", "角色变更"),
 
-    USERTASK_CONTRACT_OVERDUE("usertask_contract_overdue", "合同超期"),
+    CONTRACT_OVERDUE("usertask_contract_overdue", "合同超期"),
+
+    OVERDUE_INTEREST("usertask_overdue_interest", "超期罚息"),
     /////////////////////////////////////////// ↑↑↑↑↑--流程外的节点--↑↑↑↑↑ //////////////////////////////////////////////
 
 

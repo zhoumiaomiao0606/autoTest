@@ -54,6 +54,7 @@
         <result column="material_print_review1" jdbcType="TINYINT" property="materialPrintReview1" />
         <result column="apply_instalment1" jdbcType="TINYINT" property="applyInstalment1" />
         <result column="apply_instalment_review" jdbcType="TINYINT" property="applyInstalmentReview" />
+        <result column="overdue_interest" jdbcType="TINYINT" property="overdueInterest" />
     </resultMap>
     <sql id="Base_Column_List" >
     order_id, credit_apply, loan_info_record, bank_credit_record, social_credit_record,
@@ -67,7 +68,7 @@
     data_flow_mortgage_p2c, data_flow_mortgage_p2c_review, data_flow_mortgage_c2b, data_flow_mortgage_c2b_review,
     data_flow_register_p2c, data_flow_register_p2c_review, data_flow_register_c2b, data_flow_register_c2b_review,
     under_line_video_review, material_print_review1,
-    apply_instalment1, apply_instalment_review
+    apply_instalment1, apply_instalment_review, overdue_interest
   </sql>
     <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
         select
@@ -101,7 +102,7 @@
       data_flow_register_p2c_review, data_flow_register_c2b,
       data_flow_register_c2b_review, under_line_video_review,
       material_print_review1, apply_instalment1,
-      apply_instalment_review)
+      apply_instalment_review, overdue_interest)
     values (#{orderId,jdbcType=BIGINT}, #{creditApply,jdbcType=TINYINT}, #{loanInfoRecord,jdbcType=TINYINT},
       #{bankCreditRecord,jdbcType=TINYINT}, #{socialCreditRecord,jdbcType=TINYINT}, #{loanApply,jdbcType=TINYINT},
       #{visitVerify,jdbcType=TINYINT}, #{bankOpenCard,jdbcType=TINYINT}, #{telephoneVerify,jdbcType=TINYINT},
@@ -123,7 +124,7 @@
       #{dataFlowRegisterP2cReview,jdbcType=TINYINT}, #{dataFlowRegisterC2b,jdbcType=TINYINT},
       #{dataFlowRegisterC2bReview,jdbcType=TINYINT}, #{underLineVideoReview,jdbcType=TINYINT},
       #{materialPrintReview1,jdbcType=TINYINT}, #{applyInstalment1,jdbcType=TINYINT},
-      #{applyInstalmentReview,jdbcType=TINYINT})
+      #{applyInstalmentReview,jdbcType=TINYINT}, #{overdueInterest,jdbcType=TINYINT})
   </insert>
     <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.LoanProcessDO">
         insert into loan_process
@@ -287,6 +288,9 @@
             <if test="applyInstalmentReview != null">
                 apply_instalment_review,
             </if>
+            <if test="overdueInterest != null">
+                overdue_interest,
+            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="orderId != null">
@@ -447,6 +451,9 @@
             </if>
             <if test="applyInstalmentReview != null">
                 #{applyInstalmentReview,jdbcType=TINYINT},
+            </if>
+            <if test="overdueInterest != null">
+                #{overdueInterest,jdbcType=TINYINT},
             </if>
         </trim>
     </insert>
@@ -609,6 +616,9 @@
             <if test="applyInstalmentReview != null">
                 apply_instalment_review = #{applyInstalmentReview,jdbcType=TINYINT},
             </if>
+            <if test="overdueInterest != null">
+                overdue_interest = #{overdueInterest,jdbcType=TINYINT},
+            </if>
         </set>
         where order_id = #{orderId,jdbcType=BIGINT}
     </update>
@@ -665,7 +675,8 @@
       under_line_video_review = #{underLineVideoReview,jdbcType=TINYINT},
       material_print_review1 = #{materialPrintReview1,jdbcType=TINYINT},
       apply_instalment1 = #{applyInstalment1,jdbcType=TINYINT},
-      apply_instalment_review = #{applyInstalmentReview,jdbcType=TINYINT}
+      apply_instalment_review = #{applyInstalmentReview,jdbcType=TINYINT},
+      overdue_interest = #{overdueInterest,jdbcType=TINYINT}
     where order_id = #{orderId,jdbcType=BIGINT}
   </update>
 </mapper>

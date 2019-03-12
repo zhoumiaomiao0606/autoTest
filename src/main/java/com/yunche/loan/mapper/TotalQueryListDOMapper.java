@@ -142,4 +142,6 @@ public interface TotalQueryListDOMapper {
 
     DataManagementDetailVO selectDataManagementDetail(@Param("orderId")String orderId);
 
+    //超期罚息
+    List<TaskListVO> selectOverdueInterest(TaskListQuery taskListQuery);
 }

@@ -174,6 +174,11 @@ public class TaskListQuery {
     @JsonProperty(value = "cTALIToTime")
     private String cTALIToTime;
 
+    private String remitTimeStart;
+
+    private String remitTimeEnd;
+
+
     /**
      * 区域合伙人ID列表
      */
