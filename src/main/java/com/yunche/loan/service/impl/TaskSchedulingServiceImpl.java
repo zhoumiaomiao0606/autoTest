@@ -872,7 +872,7 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
             }
             taskListQuery.setBankInterfaceSerialOrderidList(bankInterfaceSerialOrderidList);
 
-        } else if (LoanProcessEnum.APPLY_INSTALMENT.getCode().equals(taskDefinitionKey)) {
+        } else if (LoanProcessEnum.APPLY_INSTALMENT.getCode().equals(taskDefinitionKey) || LoanProcessEnum.APPLY_INSTALMENT1.getCode().equals(taskDefinitionKey)) {
 
             if ("exception".equals(taskListQuery.getSerialStatus())) {
                 bankInterfaceSerialOrderidList = totalQueryListDOMapper.selectApplyInstalmentException(taskListQuery.getTransCode());

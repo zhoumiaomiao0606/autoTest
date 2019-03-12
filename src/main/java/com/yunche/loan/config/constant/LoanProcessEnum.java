@@ -44,7 +44,7 @@ public enum LoanProcessEnum {
     APPLY_INSTALMENT("usertask_apply_instalment", "申请分期"),
 
     MATERIAL_PRINT_REVIEW1("usertask_material_print_review1", "合同套打"),
-    APPLY_INSTALMENT1("usertask_apply_instalment1", "申请分期"),
+    APPLY_INSTALMENT1("usertask_apply_instalment1", "合伙人分期申请"),
     APPLY_INSTALMENT_REVIEW("usertask_apply_instalment_review", "申请分期审核"),
 
     BUSINESS_PAY("usertask_business_pay", "业务付款申请"),

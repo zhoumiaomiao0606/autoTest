@@ -2093,13 +2093,36 @@
         <if test="loanBank != null">
             AND base.bank = #{loanBank}
         </if>
-        <if test="taskStatus !=null" >
-            AND
-            case when #{taskStatus} = 0 then process.apply_instalment_review in (1,2,3)
-            when #{taskStatus} = 2 then process.apply_instalment_review = 2 and process.order_status = 1
-            when #{taskStatus} = 3 then process.apply_instalment_review = 3 and process.order_status = 1
-            else 1=1
-            end
+        <if test = "taskStatus != null">
+            <choose>
+                <when test="taskStatus == 0">
+                    AND process.apply_instalment_review != 0
+                </when>
+                <otherwise>
+                    and process.order_status = 1 and process.apply_instalment_review = 2
+                    <if test="serialStatus != null">
+                        <choose>
+                            <when test="serialStatus == 'except'">
+                                AND 0 =IF( ( SELECT count( 0 ) FROM bank_interface_serial WHERE trans_code = 'applydivigeneral'
+                                AND order_id = loan.id ) > 0, 1, 0 )
+                            </when>
+                        </choose>
+                        <choose>
+                            <when test="serialStatus == 'exception'  or serialStatus == 'process'  or serialStatus == 'back'">
+                                <if test="bankInterfaceSerialOrderidList != null and bankInterfaceSerialOrderidList.size() > 0">
+                                    AND loan.id in
+                                    <foreach item="item" index="index" collection="bankInterfaceSerialOrderidList" open="(" separator="," close=")">
+                                        #{item}
+                                    </foreach>
+                                </if>
+                                <if test="bankInterfaceSerialOrderidList == null or bankInterfaceSerialOrderidList.size() == 0">
+                                    AND loan.id = 1
+                                </if>
+                            </when>
+                        </choose>
+                    </if>
+                </otherwise>
+            </choose>
         </if>
 
     </select>
