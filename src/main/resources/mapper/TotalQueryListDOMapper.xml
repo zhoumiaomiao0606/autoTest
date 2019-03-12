@@ -2010,9 +2010,9 @@
         </if>
         <if test="taskStatus !=null" >
             AND
-            case when #{taskStatus} = 0 then loan_process.apply_instalment1 in (1,2,3)
-            when #{taskStatus} = 2 then loan_process.apply_instalment1 = 2 and loan_process.order_status = 1
-            when #{taskStatus} = 3 then loan_process.apply_instalment1 = 3 and loan_process.order_status = 1
+            case when #{taskStatus} = 0 then process.apply_instalment1 in (1,2,3)
+            when #{taskStatus} = 2 then process.apply_instalment1 = 2 and process.order_status = 1
+            when #{taskStatus} = 3 then process.apply_instalment1 = 3 and process.order_status = 1
             else 1=1
             end
         </if>
@@ -2095,9 +2095,9 @@
         </if>
         <if test="taskStatus !=null" >
             AND
-            case when #{taskStatus} = 0 then loan_process.apply_instalment_review in (1,2,3)
-            when #{taskStatus} = 2 then loan_process.apply_instalment_review = 2 and loan_process.order_status = 1
-            when #{taskStatus} = 3 then loan_process.apply_instalment_review = 3 and loan_process.order_status = 1
+            case when #{taskStatus} = 0 then process.apply_instalment_review in (1,2,3)
+            when #{taskStatus} = 2 then process.apply_instalment_review = 2 and process.order_status = 1
+            when #{taskStatus} = 3 then process.apply_instalment_review = 3 and process.order_status = 1
             else 1=1
             end
         </if>
