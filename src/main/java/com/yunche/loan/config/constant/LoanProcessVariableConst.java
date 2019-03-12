@@ -32,6 +32,11 @@ public class LoanProcessVariableConst {
      * 是否留备钥匙
      */
     public static final String CAR_KEY = "car_key";
+
+    /**
+     * 是否杭州城站银行
+     */
+    public static final String BANK = "bank";
     /**
      * 电审进度：审核角色进程
      */

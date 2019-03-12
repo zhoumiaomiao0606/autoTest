@@ -931,10 +931,16 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
             list = totalQueryListDOMapper.queryMaterialManageList(taskListQuery);
         } else if (LoanProcessEnum.MATERIAL_PRINT_REVIEW.getCode().equals(taskDefinitionKey)) {
             list = totalQueryListDOMapper.queryMaterialPrintList(taskListQuery);
-        } else if (LoanProcessEnum.APPLY_LICENSE_PLATE_DEPOSIT_INFO.getCode().equals(taskDefinitionKey)) {
+        } else if (LoanProcessEnum.MATERIAL_PRINT_REVIEW1.getCode().equals(taskDefinitionKey)) {
+            list = totalQueryListDOMapper.queryMaterialPrintList1(taskListQuery);
+        }else if (LoanProcessEnum.APPLY_LICENSE_PLATE_DEPOSIT_INFO.getCode().equals(taskDefinitionKey)) {
             list = totalQueryListDOMapper.queryApplyLicensePlateDepositList(taskListQuery);
         } else if (LoanProcessEnum.APPLY_INSTALMENT.getCode().equals(taskDefinitionKey)) {
             list = totalQueryListDOMapper.selectApplyInstalment(taskListQuery);
+        } else if (LoanProcessEnum.APPLY_INSTALMENT1.getCode().equals(taskDefinitionKey)) {
+            list = totalQueryListDOMapper.selectApplyInstalment1(taskListQuery);
+        } else if (LoanProcessEnum.APPLY_INSTALMENT_REVIEW.getCode().equals(taskDefinitionKey)) {
+            list = totalQueryListDOMapper.selectApplyInstalmentReview(taskListQuery);
         } else if (LoanProcessEnum.BANK_OPEN_CARD.getCode().equals(taskDefinitionKey)) {
             list = totalQueryListDOMapper.selectBankOpenCardList(taskListQuery);
         } else if (LoanProcessEnum.BUSINESS_PAY.getCode().equals(taskDefinitionKey)) {
