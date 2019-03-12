@@ -14,6 +14,7 @@ import com.yunche.loan.mapper.LoanQueryDOMapper;
 import com.yunche.loan.mapper.LoanRefundApplyDOMapper;
 import com.yunche.loan.mapper.TaskSchedulingDOMapper;
 import com.yunche.loan.service.EmployeeService;
+import com.yunche.loan.service.LoanProcessApprovalCommonService;
 import com.yunche.loan.service.LoanQueryService;
 import com.yunche.loan.service.LoanRefundApplyService;
 import org.apache.commons.lang3.StringUtils;
@@ -30,6 +31,7 @@ import static com.yunche.loan.config.constant.ApplyOrderStatusConst.APPLY_ORDER_
 import static com.yunche.loan.config.constant.ApplyOrderStatusConst.APPLY_ORDER_PASS;
 import static com.yunche.loan.config.constant.LoanOrderProcessConst.TASK_PROCESS_DONE;
 import static com.yunche.loan.config.constant.LoanOrderProcessConst.TASK_PROCESS_REFUND;
+import static com.yunche.loan.config.constant.ProcessApprovalConst.ACTION_PASS;
 
 @Service
 public class LoanRefundApplyServiceImpl implements LoanRefundApplyService {
@@ -52,6 +54,9 @@ public class LoanRefundApplyServiceImpl implements LoanRefundApplyService {
     @Autowired
     private LoanQueryService loanQueryService;
 
+    @Autowired
+    private LoanProcessApprovalCommonService loanProcessApprovalCommonService;
+
 
     @Override
     public RecombinationVO detail(Long orderId, Long refundId) {
@@ -72,12 +77,20 @@ public class LoanRefundApplyServiceImpl implements LoanRefundApplyService {
 
     @Override
     @Transactional
-    public ResultBean<Long> update(LoanRefundApplyParam param) {
+    public ResultBean<Long> update(LoanRefundApplyParam param)
+    {
 
         // insert
         if (null == param.getRefund_id()) {
 
             checkPreCondition(Long.valueOf(param.getOrder_id()));
+
+            //如果为退款申请提交--理由为退单时，判断合伙人分期申请是否已提交，如果已经提交了，则不允许发起退款申请
+
+            // 节点实时状态
+            LoanProcessDO loanProcessDO = loanProcessApprovalCommonService.getLoanProcess(Long.valueOf(param.getOrder_id()));
+
+            Preconditions.checkArgument(ACTION_PASS != loanProcessDO.getApplyInstalment(), "合伙人分期申请已提交,不允许发起退款申请!");
 
             LoanRefundApplyDO DO = BeanPlasticityUtills.copy(LoanRefundApplyDO.class, param);
             EmployeeDO employeeDO = SessionUtils.getLoginUser();

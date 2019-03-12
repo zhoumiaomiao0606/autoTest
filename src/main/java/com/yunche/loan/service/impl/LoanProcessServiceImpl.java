@@ -1290,11 +1290,16 @@ public class LoanProcessServiceImpl implements LoanProcessService {
     private void checkPreCondition(String taskDefinitionKey, Byte action, LoanOrderDO loanOrderDO, LoanProcessDO loanProcessDO) {
         //如果是退单且退单理由为退款不做and节点为合同归档===正常走流程
         LoanRefundApplyDO loanRefundApplyDO = loanRefundApplyDOMapper.lastByOrderId(loanOrderDO.getId());
+
         Preconditions.checkArgument(ORDER_STATUS_DOING.equals(loanProcessDO.getOrderStatus()) || (ORDER_STATUS_CANCEL.equals(loanProcessDO.getOrderStatus()) && MATERIAL_MANAGE.getCode().equals(taskDefinitionKey) && loanRefundApplyDO != null && REFUND_REASON_2.equals(loanRefundApplyDO.getRefund_reason())), "当前订单" + getOrderStatusText(loanProcessDO));
+
         if ((BUSINESS_PAY.getCode().equals(taskDefinitionKey)) && ACTION_PASS.equals(action)) {
             LoanBaseInfoDO baseInfoDO = loanBaseInfoDOMapper.selectByPrimaryKey(loanOrderDO.getLoanBaseInfoId());
             if (BANK_NAME_ICBC_Harbin_GuXiang_Branch.equals(baseInfoDO.getBank())) {
                 Preconditions.checkArgument(ACTION_PASS == loanProcessDO.getVideoReview(), "视频审核尚未完成，请稍后重试!");
+            }
+            if (BANK_NAME_ICBC_HangZhou_City_Station_Branch.equals(baseInfoDO.getBank())) {
+                Preconditions.checkArgument(ACTION_PASS == loanProcessDO.getApplyInstalment(), "合伙人分期申请未提交，请提交后再推送!");
             }
         }
         // 【征信申请】时，若身份证有效期<=（today+7），不允许提交，提示“身份证已过期，不允许申请贷款”

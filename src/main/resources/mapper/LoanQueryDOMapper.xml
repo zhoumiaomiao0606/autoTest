@@ -332,7 +332,7 @@
         left join loan_base_info b on b.id = o.loan_base_info_id
         where
         (
-        (p.telephone_verify = 1 and p.loan_review != 1)
+        (p.telephone_verify = 1 and p.loan_review != 1 and p.apply_instalment != 1)
         or
         p.remit_review = 21
         )
