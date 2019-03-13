@@ -1070,6 +1070,10 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
             count = PageHelper.count(() -> {
                 totalQueryListDOMapper.selectApplyInstalment(taskListQuery);
             });
+        } else if (LoanProcessEnum.APPLY_INSTALMENT_REVIEW.getCode().equals(taskDefinitionKey)) {
+            count = PageHelper.count(() -> {
+                totalQueryListDOMapper.selectApplyInstalmentReview(taskListQuery);
+            });
         } else if (LoanProcessEnum.BANK_OPEN_CARD.getCode().equals(taskDefinitionKey)) {
             count = PageHelper.count(() -> {
                 totalQueryListDOMapper.selectBankOpenCardList(taskListQuery);

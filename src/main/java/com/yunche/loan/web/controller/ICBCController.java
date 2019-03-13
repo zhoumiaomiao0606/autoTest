@@ -10,12 +10,14 @@ import com.yunche.loan.config.feign.client.MultimediauploadClient;
 import com.yunche.loan.config.feign.request.ICBCApiRequest;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.GeneratorIDUtil;
+import com.yunche.loan.domain.entity.LoanProcessDO;
 import com.yunche.loan.domain.entity.MaterialDownHisDO;
 import com.yunche.loan.domain.param.CommonBusinessApplyParam;
 import com.yunche.loan.domain.param.CreditAutomaticCommitParam;
 import com.yunche.loan.domain.param.ICBCApiCallbackParam;
 import com.yunche.loan.domain.param.MultimediaUploadParam;
 import com.yunche.loan.mapper.BankInterfaceSerialDOMapper;
+import com.yunche.loan.mapper.LoanProcessDOMapper;
 import com.yunche.loan.mapper.MaterialDownHisDOMapper;
 import com.yunche.loan.service.BankSolutionProcessService;
 import com.yunche.loan.service.BankSolutionService;
@@ -30,6 +32,8 @@ import javax.validation.Valid;
 import java.io.IOException;
 import java.net.URLDecoder;
 import java.util.Date;
+
+import static com.yunche.loan.config.constant.ProcessApprovalConst.ACTION_PASS;
 
 @CrossOrigin
 @RestController
@@ -59,6 +63,9 @@ public class ICBCController {
     @Autowired
     private MaterialDownHisDOMapper materialDownHisDOMapper;
 
+    @Autowired
+    private LoanProcessDOMapper loanProcessDOMapper;
+
     //请求接口
     @PostMapping (value = "/creditAutomaticCommit", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean creditAutomaticCommit(@RequestBody @Valid @Validated CreditAutomaticCommitParam param) {
@@ -75,6 +82,23 @@ public class ICBCController {
     //请求接口
     @PostMapping (value = "/multimediaupload", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultBean multimediaUpload(@RequestBody @Valid @Validated MultimediaUploadParam param) {
+        logger.info(param.getOrderId()+":视频推送开始");
+//        bankSolutionService.multimediaUpload(Long.parseLong(param.getOrderId()));
+        multimediauploadClient.multimediaUpload(param);
+        return  ResultBean.ofSuccess(null);
+    }
+
+    //请求接口
+    @PostMapping (value = "/multimediaupload1", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResultBean multimediaUpload1(@RequestBody @Valid @Validated MultimediaUploadParam param)
+    {
+        //判断视频审核是否提交
+        LoanProcessDO loanProcessDO = loanProcessDOMapper.selectByPrimaryKey(Long.parseLong(param.getOrderId()));
+
+        if (!ACTION_PASS.equals(loanProcessDO.getVideoReview()))
+        {
+            return  ResultBean.ofError("视频未审核，请审核后再推送");
+        }
         logger.info(param.getOrderId()+":视频推送开始");
 //        bankSolutionService.multimediaUpload(Long.parseLong(param.getOrderId()));
         multimediauploadClient.multimediaUpload(param);
