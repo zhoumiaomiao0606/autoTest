@@ -4396,13 +4396,11 @@
     <select id="selectOverdueInterest" resultType="com.yunche.loan.domain.vo.TaskListVO" parameterType="com.yunche.loan.domain.query.TaskListQuery">
 
         SELECT
-        t.*,
-        floor(
-        ( UNIX_TIMESTAMP( DATE_FORMAT( now( ), '%Y-%m-%d' )) - UNIX_TIMESTAMP( DATE_FORMAT( t.remitDate, '%Y-%m-%d' ) ) ) / ( 24 * 60 * 60 )
-        )  AS overDueDays
-        FROM
-        (
-        SELECT
+
+        calculateOverDays(1,b.bank,node.usertask_material_review_create_time,node.usertask_remit_review_create_time) as contractOverDays,
+        calculateOverDays(2,b.bank,node.usertask_vehicle_information_create_time,node.usertask_remit_review_create_time) as vehicleInfoOverDays,
+        calculateOverInterest(b.bank,remit_details.remit_amount,calculateOverDays(1,b.bank,node.usertask_material_review_create_time,node.usertask_remit_review_create_time),calculateOverDays(2,b.bank,node.usertask_vehicle_information_create_time,node.usertask_remit_review_create_time),calculateMaterialOveDays(node.usertask_material_review_create_time,t.sTime,node.usertask_remit_review_create_time)) as overInterest,
+
         main.id AS orderId,
         loan_customer.`name` AS customerName,
         loan_customer.id_card AS idCard,
@@ -4411,11 +4409,7 @@
         f.loan_amount AS loanAmount,
         f.bank_period_principal AS bankPeriodPrincipal,
         f.sign_rate AS signRate,
-        remit_details.remit_amount AS remitAmount,
-        ( SELECT create_time FROM
-        loan_process_log
-        WHERE main.id = loan_process_log.order_id AND loan_process_log.task_definition_key = 'usertask_remit_review' and loan_process_log.action =1
-        ORDER BY id DESC LIMIT 1 ) AS remitDate
+        remit_details.remit_amount AS remitAmount
 
         FROM
         loan_order main
@@ -4426,6 +4420,8 @@
         LEFT JOIN partner ON b.partner_id = partner.id
         LEFT JOIN remit_details ON main.remit_details_id = remit_details.id
         LEFT JOIN loan_financial_plan f on main.loan_financial_plan_id = f.id
+        LEFT JOIN current_node_manager node ON node.order_id = main.id
+        LEFT JOIN (				SELECT order_id,MIN(start_time) as sTime FROM loan_info_supplement  GROUP BY order_id ) t ON t.order_id = main.id
         WHERE loan_process.remit_review = 1 AND loan_process.data_flow_contract_p2c_review !=1
         <if test="taskStatus !=null" >
             AND
@@ -4478,14 +4474,12 @@
             </foreach>
         </if>
         end
-        ) t
-        <where>
             <if test="remitTimeStart != null and remitTimeStart != '' and remitTimeEnd != null and remitTimeEnd != ''">
-                t.remitDate between #{remitTimeStart} and #{remitTimeEnd}
+             and   node.usertask_remit_review_create_time between #{remitTimeStart} and #{remitTimeEnd}
             </if>
-        </where>
-        HAVING overDueDays &gt;=5
-        ORDER BY t.remitdate ASC
+
+        HAVING contractOverDays &gt;=5
+        ORDER BY node.usertask_remit_review_create_time ASC
 
     </select>
 </mapper>
