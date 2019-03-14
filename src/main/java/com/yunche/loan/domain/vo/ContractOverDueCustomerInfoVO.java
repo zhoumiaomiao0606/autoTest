@@ -33,4 +33,19 @@ public class ContractOverDueCustomerInfoVO
 
     //超期天数
     private String overDueDays;
+
+    private String contractOverDays;
+
+    private String vehicleInfoOverDays;
+
+    private String ovedueInterest;
+
+    private String contractOvedueInterest;
+
+    private String vechileOvedueInterest;
+
+    private String materialOveInterest;
+
+
+
 }

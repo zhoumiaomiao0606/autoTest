@@ -2,6 +2,7 @@ package com.yunche.loan.web.controller;
 
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.entity.OrderHandleResultDO;
+import com.yunche.loan.domain.entity.OverdueInterestDO;
 import com.yunche.loan.domain.param.ContractOverDueParam;
 import com.yunche.loan.service.ContractOverDueService;
 import com.yunche.loan.service.TallyOrderResultService;
@@ -46,6 +47,26 @@ public class ContractOverDueController
     public ResultBean detail(@RequestParam Long orderId)
     {
         return ResultBean.ofSuccess(contractOverDueService.detail(orderId));
+    }
+
+    /**
+     * 详情页
+     */
+    @GetMapping(value = "/interest")
+    public ResultBean interestDetail(@RequestParam Long orderId)
+    {
+        return ResultBean.ofSuccess(contractOverDueService.interestDetail(orderId));
+    }
+
+    /**
+     * 详情页
+     */
+    @GetMapping(value = "/interestUpdate")
+    public ResultBean update(@RequestBody @Validated OverdueInterestDO overdueInterestDO)
+    {
+        contractOverDueService.update(overdueInterestDO);
+
+        return ResultBean.ofSuccess(null,"保存成功");
     }
 
 }

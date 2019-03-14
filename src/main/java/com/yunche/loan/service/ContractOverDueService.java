@@ -1,6 +1,7 @@
 package com.yunche.loan.service;
 
 import com.yunche.loan.config.result.ResultBean;
+import com.yunche.loan.domain.entity.OverdueInterestDO;
 import com.yunche.loan.domain.param.ContractOverDueParam;
 import com.yunche.loan.domain.vo.ContractOverDueDetailVO;
 
@@ -11,4 +12,8 @@ public interface ContractOverDueService
     String exportContractOverDue(ContractOverDueParam param);
 
     ContractOverDueDetailVO detail(Long orderId);
+
+    ContractOverDueDetailVO interestDetail(Long orderId);
+
+    ResultBean<Void> update(OverdueInterestDO overdueInterestDO);
 }

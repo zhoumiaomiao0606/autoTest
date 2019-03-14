@@ -2808,14 +2808,13 @@
     <!--贷后通用客户主要信息info-->
     <select id="selectContractOverDueCustomerInfoInfo" resultType="com.yunche.loan.domain.vo.ContractOverDueCustomerInfoVO"
             parameterType="java.lang.Long">
-SELECT
-           t.*,
-           floor(
-                   ( UNIX_TIMESTAMP( DATE_FORMAT( now( ), '%Y-%m-%d' )) - UNIX_TIMESTAMP( DATE_FORMAT( t.remitDate, '%Y-%m-%d' ) ) ) / ( 24 * 60 * 60 )
-                   )  AS overDueDays
-           FROM
-           (
         select
+        calculateOverDays(1,b.bank,node.usertask_material_review_create_time,node.usertask_remit_review_create_time) as contractOverDays,
+        calculateOverDays(2,b.bank,node.usertask_vehicle_information_create_time,node.usertask_remit_review_create_time) as vehicleInfoOverDays,
+        calculateOverInterest(null,b.bank,remit_details.remit_amount,calculateOverDays(1,b.bank,node.usertask_material_review_create_time,node.usertask_remit_review_create_time),calculateOverDays(2,b.bank,node.usertask_vehicle_information_create_time,node.usertask_remit_review_create_time),calculateMaterialOveDays(node.usertask_material_review_create_time,t.sTime,node.usertask_remit_review_create_time)) as ovedueInterest,
+                calculateOverInterest(1,b.bank,remit_details.remit_amount,calculateOverDays(1,b.bank,node.usertask_material_review_create_time,node.usertask_remit_review_create_time),calculateOverDays(2,b.bank,node.usertask_vehicle_information_create_time,node.usertask_remit_review_create_time),calculateMaterialOveDays(node.usertask_material_review_create_time,t.sTime,node.usertask_remit_review_create_time)) as contractOvedueInterest,
+        calculateOverInterest(2,b.bank,remit_details.remit_amount,calculateOverDays(1,b.bank,node.usertask_material_review_create_time,node.usertask_remit_review_create_time),calculateOverDays(2,b.bank,node.usertask_vehicle_information_create_time,node.usertask_remit_review_create_time),calculateMaterialOveDays(node.usertask_material_review_create_time,t.sTime,node.usertask_remit_review_create_time)) as vechileOvedueInterest,
+        calculateOverInterest(3,b.bank,remit_details.remit_amount,calculateOverDays(1,b.bank,node.usertask_material_review_create_time,node.usertask_remit_review_create_time),calculateOverDays(2,b.bank,node.usertask_vehicle_information_create_time,node.usertask_remit_review_create_time),calculateMaterialOveDays(node.usertask_material_review_create_time,t.sTime,node.usertask_remit_review_create_time)) as materialOveInterest,
         main_order.id                                                                           AS orderId,
         customer.id_card                                                                        AS customerIdCard,
         customer.name                                                                           AS customerName,
@@ -2827,10 +2826,6 @@ SELECT
         salesman.name                                                                           AS salesmanName,
         f.loan_amount                                                                           AS loanAmount,
         remit_details.remit_amount                                                              AS remitAmount,
-        ( SELECT create_time FROM
-           loan_process_log
-           WHERE main_order.id = loan_process_log.order_id AND loan_process_log.task_definition_key = 'usertask_remit_review' and loan_process_log.action =1
-           ORDER BY id DESC LIMIT 1 ) AS remitDate,
 
         loan.bank                                                                               AS bank
 
@@ -2842,7 +2837,9 @@ SELECT
         left join partner partner on loan.partner_id = partner.id
         LEFT JOIN loan_financial_plan f on main_order.loan_financial_plan_id = f.id
         LEFT JOIN remit_details ON main_order.remit_details_id = remit_details.id
-        ) t
+        LEFT JOIN current_node_manager node ON node.order_id = main_order.id
+        LEFT JOIN (				SELECT order_id,MIN(start_time) as sTime FROM loan_info_supplement  GROUP BY order_id ) t ON t.order_id = main_order.id
+
 
 
     </select>

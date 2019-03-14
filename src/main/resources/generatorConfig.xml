@@ -381,7 +381,7 @@
 
 -->
 
-        <table tableName="loan_process" domainObjectName="LoanProcessDO"
+        <table tableName="overdue_interest" domainObjectName="OverdueInterestDO"
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
         </table>

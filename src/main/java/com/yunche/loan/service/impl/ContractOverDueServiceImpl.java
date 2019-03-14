@@ -10,6 +10,7 @@ import com.yunche.loan.config.util.POIUtil;
 import com.yunche.loan.config.util.SessionUtils;
 import com.yunche.loan.domain.entity.BaseAreaDO;
 import com.yunche.loan.domain.entity.LoanBaseInfoDO;
+import com.yunche.loan.domain.entity.OverdueInterestDO;
 import com.yunche.loan.domain.param.ContractOverDueParam;
 import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.mapper.*;
@@ -56,6 +57,9 @@ public class ContractOverDueServiceImpl implements ContractOverDueService
 
     @Autowired
     private EmployeeRelaUserGroupDOMapper employeeRelaUserGroupDOMapper;
+
+    @Autowired
+    private OverdueInterestDOMapper overdueInterestDOMapper;
 
 
     @Autowired
@@ -156,7 +160,79 @@ public class ContractOverDueServiceImpl implements ContractOverDueService
         return contractOverDueDetailVO;
     }
 
+    @Override
+    public ContractOverDueDetailVO interestDetail(Long orderId)
+    {
+        Preconditions.checkNotNull(orderId, "业务单号不能为空");
+        ContractOverDueDetailVO contractOverDueDetailVO = new ContractOverDueDetailVO();
 
+        //客户主要信息
+        ContractOverDueCustomerInfoVO contractOverDueCustomerInfoVO = loanQueryDOMapper.selectContractOverDueCustomerInfoInfo(orderId);
+
+        //金融方案
+        FinancialSchemeVO financialSchemeVO = loanQueryDOMapper.selectFinancialScheme(orderId);
+
+        //车辆信息
+        /*VehicleInfoVO vehicleInfoVO = loanQueryDOMapper.selectVehicleInfo(orderId);
+        LoanBaseInfoDO loanBaseInfoDO = loanBaseInfoDOMapper.getTotalInfoByOrderId(orderId);
+        String tmpApplyLicensePlateArea = null;
+        if (loanBaseInfoDO.getAreaId()!=null) {
+            BaseAreaDO baseAreaDO = baseAreaDOMapper.selectByPrimaryKey(loanBaseInfoDO.getAreaId(), VALID_STATUS);
+            //（个性化）如果上牌地是区县一级，则返回形式为 省+区
+            if("3".equals(String.valueOf(baseAreaDO.getLevel()))){
+                Long parentAreaId = baseAreaDO.getParentAreaId();
+                BaseAreaDO cityDO = baseAreaDOMapper.selectByPrimaryKey(parentAreaId, null);
+                baseAreaDO.setParentAreaId(cityDO.getParentAreaId());
+                baseAreaDO.setParentAreaName(cityDO.getParentAreaName());
+            }
+            if (baseAreaDO != null) {
+                if (baseAreaDO.getParentAreaName() != null) {
+                    tmpApplyLicensePlateArea = baseAreaDO.getParentAreaName() + baseAreaDO.getAreaName();
+                } else {
+                    tmpApplyLicensePlateArea = baseAreaDO.getAreaName();
+                }
+            }
+        }
+
+        vehicleInfoVO.setApply_license_plate_area(tmpApplyLicensePlateArea);
+
+        //客户详细信息
+        List<UniversalCustomerVO> customers = loanQueryDOMapper.selectUniversalCustomer(orderId);
+        for (UniversalCustomerVO universalCustomerVO : customers) {
+            List<UniversalCustomerFileVO> files1 = loanQueryService.selectUniversalCustomerFile(Long.valueOf(universalCustomerVO.getCustomer_id()));
+            universalCustomerVO.setFiles(files1);
+        }*/
+
+        OverdueInterestDO overdueInterestDO = overdueInterestDOMapper.selectByPrimaryKey(orderId);
+
+        contractOverDueDetailVO.setContractOverDueCustomerInfoVO(contractOverDueCustomerInfoVO);
+        contractOverDueDetailVO.setFinancialSchemeVO(financialSchemeVO);
+        contractOverDueDetailVO.setOverdueInterestDO(overdueInterestDO);
+        /*contractOverDueDetailVO.setVehicleInfoVO(vehicleInfoVO);
+        contractOverDueDetailVO.setCustomers(customers);*/
+
+
+        return contractOverDueDetailVO;
+    }
+
+    @Override
+    public ResultBean<Void> update(OverdueInterestDO overdueInterestDO) {
+        Preconditions.checkNotNull(overdueInterestDO.getOrderId(), "订单号不能为空");
+
+        OverdueInterestDO  existDO = overdueInterestDOMapper.selectByPrimaryKey(overdueInterestDO.getOrderId());
+
+        if (null == existDO) {
+            // create
+            int count = overdueInterestDOMapper.insertSelective(overdueInterestDO);
+            Preconditions.checkArgument(count > 0, "插入失败");
+        } else {
+            // update
+            int count = overdueInterestDOMapper.updateByPrimaryKeySelective(overdueInterestDO);
+            Preconditions.checkArgument(count > 0, "编辑失败");
+        }
+
+        return ResultBean.ofSuccess(null, "保存成功");
+    }
 
 
     /**

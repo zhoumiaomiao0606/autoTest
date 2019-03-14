@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunche.loan.mapper.OverdueInterestDOMapper">
+  <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.OverdueInterestDO">
+    <id column="order_id" jdbcType="BIGINT" property="orderId" />
+    <result column="contract_ovedue_interest" jdbcType="DECIMAL" property="contractOvedueInterest" />
+    <result column="vehicle_ovedue_interest" jdbcType="VARCHAR" property="vehicleOvedueInterest" />
+    <result column="receive_company" jdbcType="VARCHAR" property="receiveCompany" />
+    <result column="receive_account" jdbcType="VARCHAR" property="receiveAccount" />
+    <result column="info" jdbcType="VARCHAR" property="info" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    order_id, contract_ovedue_interest, vehicle_ovedue_interest, receive_company, receive_account, 
+    info
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from overdue_interest
+    where order_id = #{orderId,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from overdue_interest
+    where order_id = #{orderId,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.yunche.loan.domain.entity.OverdueInterestDO">
+    insert into overdue_interest (order_id, contract_ovedue_interest, vehicle_ovedue_interest, 
+      receive_company, receive_account, info
+      )
+    values (#{orderId,jdbcType=BIGINT}, #{contractOvedueInterest,jdbcType=DECIMAL}, #{vehicleOvedueInterest,jdbcType=VARCHAR}, 
+      #{receiveCompany,jdbcType=VARCHAR}, #{receiveAccount,jdbcType=VARCHAR}, #{info,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.OverdueInterestDO">
+    insert into overdue_interest
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="orderId != null">
+        order_id,
+      </if>
+      <if test="contractOvedueInterest != null">
+        contract_ovedue_interest,
+      </if>
+      <if test="vehicleOvedueInterest != null">
+        vehicle_ovedue_interest,
+      </if>
+      <if test="receiveCompany != null">
+        receive_company,
+      </if>
+      <if test="receiveAccount != null">
+        receive_account,
+      </if>
+      <if test="info != null">
+        info,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="orderId != null">
+        #{orderId,jdbcType=BIGINT},
+      </if>
+      <if test="contractOvedueInterest != null">
+        #{contractOvedueInterest,jdbcType=DECIMAL},
+      </if>
+      <if test="vehicleOvedueInterest != null">
+        #{vehicleOvedueInterest,jdbcType=VARCHAR},
+      </if>
+      <if test="receiveCompany != null">
+        #{receiveCompany,jdbcType=VARCHAR},
+      </if>
+      <if test="receiveAccount != null">
+        #{receiveAccount,jdbcType=VARCHAR},
+      </if>
+      <if test="info != null">
+        #{info,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.OverdueInterestDO">
+    update overdue_interest
+    <set>
+      <if test="contractOvedueInterest != null">
+        contract_ovedue_interest = #{contractOvedueInterest,jdbcType=DECIMAL},
+      </if>
+      <if test="vehicleOvedueInterest != null">
+        vehicle_ovedue_interest = #{vehicleOvedueInterest,jdbcType=VARCHAR},
+      </if>
+      <if test="receiveCompany != null">
+        receive_company = #{receiveCompany,jdbcType=VARCHAR},
+      </if>
+      <if test="receiveAccount != null">
+        receive_account = #{receiveAccount,jdbcType=VARCHAR},
+      </if>
+      <if test="info != null">
+        info = #{info,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where order_id = #{orderId,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.OverdueInterestDO">
+    update overdue_interest
+    set contract_ovedue_interest = #{contractOvedueInterest,jdbcType=DECIMAL},
+      vehicle_ovedue_interest = #{vehicleOvedueInterest,jdbcType=VARCHAR},
+      receive_company = #{receiveCompany,jdbcType=VARCHAR},
+      receive_account = #{receiveAccount,jdbcType=VARCHAR},
+      info = #{info,jdbcType=VARCHAR}
+    where order_id = #{orderId,jdbcType=BIGINT}
+  </update>
+</mapper>
