@@ -16,4 +16,6 @@ public interface ContractOverDueService
     ContractOverDueDetailVO interestDetail(Long orderId);
 
     ResultBean<Void> update(OverdueInterestDO overdueInterestDO);
+
+    String exportOverDueInterest(ContractOverDueParam param);
 }

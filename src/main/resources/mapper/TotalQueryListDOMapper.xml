@@ -4409,6 +4409,7 @@
         f.loan_amount AS loanAmount,
         f.bank_period_principal AS bankPeriodPrincipal,
         f.sign_rate AS signRate,
+        node.usertask_remit_review_create_time as remitDate,
         remit_details.remit_amount AS remitAmount
 
         FROM

@@ -234,6 +234,26 @@ public class ContractOverDueServiceImpl implements ContractOverDueService
         return ResultBean.ofSuccess(null, "保存成功");
     }
 
+    @Override
+    public String exportOverDueInterest(ContractOverDueParam param)
+    {
+        //权限控制
+        Long loginUserId = SessionUtils.getLoginUser().getId();
+
+        param.setJuniorIds(employeeService.getSelfAndCascadeChildIdList(loginUserId));
+        param.setMaxGroupLevel(taskSchedulingDOMapper.selectMaxGroupLevel(loginUserId));
+
+        List<OverDueInterestVO> list = loanQueryDOMapper.overDueInterestList(param);
+
+        ArrayList<String> header = Lists.newArrayList("业务编号", "客户姓名", "身份证号", "业务团队",
+                "贷款银行", "贷款金额","垫款金额", "银行分期本金", "执行利率", "垫款时间", "合同超期天数", "提车资料超期天数", "超期利息"
+        );
+
+
+        String ossResultKey = POIUtil.createExcelFile("超期利息",list,header,OverDueInterestVO.class,ossConfig);
+        return ossResultKey;
+    }
+
 
     /**
      * 获取 用户可见区域内的 所有合伙人ID列表

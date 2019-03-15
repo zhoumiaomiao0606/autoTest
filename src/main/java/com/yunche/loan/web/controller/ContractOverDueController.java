@@ -69,4 +69,13 @@ public class ContractOverDueController
         return ResultBean.ofSuccess(null,"保存成功");
     }
 
+    /**
+     * 导出利息
+     */
+    @PostMapping(value = "/exportOverDueInterest")
+    public ResultBean exportOverDueInterest(@RequestBody ContractOverDueParam param)
+    {
+        return ResultBean.ofSuccess(contractOverDueService.exportOverDueInterest(param));
+    }
+
 }
