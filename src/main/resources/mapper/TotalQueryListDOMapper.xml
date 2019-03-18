@@ -4433,8 +4433,8 @@
             else 1=1
             end
         </if>
-        <if test="customerName != null and customerName!= '' ">
-            AND loan_customer.`name` LIKE CONCAT('%',#{customerName},'%')
+        <if test="customer != null and customer!= '' ">
+            AND loan_customer.`name` LIKE CONCAT('%',#{customer},'%')
         </if>
         <if test="partnerId != null and partnerId != ''">
             AND partner.id = #{partnerId}
