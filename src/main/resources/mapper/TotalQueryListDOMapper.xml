@@ -4426,10 +4426,10 @@
         WHERE loan_process.remit_review = 1 AND loan_process.data_flow_contract_p2c_review !=1
         <if test="taskStatus !=null" >
             AND
-            case when #{taskStatus} = 0 then loan_process.material_review in (1,2,3)
-            when #{taskStatus} = 1 then loan_process.material_review = 1 and loan_process.order_status = 1
-            when #{taskStatus} = 2 then loan_process.material_review = 2 and loan_process.order_status = 1
-            when #{taskStatus} = 3 then loan_process.material_review = 3 and loan_process.order_status = 1
+            case when #{taskStatus} = 0 then loan_process.overdue_interest in (1,2,3)
+            when #{taskStatus} = 1 then loan_process.overdue_interest = 1 and loan_process.order_status = 1
+            when #{taskStatus} = 2 then loan_process.overdue_interest = 2 and loan_process.order_status = 1
+            when #{taskStatus} = 3 then loan_process.overdue_interest = 3 and loan_process.order_status = 1
             else 1=1
             end
         </if>
