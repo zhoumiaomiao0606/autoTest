@@ -186,6 +186,12 @@ public class TaskListVO {
     private String cTALIEndTime;
 
     private String hasRimitDays;
+
+    private String contractOverDays;
+
+    private String vehicleInfoOverDays;
+
+    private String ovedueInterest;
 }
 
 
