@@ -851,13 +851,16 @@ public class TaskSchedulingServiceImpl implements TaskSchedulingService {
         // 登录用户权限
         EmployeeDO loginUser = SessionUtils.getLoginUser();
 
+        //获取员工--上下级
         Set<String> juniorIds = employeeService.getSelfAndCascadeChildIdList(loginUser.getId());
+
+        //判断是否是合伙人级别-还是管理员
         Long maxGroupLevel = taskSchedulingDOMapper.selectMaxGroupLevel(loginUser.getId());
         taskListQuery.setEmployeeId(loginUser.getId());
         taskListQuery.setJuniorIds(juniorIds);
         taskListQuery.setMaxGroupLevel(maxGroupLevel);
 
-        //获取用户可见的区域
+        //获取用户可见的区域----部门级别--登陆用户--部门--下的合伙人
         taskListQuery.setBizAreaIdList(getUserHaveBizAreaPartnerId(loginUser.getId()));
         //获取用户可见的银行
         taskListQuery.setBankList(getUserHaveBank(loginUser.getId()));
