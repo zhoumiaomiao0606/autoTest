@@ -547,14 +547,15 @@ public class LoanCustomerServiceImpl implements LoanCustomerService {
      */
     private void fillCustInfo(CustDetailVO custDetailVO, List<LoanCustomerDO> loanCustomerDOList, Byte fileUploadType) {
 
-        List<CustomerVO> commonLenderList = Lists.newCopyOnWriteArrayList();
-        List<CustomerVO> guarantorList = Lists.newCopyOnWriteArrayList();
-        List<CustomerVO> emergencyContactList = Lists.newCopyOnWriteArrayList();
-        List<CustomerVO> specialContactList = Lists.newCopyOnWriteArrayList();
+//        List<CustomerVO> commonLenderList = Lists.newCopyOnWriteArrayList();
+        List<CustomerVO> commonLenderList = Lists.newArrayList();
+        List<CustomerVO> guarantorList = Lists.newArrayList();
+        List<CustomerVO> emergencyContactList = Lists.newArrayList();
+        List<CustomerVO> specialContactList = Lists.newArrayList();
 
-        Collection<LoanCustomerDO> synchronizedLoanCustomerDOS = Collections.synchronizedCollection(loanCustomerDOList);
+//        Collection<LoanCustomerDO> synchronizedLoanCustomerDOS = Collections.synchronizedCollection(loanCustomerDOList);
 
-        synchronizedLoanCustomerDOS.parallelStream()
+        loanCustomerDOList.stream()
                 .filter(Objects::nonNull)
                 .forEach(e -> {
 
