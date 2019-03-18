@@ -1237,6 +1237,12 @@ public class AppLoanOrderServiceImpl implements AppLoanOrderService {
 
                         zhongAnInfoDO.setLowRiskRemind(lowRisk_Remind);
 
+                        //等级
+                        zhongAnInfoDO.setLevel(creditResultMap.getString("Level"));
+
+                        //分数
+                        zhongAnInfoDO.setLevel(creditResultMap.getString("Score"));
+
 
 
 

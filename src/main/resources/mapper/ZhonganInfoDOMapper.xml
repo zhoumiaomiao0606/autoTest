@@ -30,12 +30,14 @@
         <result column="rsp_gong_an" property="rspGongAn" jdbcType="VARCHAR"/>
         <result column="high_risk_remind" property="highRiskRemind" jdbcType="VARCHAR"/>
         <result column="low_risk_remind" property="lowRiskRemind" jdbcType="VARCHAR"/>
+        <result column="level" jdbcType="VARCHAR" property="level" />
+        <result column="score" jdbcType="VARCHAR" property="score" />
     </resultMap>
     <sql id="Base_Column_List">
     id, id_card, age, gender, mobile_city, mobile_comm_duration, mobile_comm_sts, phoneid_name_check,
     high_risk_behavior, rsn_high_risk, rsn_long_overdue, rsn_multi_loan, rsn_policy_restrict, 
     rsn_risk_rec, rsp_lawsuit_alllist, rsp_speclist_inblacklist, rsp_speclist_maxdftlevel, 
-    rsp_watchlist_detail, high_risk_record, customer_name ,create_date,order_id,customer_type,result_message,tel,rsp_gong_an,high_risk_remind,low_risk_remind
+    rsp_watchlist_detail, high_risk_record, customer_name ,create_date,order_id,customer_type,result_message,tel,rsp_gong_an,high_risk_remind,low_risk_remind, level, score
   </sql>
     <select id="selectByOrderId" resultMap="BaseResultMap">
         select
@@ -44,9 +46,9 @@
         where id_card = #{idcard,jdbcType=VARCHAR} and customer_name = #{customername,jdbcType=VARCHAR}
         order by create_date desc limit 1
     </select>
-    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
+    <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
         select
-        <include refid="Base_Column_List"/>
+        <include refid="Base_Column_List" />
         from zhongan_info
         where id = #{id,jdbcType=BIGINT}
     </select>
@@ -57,25 +59,29 @@
     <insert id="insert" parameterType="com.yunche.loan.domain.entity.ZhonganInfoDO" useGeneratedKeys="true"
             keyProperty="id">
     insert into zhongan_info (id, id_card, age,
-      gender, mobile_city, mobile_comm_duration, 
-      mobile_comm_sts, phoneid_name_check, high_risk_behavior, 
-      rsn_high_risk, rsn_long_overdue, rsn_multi_loan, 
-      rsn_policy_restrict, rsn_risk_rec, rsp_lawsuit_alllist, 
-      rsp_speclist_inblacklist, rsp_speclist_maxdftlevel, 
-      rsp_watchlist_detail, high_risk_record, customer_name,create_date,order_id,customer_type,result_message,tel,rsp_gong_an,high_risk_remind,low_risk_remind
-      )
-    values (#{id,jdbcType=BIGINT}, #{idCard,jdbcType=BIGINT}, #{age,jdbcType=VARCHAR},
-      #{gender,jdbcType=VARCHAR}, #{mobileCity,jdbcType=VARCHAR}, #{mobileCommDuration,jdbcType=VARCHAR}, 
-      #{mobileCommSts,jdbcType=VARCHAR}, #{phoneidNameCheck,jdbcType=VARCHAR}, #{highRiskBehavior,jdbcType=VARCHAR}, 
-      #{rsnHighRisk,jdbcType=VARCHAR}, #{rsnLongOverdue,jdbcType=VARCHAR}, #{rsnMultiLoan,jdbcType=VARCHAR}, 
-      #{rsnPolicyRestrict,jdbcType=VARCHAR}, #{rsnRiskRec,jdbcType=VARCHAR}, #{rspLawsuitAlllist,jdbcType=VARCHAR}, 
-      #{rspSpeclistInblacklist,jdbcType=VARCHAR}, #{rspSpeclistMaxdftlevel,jdbcType=VARCHAR}, 
+      gender, mobile_city, mobile_comm_duration,
+      mobile_comm_sts, phoneid_name_check, high_risk_behavior,
+      rsn_high_risk, rsn_long_overdue, rsn_multi_loan,
+      rsn_policy_restrict, rsn_risk_rec, rsp_lawsuit_alllist,
+      rsp_speclist_inblacklist, rsp_speclist_maxdftlevel,
+      rsp_watchlist_detail, high_risk_record, customer_name,
+      create_date, order_id, customer_type,
+      result_message, tel, rsp_gong_an,
+      high_risk_remind, low_risk_remind, level,
+      score)
+    values (#{id,jdbcType=BIGINT}, #{idCard,jdbcType=VARCHAR}, #{age,jdbcType=VARCHAR},
+      #{gender,jdbcType=VARCHAR}, #{mobileCity,jdbcType=VARCHAR}, #{mobileCommDuration,jdbcType=VARCHAR},
+      #{mobileCommSts,jdbcType=VARCHAR}, #{phoneidNameCheck,jdbcType=VARCHAR}, #{highRiskBehavior,jdbcType=VARCHAR},
+      #{rsnHighRisk,jdbcType=VARCHAR}, #{rsnLongOverdue,jdbcType=VARCHAR}, #{rsnMultiLoan,jdbcType=VARCHAR},
+      #{rsnPolicyRestrict,jdbcType=VARCHAR}, #{rsnRiskRec,jdbcType=VARCHAR}, #{rspLawsuitAlllist,jdbcType=VARCHAR},
+      #{rspSpeclistInblacklist,jdbcType=VARCHAR}, #{rspSpeclistMaxdftlevel,jdbcType=VARCHAR},
       #{rspWatchlistDetail,jdbcType=VARCHAR}, #{highRiskRecord,jdbcType=VARCHAR}, #{customerName,jdbcType=VARCHAR},
-      #{createDate,jdbcType=TIMESTAMP},#{orderId,jdbcType=BIGINT},#{customerType,jdbcType=VARCHAR},#{resultMessage,jdbcType=VARCHAR}
-      ,#{tel,jdbcType=VARCHAR},#{rspGongAn,jdbcType=VARCHAR},#{highRiskRemind,jdbcType=VARCHAR},#{lowRiskRemind,jdbcType=VARCHAR})
+      #{createDate,jdbcType=TIMESTAMP}, #{orderId,jdbcType=BIGINT}, #{customerType,jdbcType=VARCHAR},
+      #{resultMessage,jdbcType=VARCHAR}, #{tel,jdbcType=VARCHAR}, #{rspGongAn,jdbcType=VARCHAR},
+      #{highRiskRemind,jdbcType=VARCHAR}, #{lowRiskRemind,jdbcType=VARCHAR}, #{level,jdbcType=VARCHAR},
+      #{score,jdbcType=VARCHAR})
   </insert>
-    <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.ZhonganInfoDO" useGeneratedKeys="true"
-            keyProperty="id">
+    <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.ZhonganInfoDO" useGeneratedKeys="true" keyProperty="id">
         insert into zhongan_info
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="id != null">
@@ -162,13 +168,19 @@
             <if test="lowRiskRemind != null">
                 low_risk_remind,
             </if>
+            <if test="level != null">
+                level,
+            </if>
+            <if test="score != null">
+                score,
+            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="id != null">
                 #{id,jdbcType=BIGINT},
             </if>
             <if test="idCard != null">
-                #{idCard,jdbcType=BIGINT},
+                #{idCard,jdbcType=VARCHAR},
             </if>
             <if test="age != null">
                 #{age,jdbcType=VARCHAR},
@@ -248,13 +260,19 @@
             <if test="lowRiskRemind != null">
                 #{lowRiskRemind,jdbcType=VARCHAR},
             </if>
+            <if test="level != null">
+                #{level,jdbcType=VARCHAR},
+            </if>
+            <if test="score != null">
+                #{score,jdbcType=VARCHAR},
+            </if>
         </trim>
     </insert>
     <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.ZhonganInfoDO">
         update zhongan_info
         <set>
             <if test="idCard != null">
-                id_card = #{idCard,jdbcType=BIGINT},
+                id_card = #{idCard,jdbcType=VARCHAR},
             </if>
             <if test="age != null">
                 age = #{age,jdbcType=VARCHAR},
@@ -334,12 +352,18 @@
             <if test="lowRiskRemind != null">
                 low_risk_remind = #{lowRiskRemind,jdbcType=VARCHAR},
             </if>
+            <if test="level != null">
+                level = #{level,jdbcType=VARCHAR},
+            </if>
+            <if test="score != null">
+                score = #{score,jdbcType=VARCHAR},
+            </if>
         </set>
         where id = #{id,jdbcType=BIGINT}
     </update>
     <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.ZhonganInfoDO">
     update zhongan_info
-    set id_card = #{idCard,jdbcType=BIGINT},
+    set id_card = #{idCard,jdbcType=VARCHAR},
       age = #{age,jdbcType=VARCHAR},
       gender = #{gender,jdbcType=VARCHAR},
       mobile_city = #{mobileCity,jdbcType=VARCHAR},
@@ -365,7 +389,9 @@
       tel = #{tel,jdbcType=VARCHAR},
       rsp_gong_an = #{rspGongAn,jdbcType=VARCHAR},
       high_risk_remind = #{highRiskRemind,jdbcType=VARCHAR},
-      low_risk_remind = #{lowRiskRemind,jdbcType=VARCHAR}
+      low_risk_remind = #{lowRiskRemind,jdbcType=VARCHAR},
+      level = #{level,jdbcType=VARCHAR},
+      score = #{score,jdbcType=VARCHAR}
     where id = #{id,jdbcType=BIGINT}
   </update>
     <select id="selectZNByOrderIdAndIdcard" resultMap="BaseResultMap">
