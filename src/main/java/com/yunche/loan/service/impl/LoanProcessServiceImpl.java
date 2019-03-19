@@ -239,6 +239,11 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             return execOutworkerCostApplyTask(approval);
         }
 
+        // 【罚息统计】
+        if (isOvedueInterestTask(approval.getTaskDefinitionKey())) {
+            return execOvedueInterestTask(approval);
+        }
+
         // 业务单
         LoanOrderDO loanOrderDO = loanProcessApprovalCommonService.getLoanOrder(approval.getOrderId());
 
@@ -610,6 +615,17 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         boolean isRefundApplyTask = OUTWORKER_COST_APPLY.getCode().equals(taskDefinitionKey)
                 || OUTWORKER_COST_APPLY_REVIEW.getCode().equals(taskDefinitionKey);
         return isRefundApplyTask;
+    }
+
+    /**
+     * 【罚息统计】任务
+     *
+     * @param taskDefinitionKey
+     * @return
+     */
+    private boolean isOvedueInterestTask(String taskDefinitionKey) {
+        boolean isOvedueInterestTask = OVERDUE_INTEREST.getCode().equals(taskDefinitionKey);
+        return isOvedueInterestTask;
     }
 
     /**
@@ -1065,6 +1081,33 @@ public class LoanProcessServiceImpl implements LoanProcessService {
                 updateOutworkerCostApplyProcess(approval, ApplyOrderStatus.APPLY_ORDER_REJECT);
 
                 return ResultBean.ofSuccess(null, "[财务报销]任务执行成功");
+            }
+        }
+
+        return ResultBean.ofError("流程审核参数有误");
+    }
+
+    /**
+     * 执行 -【财务报销】
+     *
+     * @param approval
+     * @return
+     */
+    private ResultBean<Void> execOvedueInterestTask(ApprovalParam approval) {
+
+        // [外勤费用申报]
+        if (OVERDUE_INTEREST.getCode().equals(approval.getTaskDefinitionKey())) {
+
+            // PASS
+            if (ACTION_PASS.equals(approval.getAction())) {
+
+               //
+                LoanProcessDO loanProcessDO = new LoanProcessDO();
+                loanProcessDO.setOrderId(approval.getOrderId());
+                loanProcessDO.setOverdueInterest(new Byte("1"));
+                loanProcessDOMapper.updateByPrimaryKeySelective(loanProcessDO);
+
+                return ResultBean.ofSuccess(null, "罚息提交成功");
             }
         }
 
