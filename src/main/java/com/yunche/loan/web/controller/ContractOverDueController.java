@@ -61,7 +61,7 @@ public class ContractOverDueController
     /**
      * 详情页
      */
-    @GetMapping(value = "/interestUpdate")
+    @PostMapping(value = "/interestUpdate")
     public ResultBean update(@RequestBody @Validated OverdueInterestDO overdueInterestDO)
     {
         contractOverDueService.update(overdueInterestDO);
