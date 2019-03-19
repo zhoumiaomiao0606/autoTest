@@ -53,7 +53,7 @@ public class VideoFaceServiceImpl implements VideoFaceService {
     // log
     private static final Logger logger = LoggerFactory.getLogger(VideoFaceServiceImpl.class);
 
-    public static final String HTML_NEW_LINE = "<br/>";
+    private static final String HTML_NEW_LINE = "<br/>";
 
     @Autowired
     private VideoFaceLogDOMapper videoFaceLogDOMapper;
@@ -352,9 +352,9 @@ public class VideoFaceServiceImpl implements VideoFaceService {
 
         VideoFaceQuestionAnswerVO videoFaceQuestionAnswerVO = setAndGetVideoFaceQuestionAnswerVO(bankId, orderId);
 
-        String question_1 = "1、你好，这里是工商银行路桥支行，请问是" + redText(videoFaceQuestionAnswerVO.getCustomerName()) + "先生/女士吗？（参考答案）是";
-        String question_2 = "2、我是工商银行路桥支行的工作人员，请问您现在是否需要在我行申请一笔信用卡购车分期付款业务？您对此分期付款业务情况是否了解（参考答案）是";
-        String question_3 = "3、下面需要核对一下您的身份信息（选问项，选三个或以上）";
+        String question_1 = "1、你好，这里是工商银行台州路桥支行，请问您的姓名是？" + "（参考答案）" + redText(videoFaceQuestionAnswerVO.getCustomerName());
+        String question_2 = "2、我是工商银行**支行的工作人员，请问您现在是否需要在我行申请一笔信用卡购车分期付款业务？（参考答案）是";
+        String question_3 = "3、下面需要核对一下您的身份信息";
 
         String yyyy_MM_dd = "";
         String idCard_last_six_num = "";
@@ -370,27 +370,39 @@ public class VideoFaceServiceImpl implements VideoFaceService {
         }
 
         String question_4 = "4、Q1请问您的出生年月日是？   参考答案：" + redText(yyyy_MM_dd);
-        String question_5 = "5、Q2你的身份证号码后六位是什么？   参考答案：" + redText(idCard_last_six_num);
-        String question_6 = "6、Q3你所购车辆的型号是什么？   参考答案：" + redText(videoFaceQuestionAnswerVO.getCarName());
-        String question_7 = "7、Q4您现在的工作单位是什么？（面签人员无法核实）";
-        String question_8 = "8、Q5您单位地址是？   （面签人员无法核实）";
-        String question_9 = "9、Q6您家庭住址是哪里？   （面签人员无法核实）";
-        String question_10 = "10、Q7您身份证上的地址是哪里？   （面签人员无法核实）";
-        String question_11 = "11、Q8您所购买车辆是什么颜色？   （面签人员无法核实）";
-        String question_12 = "12、Q9你现在所处位置？   参考答案：" + redText(address);
-        String question_13 = "13、请问您购买的是什么品牌的汽车？购买车辆是否自用？   （参考答案）是  车辆品牌：" + redText(videoFaceQuestionAnswerVO.getCarBrandName());
-        String question_14 = "14、您了解该笔贷款是由浙江鑫宝行融资担保有限公司提供担保的吗？   参考答案：了解";
-        String question_15 = "15、请您务必在合同上填写正确的手机号码和联系地址";
-        String question_16 = "16、请您现在在信用卡申请书、分期付款合同以及客户告知书上签名";
-        String question_17 = "17、银行：请您认真仔细阅读担保方签署相关协议，该协议内容以及协议中约定的在您未按时、足额清偿债务时担保方可采取的措施等，" +
+        String question_5 = "5、Q2请问您的身份证号码是？   参考答案：" + redText(idCard);
+
+        String question_6 = "6、以下问题可选择性提问，但不得少于两个。";
+        String question_7 = "7、Q1：您现在的工作单位是什么？（面签人员无法核实）";
+        String question_8 = "8、Q2：您单位地址是？   （面签人员无法核实）";
+        String question_9 = "9、Q3：您家庭住址是哪里   （面签人员无法核实）";
+        String question_10 = "10、Q4：您身份证上的地址是哪里   （面签人员无法核实）";
+        String question_11 = "11、Q5：您所购车辆是什么颜色的？   （面签人员无法核实）";
+
+        String question_12 = "12、你现在所处位置？   参考答案：" + redText(address);
+        String question_13 = "13、请问您购买的是什么品牌的汽车？（参考答案） 车辆品牌：" + redText(videoFaceQuestionAnswerVO.getCarBrandName());
+        String question_14 = "14、请问您所购车辆是否自用？   参考答案：是";
+        String question_15 = "15、您所购车辆是否已经提到？   参考答案：是";
+
+        String question_16 = "16、您所购买车辆车价是多少？   参考答案：车价：" + redText(videoFaceQuestionAnswerVO.getCarPrice());
+        String question_17 = "17、您的银行分期付款业务分期金额是多少？（该金额包含金融服务费）" + redText(videoFaceQuestionAnswerVO.getBankPeriodPrincipal()) + "元。";
+        String question_18 = "18、您的贷款期数是？参考答案：" + redText(videoFaceQuestionAnswerVO.getLoanTime());
+
+        String question_19 = "19、您是否知晓该笔贷款是由#合作机构名称" + redText(videoFaceQuestionAnswerVO.getLoanTime()) + "#提供担保的吗？参考答案：是";
+        String question_20 = "20、我行审批通过后将根据您的授权对您的信用卡进行激活并将您的分期款项汇给" + redText(videoFaceQuestionAnswerVO.getLoanTime()) + "(每家合作机构对应的放款账户名称)账户，您是否有异议？参考答案：没有异议";
+        String question_21 = "21、请您务必在合同上填写正确的手机号码和联系地址方便寄送合同。参考答案：好的。";
+        String question_22 = "22、请您现在在信用卡申请书、分期付款合同以及客户告知书上签名。。参考答案：好的。";
+
+        String question_23 = "23、银行：请您认真仔细阅读担保方签署相关协议，该协议内容以及协议中约定的在您未按时、足额清偿债务时担保方可采取的措施等，" +
                 "均与工商银行无关。您办理该笔分期业务无需向我行和担保公司缴纳任何保证金和押金。" + HTML_NEW_LINE +
                 "银行：请您务必下载和使用工银融E联，通过申请时预留手机号注册登录后，即可享受相应服务。" + HTML_NEW_LINE +
-                "银行：感谢您的配合，业务办理成功后，请您留意查收合同及客户告知书并仔细阅读，后续如有问题，欢迎致电我行告知书上的汽车分期服务专线电话。";
+                "银行：感谢您的配合，业务办理成功后，请您留意查收合同及客户告知书并仔细阅读，后续如有问题，欢迎致电我行告知书上的汽车分期服务专线电话。" + HTML_NEW_LINE +
+                "银行：感谢您的配合，再见！";
 
         List<String> questionList = Lists.newArrayList(question_1, question_2, question_3, question_4, question_5,
                 question_6, question_7, question_8, question_9, question_10,
                 question_11, question_12, question_13, question_14, question_15,
-                question_16, question_17);
+                question_16, question_17, question_18, question_19, question_20, question_21, question_22, question_23);
 
         return questionList;
     }
@@ -401,24 +413,27 @@ public class VideoFaceServiceImpl implements VideoFaceService {
         String a = "银行：您好，请问是" + redText(videoFaceQuestionAnswerVO.getCustomerName()) + "先生/女士吗？";
         String b = "银行：我是工商银行杭州分行城站支行的工作人员，请问您现在是否需要在我行申请一笔信用卡汽车分期付款业务用于购买汽车？";
         String c = "银行：购买的车辆是否自用？所购车辆是否已经提到？";
-        String d = "银行：请报一下您的身份证号码（合作机构业务员指导客户现场提供身份证正反面影像，客户经理进行核对）。" + redText(videoFaceQuestionAnswerVO.getCustomerIdCard());
+//        String d = "银行：请报一下您的身份证号码（合作机构业务员指导客户现场提供身份证正反面影像，客户经理进行核对）。" + redText(videoFaceQuestionAnswerVO.getCustomerIdCard());
+        String d = "银行：请您将身份证正面面对镜头，并报一下身份证号码，身份证反面面对镜头（合作机构业务员指导客户现场提供身份证正反面影像，客户经理进行核对）。" + redText(videoFaceQuestionAnswerVO.getCustomerIdCard());
         String e = "银行：请问您现在的工作单位是什么？" + redText(videoFaceQuestionAnswerVO.getIncomeCertificateCompanyName());
         String f = "银行：请问您购买的是什么品牌的汽车？" + redText(videoFaceQuestionAnswerVO.getCarBrandName());
         String g = "银行：请问征信查询授权书是您本人签字吗？";
         String h = "银行：请问您办理业务所需的个人信息材料都是您本人提供并签字的吗？";
         String i = "银行：您了解该笔贷款是由浙江鑫宝行融资担保有限公司担保的吗？";
-        String j = "银行：请您翻开《牡丹信用卡透支分期付款/抵押合同》 第一页确认相关信息。" +
-                "您申请信用卡汽车分期业务用于购买" + redText(videoFaceQuestionAnswerVO.getCarBrandName()) + "品牌的汽车，" +
-                "车辆交易总价" + redText(videoFaceQuestionAnswerVO.getCarPrice()) + "元，" +
-                "您自行支付的首付款" + redText(videoFaceQuestionAnswerVO.getDownPaymentMoney()) + "元，" +
-                "您申请透支金额" + redText(videoFaceQuestionAnswerVO.getLoanAmount()) + "元用于支付剩余交易款项，" +
-                "申请透支金额" + redText(videoFaceQuestionAnswerVO.getBankPeriodPrincipal().subtract(videoFaceQuestionAnswerVO.getLoanAmount())) + "元用于支付汽车金融服务费，" +
-                "合计透支金额" + redText(videoFaceQuestionAnswerVO.getBankPeriodPrincipal()) + "元。" +
+        String j = "银行：请您翻开《牡丹信用卡透支分期付款/抵押合同》的第一页确认相关信息，重点看第二条。" +
+                "您申请信用卡汽车分期付款业务用于购买" + redText(videoFaceQuestionAnswerVO.getCarBrandName()) + "品牌的汽车，" +
+                "车辆交易总价" + redText(videoFaceQuestionAnswerVO.getCarPrice()) + "元，是否确认无误？" + HTML_NEW_LINE +
+                "您自行支付的首付款" + redText(videoFaceQuestionAnswerVO.getDownPaymentMoney()) + "元，是否确认无误？" + HTML_NEW_LINE +
+                "您申请透支金额" + redText(videoFaceQuestionAnswerVO.getLoanAmount()) + "元用于支付剩余交易款项，是否确认无误？" + HTML_NEW_LINE +
+                "申请透支金额" + redText(videoFaceQuestionAnswerVO.getBankPeriodPrincipal().subtract(videoFaceQuestionAnswerVO.getLoanAmount())) + "元用于支付汽车金融服务费，是否确认无误？" + HTML_NEW_LINE +
+                "合计透支金额" + redText(videoFaceQuestionAnswerVO.getBankPeriodPrincipal()) + "元，是否确认无误？" + HTML_NEW_LINE +
                 "您首月需还款" + redText(videoFaceQuestionAnswerVO.getFirstMonthRepay()) + "元，" +
-                "以后每月还款" + redText(videoFaceQuestionAnswerVO.getEachMonthRepay()) + "元，"
-                + redText(videoFaceQuestionAnswerVO.getLoanTime() / 12) + "年" +
-                "总计需还款" + redText(videoFaceQuestionAnswerVO.getPrincipalInterestSum()) + "元。" +
-                "以上信息您是否确认无误？";
+                "以后每月还款" + redText(videoFaceQuestionAnswerVO.getEachMonthRepay()) + "元，分期期限为"
+                + redText(videoFaceQuestionAnswerVO.getLoanTime() / 12) + "年，" +
+                "总计需还款" + redText(videoFaceQuestionAnswerVO.getPrincipalInterestSum()) + "元，是否确认无误？" + HTML_NEW_LINE +
+                "以上信息您是否确认无误？" + HTML_NEW_LINE +
+                "请您在抵押合同金额上加盖手印。" + HTML_NEW_LINE +
+                "请您举起抵押合同进行比对。";
         String k = "银行：在您足额偿清合同约定的所有债务之前，您所购车辆的商业保险保单的第一受益人为工商银行，请问您是否同意？";
         String l = "银行：我行审批通过后将根据您的授权对您的信用卡进行激活并将您的分期款项汇给浙江鑫宝行担保有限公司账户，您是否有异议？";
         String m = "银行：请您务必在合同上填写正确的手机号码和联系地址。";
