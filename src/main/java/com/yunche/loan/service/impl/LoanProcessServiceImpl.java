@@ -2833,6 +2833,19 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         LoanRejectLogDO loanRejectLogDO = loanRejectLogService.rejectLog(orderId, taskDefinitionKey);
         if (null != loanRejectLogDO) {
             BeanUtils.copyProperties(loanRejectLogDO, loanRejectLogVO);
+            //拼接打回原因+打回理由
+            if (ONE.equals(loanRejectLogDO.getOpt()))
+            {
+                loanRejectLogVO.setReason(loanRejectLogVO.getReason()+"打回理由 ：个人信息");
+            }else if (TWO.equals(loanRejectLogDO.getOpt()))
+            {
+                loanRejectLogVO.setReason(loanRejectLogVO.getReason()+"打回理由 ：车辆信息");
+
+            }else if (THREE.equals(loanRejectLogDO.getOpt()))
+            {
+                loanRejectLogVO.setReason(loanRejectLogVO.getReason()+"打回理由 ：金融方案");
+            }
+
             loanRejectLogVO.setOrderId(String.valueOf(loanRejectLogDO.getOrderId()));
         }
 

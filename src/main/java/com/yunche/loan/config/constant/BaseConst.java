@@ -5,6 +5,13 @@ package com.yunche.loan.config.constant;
  * @date 2018/1/22
  */
 public class BaseConst {
+
+    // 1
+    public static final Byte ONE = 1;
+    // 2
+    public static final Byte TWO = 2;
+    // 3
+    public static final Byte THREE = 3;
     /**
      * 有效
      */
