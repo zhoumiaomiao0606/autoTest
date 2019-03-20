@@ -161,13 +161,11 @@ public class LoanCreditInfoServiceImpl implements LoanCreditInfoService {
      */
     private void fillCustInfoAndCreditRecord(CreditRecordVO creditRecordVO, List<LoanCustomerDO> loanCustomerDOList, Byte creditType) {
 
-        List<CreditRecordVO.CustomerCreditRecord> commonLenderList = Lists.newCopyOnWriteArrayList();
-        List<CreditRecordVO.CustomerCreditRecord> guarantorList = Lists.newCopyOnWriteArrayList();
-        List<CreditRecordVO.CustomerCreditRecord> emergencyContactList = Lists.newCopyOnWriteArrayList();
+        List<CreditRecordVO.CustomerCreditRecord> commonLenderList = Lists.newArrayList();
+        List<CreditRecordVO.CustomerCreditRecord> guarantorList = Lists.newArrayList();
+        List<CreditRecordVO.CustomerCreditRecord> emergencyContactList = Lists.newArrayList();
 
-        Collection<LoanCustomerDO> synchronizedLoanCustomerDOS = Collections.synchronizedCollection(loanCustomerDOList);
-
-        synchronizedLoanCustomerDOS.parallelStream()
+        loanCustomerDOList.stream()
                 .filter(Objects::nonNull)
                 .forEach(e -> {
 
@@ -240,11 +238,11 @@ public class LoanCreditInfoServiceImpl implements LoanCreditInfoService {
                     }
                 });
 
-        List<CreditRecordVO.CustomerCreditRecord> sortedCommonLenderList = commonLenderList.parallelStream()
+        List<CreditRecordVO.CustomerCreditRecord> sortedCommonLenderList = commonLenderList.stream()
                 .sorted(Comparator.comparing(CreditRecordVO.CustomerCreditRecord::getCustomerId)).collect(Collectors.toList());
-        List<CreditRecordVO.CustomerCreditRecord> sortedGuarantorList = guarantorList.parallelStream()
+        List<CreditRecordVO.CustomerCreditRecord> sortedGuarantorList = guarantorList.stream()
                 .sorted(Comparator.comparing(CreditRecordVO.CustomerCreditRecord::getCustomerId)).collect(Collectors.toList());
-        List<CreditRecordVO.CustomerCreditRecord> sortedEmergencyContactList = emergencyContactList.parallelStream()
+        List<CreditRecordVO.CustomerCreditRecord> sortedEmergencyContactList = emergencyContactList.stream()
                 .sorted(Comparator.comparing(CreditRecordVO.CustomerCreditRecord::getCustomerId)).collect(Collectors.toList());
 
         creditRecordVO.setCommonLenderList(sortedCommonLenderList);

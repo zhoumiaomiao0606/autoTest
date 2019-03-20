@@ -1,5 +1,6 @@
 package com.yunche.loan.domain.vo;
 
+import com.google.common.collect.Lists;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;
@@ -45,13 +46,12 @@ public class FileVO {
         if (!CollectionUtils.isEmpty(urls)) {
 
             List<String> urlList = urls.stream()
-                    .filter(Objects::nonNull)
-                    .filter(e -> StringUtils.isNotBlank(e))
+                    .filter(StringUtils::isNotBlank)
                     .collect(Collectors.toList());
 
             return urlList;
         }
 
-        return Collections.EMPTY_LIST;
+        return Lists.newArrayList();
     }
 }
