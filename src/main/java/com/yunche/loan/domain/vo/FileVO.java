@@ -44,7 +44,7 @@ public class FileVO {
 
         if (!CollectionUtils.isEmpty(urls)) {
 
-            List<String> urlList = urls.parallelStream()
+            List<String> urlList = urls.stream()
                     .filter(Objects::nonNull)
                     .filter(e -> StringUtils.isNotBlank(e))
                     .collect(Collectors.toList());
