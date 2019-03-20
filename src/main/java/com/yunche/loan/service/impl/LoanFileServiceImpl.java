@@ -106,7 +106,7 @@ public class LoanFileServiceImpl implements LoanFileService {
         }
 
         List<FileVO> fileVOS = typeFilesMap.values()
-                .parallelStream()
+                .stream()
                 .sorted(Comparator.comparing(FileVO::getType))
                 .collect(Collectors.toList());
 
