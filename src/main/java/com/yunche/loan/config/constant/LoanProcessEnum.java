@@ -68,6 +68,8 @@ public enum LoanProcessEnum {
     VIDEO_REVIEW_FILTER("filter_video_review", "视频审核-拦截任务"),
     UNDER_LINE_VIDEO_REVIEW_FILTER("filter_under_line_video_review", "线下视频审核-拦截任务"),
     UNDER_LINE_VIDEO_REVIEW_BEFORE_FILTER("filter_under_line_video_review_before", "线下视频审核-拦截任务(先)"),
+    USERTASK_MATERIAL_PRINT_REVIEW1_BEFORE_FILTER("filter_usertask_material_print_review1_before", "合同套打1(先)"),
+    USERTASK_APPLY_INSTALMENT1_BEFORE_FILTER("filter_usertask_apply_instalment1_before", "申请分期1(先)"),
     ///////////////////////////////////////////// ↑↑↑↑↑--filter--↑↑↑↑↑ /////////////////////////////////////////////////
 
     /////////////////////////////////////////// ↓↓↓↓↓--流程外的节点--↓↓↓↓↓ //////////////////////////////////////////////

@@ -290,7 +290,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
 
             //设置电审信息 ---
             LoanTelephoneVerifyDO ltv = new LoanTelephoneVerifyDO();
-            ltv.setOrderId(loanTelephoneVerifyDO.getOrderId());
+            ltv.setOrderId(approval.getOrderId().toString());
             ltv.setPassLevel(approval.getPassLevel());
             loanTelephoneVerifyDOMapper.updateByPrimaryKeySelective(ltv);
         }
@@ -2077,6 +2077,8 @@ public class LoanProcessServiceImpl implements LoanProcessService {
         //completeCommitKeyTask(task.getProcessInstanceId(), approval.getOrderId());
         //自动提交其中的一个审批审核（南京工行提交线上视频，其他提交线下视频）
         authCommitVideoAuditTask(loanOrderDO, task.getProcessInstanceId(), approval.getOrderId());
+
+        authCommitTask(loanOrderDO, task.getProcessInstanceId(), approval.getOrderId());
         // 更新状态
         updateTelephoneVerify(approval.getOrderId(), TASK_PROCESS_DONE);
     }
@@ -2089,6 +2091,18 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             autoCompleteTask(processInstanceId, orderId, UNDER_LINE_VIDEO_REVIEW_BEFORE_FILTER.getCode());
         }
         autoCompleteTask(processInstanceId, orderId, VIDEO_REVIEW_BEFORE_FILTER.getCode());
+
+    }
+
+    //自动提交
+    private void authCommitTask(LoanOrderDO loanOrderDO, String processInstanceId, Long orderId) {
+        LoanBaseInfoDO loanBaseInfoDO = loanBaseInfoDOMapper.selectByPrimaryKey(loanOrderDO.getLoanBaseInfoId());
+        if ((BankConst.BANK_NAME_ICBC_HangZhou_City_Station_Branch).equals(loanBaseInfoDO.getBank())) {
+
+            autoCompleteTask(processInstanceId, orderId, USERTASK_MATERIAL_PRINT_REVIEW1_BEFORE_FILTER.getCode());
+
+            autoCompleteTask(processInstanceId, orderId, USERTASK_APPLY_INSTALMENT1_BEFORE_FILTER.getCode());
+        }
 
     }
 
@@ -3090,8 +3104,12 @@ public class LoanProcessServiceImpl implements LoanProcessService {
             if (ACTION_PASS.equals(action)) {
                 //设置留备钥匙
                 LoanCarInfoDO loanCarInfoDO = loanCarInfoDOMapper.selectByPrimaryKey(loanOrderDO.getLoanCarInfoId());
-                LoanBaseInfoDO loanBaseInfoDO = loanBaseInfoDOMapper.selectByPrimaryKey(loanOrderDO.getLoanBaseInfoId());
-                variables.put(BANK,loanBaseInfoDO.getBank());
+                //LoanBaseInfoDO loanBaseInfoDO = loanBaseInfoDOMapper.selectByPrimaryKey(loanOrderDO.getLoanBaseInfoId());
+                /*if (BANK_NAME_ICBC_HangZhou_City_Station_Branch.equals(loanBaseInfoDO.getBank()))
+                {
+                    variables.put(BANK,ONE);
+                }*/
+
                 variables.put(CAR_KEY, loanCarInfoDO.getCarKey());
                 // 如果为打回
                 if (TASK_PROCESS_REJECT.equals(loanProcessDO.getLoanApply())) {

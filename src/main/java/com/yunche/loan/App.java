@@ -100,7 +100,7 @@ public class App {
              */
             private void deploy(String processClassPathResource, String processName) {
 
-               /* repositoryService.createDeployment()
+                repositoryService.createDeployment()
                         .addClasspathResource(processClassPathResource)
                         .name(processName)
                         .deploy();
@@ -109,7 +109,7 @@ public class App {
                 activitiService.replaceActivitiVersion(processClassPathResource);
 
                 // 刷新activiti缓存数据
-                activitiCache.refresh();*/
+                activitiCache.refresh();
             }
         };
 
