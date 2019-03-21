@@ -529,11 +529,11 @@
     <userTask id="usertask_contract_overdue" name="合同超期" activiti:candidateGroups="管理员,客服经理,客服"></userTask>
     <userTask id="usertask_material_print_review1" name="合同套打1" activiti:candidateGroups="管理员,总经理,培训经理,台州主管,渠道经理,抄单,哈尔滨抄单,台州抄单,杭州城站抄单,南京抄单,合伙人抄单"></userTask>
     <sequenceFlow id="flow314" sourceRef="parallelgateway3" targetRef="usertask_material_print_review1">
-      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${bank == '杭州城站工行'}]]></conditionExpression>
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${bank == '中国工商银行杭州城站支行'}]]></conditionExpression>
     </sequenceFlow>
     <userTask id="usertask_apply_instalment1" name="申请分期1" activiti:candidateGroups="管理员,总经理,培训经理,台州主管,杭州城站分期专员,台州分期专员"></userTask>
     <sequenceFlow id="flow315" sourceRef="parallelgateway3" targetRef="usertask_apply_instalment1">
-      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${bank == '杭州城站工行'}]]></conditionExpression>
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${bank == '中国工商银行杭州城站支行'}]]></conditionExpression>
     </sequenceFlow>
     <userTask id="usertask_apply_instalment_review" name="分期审核"></userTask>
     <sequenceFlow id="flow316" sourceRef="usertask_apply_instalment1" targetRef="usertask_apply_instalment_review">
@@ -2026,7 +2026,7 @@
         <omgdi:waypoint x="3875.0" y="2880.0"></omgdi:waypoint>
         <omgdi:waypoint x="3875.0" y="2815.0"></omgdi:waypoint>
         <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="16.0" width="100.0" x="4143.0" y="2808.0"></omgdc:Bounds>
+          <omgdc:Bounds height="16.0" width="22.0" x="4143.0" y="2808.0"></omgdc:Bounds>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="flow320" id="BPMNEdge_flow320">
