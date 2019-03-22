@@ -1342,7 +1342,7 @@ public class LoanProcessServiceImpl implements LoanProcessService {
                 Preconditions.checkArgument(ACTION_PASS == loanProcessDO.getVideoReview(), "视频审核尚未完成，请稍后重试!");
             }
             if (BANK_NAME_ICBC_HangZhou_City_Station_Branch.equals(baseInfoDO.getBank())) {
-                Preconditions.checkArgument(ACTION_PASS == loanProcessDO.getApplyInstalment(), "合伙人分期申请未提交，请提交后再推送!");
+                Preconditions.checkArgument(ACTION_PASS == loanProcessDO.getApplyInstalment1(), "合伙人分期申请未提交!");
             }
         }
         // 【征信申请】时，若身份证有效期<=（today+7），不允许提交，提示“身份证已过期，不允许申请贷款”
