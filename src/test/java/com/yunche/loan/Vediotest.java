@@ -122,14 +122,14 @@ public class Vediotest
         }
 */
 
-        FileVO fileVO = new FileVO();
+        /*FileVO fileVO = new FileVO();
 
         List<String> urls = Lists.newArrayList();
 
         fileVO.setUrls(urls);
 
 
-        System.out.println(fileVO);
+        System.out.println(fileVO);*/
 
 
         /*List<BankCodeVO> list = Lists.newArrayList();

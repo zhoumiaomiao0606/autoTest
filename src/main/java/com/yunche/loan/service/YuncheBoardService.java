@@ -1,6 +1,7 @@
 package com.yunche.loan.service;
 
 import com.yunche.loan.config.result.ResultBean;
+import com.yunche.loan.domain.entity.YuncheBoardDO;
 import com.yunche.loan.domain.param.YuncheBoardParam;
 
 public interface YuncheBoardService {
@@ -11,4 +12,6 @@ public interface YuncheBoardService {
     ResultBean listAll(YuncheBoardParam yuncheBoardParam);
 
     ResultBean<Void> delete(Integer id);
+
+    YuncheBoardDO detail(Integer id);
 }

@@ -38,6 +38,11 @@ public class YuncheBoardController
         return yuncheBoardService.listAll(yuncheBoardParam);
     }
 
+    @GetMapping(value = "/detail")
+    public ResultBean detail(@RequestParam Integer id) {
+        return ResultBean.ofSuccess(yuncheBoardService.detail(id));
+    }
+
     /*@GetMapping(value = "/listAllEmployName")
     public ResultBean listAllEmployName()
     {

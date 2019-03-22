@@ -49,7 +49,7 @@
       #{endTime,jdbcType=TIMESTAMP}, #{urls,jdbcType=VARCHAR}, #{status,jdbcType=TINYINT},
       #{content,jdbcType=LONGVARCHAR})
   </insert>
-  <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.YuncheBoardDO">
+  <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.YuncheBoardDO" useGeneratedKeys="true" keyColumn="id" keyProperty="id">
     insert into yunche_board
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="id != null">
@@ -216,34 +216,34 @@
     from yunche_board
     <where>
       <if test="applyTime != null">
-       and apply_time = #{applyTime,jdbcType=TIMESTAMP},
+       and apply_time = #{applyTime,jdbcType=TIMESTAMP}
       </if>
       <if test="applyMan != null">
-        and apply_man = #{applyMan,jdbcType=VARCHAR},
+        and apply_man = #{applyMan,jdbcType=VARCHAR}
       </if>
       <if test="applyPartment != null">
-        and apply_partment = #{applyPartment,jdbcType=VARCHAR},
+        and apply_partment = #{applyPartment,jdbcType=VARCHAR}
       </if>
       <if test="bank != null">
-        and bank = #{bank,jdbcType=VARCHAR},
+        and bank like #{bank,jdbcType=VARCHAR}
       </if>
       <if test="level != null">
-        and level = #{level,jdbcType=TINYINT},
+        and level = #{level,jdbcType=TINYINT}
       </if>
       <if test="title != null">
-        and title = #{title,jdbcType=VARCHAR},
+        and title = #{title,jdbcType=VARCHAR}
       </if>
       <if test="effectiveTime != null">
-        and effective_time = #{effectiveTime,jdbcType=TIMESTAMP},
+        and effective_time = #{effectiveTime,jdbcType=TIMESTAMP}
       </if>
       <if test="startTime != null">
-        and start_time = #{startTime,jdbcType=TIMESTAMP},
+        and start_time = #{startTime,jdbcType=TIMESTAMP}
       </if>
       <if test="endTime != null">
-        and end_time = #{endTime,jdbcType=TIMESTAMP},
+        and end_time = #{endTime,jdbcType=TIMESTAMP}
       </if>
       <if test="status != null">
-        and status = #{status,jdbcType=TINYINT},
+        and status = #{status,jdbcType=TINYINT}
       </if>
     </where>
   </select>
