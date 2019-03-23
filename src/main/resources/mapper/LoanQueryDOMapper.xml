@@ -50,7 +50,7 @@
 	        vehicle.assess_org                        as vehicle_assess_org,
 	        customer.id                               as customer_id,
             vehicle.assess_use_year                   as vehicle_assess_use_year,
-            car.car_category                          as car_category,
+            vehicle.car_category                          as car_category,
             bank_log.operate_name                     as operate_name,
             DATE_FORMAT(bank_log.operate_date,'%Y-%m-%d %H:%i:%S')   as operate_date,
             current.usertask_remit_review_create_time    as remit_details_time
@@ -110,7 +110,7 @@
         vehicle.assess_org                        as vehicle_assess_org,
         customer.id                               as customer_id,
         vehicle.assess_use_year                   as vehicle_assess_use_year,
-        car.car_category                          as car_category,
+        vehicle.car_category                          as car_category,
         bank_log.operate_name                     as operate_name,
         DATE_FORMAT(bank_log.operate_date,'%Y-%m-%d %H:%i:%S')   as operate_date,
         current.usertask_remit_review_create_time    as remit_details_time
@@ -670,7 +670,7 @@
             process.video_review                                                                    AS process_video_review,
             bank.repay_date                                                                         AS bank_repay_date,
             bank.billing_date                                                                       AS bank_billing_date,
-            car.car_category                                                                        AS car_category,
+            vehicle.car_category                                                                        AS car_category,
             cost.performance_fee                                                                    AS performance_fee,
             repay.overdue_amount                                                                    AS overdue_amount,
             remit.remit_time                                                                        AS remit_review_time,
@@ -817,7 +817,7 @@
         process.video_review                                                                    AS process_video_review,
         bank.repay_date                                                                         AS bank_repay_date,
         bank.billing_date                                                                       AS bank_billing_date,
-        car.car_category                                                                        AS car_category,
+        vehicle.car_category                                                                        AS car_category,
         cost.performance_fee                                                                    AS performance_fee,
         repay.overdue_amount                                                                    AS overdue_amount,
         remit.remit_time                                                                        AS remit_review_time,
@@ -1002,7 +1002,6 @@
         ELSE
         '待收'
         END                                                           AS needCollectKey,
-            car.car_category                                                        AS car_category,
             vehicle.vehicle_identification_number                                   AS vehicle_vehicle_identification_number,
             vehicle.license_plate_number                                            AS vehicle_license_plate_number,
             vehicle.engine_number                                                   AS vehicle_engine_number,
