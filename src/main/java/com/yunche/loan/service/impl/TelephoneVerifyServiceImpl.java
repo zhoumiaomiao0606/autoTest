@@ -75,6 +75,9 @@ public class TelephoneVerifyServiceImpl implements TelephoneVerifyService {
     @Autowired
     private PartnerDOMapper partnerDOMapper;
 
+    @Autowired
+    private CurrentNodeManagerDOMapper currentNodeManagerDOMapper;
+
     @Override
     public RecombinationVO detail(Long orderId) {
 
@@ -128,6 +131,17 @@ public class TelephoneVerifyServiceImpl implements TelephoneVerifyService {
         universalInfoVO.setVehicle_apply_license_plate_area(tmpApplyLicensePlateArea);
         universalInfoVO.setRiskBearRate(partnerDO.getRiskBearRate()==null?new BigDecimal("0"):partnerDO.getRiskBearRate());
         recombinationVO.setInfo(universalInfoVO);
+
+        if (loanTelephoneVerifyDO!=null)
+        {
+            CurrentNodeManagerDO currentNodeManagerDO = currentNodeManagerDOMapper.selectByPrimaryKey(orderId);
+            if (currentNodeManagerDO !=null)
+            {
+                loanTelephoneVerifyDO.setPassTime(currentNodeManagerDO.getUsertaskTelephoneVerifyCreateTime());
+                loanTelephoneVerifyDO.setPassName(currentNodeManagerDO.getUsertaskTelephoneVerifyGmtUserName());
+            }
+
+        }
 
         recombinationVO.setTelephone_des(loanTelephoneVerifyDO);
         recombinationVO.setCredits(credits);

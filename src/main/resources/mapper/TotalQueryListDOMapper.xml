@@ -4479,7 +4479,7 @@
              and   node.usertask_remit_review_create_time between #{remitTimeStart} and #{remitTimeEnd}
             </if>
 
-        HAVING contractOverDays &gt;=5
+        HAVING contractOverDays &gt;=0
         ORDER BY node.usertask_remit_review_create_time ASC
 
     </select>

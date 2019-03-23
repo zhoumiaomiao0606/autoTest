@@ -37,4 +37,8 @@ public class LoanTelephoneVerifyDO {
     private Byte keyRiskPremiumConfirm;
 
     private Byte passLevel;
+
+    private String passTime;
+
+    private String passName;
 }
