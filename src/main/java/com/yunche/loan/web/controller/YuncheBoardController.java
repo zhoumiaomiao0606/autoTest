@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 @CrossOrigin
 @RestController
-@RequestMapping("/api/v1/yuncheBoard")
+@RequestMapping(value = {"/api/v1/yuncheBoard", "/api/v1/app/yuncheBoard"})
 public class YuncheBoardController
 {
 
