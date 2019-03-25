@@ -608,8 +608,8 @@ public class LoanDataFlowServiceImpl implements LoanDataFlowService {
                 String mortgageHandDate = StringUtil.isEmpty(tmp[2].trim()) ? null : tmp[2].trim();
                 String mortgageSendDate = StringUtil.isEmpty(tmp[3].trim()) ? null : tmp[3].trim();
                 List<String> list = dataManagementInfoDOMapper.selectOrderByIdCard(idCard);
-                if(list != null){
-                    if(list.size()>1){
+                if(list != null && list.size() !=0){
+                    if(list.size()>1 ){
                         info.add(name+idCard+"合同已上交的订单存在多个，手动处理");
                         error++;
                     }else{
