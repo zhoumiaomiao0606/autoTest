@@ -2,10 +2,7 @@ package com.yunche.loan.web.controller;
 
 import com.yunche.loan.config.anno.Limiter;
 import com.yunche.loan.config.result.ResultBean;
-import com.yunche.loan.domain.param.CreditApplyOrderParam;
-import com.yunche.loan.domain.param.CreditRecordParam;
-import com.yunche.loan.domain.param.LoanCarInfoParam;
-import com.yunche.loan.domain.param.LoanHomeVisitParam;
+import com.yunche.loan.domain.param.*;
 import com.yunche.loan.domain.query.LoanCreditExportQuery;
 import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.service.LoanOrderService;
@@ -208,6 +205,12 @@ public class LoanOrderController {
     @GetMapping(value = "/customerinfo/simple")
     public ResultBean<List<LoanSimpleCustomerInfoVO>> simpleCustomerInfo(@RequestParam Long orderId) {
         return loanOrderService.simpleCustomerInfo(orderId);
+    }
+
+
+    @PostMapping(value = "/loanapply/submit")
+    public ResultBean loanapplySubmit(@RequestBody LoanapplyMutiparam loanapplyMutiparam) {
+        return loanOrderService.loanapplySubmit(loanapplyMutiparam);
     }
 }
 
