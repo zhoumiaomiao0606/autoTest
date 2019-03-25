@@ -38,6 +38,18 @@ public class YuncheBoardController
         return yuncheBoardService.listAll(yuncheBoardParam);
     }
 
+    @PostMapping(value = "/listAllByLoginUser", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResultBean listAllByLoginUser(@RequestBody YuncheBoardParam yuncheBoardParam)
+    {
+        return yuncheBoardService.listAllByLoginUser(yuncheBoardParam);
+    }
+
+    @PostMapping(value = "/board", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResultBean board(@RequestBody YuncheBoardParam yuncheBoardParam)
+    {
+        return yuncheBoardService.board(yuncheBoardParam);
+    }
+
     @GetMapping(value = "/detail")
     public ResultBean detail(@RequestParam Integer id) {
         return ResultBean.ofSuccess(yuncheBoardService.detail(id));

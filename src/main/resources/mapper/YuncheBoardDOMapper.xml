@@ -14,13 +14,14 @@
     <result column="end_time" jdbcType="TIMESTAMP" property="endTime" />
     <result column="urls" jdbcType="VARCHAR" property="urls" />
     <result column="status" jdbcType="TINYINT" property="status" />
+    <result column="publish_time" jdbcType="TIMESTAMP" property="publishTime" />
   </resultMap>
   <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.yunche.loan.domain.entity.YuncheBoardDO">
     <result column="content" jdbcType="LONGVARCHAR" property="content" />
   </resultMap>
   <sql id="Base_Column_List">
     id, apply_time, apply_man, apply_partment, bank, level, title, effective_time, start_time,
-    end_time, urls, status
+    end_time, urls, status, publish_time
   </sql>
   <sql id="Blob_Column_List">
     content
@@ -37,17 +38,17 @@
     delete from yunche_board
     where id = #{id,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" parameterType="com.yunche.loan.domain.entity.YuncheBoardDO">
+  <insert id="insert" parameterType="com.yunche.loan.domain.entity.YuncheBoardDO" useGeneratedKeys="true" keyColumn="id" keyProperty="id">
     insert into yunche_board (id, apply_time, apply_man,
       apply_partment, bank, level,
       title, effective_time, start_time,
       end_time, urls, status,
-      content)
+      publish_time, content)
     values (#{id,jdbcType=INTEGER}, #{applyTime,jdbcType=TIMESTAMP}, #{applyMan,jdbcType=VARCHAR},
       #{applyPartment,jdbcType=VARCHAR}, #{bank,jdbcType=VARCHAR}, #{level,jdbcType=TINYINT},
       #{title,jdbcType=VARCHAR}, #{effectiveTime,jdbcType=TIMESTAMP}, #{startTime,jdbcType=TIMESTAMP},
       #{endTime,jdbcType=TIMESTAMP}, #{urls,jdbcType=VARCHAR}, #{status,jdbcType=TINYINT},
-      #{content,jdbcType=LONGVARCHAR})
+      #{publishTime,jdbcType=TIMESTAMP}, #{content,jdbcType=LONGVARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.YuncheBoardDO" useGeneratedKeys="true" keyColumn="id" keyProperty="id">
     insert into yunche_board
@@ -87,6 +88,9 @@
       </if>
       <if test="status != null">
         status,
+      </if>
+      <if test="publishTime != null">
+        publish_time,
       </if>
       <if test="content != null">
         content,
@@ -129,6 +133,9 @@
       <if test="status != null">
         #{status,jdbcType=TINYINT},
       </if>
+      <if test="publishTime != null">
+        #{publishTime,jdbcType=TIMESTAMP},
+      </if>
       <if test="content != null">
         #{content,jdbcType=LONGVARCHAR},
       </if>
@@ -170,6 +177,9 @@
       <if test="status != null">
         status = #{status,jdbcType=TINYINT},
       </if>
+      <if test="publishTime != null">
+        publish_time = #{publishTime,jdbcType=TIMESTAMP},
+      </if>
       <if test="content != null">
         content = #{content,jdbcType=LONGVARCHAR},
       </if>
@@ -189,6 +199,7 @@
       end_time = #{endTime,jdbcType=TIMESTAMP},
       urls = #{urls,jdbcType=VARCHAR},
       status = #{status,jdbcType=TINYINT},
+      publish_time = #{publishTime,jdbcType=TIMESTAMP},
       content = #{content,jdbcType=LONGVARCHAR}
     where id = #{id,jdbcType=INTEGER}
   </update>
@@ -204,7 +215,8 @@
       start_time = #{startTime,jdbcType=TIMESTAMP},
       end_time = #{endTime,jdbcType=TIMESTAMP},
       urls = #{urls,jdbcType=VARCHAR},
-      status = #{status,jdbcType=TINYINT}
+      status = #{status,jdbcType=TINYINT},
+      publish_time = #{publishTime,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=INTEGER}
   </update>
 
@@ -222,10 +234,10 @@
         and apply_man = #{applyMan,jdbcType=VARCHAR}
       </if>
       <if test="applyPartment != null">
-        and apply_partment = #{applyPartment,jdbcType=VARCHAR}
+        and apply_partment like concat('%',#{applyPartment,jdbcType=VARCHAR},'%')
       </if>
       <if test="bank != null">
-        and bank like #{bank,jdbcType=VARCHAR}
+        and bank like concat('%',#{bank,jdbcType=VARCHAR},'%')
       </if>
       <if test="level != null">
         and level = #{level,jdbcType=TINYINT}
@@ -233,18 +245,35 @@
       <if test="title != null">
         and title = #{title,jdbcType=VARCHAR}
       </if>
-      <if test="effectiveTime != null">
-        and effective_time = #{effectiveTime,jdbcType=TIMESTAMP}
-      </if>
-      <if test="startTime != null">
-        and start_time = #{startTime,jdbcType=TIMESTAMP}
-      </if>
-      <if test="endTime != null">
-        and end_time = #{endTime,jdbcType=TIMESTAMP}
+      <if test="startTime != null and endTime !=null">
+        and effective_time between #{startTime,jdbcType=VARCHAR} and #{endTime,jdbcType=VARCHAR}
       </if>
       <if test="status != null">
         and status = #{status,jdbcType=TINYINT}
       </if>
     </where>
+  </select>
+
+  <select id="selectBoardsbyPartner" parameterType="com.yunche.loan.domain.param.YuncheBoardParam" resultMap="ResultMapWithBLOBs">
+    select
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from yunche_board
+    <where>
+        now() between start_time and end_time
+        and status = 1
+      and
+      case when #{maxGroupLevel} = 3 then 1=1
+      else 1=1
+      <if test="bankList != null and bankList.size() > 0">
+        and
+        <foreach item="item" index="index" collection="bankList" open="(" separator=" or " close=")">
+          bank like concat('%',#{item},'%')
+        </foreach>
+      </if>
+      end
+    </where>
+    order by id desc
   </select>
 </mapper>

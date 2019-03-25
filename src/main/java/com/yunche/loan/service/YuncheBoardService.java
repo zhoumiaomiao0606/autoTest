@@ -14,4 +14,8 @@ public interface YuncheBoardService {
     ResultBean<Void> delete(Integer id);
 
     YuncheBoardDO detail(Integer id);
+
+    ResultBean listAllByLoginUser(YuncheBoardParam yuncheBoardParam);
+
+    ResultBean board(YuncheBoardParam yuncheBoardParam);
 }

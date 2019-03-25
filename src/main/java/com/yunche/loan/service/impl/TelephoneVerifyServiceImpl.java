@@ -141,6 +141,12 @@ public class TelephoneVerifyServiceImpl implements TelephoneVerifyService {
                 loanTelephoneVerifyDO.setPassName(currentNodeManagerDO.getUsertaskTelephoneVerifyGmtUserName());
             }
 
+            UniversalApprovalInfo universalApprovalInfo = loanQueryDOMapper.selectUniversalApprovalInfo(TELEPHONE_VERIFY.getCode(), orderId);
+            if (universalApprovalInfo !=null)
+            {
+                loanTelephoneVerifyDO.setRemark(universalApprovalInfo.getInfo());
+            }
+
         }
 
         recombinationVO.setTelephone_des(loanTelephoneVerifyDO);

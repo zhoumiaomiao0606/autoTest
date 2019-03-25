@@ -21,4 +21,6 @@ public interface YuncheBoardDOMapper {
     int updateByPrimaryKey(YuncheBoardDO record);
 
     List<YuncheBoardDO> selectBoards(YuncheBoardParam yuncheBoardParam);
+
+    List<YuncheBoardDO> selectBoardsbyPartner(YuncheBoardParam yuncheBoardParam);
 }

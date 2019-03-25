@@ -41,4 +41,6 @@ public class LoanTelephoneVerifyDO {
     private String passTime;
 
     private String passName;
+
+    private String remark;
 }
