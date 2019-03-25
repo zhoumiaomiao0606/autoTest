@@ -12,6 +12,7 @@ import com.yunche.loan.domain.entity.LoanOrderDO;
 import com.yunche.loan.domain.param.ZhongAnCusParam;
 import com.yunche.loan.domain.param.ZhongAnQueryParam;
 import com.yunche.loan.domain.vo.BankCodeVO;
+import com.yunche.loan.domain.vo.FileVO;
 import com.yunche.loan.domain.vo.SDCOrders;
 import net.bramp.ffmpeg.FFmpeg;
 import net.bramp.ffmpeg.FFmpegExecutor;
@@ -88,6 +89,7 @@ public class Vediotest
         System.out.println("====="+collect.size()+ JSON.toJSONString(collect));*/
         //System.out.println("====="+(null==2));
 
+        //众安
         String param = "{\"order_id\":\"1901291042140362363\",\"customers\":[{\"name\":\"杨璐嘉\",\"tel\":\"13677347959\",\"idcard\":\"430521198412249220\",\"customertype\":\"特殊关联人\",\"ralationship\":\"1\",\"loanmoney\":\"1\"}]}";
         ZhongAnQueryParam zhongAnQueryParam = new ZhongAnQueryParam();
 
@@ -119,6 +121,14 @@ public class Vediotest
             System.out.println("====错误");
         }
 
+        /*FileVO fileVO = new FileVO();
+
+        List<String> urls = Lists.newArrayList();
+
+        fileVO.setUrls(urls);
+
+
+        System.out.println(fileVO);*/
 
 
         /*List<BankCodeVO> list = Lists.newArrayList();

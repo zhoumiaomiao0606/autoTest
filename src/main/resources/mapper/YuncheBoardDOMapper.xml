@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yunche.loan.mapper.YuncheBoardDOMapper">
+  <resultMap id="BaseResultMap" type="com.yunche.loan.domain.entity.YuncheBoardDO">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="apply_time" jdbcType="TIMESTAMP" property="applyTime" />
+    <result column="apply_man" jdbcType="VARCHAR" property="applyMan" />
+    <result column="apply_partment" jdbcType="VARCHAR" property="applyPartment" />
+    <result column="bank" jdbcType="VARCHAR" property="bank" />
+    <result column="level" jdbcType="TINYINT" property="level" />
+    <result column="title" jdbcType="VARCHAR" property="title" />
+    <result column="effective_time" jdbcType="TIMESTAMP" property="effectiveTime" />
+    <result column="start_time" jdbcType="TIMESTAMP" property="startTime" />
+    <result column="end_time" jdbcType="TIMESTAMP" property="endTime" />
+    <result column="urls" jdbcType="VARCHAR" property="urls" />
+    <result column="status" jdbcType="TINYINT" property="status" />
+    <result column="publish_time" jdbcType="TIMESTAMP" property="publishTime" />
+  </resultMap>
+  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.yunche.loan.domain.entity.YuncheBoardDO">
+    <result column="content" jdbcType="LONGVARCHAR" property="content" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, apply_time, apply_man, apply_partment, bank, level, title, effective_time, start_time,
+    end_time, urls, status, publish_time
+  </sql>
+  <sql id="Blob_Column_List">
+    content
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="ResultMapWithBLOBs">
+    select
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from yunche_board
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from yunche_board
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.yunche.loan.domain.entity.YuncheBoardDO" useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+    insert into yunche_board (id, apply_time, apply_man,
+      apply_partment, bank, level,
+      title, effective_time, start_time,
+      end_time, urls, status,
+      publish_time, content)
+    values (#{id,jdbcType=INTEGER}, #{applyTime,jdbcType=TIMESTAMP}, #{applyMan,jdbcType=VARCHAR},
+      #{applyPartment,jdbcType=VARCHAR}, #{bank,jdbcType=VARCHAR}, #{level,jdbcType=TINYINT},
+      #{title,jdbcType=VARCHAR}, #{effectiveTime,jdbcType=TIMESTAMP}, #{startTime,jdbcType=TIMESTAMP},
+      #{endTime,jdbcType=TIMESTAMP}, #{urls,jdbcType=VARCHAR}, #{status,jdbcType=TINYINT},
+      #{publishTime,jdbcType=TIMESTAMP}, #{content,jdbcType=LONGVARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.yunche.loan.domain.entity.YuncheBoardDO" useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+    insert into yunche_board
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="applyTime != null">
+        apply_time,
+      </if>
+      <if test="applyMan != null">
+        apply_man,
+      </if>
+      <if test="applyPartment != null">
+        apply_partment,
+      </if>
+      <if test="bank != null">
+        bank,
+      </if>
+      <if test="level != null">
+        level,
+      </if>
+      <if test="title != null">
+        title,
+      </if>
+      <if test="effectiveTime != null">
+        effective_time,
+      </if>
+      <if test="startTime != null">
+        start_time,
+      </if>
+      <if test="endTime != null">
+        end_time,
+      </if>
+      <if test="urls != null">
+        urls,
+      </if>
+      <if test="status != null">
+        status,
+      </if>
+      <if test="publishTime != null">
+        publish_time,
+      </if>
+      <if test="content != null">
+        content,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="applyTime != null">
+        #{applyTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="applyMan != null">
+        #{applyMan,jdbcType=VARCHAR},
+      </if>
+      <if test="applyPartment != null">
+        #{applyPartment,jdbcType=VARCHAR},
+      </if>
+      <if test="bank != null">
+        #{bank,jdbcType=VARCHAR},
+      </if>
+      <if test="level != null">
+        #{level,jdbcType=TINYINT},
+      </if>
+      <if test="title != null">
+        #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="effectiveTime != null">
+        #{effectiveTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="startTime != null">
+        #{startTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endTime != null">
+        #{endTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="urls != null">
+        #{urls,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=TINYINT},
+      </if>
+      <if test="publishTime != null">
+        #{publishTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="content != null">
+        #{content,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.yunche.loan.domain.entity.YuncheBoardDO">
+    update yunche_board
+    <set>
+      <if test="applyTime != null">
+        apply_time = #{applyTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="applyMan != null">
+        apply_man = #{applyMan,jdbcType=VARCHAR},
+      </if>
+      <if test="applyPartment != null">
+        apply_partment = #{applyPartment,jdbcType=VARCHAR},
+      </if>
+      <if test="bank != null">
+        bank = #{bank,jdbcType=VARCHAR},
+      </if>
+      <if test="level != null">
+        level = #{level,jdbcType=TINYINT},
+      </if>
+      <if test="title != null">
+        title = #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="effectiveTime != null">
+        effective_time = #{effectiveTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="startTime != null">
+        start_time = #{startTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endTime != null">
+        end_time = #{endTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="urls != null">
+        urls = #{urls,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        status = #{status,jdbcType=TINYINT},
+      </if>
+      <if test="publishTime != null">
+        publish_time = #{publishTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="content != null">
+        content = #{content,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.yunche.loan.domain.entity.YuncheBoardDO">
+    update yunche_board
+    set apply_time = #{applyTime,jdbcType=TIMESTAMP},
+      apply_man = #{applyMan,jdbcType=VARCHAR},
+      apply_partment = #{applyPartment,jdbcType=VARCHAR},
+      bank = #{bank,jdbcType=VARCHAR},
+      level = #{level,jdbcType=TINYINT},
+      title = #{title,jdbcType=VARCHAR},
+      effective_time = #{effectiveTime,jdbcType=TIMESTAMP},
+      start_time = #{startTime,jdbcType=TIMESTAMP},
+      end_time = #{endTime,jdbcType=TIMESTAMP},
+      urls = #{urls,jdbcType=VARCHAR},
+      status = #{status,jdbcType=TINYINT},
+      publish_time = #{publishTime,jdbcType=TIMESTAMP},
+      content = #{content,jdbcType=LONGVARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.YuncheBoardDO">
+    update yunche_board
+    set apply_time = #{applyTime,jdbcType=TIMESTAMP},
+      apply_man = #{applyMan,jdbcType=VARCHAR},
+      apply_partment = #{applyPartment,jdbcType=VARCHAR},
+      bank = #{bank,jdbcType=VARCHAR},
+      level = #{level,jdbcType=TINYINT},
+      title = #{title,jdbcType=VARCHAR},
+      effective_time = #{effectiveTime,jdbcType=TIMESTAMP},
+      start_time = #{startTime,jdbcType=TIMESTAMP},
+      end_time = #{endTime,jdbcType=TIMESTAMP},
+      urls = #{urls,jdbcType=VARCHAR},
+      status = #{status,jdbcType=TINYINT},
+      publish_time = #{publishTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+  <select id="selectBoards" parameterType="com.yunche.loan.domain.param.YuncheBoardParam" resultMap="ResultMapWithBLOBs">
+    select
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from yunche_board
+    <where>
+      <if test="applyTime != null">
+       and apply_time = #{applyTime,jdbcType=TIMESTAMP}
+      </if>
+      <if test="applyMan != null">
+        and apply_man = #{applyMan,jdbcType=VARCHAR}
+      </if>
+      <if test="applyPartment != null">
+        and apply_partment like concat('%',#{applyPartment,jdbcType=VARCHAR},'%')
+      </if>
+      <if test="bank != null">
+        and bank like concat('%',#{bank,jdbcType=VARCHAR},'%')
+      </if>
+      <if test="level != null">
+        and level = #{level,jdbcType=TINYINT}
+      </if>
+      <if test="title != null">
+        and title = #{title,jdbcType=VARCHAR}
+      </if>
+      <if test="startTime != null and endTime !=null">
+        and effective_time between #{startTime,jdbcType=VARCHAR} and #{endTime,jdbcType=VARCHAR}
+      </if>
+      <if test="status != null">
+        and status = #{status,jdbcType=TINYINT}
+      </if>
+    </where>
+  </select>
+
+  <select id="selectBoardsbyPartner" parameterType="com.yunche.loan.domain.param.YuncheBoardParam" resultMap="ResultMapWithBLOBs">
+    select
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from yunche_board
+    <where>
+        now() between start_time and end_time
+        and status = 1
+      and
+      case when #{maxGroupLevel} = 3 then 1=1
+      else 1=1
+      <if test="bankList != null and bankList.size() > 0">
+        and
+        <foreach item="item" index="index" collection="bankList" open="(" separator=" or " close=")">
+          bank like concat('%',#{item},'%')
+        </foreach>
+      </if>
+      end
+    </where>
+    order by publish_time desc
+  </select>
+</mapper>

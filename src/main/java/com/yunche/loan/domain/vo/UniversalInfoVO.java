@@ -1,8 +1,10 @@
 package com.yunche.loan.domain.vo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.util.Date;
 
 @Data
 public class UniversalInfoVO {
@@ -142,4 +144,12 @@ public class UniversalInfoVO {
      * 城市id---用于判断是否城市是台州
      */
     private Long cityId;
+
+    //初登日期
+    @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss", timezone = "GMT+8")
+    private Date vehicle_register_date;
+
+    //面签登记提交时间
+    @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss", timezone = "GMT+8")
+    private Date loan_info_record_date;
 }

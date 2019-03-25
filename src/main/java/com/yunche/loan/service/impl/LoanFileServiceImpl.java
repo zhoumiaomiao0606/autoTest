@@ -93,14 +93,11 @@ public class LoanFileServiceImpl implements LoanFileService {
                             typeFilesMap.put(type, fileVO);
 
                         } else {
+
                             FileVO fileVO = typeFilesMap.get(type);
-                            List<String> urls = JSON.parseArray(e.getPath(), String.class);
-                            if (!CollectionUtils.isEmpty(fileVO.getUrls())) {
-                                List<String> urls1 = fileVO.getUrls();
-                                urls1.addAll(urls);
-                                fileVO.setUrls(urls1);
-                            } else {
-                                fileVO.setUrls(urls);
+                            List<String> existUrls = JSON.parseArray(e.getPath(), String.class);
+                            if (!CollectionUtils.isEmpty(existUrls)) {
+                                fileVO.getUrls().addAll(existUrls);
                             }
 
                         }
@@ -109,7 +106,7 @@ public class LoanFileServiceImpl implements LoanFileService {
         }
 
         List<FileVO> fileVOS = typeFilesMap.values()
-                .parallelStream()
+                .stream()
                 .sorted(Comparator.comparing(FileVO::getType))
                 .collect(Collectors.toList());
 

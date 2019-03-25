@@ -32,6 +32,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
+import static com.yunche.loan.config.constant.LoanProcessEnum.LOAN_INFO_RECORD;
 import static com.yunche.loan.config.constant.LoanProcessEnum.TELEPHONE_VERIFY;
 
 @Service
@@ -74,6 +75,12 @@ public class TelephoneVerifyServiceImpl implements TelephoneVerifyService {
 
     @Autowired
     private PartnerDOMapper partnerDOMapper;
+
+    @Autowired
+    private CurrentNodeManagerDOMapper currentNodeManagerDOMapper;
+
+    @Autowired
+    private LoanProcessLogDOMapper loanProcessLogDOMapper;
 
     @Override
     public RecombinationVO detail(Long orderId) {
@@ -125,9 +132,32 @@ public class TelephoneVerifyServiceImpl implements TelephoneVerifyService {
         PartnerDO partnerDO = partnerDOMapper.selectByPrimaryKey(loanBaseInfoDO.getPartnerId(), new Byte("0"));
 
         UniversalInfoVO universalInfoVO = loanQueryDOMapper.selectUniversalInfo(orderId);
+
+        LoanProcessLogDO loanProcessLogDO = loanProcessLogDOMapper.lastLogByOrderIdAndTaskDefinitionKey(orderId, LOAN_INFO_RECORD.getCode());
+        if (loanProcessLogDO!=null)
+        {
+            universalInfoVO.setLoan_info_record_date(loanProcessLogDO.getCreateTime());
+        }
         universalInfoVO.setVehicle_apply_license_plate_area(tmpApplyLicensePlateArea);
         universalInfoVO.setRiskBearRate(partnerDO.getRiskBearRate()==null?new BigDecimal("0"):partnerDO.getRiskBearRate());
         recombinationVO.setInfo(universalInfoVO);
+
+        if (loanTelephoneVerifyDO!=null)
+        {
+            CurrentNodeManagerDO currentNodeManagerDO = currentNodeManagerDOMapper.selectByPrimaryKey(orderId);
+            if (currentNodeManagerDO !=null)
+            {
+                loanTelephoneVerifyDO.setPassTime(currentNodeManagerDO.getUsertaskTelephoneVerifyCreateTime());
+                loanTelephoneVerifyDO.setPassName(currentNodeManagerDO.getUsertaskTelephoneVerifyGmtUserName());
+            }
+
+            UniversalApprovalInfo universalApprovalInfo = loanQueryDOMapper.selectUniversalApprovalInfo(TELEPHONE_VERIFY.getCode(), orderId);
+            if (universalApprovalInfo !=null)
+            {
+                loanTelephoneVerifyDO.setRemark(universalApprovalInfo.getInfo());
+            }
+
+        }
 
         recombinationVO.setTelephone_des(loanTelephoneVerifyDO);
         recombinationVO.setCredits(credits);

@@ -14,7 +14,7 @@ public class ContractOverDueDetailVO
 
     private VehicleInfoVO vehicleInfoVO;
 
-    private OverdueInterestDO overdueInterestDO;
+    private OverdueInterestDO overdueInterestDO = new OverdueInterestDO();
 
     private List<UniversalCustomerVO> customers;
 }

@@ -26,6 +26,7 @@ public class ActivitiConfig {
         config.setTransactionManager(transactionManager);
         config.setDatabaseType("mysql");
         config.setDatabaseSchemaUpdate("true");
+        //config.setDatabaseSchemaUpdate("drop-create");
         return config;
     }
 }

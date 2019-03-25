@@ -50,7 +50,7 @@
 	        vehicle.assess_org                        as vehicle_assess_org,
 	        customer.id                               as customer_id,
             vehicle.assess_use_year                   as vehicle_assess_use_year,
-            car.car_category                          as car_category,
+            vehicle.car_category                          as car_category,
             bank_log.operate_name                     as operate_name,
             DATE_FORMAT(bank_log.operate_date,'%Y-%m-%d %H:%i:%S')   as operate_date,
             current.usertask_remit_review_create_time    as remit_details_time
@@ -110,7 +110,7 @@
         vehicle.assess_org                        as vehicle_assess_org,
         customer.id                               as customer_id,
         vehicle.assess_use_year                   as vehicle_assess_use_year,
-        car.car_category                          as car_category,
+        vehicle.car_category                          as car_category,
         bank_log.operate_name                     as operate_name,
         DATE_FORMAT(bank_log.operate_date,'%Y-%m-%d %H:%i:%S')   as operate_date,
         current.usertask_remit_review_create_time    as remit_details_time
@@ -332,7 +332,7 @@
         left join loan_base_info b on b.id = o.loan_base_info_id
         where
         (
-        (p.telephone_verify = 1 and p.loan_review != 1 and p.apply_instalment != 1)
+        (p.telephone_verify = 1 and p.loan_review != 1 and p.apply_instalment1 != 1)
         or
         p.remit_review = 21
         )
@@ -670,7 +670,7 @@
             process.video_review                                                                    AS process_video_review,
             bank.repay_date                                                                         AS bank_repay_date,
             bank.billing_date                                                                       AS bank_billing_date,
-            car.car_category                                                                        AS car_category,
+            vehicle.car_category                                                                        AS car_category,
             cost.performance_fee                                                                    AS performance_fee,
             repay.overdue_amount                                                                    AS overdue_amount,
             remit.remit_time                                                                        AS remit_review_time,
@@ -773,6 +773,7 @@
         car.pay_month                                                                           AS pay_month,
         car.distributor_name                                                                    AS car_distributor_name,
         vehicle.color                                                                           AS vehicle_color,
+                vehicle.register_date                                                                           AS vehicle_register_date,
         vehicle.now_driving_license_owner                                                       AS vehicle_now_driving_license_owner,
         vehicle.old_driving_license_owner                                                       AS vehicle_old_driving_license_owner,
         vehicle.license_plate_type                                                              AS vehicle_license_plate_type,
@@ -817,7 +818,7 @@
         process.video_review                                                                    AS process_video_review,
         bank.repay_date                                                                         AS bank_repay_date,
         bank.billing_date                                                                       AS bank_billing_date,
-        car.car_category                                                                        AS car_category,
+        vehicle.car_category                                                                        AS car_category,
         cost.performance_fee                                                                    AS performance_fee,
         repay.overdue_amount                                                                    AS overdue_amount,
         remit.remit_time                                                                        AS remit_review_time,
@@ -1002,7 +1003,6 @@
         ELSE
         '待收'
         END                                                           AS needCollectKey,
-            car.car_category                                                        AS car_category,
             vehicle.vehicle_identification_number                                   AS vehicle_vehicle_identification_number,
             vehicle.license_plate_number                                            AS vehicle_license_plate_number,
             vehicle.engine_number                                                   AS vehicle_engine_number,
@@ -2830,14 +2830,14 @@
         f.loan_amount                                                                           AS loanAmount,
         remit_details.remit_amount                                                              AS remitAmount,
 
-        loan.bank                                                                               AS bank
+        b.bank                                                                               AS bank
 
         from (select * from loan_order where id = #{orderId,jdbcType=BIGINT}) main_order
         left join loan_process process on main_order.id = process.order_id
         left join loan_customer customer on main_order.loan_customer_id = customer.id
-        left join loan_base_info loan on main_order.loan_base_info_id = loan.id
-        left join employee salesman on loan.salesman_id = salesman.id
-        left join partner partner on loan.partner_id = partner.id
+        left join loan_base_info  b on main_order.loan_base_info_id = b.id
+        left join employee salesman on b.salesman_id = salesman.id
+        left join partner partner on b.partner_id = partner.id
         LEFT JOIN loan_financial_plan f on main_order.loan_financial_plan_id = f.id
         LEFT JOIN remit_details ON main_order.remit_details_id = remit_details.id
         LEFT JOIN current_node_manager node ON node.order_id = main_order.id
