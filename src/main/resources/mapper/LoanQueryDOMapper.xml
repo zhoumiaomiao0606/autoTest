@@ -773,6 +773,7 @@
         car.pay_month                                                                           AS pay_month,
         car.distributor_name                                                                    AS car_distributor_name,
         vehicle.color                                                                           AS vehicle_color,
+                vehicle.register_date                                                                           AS vehicle_register_date,
         vehicle.now_driving_license_owner                                                       AS vehicle_now_driving_license_owner,
         vehicle.old_driving_license_owner                                                       AS vehicle_old_driving_license_owner,
         vehicle.license_plate_type                                                              AS vehicle_license_plate_type,
