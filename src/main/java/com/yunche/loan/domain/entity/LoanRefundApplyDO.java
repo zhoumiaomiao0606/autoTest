@@ -27,6 +27,8 @@ public class LoanRefundApplyDO {
      * 退款原因(1-金融方案修改;2-退款不做;3-业务审批重审;)
      */
     private Byte refund_reason;
+
+    private Byte refund_cause;
     /**
      * 退款账号详情ID
      */
@@ -45,4 +47,8 @@ public class LoanRefundApplyDO {
     private BigDecimal other_interest;
 
     private BigDecimal penalty_interest;
+
+    private String return_text;
+
+    private Byte retrun_reason;
 }

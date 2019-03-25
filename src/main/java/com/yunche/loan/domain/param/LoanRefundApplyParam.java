@@ -23,6 +23,12 @@ public class LoanRefundApplyParam {
     private String refund_date;
 
     private String refund_reason;
+
+    private String refund_cause;
+
+    private String retrun_reason;
+
+    private String return_text;
     /**
      * 退款账号ID
      */

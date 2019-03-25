@@ -18,6 +18,9 @@
         <result column="advances_interest" jdbcType="DECIMAL" property="advances_interest" />
         <result column="other_interest" jdbcType="DECIMAL" property="other_interest" />
         <result column="penalty_interest" jdbcType="DECIMAL" property="penalty_interest" />
+        <result column="refund_cause" jdbcType="TINYINT" property="refund_cause" />
+        <result column="retrun_reason" jdbcType="TINYINT" property="retrun_reason" />
+        <result column="return_text" jdbcType="VARCHAR" property="return_text" />
     </resultMap>
     <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.yunche.loan.domain.entity.LoanRefundApplyDO">
         <result column="path" jdbcType="LONGVARCHAR" property="path" />
@@ -25,7 +28,7 @@
     <sql id="Base_Column_List">
         id, order_id, initiator_id, initiator_name, auditor_id, auditor_name, refund_amount,
         refund_date, refund_reason, refund_apply_account_id, start_time, end_time, status,
-        advances_interest, other_interest, penalty_interest
+        advances_interest, other_interest, penalty_interest,refund_cause,retrun_reason,return_text
     </sql>
     <sql id="Blob_Column_List">
         path
@@ -48,13 +51,14 @@
         refund_amount, refund_date, refund_reason,
         refund_apply_account_id, start_time, end_time,
         status, advances_interest, other_interest,
-        penalty_interest, path)
+        penalty_interest, path,refund_cause,retrun_reason,return_text)
         values (#{id,jdbcType=BIGINT}, #{order_id,jdbcType=BIGINT}, #{initiator_id,jdbcType=BIGINT},
         #{initiator_name,jdbcType=VARCHAR}, #{auditor_id,jdbcType=BIGINT}, #{auditor_name,jdbcType=VARCHAR},
         #{refund_amount,jdbcType=DECIMAL}, #{refund_date,jdbcType=DATE}, #{refund_reason,jdbcType=TINYINT},
         #{refund_apply_account_id,jdbcType=BIGINT}, #{start_time,jdbcType=TIMESTAMP}, #{end_time,jdbcType=TIMESTAMP},
         #{status,jdbcType=TINYINT}, #{advances_interest,jdbcType=DECIMAL}, #{other_interest,jdbcType=DECIMAL},
-        #{penalty_interest,jdbcType=DECIMAL}, #{path,jdbcType=LONGVARCHAR})
+        #{penalty_interest,jdbcType=DECIMAL}, #{path,jdbcType=LONGVARCHAR}, #{refund_cause,jdbcType=TINYINT}
+        ,#{retrun_reason,jdbcType=TINYINT},#{return_text,jdbcType=VARCHAR})
     </insert>
     <insert id="insertSelective" useGeneratedKeys="true" keyProperty="id"  keyColumn="id" parameterType="com.yunche.loan.domain.entity.LoanRefundApplyDO">
         insert into loan_refund_apply
@@ -110,6 +114,15 @@
             <if test="path != null">
                 path,
             </if>
+            <if test="refund_cause != null">
+                refund_cause,
+            </if>
+            <if test="retrun_reason != null">
+                retrun_reason,
+            </if>
+            <if test="return_text != null">
+                return_text,
+            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="id != null">
@@ -162,6 +175,15 @@
             </if>
             <if test="path != null">
                 #{path,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="refund_cause != null">
+                #{refund_cause,jdbcType=TINYINT},
+            </if>
+            <if test="retrun_reason != null">
+                #{retrun_reason,jdbcType=TINYINT},
+            </if>
+            <if test="return_text != null">
+                #{return_text,jdbcType=VARCHAR},
             </if>
         </trim>
     </insert>
@@ -216,6 +238,15 @@
             <if test="path != null">
                 path = #{path,jdbcType=LONGVARCHAR},
             </if>
+            <if test="refund_cause != null">
+                refund_cause = #{refund_cause,jdbcType=TINYINT},
+            </if>
+            <if test="retrun_reason != null">
+                retrun_reason = #{retrun_reason,jdbcType=TINYINT},
+            </if>
+            <if test="return_text != null">
+                return_text = #{return_text,jdbcType=VARCHAR},
+            </if>
         </set>
         where id = #{id,jdbcType=BIGINT}
     </update>
@@ -236,7 +267,10 @@
         advances_interest = #{advances_interest,jdbcType=DECIMAL},
         other_interest = #{other_interest,jdbcType=DECIMAL},
         penalty_interest = #{penalty_interest,jdbcType=DECIMAL},
-        path = #{path,jdbcType=LONGVARCHAR}
+        path = #{path,jdbcType=LONGVARCHAR},
+        refund_cause = #{refund_cause,jdbcType=TINYINT},
+        retrun_reason = #{retrun_reason,jdbcType=TINYINT},
+        return_text = #{return_text,jdbcType=VARCHAR}
         where id = #{id,jdbcType=BIGINT}
     </update>
     <update id="updateByPrimaryKey" parameterType="com.yunche.loan.domain.entity.LoanRefundApplyDO">
@@ -255,7 +289,10 @@
         status = #{status,jdbcType=TINYINT},
         advances_interest = #{advances_interest,jdbcType=DECIMAL},
         other_interest = #{other_interest,jdbcType=DECIMAL},
-        penalty_interest = #{penalty_interest,jdbcType=DECIMAL}
+        penalty_interest = #{penalty_interest,jdbcType=DECIMAL},
+        refund_cause = #{refund_cause,jdbcType=TINYINT},
+        retrun_reason = #{retrun_reason,jdbcType=TINYINT},
+        return_text = #{return_text,jdbcType=VARCHAR}
         where id = #{id,jdbcType=BIGINT}
     </update>
 

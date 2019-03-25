@@ -1629,11 +1629,14 @@
             refund.refund_amount 					            AS refund_amount,
             DATE_FORMAT(refund.refund_date,'%Y-%m-%d %H:%i:%S') AS refund_date,
             refund.refund_reason 					            AS refund_reason,
+            refund.refund_cause                                 AS refund_cause,
             refund.refund_apply_account_id  	                AS refund_apply_account_id,
             refund.path 										AS path,
             refund.advances_interest                           AS advances_interest,
             refund.other_interest                              AS other_interest,
             refund.penalty_interest                            AS penalty_interest,
+            refund.retrun_reason                               AS retrun_reason,
+            refund.return_text                                 AS return_text,
             conf_refund.refund_pay_open_bank                   AS refund_pay_open_bank,
             conf_refund.refund_pay_account_name                AS refund_pay_account_name,
             conf_refund.refund_pay_account                     AS refund_pay_account
@@ -2243,9 +2246,9 @@
           (
           select SUBSTRING_INDEX(GROUP_CONCAT(serial_no order by request_time desc separator ','),',',1)
           as serial_no
-          from bank_interface_serial t GROUP BY trans_code,customer_id
-          ) orderdata on orderdata.serial_no = serial.serial_no and serial.trans_code = #{transCode}
-          and serial.customer_id = #{customerId}
+          from bank_interface_serial t where t.trans_code = #{transCode}
+          and t.customer_id = #{customerId} GROUP BY trans_code,customer_id
+          ) orderdata on orderdata.serial_no = serial.serial_no
     </select>
     <select id="selectBankInterFaceSerialOrderStatusByOrderId"
             resultType="com.yunche.loan.domain.vo.BankInterFaceSerialOrderStatusVO">
