@@ -765,6 +765,13 @@
         car.car_detail_id                                                                       AS car_detail_id,
         useGetCarName(car.car_detail_id)                                                        AS car_name,
         car.car_type                                                                            AS car_type,
+
+        CASE WHEN car.car_type = 0 THEN
+        '新车'
+        WHEN car.car_type = 1 THEN
+        '二手车' ELSE '其他'
+        END                                                                            AS car_type_name,
+
         car.gps_num                                                                             AS car_gps_num,
         car.business_source                                                                     AS car_business_source,
         car.vehicle_property                                                                    AS car_vehicle_property,

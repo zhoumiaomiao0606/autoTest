@@ -135,6 +135,8 @@ public class UniversalInfoVO {
     private String bridge_lend_date;
     private String bank_lend_date;
 
+    private String car_type_name;
+
 
     private BigDecimal riskBearRate;
 
