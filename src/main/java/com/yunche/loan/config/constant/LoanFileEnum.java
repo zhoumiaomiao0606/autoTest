@@ -164,7 +164,10 @@ public enum LoanFileEnum {
 
     LETTER_COMMITMENT_SIGNED_PARTNERS((byte) 98, "合伙人签字承诺函"),
 
-    LETTER_OF_RISK_COMMITMENT((byte) 101, "风险承诺函");
+    LETTER_OF_RISK_COMMITMENT((byte) 101, "风险承诺函"),
+
+    FACE_SIGNATURE((byte) 102, "合伙人签字承诺函")
+    ;
 
 
 
