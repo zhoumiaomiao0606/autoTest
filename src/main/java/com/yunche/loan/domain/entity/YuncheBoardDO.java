@@ -5,6 +5,7 @@ import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
+import java.util.List;
 
 
 @Data
@@ -21,11 +22,11 @@ public class YuncheBoardDO {
 
     private String bank;
 
-    private Byte level;
+    private String level;
 
     private String title;
 
-    @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss", timezone = "GMT+8")
+    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
     private Date effectiveTime;
 
     @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss", timezone = "GMT+8")
@@ -35,6 +36,10 @@ public class YuncheBoardDO {
     private Date endTime;
 
     private String urls;
+
+    private List<String> appUrls;
+
+    private List<String> appBanks;
 
     private Byte status;
 

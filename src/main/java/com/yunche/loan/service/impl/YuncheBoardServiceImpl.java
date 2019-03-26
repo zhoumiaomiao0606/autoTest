@@ -1,6 +1,7 @@
 package com.yunche.loan.service.impl;
 
 import cn.jiguang.common.utils.Preconditions;
+import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.common.collect.Lists;
@@ -116,11 +117,37 @@ public class YuncheBoardServiceImpl implements YuncheBoardService
         //判断是否是合伙人级别-还是管理员
         Long maxGroupLevel = taskSchedulingDOMapper.selectMaxGroupLevel(loginUser.getId());
         yuncheBoardParam.setMaxGroupLevel(maxGroupLevel);
+
+
         //获取用户可见的银行
         yuncheBoardParam.setBankList(getUserHaveBank(loginUser.getId()));
         SessionUtils.getLoginUser().getId();
         PageHelper.startPage(yuncheBoardParam.getPageIndex(), yuncheBoardParam.getPageSize(), true);
         List<YuncheBoardDO> list = yuncheBoardDOMapper.selectBoardsbyPartner(yuncheBoardParam);
+        if (!CollectionUtils.isEmpty(list))
+        {
+            list
+                    .stream()
+                    .forEach(
+                            e ->
+                            {
+                                if (e.getUrls() !=null)
+                                {
+                                    e.setAppUrls((List)JSON.parse(e.getUrls()));
+
+                                }
+
+                                if (e.getBank()!=null)
+                                {
+                                    e.setAppBanks((List)JSON.parse(e.getBank()));
+                                }
+
+                            }
+                    );
+
+        }
+
+        //System.out.println(l);
         PageInfo<YuncheBoardDO> pageInfo = new PageInfo<>(list);
         return ResultBean.ofSuccess(list, new Long(pageInfo.getTotal()).intValue(), pageInfo.getPageNum(), pageInfo.getPageSize());
     }
