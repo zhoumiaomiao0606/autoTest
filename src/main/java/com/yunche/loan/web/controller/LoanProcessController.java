@@ -52,6 +52,14 @@ public class LoanProcessController {
         return loanProcessService.approval(approval);
     }
 
+    @Limiter
+    @PostMapping(value = "/external/approval", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResultBean<Void> maitianApproval(@RequestBody ApprovalParam approval) {
+        approval.setCheckPermission(false);
+        approval.setNeedLog(true);
+        return loanProcessService.approval(approval);
+    }
+
     /**
      * 当前业务单的当前任务节点
      *
