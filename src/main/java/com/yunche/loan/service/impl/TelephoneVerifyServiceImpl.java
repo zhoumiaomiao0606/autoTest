@@ -32,6 +32,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
+import static com.yunche.loan.config.constant.LoanProcessEnum.LOAN_APPLY;
 import static com.yunche.loan.config.constant.LoanProcessEnum.LOAN_INFO_RECORD;
 import static com.yunche.loan.config.constant.LoanProcessEnum.TELEPHONE_VERIFY;
 
@@ -133,11 +134,20 @@ public class TelephoneVerifyServiceImpl implements TelephoneVerifyService {
 
         UniversalInfoVO universalInfoVO = loanQueryDOMapper.selectUniversalInfo(orderId);
 
+        //面签登记提交时间
         LoanProcessLogDO loanProcessLogDO = loanProcessLogDOMapper.lastLogByOrderIdAndTaskDefinitionKey(orderId, LOAN_INFO_RECORD.getCode());
         if (loanProcessLogDO!=null)
         {
             universalInfoVO.setLoan_info_record_date(loanProcessLogDO.getCreateTime());
-        }
+        }else
+            {
+                LoanProcessLogDO loanLogDO = loanProcessLogDOMapper.lastLogByOrderIdAndTaskDefinitionKey(orderId, LOAN_APPLY.getCode());
+
+                if (loanLogDO !=null)
+                {
+                    universalInfoVO.setLoan_info_record_date(loanLogDO.getCreateTime());
+                }
+            }
         universalInfoVO.setVehicle_apply_license_plate_area(tmpApplyLicensePlateArea);
         universalInfoVO.setRiskBearRate(partnerDO.getRiskBearRate()==null?new BigDecimal("0"):partnerDO.getRiskBearRate());
         recombinationVO.setInfo(universalInfoVO);
