@@ -381,7 +381,7 @@
 
 -->
 
-        <table tableName="loan_telephone_verify" domainObjectName="LoanTelephoneVerifyDO"
+        <table tableName="video_face_log" domainObjectName="VideoFaceLogDO"
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
         </table>

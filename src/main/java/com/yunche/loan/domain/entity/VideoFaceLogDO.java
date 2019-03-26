@@ -59,4 +59,6 @@ public class VideoFaceLogDO {
     private Date gmtModify;
 
     private String videoSize;
+
+    private String carTypeName;
 }
