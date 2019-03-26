@@ -1,5 +1,6 @@
 package com.yunche.loan.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import
         com.github.pagehelper.util.StringUtil;
 import com.google.common.base.Preconditions;
@@ -374,7 +375,7 @@ public class BankSolutionServiceImpl implements BankSolutionService {
 
         violationUtil.violation(applyevaluate);
         ApplycreditstatusResponse response=null;
-        try{
+        /*try{
             response = icbcFeignClient.applyevaluate(applyevaluate);
         }catch (Exception e){
             String partnerIdStr = loanBaseInfoDO.getPartnerId().toString();
@@ -389,7 +390,27 @@ public class BankSolutionServiceImpl implements BankSolutionService {
             bankInterfaceSerialDO.setSerialNo(serialNo);
             bankInterfaceSerialDO.setStatus(new Byte(IDict.K_JJSTS.SUCCESS));
             int count = bankInterfaceSerialDOMapper.updateByPrimaryKeySelective(bankInterfaceSerialDO);
+        }*/
+        String partnerIdStr = loanBaseInfoDO.getPartnerId().toString();
+        try{
+            if(blackPartner.contains(partnerIdStr))
+            {
+                LOG.info(":黑名单合伙人："+partnerIdStr+"调用工行接口");
+                response = icbcFeignClient.applyevaluate(applyevaluate);
+            }
+        }catch (Exception e){
+            LOG.info(":黑名单合伙人："+partnerIdStr+"调用工行接口失败");
         }
+
+        BankInterfaceSerialDO bankInterfaceSerialDO = new BankInterfaceSerialDO();
+        bankInterfaceSerialDO.setOrderId(orderId);
+        bankInterfaceSerialDO.setSerialNo(serialNo);
+        bankInterfaceSerialDO.setStatus(new Byte(IDict.K_JJSTS.SUCCESS));
+        if (response !=null)
+        {
+            bankInterfaceSerialDO.setApiMsg(JSON.toJSONString(response));
+        }
+        int count = bankInterfaceSerialDOMapper.updateByPrimaryKeySelective(bankInterfaceSerialDO);
 
 
         return ResultBean.ofSuccess(response);
