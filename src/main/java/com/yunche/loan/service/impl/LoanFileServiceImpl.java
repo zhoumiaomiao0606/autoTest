@@ -4,7 +4,6 @@ import com.alibaba.fastjson.JSON;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.oracle.tools.packager.Log;
 import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.domain.entity.LoanFileDO;
 import com.yunche.loan.domain.vo.FileVO;
