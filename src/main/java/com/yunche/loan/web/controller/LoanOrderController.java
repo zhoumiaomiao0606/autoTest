@@ -214,6 +214,17 @@ public class LoanOrderController {
     public ResultBean loanapplySubmit(@RequestBody LoanapplyMutiparam loanapplyMutiparam) {
         return loanOrderService.loanapplySubmit(loanapplyMutiparam);
     }
+
+    /**
+     *
+     * @param orderId
+     * @param type
+     * @return
+     */
+    @GetMapping(value = "/maitian/creditInfo")
+    public ResultBean mtCreditInfo (Long orderId,Byte type) {
+        return loanOrderService.mtCreditInfo(orderId,type);
+    }
 }
 
 

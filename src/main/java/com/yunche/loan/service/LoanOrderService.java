@@ -47,4 +47,6 @@ public interface LoanOrderService {
     RecombinationVO<UniversalInfoVO> newCreditRecordDetail(Long orderId);
 
     ResultBean loanapplySubmit(LoanapplyMutiparam loanapplyMutiparam);
+
+    ResultBean mtCreditInfo(Long orderId, Byte type);
 }
