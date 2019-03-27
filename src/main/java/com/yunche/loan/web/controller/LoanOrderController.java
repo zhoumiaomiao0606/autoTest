@@ -32,6 +32,7 @@ public class LoanOrderController {
      * @param orderId
      * @return
      */
+    @Limiter(value = 2,expire = 2)
     @GetMapping(value = "/creditapply/detail")
     public ResultBean<CreditApplyOrderVO> creditApplyOrderDetail(@RequestParam("orderId") Long orderId) {
         return loanOrderService.creditApplyOrderDetail(orderId);
@@ -67,6 +68,7 @@ public class LoanOrderController {
      * @param type    征信类型： 1-银行;  2-社会;
      * @return
      */
+    @Limiter(value = 2,expire = 2)
     @GetMapping(value = "/creditrecord/detail")
     public ResultBean<CreditRecordVO> creditRecordDetail(@RequestParam("orderId") Long orderId,
                                                          @RequestParam("type") Byte type) {

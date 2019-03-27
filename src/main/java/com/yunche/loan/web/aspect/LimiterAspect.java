@@ -58,7 +58,7 @@ public class LimiterAspect {
         String userHash = String.valueOf(user.hashCode());
 
         if (!doLimiter(route, userHash, limit, expire)) {
-            throw new BizException("操作太过频繁，请勿重复点击！");
+            throw new BizException("操作太过频繁，请勿频繁重复访问！");
         }
 
         return point.proceed();
