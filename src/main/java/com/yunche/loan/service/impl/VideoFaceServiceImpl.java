@@ -352,7 +352,7 @@ public class VideoFaceServiceImpl implements VideoFaceService {
 
         VideoFaceQuestionAnswerVO videoFaceQuestionAnswerVO = setAndGetVideoFaceQuestionAnswerVO(bankId, orderId);
 
-        String question_1 = "1、你好，这里是工商银行台州路桥支行，请问您的姓名是？" + "（参考答案）" + redText(videoFaceQuestionAnswerVO.getCustomerName());
+        /*String question_1 = "1、你好，这里是工商银行台州路桥支行，请问您的姓名是？" + "（参考答案）" + redText(videoFaceQuestionAnswerVO.getCustomerName());
         String question_2 = "2、我是工商银行**支行的工作人员，请问您现在是否需要在我行申请一笔信用卡购车分期付款业务？（参考答案）是";
         String question_3 = "3、下面需要核对一下您的身份信息";
 
@@ -403,7 +403,46 @@ public class VideoFaceServiceImpl implements VideoFaceService {
                 question_6, question_7, question_8, question_9, question_10,
                 question_11, question_12, question_13, question_14, question_15,
                 question_16, question_17, question_18, question_19, question_20, question_21, question_22, question_23);
+*/
+        String question_1 = "1、你好，这里是工商银行路桥支行，请问是" + redText(videoFaceQuestionAnswerVO.getCustomerName()) + "先生/女士吗？（参考答案）是";
+        String question_2 = "2、我是工商银行路桥支行的工作人员，请问您现在是否需要在我行申请一笔信用卡购车分期付款业务？您对此分期付款业务情况是否了解（参考答案）是";
+        String question_3 = "3、下面需要核对一下您的身份信息（选问项，选三个或以上）";
 
+        String yyyy_MM_dd = "";
+        String idCard_last_six_num = "";
+
+        String idCard = videoFaceQuestionAnswerVO.getCustomerIdCard();
+        if (StringUtils.isNotBlank(idCard)) {
+            String year = idCard.substring(6, 10);
+            String month = idCard.substring(10, 12);
+            String day = idCard.substring(12, 14);
+
+            yyyy_MM_dd = year + "-" + month + "-" + day;
+            idCard_last_six_num = idCard.substring(12, 18);
+        }
+
+        String question_4 = "4、Q1请问您的出生年月日是？   参考答案：" + redText(yyyy_MM_dd);
+        String question_5 = "5、Q2你的身份证号码后六位是什么？   参考答案：" + redText(idCard_last_six_num);
+        String question_6 = "6、Q3你所购车辆的型号是什么？   参考答案：" + redText(videoFaceQuestionAnswerVO.getCarName());
+        String question_7 = "7、Q4您现在的工作单位是什么？（面签人员无法核实）";
+        String question_8 = "8、Q5您单位地址是？   （面签人员无法核实）";
+        String question_9 = "9、Q6您家庭住址是哪里？   （面签人员无法核实）";
+        String question_10 = "10、Q7您身份证上的地址是哪里？   （面签人员无法核实）";
+        String question_11 = "11、Q8您所购买车辆是什么颜色？   （面签人员无法核实）";
+        String question_12 = "12、Q9你现在所处位置？   参考答案：" + redText(address);
+        String question_13 = "13、请问您购买的是什么品牌的汽车？购买车辆是否自用？   （参考答案）是  车辆品牌：" + redText(videoFaceQuestionAnswerVO.getCarBrandName());
+        String question_14 = "14、您了解该笔贷款是由浙江鑫宝行融资担保有限公司提供担保的吗？   参考答案：了解";
+        String question_15 = "15、请您务必在合同上填写正确的手机号码和联系地址";
+        String question_16 = "16、请您现在在信用卡申请书、分期付款合同以及客户告知书上签名";
+        String question_17 = "17、银行：请您认真仔细阅读担保方签署相关协议，该协议内容以及协议中约定的在您未按时、足额清偿债务时担保方可采取的措施等，" +
+                "均与工商银行无关。您办理该笔分期业务无需向我行和担保公司缴纳任何保证金和押金。" + HTML_NEW_LINE +
+                "银行：请您务必下载和使用工银融E联，通过申请时预留手机号注册登录后，即可享受相应服务。" + HTML_NEW_LINE +
+                "银行：感谢您的配合，业务办理成功后，请您留意查收合同及客户告知书并仔细阅读，后续如有问题，欢迎致电我行告知书上的汽车分期服务专线电话。";
+
+        List<String> questionList = Lists.newArrayList(question_1, question_2, question_3, question_4, question_5,
+                question_6, question_7, question_8, question_9, question_10,
+                question_11, question_12, question_13, question_14, question_15,
+                question_16, question_17);
         return questionList;
     }
 
