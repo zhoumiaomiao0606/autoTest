@@ -35,6 +35,7 @@ public class LoanOrderController {
      * @param orderId
      * @return
      */
+    @Limiter(value = 2,expire = 2)
     @GetMapping(value = "/creditapply/detail")
     public ResultBean<CreditApplyOrderVO> creditApplyOrderDetail(@RequestParam("orderId") Long orderId) {
         return loanOrderService.creditApplyOrderDetail(orderId);
