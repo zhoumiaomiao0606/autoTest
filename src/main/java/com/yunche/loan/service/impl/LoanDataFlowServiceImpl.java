@@ -537,11 +537,19 @@ public class LoanDataFlowServiceImpl implements LoanDataFlowService {
 
                     Long id_ = Long.valueOf(id);
 
-                    LoanDataFlowDO loanDataFlowDO = new LoanDataFlowDO();
-                    loanDataFlowDO.setId(id_);
-                    loanDataFlowDO.setExpressReceiveMan(loginUser.getName());
-                    loanDataFlowDO.setExpressReceiveDate(new Date());
-                    loanDataFlowDO.setGmtModify(new Date());
+                    //LoanDataFlowDO loanDataFlowDO = new LoanDataFlowDO();
+                    LoanDataFlowDO loanDataFlowDO = loanDataFlowDOMapper.selectByPrimaryKey(id_);
+                    if (loanDataFlowDO !=null)
+                    {
+                        loanDataFlowDO.setId(id_);
+                        loanDataFlowDO.setExpressReceiveMan(loginUser.getName());
+                        loanDataFlowDO.setExpressReceiveDate(new Date());
+                        loanDataFlowDO.setGmtModify(new Date());
+                    }else
+                        {
+                            throw new BizException("流转id有错误！！！！！");
+                        }
+
 
                     return loanDataFlowDO;
                 })
