@@ -1590,7 +1590,7 @@
               inner join
             (
 							select distinct principal_cust_id AS id from loan_customer where id_card in
-							(select distinct id_card from loan_customer where principal_cust_id = #{customerId,jdbcType=BIGINT})
+							(select distinct id_card from loan_customer where principal_cust_id = #{customerId,jdbcType=BIGINT} and id_card is not null and id_card !='')
 								union
 							select  distinct principal_cust_id AS id from loan_customer where id_card =
 							(select id_card from loan_customer where id = #{customerId,jdbcType=BIGINT})
