@@ -911,6 +911,8 @@ public class WebSocketServiceImpl implements WebSocketService {
             videoFaceCustomerVO.setPartnerId(universalInfoVO.getPartner_id());
             videoFaceCustomerVO.setPartnerName(universalInfoVO.getPartner_name());
 
+            videoFaceCustomerVO.setCarTypeName(universalInfoVO.getCar_type_name());
+
             // carInfo
             videoFaceCustomerVO.setCarDetailId(Long.valueOf(universalInfoVO.getCar_detail_id()));
             // carName 特殊处理

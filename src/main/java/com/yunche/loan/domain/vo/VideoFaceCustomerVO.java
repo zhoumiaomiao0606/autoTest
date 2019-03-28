@@ -80,5 +80,8 @@ public class VideoFaceCustomerVO {
      * 合伙人
      */
     private String partnerId;
+
     private String partnerName;
+
+    private String carTypeName;
 }

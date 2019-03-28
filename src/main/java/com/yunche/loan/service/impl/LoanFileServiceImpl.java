@@ -104,7 +104,7 @@ public class LoanFileServiceImpl implements LoanFileService {
 
                     });
         }
-
+        //Log.info("======取文件信息");
         List<FileVO> fileVOS = typeFilesMap.values()
                 .stream()
                 .sorted(Comparator.comparing(FileVO::getType))
