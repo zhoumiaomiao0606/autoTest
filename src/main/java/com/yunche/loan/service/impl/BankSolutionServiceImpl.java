@@ -795,9 +795,8 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         applyDiviGeneral.setBusitype(busitype);
         applyDiviGeneral.setCustomerId(customerId.toString());
         applyDiviGeneral.setFileNum(String.valueOf(pictures.size()));
-        // TODO
-        applyDiviGeneral.setDcCorpno("");
-        applyDiviGeneral.setSellerno("");
+        applyDiviGeneral.setDcCorpno(sysConfig.getDcCorpno());
+        applyDiviGeneral.setSellerno(sysConfig.getSellerno());
 
         //resultsum
         boolean check = bankInterfaceSerialDOMapper.checkRequestBussIsSucessByTransCodeOrderId(customerId, IDict.K_TRANS_CODE.APPLYDIVIGENERAL);
