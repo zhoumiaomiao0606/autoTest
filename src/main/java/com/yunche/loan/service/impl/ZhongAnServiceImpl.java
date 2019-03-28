@@ -61,7 +61,7 @@ public class ZhongAnServiceImpl implements ZhongAnService {
 
         parseResponse(response.getBizContent());
 
-        return null;
+        return response.getBizContent();
     }
 
     private void parseResponse(String bizContent) {

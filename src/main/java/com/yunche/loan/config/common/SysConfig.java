@@ -17,6 +17,10 @@ public class SysConfig {
     private int port;//ftp 端口
     private String platno;
     private String assurerno;
+    // 担保单位编号
+    private String dcCorpno;
+    // 经销商编号
+    private String sellerno;
     private String tzphybrno;
     private String hzphybrno;
     private String priKey;
