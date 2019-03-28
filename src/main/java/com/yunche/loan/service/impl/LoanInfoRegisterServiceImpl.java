@@ -151,7 +151,7 @@ public class LoanInfoRegisterServiceImpl implements LoanInfoRegisterService {
 
         List<FileVO> fileVOS = fileVOList.stream()
                 .filter(Objects::nonNull)
-                .filter(f ->FACE_SIGNATURE.equals(f.getType()))
+                .filter(f ->FACE_SIGNATURE.getType().equals(f.getType()))
                 .map(e -> {
 
                     if (CollectionUtils.isEmpty(e.getUrls())) {
