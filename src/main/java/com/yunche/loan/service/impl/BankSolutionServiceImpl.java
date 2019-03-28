@@ -995,6 +995,9 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         applyCredit.setCmptime(new SimpleDateFormat("HHmmss").format(new Date()));
         applyCredit.setCustomerId(loanCustomerDO.getId().toString());
         applyCredit.setFileNum((String.valueOf(fileNumList.size())));
+
+        applyCredit.setDcCorpno(sysConfig.getDcCorpno());
+        applyCredit.setSellerno(sysConfig.getSellerno());
         //customer
         customer.setMastername(loanCustomerDO.getName());
         customer.setCustname(loanCustomerDO.getName());
