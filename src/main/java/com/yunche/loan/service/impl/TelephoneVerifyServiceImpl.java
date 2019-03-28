@@ -29,6 +29,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
+import java.time.*;
 import java.util.*;
 
 import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
@@ -148,6 +149,31 @@ public class TelephoneVerifyServiceImpl implements TelephoneVerifyService {
                     universalInfoVO.setLoan_info_record_date(loanLogDO.getCreateTime());
                 }
             }
+
+            //计算车龄
+        //只有二手车才计算
+        if (universalInfoVO.getCar_type().equals("1"))
+        {
+            if (universalInfoVO.getVehicle_register_date()!=null && universalInfoVO.getLoan_info_record_date()!=null)
+            {
+                ZoneId zone = ZoneId.systemDefault();
+
+                Instant instant1 = universalInfoVO.getVehicle_register_date().toInstant();
+                LocalDateTime localDateTime = LocalDateTime.ofInstant(instant1, zone);
+                LocalDate localDate1 = localDateTime.toLocalDate();
+
+                Instant instant2 = universalInfoVO.getLoan_info_record_date().toInstant();
+                LocalDateTime localDateTime2 = LocalDateTime.ofInstant(instant2, zone);
+                LocalDate localDate2 = localDateTime2.toLocalDate();
+
+                Period period =Period.between(localDate1,localDate2);
+
+                StringBuilder stringBuilder =new StringBuilder();
+                stringBuilder.append(period.getYears()).append("年 ").append(period.getMonths()).append("月 ").append(period.getDays()).append("日");
+                universalInfoVO.setCarAge(stringBuilder.toString());
+            }
+        }
+
         universalInfoVO.setVehicle_apply_license_plate_area(tmpApplyLicensePlateArea);
         universalInfoVO.setRiskBearRate(partnerDO.getRiskBearRate()==null?new BigDecimal("0"):partnerDO.getRiskBearRate());
         recombinationVO.setInfo(universalInfoVO);
