@@ -26,7 +26,6 @@ import java.util.stream.Collectors;
 import static com.yunche.loan.config.constant.AreaConst.LEVEL_AREA;
 import static com.yunche.loan.config.constant.AreaConst.LEVEL_CITY;
 import static com.yunche.loan.config.constant.LoanFileConst.UPLOAD_TYPE_NORMAL;
-import static com.yunche.loan.config.constant.LoanFileEnum.FACE_ONE;
 import static com.yunche.loan.config.constant.LoanFileEnum.FACE_SIGNATURE;
 
 @Service
