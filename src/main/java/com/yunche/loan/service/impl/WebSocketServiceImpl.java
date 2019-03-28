@@ -10,12 +10,14 @@ import com.yunche.loan.config.result.ResultBean;
 import com.yunche.loan.config.util.MapSortUtils;
 import com.yunche.loan.config.util.SessionUtils;
 import com.yunche.loan.domain.entity.ConfVideoFaceTimeDO;
+import com.yunche.loan.domain.entity.LoanOrderDO;
 import com.yunche.loan.domain.param.WebSocketParam;
 import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.*;
 import lombok.NonNull;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
@@ -27,12 +29,15 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.Collectors;
 
 import static com.yunche.loan.config.constant.BankConst.*;
 import static com.yunche.loan.config.constant.CarConst.CAR_DETAIL;
 import static com.yunche.loan.config.constant.CarConst.CAR_MODEL;
 import static com.yunche.loan.config.constant.ConfVideoFaceConst.*;
 import static com.yunche.loan.config.constant.FaceSignConst.FACE_SIGN_MACHINE;
+import static com.yunche.loan.config.constant.LoanFileConst.UPLOAD_TYPE_NORMAL;
+import static com.yunche.loan.config.constant.LoanFileEnum.FACE_SIGNATURE;
 import static com.yunche.loan.config.constant.VideoFaceConst.*;
 import static com.yunche.loan.service.impl.VideoFaceQueue.SEPARATOR;
 import static com.yunche.loan.config.util.DateTimeFormatUtils.formatter_yyyyMMdd_HHmmss;
@@ -66,6 +71,12 @@ public class WebSocketServiceImpl implements WebSocketService {
 
     @Autowired
     private ConfVideoFaceService confVideoFaceService;
+
+    @Autowired
+    private LoanFileService loanFileService;
+
+    @Autowired
+    private LoanOrderDOMapper loanOrderDOMapper;
 
 
     @Override
@@ -911,6 +922,7 @@ public class WebSocketServiceImpl implements WebSocketService {
             videoFaceCustomerVO.setPartnerId(universalInfoVO.getPartner_id());
             videoFaceCustomerVO.setPartnerName(universalInfoVO.getPartner_name());
 
+            //车辆类型
             videoFaceCustomerVO.setCarTypeName(universalInfoVO.getCar_type_name());
 
             // carInfo
@@ -920,6 +932,25 @@ public class WebSocketServiceImpl implements WebSocketService {
             videoFaceCustomerVO.setCarName(carName);
         }
 
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
+        List<FileVO> fileVOList = loanFileService.listByCustomerIdAndUploadType(loanOrderDO.getLoanCustomerId(), UPLOAD_TYPE_NORMAL);
+
+        List<FileVO> fileVOS = fileVOList.stream()
+                .filter(Objects::nonNull)
+                .filter(f ->FACE_SIGNATURE.getType().equals(f.getType()))
+                .map(e -> {
+
+                    if (CollectionUtils.isEmpty(e.getUrls())) {
+                        return null;
+                    } else {
+                        FileVO fileVO = new FileVO();
+                        BeanUtils.copyProperties(e, fileVO);
+                        return fileVO;
+                    }
+
+                }).collect(Collectors.toList());
+
+        videoFaceCustomerVO.setFiles(fileVOS);
         return videoFaceCustomerVO;
     }
 

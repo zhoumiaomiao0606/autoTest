@@ -3,6 +3,8 @@ package com.yunche.loan.domain.vo;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * @author liuzhe
@@ -84,4 +86,6 @@ public class VideoFaceCustomerVO {
     private String partnerName;
 
     private String carTypeName;
+
+    private List<FileVO> files = Collections.EMPTY_LIST;
 }

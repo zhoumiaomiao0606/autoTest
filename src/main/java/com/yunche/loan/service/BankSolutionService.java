@@ -37,5 +37,5 @@ public interface BankSolutionService {
 
     public ApplycreditstatusResponse applycreditstatus(ICBCApiRequest.Applycreditstatus applycreditstatus);
 
-    ApplyMediaStatusResponse applyMediaStatus(Long orderId);
+    public ApplyMediaStatusResponse applyMediaStatus(Long orderId);
 }
