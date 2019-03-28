@@ -4,6 +4,8 @@ import com.yunche.loan.config.feign.config.FeignConfig;
 import com.yunche.loan.config.feign.request.ICBCApiRequest;
 import com.yunche.loan.config.feign.response.*;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -15,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 //@FeignClient(name = "icbcFeignClient", url = "http://122.225.203.102:9030/", configuration = FeignConfig.class)
 
 //测试
-//@FeignClient(name = "iCBCFeignClient" ,url = "http://122.225.203.102:18080/",configuration = FeignConfig.class)
+//@FeignClient(name = "iCBCFeignClient", url = "http://122.225.203.102:18080/", configuration = FeignConfig.class)
 
 //本地测试
 //@FeignClient(name = "iCBCFeignClient" ,url = "http://127.0.0.1:18080/",configuration = FeignConfig.class)
@@ -51,4 +53,13 @@ public interface ICBCFeignClient {
     //二手车评估预审接口
     @RequestMapping(value = "/api/v1/icbc/apply/applyevaluate", method = RequestMethod.POST)
     ApplycreditstatusResponse applyevaluate(@RequestBody ICBCApiRequest.Applyevaluate applyevaluate);
+
+    /**
+     * 多媒体资料状态查询接口
+     *
+     * @param param
+     * @return
+     */
+    @PostMapping(value = "/api/v1/icbc/apply/mediaStatus", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    ApplyMediaStatusResponse applyMediaStatus(@RequestBody ICBCApiRequest.ApplyMediaStatus param);
 }

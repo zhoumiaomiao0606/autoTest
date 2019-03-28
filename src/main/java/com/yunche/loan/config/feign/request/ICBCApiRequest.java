@@ -123,12 +123,19 @@ public class ICBCApiRequest {
 
     }
 
+    /**
+     *
+     */
+    public static class ApplyMediaStatus extends Pub {
+
+    }
+
 
     /**
      * 二手车评估预审
      */
     @Data
-    public static class Applyevaluate{
+    public static class Applyevaluate {
         @NotEmpty(message = "平台编号不能为空")
         private String platno;
         @NotEmpty(message = "合作机构交易流水号不能为空")
@@ -412,7 +419,7 @@ public class ICBCApiRequest {
         @NotEmpty(groups = MultimediaUploadValidated.class)
         private String guestPlatno;
         @NotEmpty(groups = MultimediaUploadValidated.class)
-        private  String idno;
+        private String idno;
         @NotEmpty
         private String cmpseq;
         @NotEmpty
@@ -433,6 +440,12 @@ public class ICBCApiRequest {
         private String fileNum;
         @NotEmpty
         private String customerId;
+        // 担保单位编号
+        @NotEmpty
+        private String dcCorpno;
+        // 经销商编号
+        @NotEmpty
+        private String sellerno;
 
         private Integer activeTimes;
     }

@@ -378,7 +378,7 @@ public class IDict {
 
     }
 
-    public static abstract interface  K_CONF_THIRD_PARTY{
+    public static abstract interface K_CONF_THIRD_PARTY {
         /**
          * 金投行配置ID
          */
@@ -389,7 +389,7 @@ public class IDict {
     /**
      * 第三方资金出借状态
      */
-    public static abstract interface K_CJZT{
+    public static abstract interface K_CJZT {
 
         /**
          * 未出借
@@ -429,13 +429,12 @@ public class IDict {
         public static final Byte K_CJZT_HANDLE_ERROR = 9;
 
 
-
     }
 
     /**
      * 文件后缀
      */
-    public static abstract interface K_SUFFIX{
+    public static abstract interface K_SUFFIX {
 
         public static final String K_SUFFIX_JPG = ".jpg";
 
@@ -445,7 +444,7 @@ public class IDict {
     /**
      * 银行征信图片导出状态
      */
-    public static abstract interface K_CREDIT_PIC_EXP{
+    public static abstract interface K_CREDIT_PIC_EXP {
         public static final Byte K_SUFFIX_JPG_NO = 1;
         public static final Byte K_SUFFIX_JPG_YES = 2;
     }
@@ -454,7 +453,7 @@ public class IDict {
     /**
      * 财务系统凭证type
      */
-    public static abstract interface K_VOUCHER{
+    public static abstract interface K_VOUCHER {
 
         /**
          * 代客户垫款
@@ -478,99 +477,97 @@ public class IDict {
     /**
      * 开卡状态
      */
-    public static abstract interface K_KKZT{
+    public static abstract interface K_KKZT {
         /**
          * 待申请
          */
-        public static final String WAIT="1";
+        public static final String WAIT = "1";
         /**
          * 已申请
          */
-        public static final String HAVE_APP="2";
+        public static final String HAVE_APP = "2";
         /**
          * 异常退回
          */
-        public static final String ERR_BACK="3";
+        public static final String ERR_BACK = "3";
         /**
          * 银行退回
          */
-        public static final String BANK_BACK="4";
+        public static final String BANK_BACK = "4";
         /**
          * 开卡成功
          */
-        public static final String OPEN_SUCC="5";
+        public static final String OPEN_SUCC = "5";
     }
 
     /**
      * 评估类型
      */
-    public static abstract interface K_EVALUATION_TYPE{
+    public static abstract interface K_EVALUATION_TYPE {
         /**
          * 在线评估
          */
-        public static final Byte ONLINE=1;
+        public static final Byte ONLINE = 1;
 
         /**
          * 人工评估
          */
-        public static final Byte ARTIFICIAL=2;
+        public static final Byte ARTIFICIAL = 2;
 
     }
 
     /**
      * 打款状态(打款状态--默认为-0-未打款----1-打款中---2-打款成功---3--打款失败)
      */
-    public static abstract interface K_DKZT{
+    public static abstract interface K_DKZT {
         /**
          * 未打款
          */
-        public static final Byte NO_PAY=0;
+        public static final Byte NO_PAY = 0;
 
         /**
          * 打款中
          */
-        public static final Byte PAYING=1;
+        public static final Byte PAYING = 1;
 
 
         /**
          * 打款成功
          */
-        public static final Byte PAY_SUCC=2;
+        public static final Byte PAY_SUCC = 2;
 
         /**
          * 打款成功
          */
-        public static final Byte PAY_FAIL=3;
+        public static final Byte PAY_FAIL = 3;
 
     }
 
 
-    public static abstract interface K_BANK_JYZT{
+    public static abstract interface K_BANK_JYZT {
         /**
          * 处理中
          */
-        public static final String PROCESS="2";
+        public static final String PROCESS = "2";
         /**
          * 部分成功
          */
-        public static final String PART_SUCC="3";
+        public static final String PART_SUCC = "3";
 
         /**
          * 全部成功
          */
-        public static final String FULL_SUCC="4";
+        public static final String FULL_SUCC = "4";
         /**
          * 失败
          */
-        public static final String FAIL="5";
+        public static final String FAIL = "5";
 
 
         /**
          * 推送应答失败
          */
-        public static final String PUSH_FAIL="6";
-
-
+        public static final String PUSH_FAIL = "6";
 
 
     }
