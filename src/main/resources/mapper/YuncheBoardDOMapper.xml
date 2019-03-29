@@ -243,7 +243,7 @@
         and level = #{level,jdbcType=CHAR}
       </if>
       <if test="title != null">
-        and title = #{title,jdbcType=VARCHAR}
+        and title like concat('%',#{title,jdbcType=VARCHAR},'%')
       </if>
       <if test="startTime != null and endTime !=null">
         and effective_time between #{startTime,jdbcType=VARCHAR} and #{endTime,jdbcType=VARCHAR}
