@@ -56,12 +56,12 @@ public class ImageTest {
 //        image.add("img/2019/201901/20190108/xZ3BnEzkTW.jpg");
 //        image.add("img/2019/201901/20190108/YzSirD6Qc3.jpg");
 //        image.add("img/2019/201901/20190108/rn2knDHf5z.jpg");
-            image.add("img/2019/201901/20190107/3rHwKQeP2N.jpg");
-            image.add("img/2019/201901/20190107/TE23SkbMyi.jpg");
+            image.add("img/2019/201903/20190317/JSE3syASEW.jpg");
+            image.add("img/2019/201903/20190318/JERPXR2Bm7.jpg");
 //            image.add("IMG/2019/201901/20190110/20190110091512/12345/1547082912052.139160.jpg");
 //            image.add("IMG/2019/201901/20190110/20190110091515/12345/1547082915746.907959.jpg");
-        ImageUtil.mergetImage2PicByConvert("/tmp/",GeneratorIDUtil.execute()+".jpg",image);
-        ImageUtil.mergeImage2Doc(image);
+        String s = ImageUtil.mergetImage2PicByConvert("/tmp/", GeneratorIDUtil.execute() + ".jpg", image);
+        System.out.println(s);
     }
     @Test
     public void func2(){

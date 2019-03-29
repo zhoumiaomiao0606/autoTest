@@ -37,6 +37,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import java.io.File;
 import java.lang.Process;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -134,8 +135,22 @@ public class UniversalController {
     }
 
     @GetMapping("/jjq")
-    public ResultBean test1() {
-        return materialService.downSupplementFiles2OSS(Long.valueOf("1809051406599576357"), true, Long.valueOf("193"));
+    public ResultBean test1(@RequestParam String keys) {
+
+
+        ArrayList<String> image = Lists.newArrayList();
+//        image.add("img/2019/201901/20190108/xZ3BnEzkTW.jpg");
+//        image.add("img/2019/201901/20190108/YzSirD6Qc3.jpg");
+//        image.add("img/2019/201901/20190108/rn2knDHf5z.jpg");
+        image.add("img/2019/201903/20190322/8Q5WjzE3x5.jpg");
+        image.add("img/2019/201903/20190322/CkjEmWwf34.jpg");
+//            image.add("IMG/2019/201901/20190110/20190110091512/12345/1547082912052.139160.jpg");
+//            image.add("IMG/2019/201901/20190110/20190110091515/12345/1547082915746.907959.jpg");
+
+        String singlePic = ImageUtil.getSinglePic("787878787878.jpg",keys);
+        ImageUtil.getSingleFile("3333333.jpg",keys,null);
+        ImageUtil.mergetImage2PicByConvert("/tmp/","545454.jpg",image);
+        return ResultBean.ofSuccess(singlePic);
     }
     @PostMapping("/t_vouchet")
     public ResultBean voucher(@RequestBody  ApprovalParam param){

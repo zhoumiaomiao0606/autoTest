@@ -185,6 +185,7 @@ public class AsyncUpload {
                 String suffix = name.split("\\.")[1].trim();
                 if(PIC_SUFFIX.contains(suffix)){
                     picPath = ImageUtil.mergeImage2Pic(name,urls);
+//                    picPath = ImageUtil.mergetImage2PicByConvert(sysConfig.getTempDir(),name,urls);
                 }else if(DOCX_SUFFIX.contains(suffix)){
                     picPath = ImageUtil.mergeImage2Doc(name,urls);
                 }else{
