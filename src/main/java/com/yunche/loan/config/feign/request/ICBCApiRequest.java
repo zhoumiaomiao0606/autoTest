@@ -441,11 +441,11 @@ public class ICBCApiRequest {
         @NotEmpty
         private String customerId;
         // 担保单位编号
-        @NotEmpty
+        /*@NotEmpty
         private String dcCorpno;
         // 经销商编号
         @NotEmpty
-        private String sellerno;
+        private String sellerno;*/
 
         private Integer activeTimes;
     }
