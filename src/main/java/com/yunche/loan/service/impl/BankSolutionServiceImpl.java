@@ -821,8 +821,8 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         applyDiviGeneral.setBusitype(busitype);
         applyDiviGeneral.setCustomerId(customerId.toString());
         applyDiviGeneral.setFileNum(String.valueOf(pictures.size()));
-        applyDiviGeneral.setDcCorpno(sysConfig.getDcCorpno());
-        applyDiviGeneral.setSellerno(sysConfig.getSellerno());
+//        applyDiviGeneral.setDcCorpno(sysConfig.getDcCorpno());
+//        applyDiviGeneral.setSellerno(sysConfig.getSellerno());
 
         //resultsum
         boolean check = bankInterfaceSerialDOMapper.checkRequestBussIsSucessByTransCodeOrderId(customerId, IDict.K_TRANS_CODE.APPLYDIVIGENERAL);
@@ -996,8 +996,8 @@ public class BankSolutionServiceImpl implements BankSolutionService {
         applyCredit.setCustomerId(loanCustomerDO.getId().toString());
         applyCredit.setFileNum((String.valueOf(fileNumList.size())));
 
-        applyCredit.setDcCorpno(sysConfig.getDcCorpno());
-        applyCredit.setSellerno(sysConfig.getSellerno());
+//        applyCredit.setDcCorpno(sysConfig.getDcCorpno());
+//        applyCredit.setSellerno(sysConfig.getSellerno());
         //customer
         customer.setMastername(loanCustomerDO.getName());
         customer.setCustname(loanCustomerDO.getName());
