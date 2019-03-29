@@ -38,6 +38,8 @@ import static com.yunche.loan.config.constant.ConfVideoFaceConst.*;
 import static com.yunche.loan.config.constant.FaceSignConst.FACE_SIGN_MACHINE;
 import static com.yunche.loan.config.constant.LoanFileConst.UPLOAD_TYPE_NORMAL;
 import static com.yunche.loan.config.constant.LoanFileEnum.FACE_SIGNATURE;
+import static com.yunche.loan.config.constant.LoanFileEnum.ID_CARD_BACK;
+import static com.yunche.loan.config.constant.LoanFileEnum.ID_CARD_FRONT;
 import static com.yunche.loan.config.constant.VideoFaceConst.*;
 import static com.yunche.loan.service.impl.VideoFaceQueue.SEPARATOR;
 import static com.yunche.loan.config.util.DateTimeFormatUtils.formatter_yyyyMMdd_HHmmss;
@@ -937,7 +939,7 @@ public class WebSocketServiceImpl implements WebSocketService {
 
         List<FileVO> fileVOS = fileVOList.stream()
                 .filter(Objects::nonNull)
-                .filter(f ->FACE_SIGNATURE.getType().equals(f.getType()))
+                .filter(f ->FACE_SIGNATURE.getType().equals(f.getType()) || ID_CARD_FRONT.getType().equals(f.getType()) || ID_CARD_BACK.getType().equals(f.getType()) )
                 .map(e -> {
 
                     if (CollectionUtils.isEmpty(e.getUrls())) {
