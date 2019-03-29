@@ -557,6 +557,7 @@
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${action == 1}]]></conditionExpression>
     </sequenceFlow>
     <sequenceFlow id="flow324" sourceRef="parallelgateway3" targetRef="filter_usertask_material_print_review1_before"></sequenceFlow>
+    <userTask id="usertask_data_management" name="资料管理"></userTask>
   </process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_loan_process">
     <bpmndi:BPMNPlane bpmnElement="loan_process" id="BPMNPlane_loan_process">
@@ -1006,6 +1007,9 @@
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="filter_usertask_material_print_review1_before" id="BPMNShape_filter_usertask_material_print_review1_before">
         <omgdc:Bounds height="55.0" width="105.0" x="3791.0" y="2790.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="usertask_data_management" id="BPMNShape_usertask_data_management">
+        <omgdc:Bounds height="55.0" width="105.0" x="3118.0" y="270.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge bpmnElement="flow1" id="BPMNEdge_flow1">
         <omgdi:waypoint x="333.0" y="1086.0"></omgdi:waypoint>
