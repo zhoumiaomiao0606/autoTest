@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.yunche.loan.domain.entity.*;
 import lombok.Data;
 
+import java.util.Collections;
 import java.util.List;
 
 @Data
@@ -131,4 +132,6 @@ public class RecombinationVO<T> {
      * 结构化征信
      */
     private List<UniversalCreditStructVO> creditStruct = Lists.newArrayList();
+
+    private List<FileVO> files = Collections.EMPTY_LIST;
 }

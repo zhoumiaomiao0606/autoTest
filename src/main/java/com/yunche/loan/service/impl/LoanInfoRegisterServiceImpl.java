@@ -8,18 +8,25 @@ import com.yunche.loan.domain.param.LoanInfoRegisterParam;
 import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.LoanCustomerService;
+import com.yunche.loan.service.LoanFileService;
 import com.yunche.loan.service.LoanInfoRegisterService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.Date;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import static com.yunche.loan.config.constant.AreaConst.LEVEL_AREA;
 import static com.yunche.loan.config.constant.AreaConst.LEVEL_CITY;
+import static com.yunche.loan.config.constant.LoanFileConst.UPLOAD_TYPE_NORMAL;
+import static com.yunche.loan.config.constant.LoanFileEnum.FACE_SIGNATURE;
 
 @Service
 public class LoanInfoRegisterServiceImpl implements LoanInfoRegisterService {
@@ -54,6 +61,9 @@ public class LoanInfoRegisterServiceImpl implements LoanInfoRegisterService {
 
     @Autowired
     private BaseAreaDOMapper baseAreaDOMapper;
+
+    @Autowired
+    private LoanFileService loanFileService;
 
 
     @Override
@@ -136,6 +146,25 @@ public class LoanInfoRegisterServiceImpl implements LoanInfoRegisterService {
             }
         }
 
+//根据客户号查询上传的文件
+        List<FileVO> fileVOList = loanFileService.listByCustomerIdAndUploadType(loanOrderDO.getLoanCustomerId(), UPLOAD_TYPE_NORMAL);
+
+        List<FileVO> fileVOS = fileVOList.stream()
+                .filter(Objects::nonNull)
+                .filter(f ->FACE_SIGNATURE.getType().equals(f.getType()))
+                .map(e -> {
+
+                    if (CollectionUtils.isEmpty(e.getUrls())) {
+                        return null;
+                    } else {
+                        FileVO fileVO = new FileVO();
+                        BeanUtils.copyProperties(e, fileVO);
+                        return fileVO;
+                    }
+
+                }).collect(Collectors.toList());
+
+        recombinationVO.setFiles(fileVOS);
         recombinationVO.setInfo(universalInfoVO);
 
         recombinationVO.setCar(universalCarInfoVO);
@@ -306,6 +335,10 @@ public class LoanInfoRegisterServiceImpl implements LoanInfoRegisterService {
             loanCustomerDO.setIncomeCertificateCompanyName(loanInfoRegisterParam.getWorkCompanyName());
             loanCustomerDOMapper.updateByPrimaryKeySelective(loanCustomerDO);
         }
+
+
+        ResultBean<Void> fileResultBean = loanFileService.updateOrInsertByCustomerIdAndUploadType(loanOrderDO.getLoanCustomerId(), loanInfoRegisterParam.getFiles(), UPLOAD_TYPE_NORMAL);
+         Preconditions.checkArgument(fileResultBean.getSuccess(), fileResultBean.getMsg());
 
         return ResultBean.ofSuccess(null, "保存成功");
     }

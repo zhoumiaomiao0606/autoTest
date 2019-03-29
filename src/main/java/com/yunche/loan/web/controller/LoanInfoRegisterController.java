@@ -25,4 +25,9 @@ public class LoanInfoRegisterController {
     ResultBean update(@RequestBody LoanInfoRegisterParam loanInfoRegisterParam) {
         return loanInfoRegisterService.update(loanInfoRegisterParam);
     }
+
+    @PostMapping(value = "/submit")
+    public ResultBean submit () {
+        return null;
+    }
 }

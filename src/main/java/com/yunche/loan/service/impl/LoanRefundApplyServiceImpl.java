@@ -90,7 +90,7 @@ public class LoanRefundApplyServiceImpl implements LoanRefundApplyService {
             // 节点实时状态
             LoanProcessDO loanProcessDO = loanProcessApprovalCommonService.getLoanProcess(Long.valueOf(param.getOrder_id()));
 
-            Preconditions.checkArgument(ACTION_PASS != loanProcessDO.getApplyInstalment(), "合伙人分期申请已提交,不允许发起退款申请!");
+            Preconditions.checkArgument(ACTION_PASS != loanProcessDO.getApplyInstalment1(), "合伙人分期申请已提交,不允许发起退款申请!");
 
             LoanRefundApplyDO DO = BeanPlasticityUtills.copy(LoanRefundApplyDO.class, param);
             EmployeeDO employeeDO = SessionUtils.getLoginUser();

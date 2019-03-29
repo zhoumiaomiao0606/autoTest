@@ -2,9 +2,12 @@ package com.yunche.loan.domain.param;
 
 import com.yunche.loan.domain.entity.LoanCustomerDO;
 import com.yunche.loan.domain.vo.BaseVO;
+import com.yunche.loan.domain.vo.FileVO;
 import lombok.Data;
 
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
 @Data
 public class LoanInfoRegisterParam {
@@ -61,5 +64,7 @@ public class LoanInfoRegisterParam {
     private String  mileage;
     private Long cityId;
     private Date firstRegisterDate;
+
+    private List<FileVO> files = Collections.EMPTY_LIST;
 
 }

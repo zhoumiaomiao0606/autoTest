@@ -29,9 +29,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
+import java.time.*;
 import java.util.*;
 
 import static com.yunche.loan.config.constant.BaseConst.VALID_STATUS;
+import static com.yunche.loan.config.constant.LoanProcessEnum.LOAN_APPLY;
+import static com.yunche.loan.config.constant.LoanProcessEnum.LOAN_INFO_RECORD;
 import static com.yunche.loan.config.constant.LoanProcessEnum.TELEPHONE_VERIFY;
 
 @Service
@@ -74,6 +77,12 @@ public class TelephoneVerifyServiceImpl implements TelephoneVerifyService {
 
     @Autowired
     private PartnerDOMapper partnerDOMapper;
+
+    @Autowired
+    private CurrentNodeManagerDOMapper currentNodeManagerDOMapper;
+
+    @Autowired
+    private LoanProcessLogDOMapper loanProcessLogDOMapper;
 
     @Override
     public RecombinationVO detail(Long orderId) {
@@ -125,9 +134,66 @@ public class TelephoneVerifyServiceImpl implements TelephoneVerifyService {
         PartnerDO partnerDO = partnerDOMapper.selectByPrimaryKey(loanBaseInfoDO.getPartnerId(), new Byte("0"));
 
         UniversalInfoVO universalInfoVO = loanQueryDOMapper.selectUniversalInfo(orderId);
+
+        //面签登记提交时间
+        LoanProcessLogDO loanProcessLogDO = loanProcessLogDOMapper.lastLogByOrderIdAndTaskDefinitionKey(orderId, LOAN_INFO_RECORD.getCode());
+        if (loanProcessLogDO!=null)
+        {
+            universalInfoVO.setLoan_info_record_date(loanProcessLogDO.getCreateTime());
+        }else
+            {
+                LoanProcessLogDO loanLogDO = loanProcessLogDOMapper.lastLogByOrderIdAndTaskDefinitionKey(orderId, LOAN_APPLY.getCode());
+
+                if (loanLogDO !=null)
+                {
+                    universalInfoVO.setLoan_info_record_date(loanLogDO.getCreateTime());
+                }
+            }
+
+            //计算车龄
+        //只有二手车才计算
+        if (universalInfoVO.getCar_type().equals("1"))
+        {
+            if (universalInfoVO.getVehicle_register_date()!=null && universalInfoVO.getLoan_info_record_date()!=null)
+            {
+                ZoneId zone = ZoneId.systemDefault();
+
+                Instant instant1 = universalInfoVO.getVehicle_register_date().toInstant();
+                LocalDateTime localDateTime = LocalDateTime.ofInstant(instant1, zone);
+                LocalDate localDate1 = localDateTime.toLocalDate();
+
+                Instant instant2 = universalInfoVO.getLoan_info_record_date().toInstant();
+                LocalDateTime localDateTime2 = LocalDateTime.ofInstant(instant2, zone);
+                LocalDate localDate2 = localDateTime2.toLocalDate();
+
+                Period period =Period.between(localDate1,localDate2);
+
+                StringBuilder stringBuilder =new StringBuilder();
+                stringBuilder.append(period.getYears()).append("年 ").append(period.getMonths()).append("月 ").append(period.getDays()).append("日");
+                universalInfoVO.setCarAge(stringBuilder.toString());
+            }
+        }
+
         universalInfoVO.setVehicle_apply_license_plate_area(tmpApplyLicensePlateArea);
         universalInfoVO.setRiskBearRate(partnerDO.getRiskBearRate()==null?new BigDecimal("0"):partnerDO.getRiskBearRate());
         recombinationVO.setInfo(universalInfoVO);
+
+        if (loanTelephoneVerifyDO!=null)
+        {
+            CurrentNodeManagerDO currentNodeManagerDO = currentNodeManagerDOMapper.selectByPrimaryKey(orderId);
+            if (currentNodeManagerDO !=null)
+            {
+                loanTelephoneVerifyDO.setPassTime(currentNodeManagerDO.getUsertaskTelephoneVerifyCreateTime());
+                loanTelephoneVerifyDO.setPassName(currentNodeManagerDO.getUsertaskTelephoneVerifyGmtUserName());
+            }
+
+            UniversalApprovalInfo universalApprovalInfo = loanQueryDOMapper.selectUniversalApprovalInfo(TELEPHONE_VERIFY.getCode(), orderId);
+            if (universalApprovalInfo !=null)
+            {
+                loanTelephoneVerifyDO.setRemark(universalApprovalInfo.getInfo());
+            }
+
+        }
 
         recombinationVO.setTelephone_des(loanTelephoneVerifyDO);
         recombinationVO.setCredits(credits);

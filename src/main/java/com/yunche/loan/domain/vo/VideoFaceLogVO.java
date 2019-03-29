@@ -78,6 +78,8 @@ public class VideoFaceLogVO {
 
     private String videoSize;
 
+    private String carTypeName;
+
 
     public String getTypeVal() {
         Byte type = getType();

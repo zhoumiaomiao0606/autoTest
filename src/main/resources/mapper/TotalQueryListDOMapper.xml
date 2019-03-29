@@ -4423,12 +4423,12 @@
         LEFT JOIN loan_financial_plan f on main.loan_financial_plan_id = f.id
         LEFT JOIN current_node_manager node ON node.order_id = main.id
         LEFT JOIN (				SELECT order_id,MIN(start_time) as sTime FROM loan_info_supplement  GROUP BY order_id ) t ON t.order_id = main.id
-        WHERE loan_process.remit_review = 1 AND loan_process.data_flow_contract_p2c_review !=1
+        WHERE loan_process.remit_review = 1
         <if test="taskStatus !=null" >
             AND
             case when #{taskStatus} = 0 then loan_process.overdue_interest in (1,2,3)
             when #{taskStatus} = 1 then loan_process.overdue_interest = 1 and loan_process.order_status = 1
-            when #{taskStatus} = 2 then loan_process.overdue_interest = 0 and loan_process.order_status = 1
+            when #{taskStatus} = 2 then loan_process.overdue_interest = 2 and loan_process.order_status = 1
             when #{taskStatus} = 3 then loan_process.overdue_interest = 3 and loan_process.order_status = 1
             else 1=1
             end
@@ -4479,7 +4479,7 @@
              and   node.usertask_remit_review_create_time between #{remitTimeStart} and #{remitTimeEnd}
             </if>
 
-        HAVING contractOverDays &gt;=5
+        HAVING contractOverDays &gt;=0 or vehicleInfoOverDays &gt;=0
         ORDER BY node.usertask_remit_review_create_time ASC
 
     </select>

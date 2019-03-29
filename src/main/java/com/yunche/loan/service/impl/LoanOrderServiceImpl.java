@@ -1,6 +1,8 @@
 package com.yunche.loan.service.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.aliyun.oss.OSSClient;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
@@ -18,6 +20,7 @@ import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.mapper.*;
 import com.yunche.loan.service.*;
 import org.apache.commons.lang3.StringUtils;
+import org.checkerframework.checker.units.qual.A;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -60,6 +63,9 @@ public class LoanOrderServiceImpl implements LoanOrderService {
 
     @Autowired
     private LoanBaseInfoService loanBaseInfoService;
+
+    @Autowired
+    private LoanFinancialPlanService loanFinancialPlanService;
 
     @Autowired
     private LoanOrderDOMapper loanOrderDOMapper;
@@ -807,6 +813,41 @@ public class LoanOrderServiceImpl implements LoanOrderService {
         recombinationVO.setInfo(loanQueryDOMapper.selectUniversalInfo(orderId));
 
         return recombinationVO;
+    }
+
+    @Override
+    public ResultBean loanapplySubmit(LoanapplyMutiparam loanapplyMutiparam) {
+        // 保存客户信息
+        AllCustDetailParam allCustDetailParam = new AllCustDetailParam();
+        allCustDetailParam.setPrincipalLender(loanapplyMutiparam.getPrincipalLender());
+        allCustDetailParam.setCommonLenderList(loanapplyMutiparam.getCommonLenderList());
+        allCustDetailParam.setGuarantorList(loanapplyMutiparam.getGuarantorList());
+        allCustDetailParam.setEmergencyContactList(loanapplyMutiparam.getEmergencyContactList());
+        loanCustomerService.updateAll(allCustDetailParam);
+        // 保存车辆信息
+        createLoanCarInfo(loanapplyMutiparam.getLoanCarInfoParam());
+        // 保存金融计划
+        loanFinancialPlanService.createOrUpdateLoanFinancialPlan(loanapplyMutiparam.getLoanFinancialPlanParam());
+        return ResultBean.ofSuccess();
+    }
+
+    @Override
+    public ResultBean mtCreditInfo(Long orderId, Byte type) {
+        LoanOrderDO loanOrderDO = loanOrderDOMapper.selectByPrimaryKey(orderId);
+        Preconditions.checkArgument(loanOrderDO != null, "非法的订单号");
+        List<LoanCustomerDO> customerDOList = loanCustomerDOMapper.selectCusByOrderIdAll(orderId);
+
+        JSONArray creditinfos = new JSONArray();
+        customerDOList.forEach(customerDOS -> {
+            List<LoanCreditInfoDO> creditInfoDOS = loanCreditInfoDOMapper.getByCustomerIdAndType(customerDOS.getId(),type);
+            JSONObject customcreditInfo = new JSONObject();
+            customcreditInfo.put("id",customerDOS.getId());
+            customcreditInfo.put("name",customerDOS.getName());
+            customcreditInfo.put("custType",customerDOS.getCustType());
+            customcreditInfo.put("creditInfo",creditInfoDOS);
+            creditinfos.add(customcreditInfo);
+        });
+        return ResultBean.ofSuccess(creditinfos);
     }
 
     /**

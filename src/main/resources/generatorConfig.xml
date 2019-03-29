@@ -381,7 +381,7 @@
 
 -->
 
-        <table tableName="zhongan_info" domainObjectName="ZhonganInfoDO"
+        <table tableName="yunche_board" domainObjectName="YuncheBoardDO"
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
         </table>

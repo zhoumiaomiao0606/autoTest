@@ -2,10 +2,7 @@ package com.yunche.loan.web.controller;
 
 import com.yunche.loan.config.anno.Limiter;
 import com.yunche.loan.config.result.ResultBean;
-import com.yunche.loan.domain.param.CreditApplyOrderParam;
-import com.yunche.loan.domain.param.CreditRecordParam;
-import com.yunche.loan.domain.param.LoanCarInfoParam;
-import com.yunche.loan.domain.param.LoanHomeVisitParam;
+import com.yunche.loan.domain.param.*;
 import com.yunche.loan.domain.query.LoanCreditExportQuery;
 import com.yunche.loan.domain.vo.*;
 import com.yunche.loan.service.LoanOrderService;
@@ -35,6 +32,7 @@ public class LoanOrderController {
      * @param orderId
      * @return
      */
+    @Limiter(value = 2,expire = 2)
     @GetMapping(value = "/creditapply/detail")
     public ResultBean<CreditApplyOrderVO> creditApplyOrderDetail(@RequestParam("orderId") Long orderId) {
         return loanOrderService.creditApplyOrderDetail(orderId);
@@ -70,6 +68,7 @@ public class LoanOrderController {
      * @param type    征信类型： 1-银行;  2-社会;
      * @return
      */
+    @Limiter(value = 2,expire = 2)
     @GetMapping(value = "/creditrecord/detail")
     public ResultBean<CreditRecordVO> creditRecordDetail(@RequestParam("orderId") Long orderId,
                                                          @RequestParam("type") Byte type) {
@@ -208,6 +207,23 @@ public class LoanOrderController {
     @GetMapping(value = "/customerinfo/simple")
     public ResultBean<List<LoanSimpleCustomerInfoVO>> simpleCustomerInfo(@RequestParam Long orderId) {
         return loanOrderService.simpleCustomerInfo(orderId);
+    }
+
+
+    @PostMapping(value = "/loanapply/submit")
+    public ResultBean loanapplySubmit(@RequestBody LoanapplyMutiparam loanapplyMutiparam) {
+        return loanOrderService.loanapplySubmit(loanapplyMutiparam);
+    }
+
+    /**
+     *
+     * @param orderId
+     * @param type
+     * @return
+     */
+    @GetMapping(value = "/maitian/creditInfo")
+    public ResultBean mtCreditInfo (Long orderId,Byte type) {
+        return loanOrderService.mtCreditInfo(orderId,type);
     }
 }
 

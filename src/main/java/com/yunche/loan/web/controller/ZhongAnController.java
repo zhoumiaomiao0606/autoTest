@@ -22,7 +22,7 @@ public class ZhongAnController {
 
 
     @PostMapping(value = "/creditStruct", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultBean xx(@RequestBody ZhongAnCreditStructParam param) throws ZhongAnOpenException {
+    public ResultBean creditStruct(@RequestBody ZhongAnCreditStructParam param) throws ZhongAnOpenException {
         return ResultBean.ofSuccess(zhongAnService.creditStruct(param));
     }
 

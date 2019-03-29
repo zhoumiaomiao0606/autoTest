@@ -11,6 +11,8 @@ import java.util.Set;
 @Data
 public class ContractOverDueParam
 {
+    private Integer taskStatus =0;
+
     private String customerName;
 
     private String loanBank;

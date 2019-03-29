@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
  */
 @CrossOrigin
 @RestController
-    @RequestMapping("/api/v1/creditStruct")
+@RequestMapping("/api/v1/creditStruct")
 public class CreditStructController {
 
     @Autowired

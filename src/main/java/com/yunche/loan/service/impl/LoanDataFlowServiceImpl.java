@@ -537,11 +537,19 @@ public class LoanDataFlowServiceImpl implements LoanDataFlowService {
 
                     Long id_ = Long.valueOf(id);
 
-                    LoanDataFlowDO loanDataFlowDO = new LoanDataFlowDO();
-                    loanDataFlowDO.setId(id_);
-                    loanDataFlowDO.setExpressReceiveMan(loginUser.getName());
-                    loanDataFlowDO.setExpressReceiveDate(new Date());
-                    loanDataFlowDO.setGmtModify(new Date());
+                    //LoanDataFlowDO loanDataFlowDO = new LoanDataFlowDO();
+                    LoanDataFlowDO loanDataFlowDO = loanDataFlowDOMapper.selectByPrimaryKey(id_);
+                    if (loanDataFlowDO !=null)
+                    {
+                        loanDataFlowDO.setId(id_);
+                        loanDataFlowDO.setExpressReceiveMan(loginUser.getName());
+                        loanDataFlowDO.setExpressReceiveDate(new Date());
+                        loanDataFlowDO.setGmtModify(new Date());
+                    }else
+                        {
+                            throw new BizException("流转id有错误！！！！！");
+                        }
+
 
                     return loanDataFlowDO;
                 })
@@ -608,8 +616,8 @@ public class LoanDataFlowServiceImpl implements LoanDataFlowService {
                 String mortgageHandDate = StringUtil.isEmpty(tmp[2].trim()) ? null : tmp[2].trim();
                 String mortgageSendDate = StringUtil.isEmpty(tmp[3].trim()) ? null : tmp[3].trim();
                 List<String> list = dataManagementInfoDOMapper.selectOrderByIdCard(idCard);
-                if(list != null){
-                    if(list.size()>1){
+                if(list != null && list.size() !=0){
+                    if(list.size()>1 ){
                         info.add(name+idCard+"合同已上交的订单存在多个，手动处理");
                         error++;
                     }else{

@@ -63,4 +63,6 @@ public class VideoFaceQuery extends BaseQuery {
     private Date gmtModify;
 
     private String videoSize;
+
+    private String carTypeName;
 }

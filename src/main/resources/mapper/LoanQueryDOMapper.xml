@@ -50,7 +50,7 @@
 	        vehicle.assess_org                        as vehicle_assess_org,
 	        customer.id                               as customer_id,
             vehicle.assess_use_year                   as vehicle_assess_use_year,
-            car.car_category                          as car_category,
+            vehicle.car_category                          as car_category,
             bank_log.operate_name                     as operate_name,
             DATE_FORMAT(bank_log.operate_date,'%Y-%m-%d %H:%i:%S')   as operate_date,
             current.usertask_remit_review_create_time    as remit_details_time
@@ -110,7 +110,7 @@
         vehicle.assess_org                        as vehicle_assess_org,
         customer.id                               as customer_id,
         vehicle.assess_use_year                   as vehicle_assess_use_year,
-        car.car_category                          as car_category,
+        vehicle.car_category                          as car_category,
         bank_log.operate_name                     as operate_name,
         DATE_FORMAT(bank_log.operate_date,'%Y-%m-%d %H:%i:%S')   as operate_date,
         current.usertask_remit_review_create_time    as remit_details_time
@@ -332,7 +332,7 @@
         left join loan_base_info b on b.id = o.loan_base_info_id
         where
         (
-        (p.telephone_verify = 1 and p.loan_review != 1 and p.apply_instalment != 1)
+        (p.telephone_verify = 1 and p.loan_review != 1 and p.apply_instalment1 != 1)
         or
         p.remit_review = 21
         )
@@ -670,7 +670,7 @@
             process.video_review                                                                    AS process_video_review,
             bank.repay_date                                                                         AS bank_repay_date,
             bank.billing_date                                                                       AS bank_billing_date,
-            car.car_category                                                                        AS car_category,
+            vehicle.car_category                                                                        AS car_category,
             cost.performance_fee                                                                    AS performance_fee,
             repay.overdue_amount                                                                    AS overdue_amount,
             remit.remit_time                                                                        AS remit_review_time,
@@ -765,6 +765,13 @@
         car.car_detail_id                                                                       AS car_detail_id,
         useGetCarName(car.car_detail_id)                                                        AS car_name,
         car.car_type                                                                            AS car_type,
+
+        CASE WHEN car.car_type = 0 THEN
+        '新车'
+        WHEN car.car_type = 1 THEN
+        '二手车' ELSE '其他'
+        END                                                                            AS car_type_name,
+
         car.gps_num                                                                             AS car_gps_num,
         car.business_source                                                                     AS car_business_source,
         car.vehicle_property                                                                    AS car_vehicle_property,
@@ -773,6 +780,7 @@
         car.pay_month                                                                           AS pay_month,
         car.distributor_name                                                                    AS car_distributor_name,
         vehicle.color                                                                           AS vehicle_color,
+                vehicle.register_date                                                                           AS vehicle_register_date,
         vehicle.now_driving_license_owner                                                       AS vehicle_now_driving_license_owner,
         vehicle.old_driving_license_owner                                                       AS vehicle_old_driving_license_owner,
         vehicle.license_plate_type                                                              AS vehicle_license_plate_type,
@@ -817,7 +825,7 @@
         process.video_review                                                                    AS process_video_review,
         bank.repay_date                                                                         AS bank_repay_date,
         bank.billing_date                                                                       AS bank_billing_date,
-        car.car_category                                                                        AS car_category,
+        vehicle.car_category                                                                        AS car_category,
         cost.performance_fee                                                                    AS performance_fee,
         repay.overdue_amount                                                                    AS overdue_amount,
         remit.remit_time                                                                        AS remit_review_time,
@@ -1002,7 +1010,6 @@
         ELSE
         '待收'
         END                                                           AS needCollectKey,
-            car.car_category                                                        AS car_category,
             vehicle.vehicle_identification_number                                   AS vehicle_vehicle_identification_number,
             vehicle.license_plate_number                                            AS vehicle_license_plate_number,
             vehicle.engine_number                                                   AS vehicle_engine_number,
@@ -1590,7 +1597,7 @@
               inner join
             (
 							select distinct principal_cust_id AS id from loan_customer where id_card in
-							(select distinct id_card from loan_customer where principal_cust_id = #{customerId,jdbcType=BIGINT})
+							(select distinct id_card from loan_customer where principal_cust_id = #{customerId,jdbcType=BIGINT} and id_card is not null and id_card !='')
 								union
 							select  distinct principal_cust_id AS id from loan_customer where id_card =
 							(select id_card from loan_customer where id = #{customerId,jdbcType=BIGINT})
@@ -1629,11 +1636,14 @@
             refund.refund_amount 					            AS refund_amount,
             DATE_FORMAT(refund.refund_date,'%Y-%m-%d %H:%i:%S') AS refund_date,
             refund.refund_reason 					            AS refund_reason,
+            refund.refund_cause                                 AS refund_cause,
             refund.refund_apply_account_id  	                AS refund_apply_account_id,
             refund.path 										AS path,
             refund.advances_interest                           AS advances_interest,
             refund.other_interest                              AS other_interest,
             refund.penalty_interest                            AS penalty_interest,
+            refund.retrun_reason                               AS retrun_reason,
+            refund.return_text                                 AS return_text,
             conf_refund.refund_pay_open_bank                   AS refund_pay_open_bank,
             conf_refund.refund_pay_account_name                AS refund_pay_account_name,
             conf_refund.refund_pay_account                     AS refund_pay_account
@@ -2243,9 +2253,9 @@
           (
           select SUBSTRING_INDEX(GROUP_CONCAT(serial_no order by request_time desc separator ','),',',1)
           as serial_no
-          from bank_interface_serial t GROUP BY trans_code,customer_id
-          ) orderdata on orderdata.serial_no = serial.serial_no and serial.trans_code = #{transCode}
-          and serial.customer_id = #{customerId}
+          from bank_interface_serial t where t.trans_code = #{transCode}
+          and t.customer_id = #{customerId} GROUP BY trans_code,customer_id
+          ) orderdata on orderdata.serial_no = serial.serial_no
     </select>
     <select id="selectBankInterFaceSerialOrderStatusByOrderId"
             resultType="com.yunche.loan.domain.vo.BankInterFaceSerialOrderStatusVO">
@@ -3038,13 +3048,13 @@
         LEFT JOIN loan_financial_plan f on main.loan_financial_plan_id = f.id
         LEFT JOIN current_node_manager node ON node.order_id = main.id
         LEFT JOIN (				SELECT order_id,MIN(start_time) as sTime FROM loan_info_supplement  GROUP BY order_id ) t ON t.order_id = main.id
-        WHERE loan_process.remit_review = 1 AND loan_process.data_flow_contract_p2c_review !=1
+        WHERE loan_process.remit_review = 1
         <if test="taskStatus !=null" >
             AND
-            case when #{taskStatus} = 0 then loan_process.material_review in (1,2,3)
-            when #{taskStatus} = 1 then loan_process.material_review = 1 and loan_process.order_status = 1
-            when #{taskStatus} = 2 then loan_process.material_review = 2 and loan_process.order_status = 1
-            when #{taskStatus} = 3 then loan_process.material_review = 3 and loan_process.order_status = 1
+            case when #{taskStatus} = 0 then loan_process.overdue_interest in (1,2,3)
+            when #{taskStatus} = 1 then loan_process.overdue_interest = 1 and loan_process.order_status = 1
+            when #{taskStatus} = 2 then loan_process.overdue_interest = 2 and loan_process.order_status = 1
+            when #{taskStatus} = 3 then loan_process.overdue_interest = 3 and loan_process.order_status = 1
             else 1=1
             end
         </if>
@@ -3093,8 +3103,7 @@
         <if test="remitTimeStart != null and remitTimeStart != '' and remitTimeEnd != null and remitTimeEnd != ''">
             and   node.usertask_remit_review_create_time between #{remitTimeStart} and #{remitTimeEnd}
         </if>
-
-        HAVING contractOverDays &gt;=5
+        HAVING overDueDays &gt;=0 or vehicleInfoOverDays &gt;=0
         ORDER BY node.usertask_remit_review_create_time ASC
 
 

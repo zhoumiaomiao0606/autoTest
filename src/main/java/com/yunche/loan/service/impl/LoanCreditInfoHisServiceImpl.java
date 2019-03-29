@@ -52,7 +52,7 @@ public class LoanCreditInfoHisServiceImpl implements LoanCreditInfoHisService {
         Preconditions.checkNotNull(principalCustId, "主贷人ID不能为空");
         Preconditions.checkNotNull(loanAmount, "loanAmount不能为空");
 
-        // 获取订单所有需要查询征信的客户
+        // 获取订单所有需要查询征信的客户--方法
         List<LoanCustomerDO> customers = getAllCustomer(principalCustId);
 
         if (CollectionUtils.isEmpty(customers)) {
