@@ -57,10 +57,10 @@ public class ImageUtil {
         return mergeImage2Pic(generateName()+PIC_SUFFIX,imageList);
     }
 
-    public static final void mergetImage2PicByConvert(String localPath,String name,List<String> imageList){
+    public static final String  mergetImage2PicByConvert(String localPath,String name,List<String> imageList){
         List<String> fileList= Lists.newLinkedList();
         if(CollectionUtils.isEmpty(imageList)){
-            return;
+            return null;
         }
         String tmpName =GeneratorIDUtil.execute()+IDict.K_SUFFIX.K_SUFFIX_JPG;
         try {
@@ -103,7 +103,11 @@ public class ImageUtil {
              cmd.run(operation);
 
             LOG.info("convert 合成图片结束【"+localPath+name+"】");
+
+//            ImageUtil.compress(localPath+tmpName,downLoadBasepath+File.separator+name);
             FileUtils.copyFile(new File(localPath+tmpName),new File(localPath+name));
+
+            return localPath+name;
         } catch (IOException e) {
             throw new BizException(e);
         } catch (InterruptedException e) {
@@ -500,39 +504,26 @@ public class ImageUtil {
         OSSClient ossClient =null;
 
         String hz =null;
-        String tmpFile=null;
         String returnKey=downLoadBasepath+File.separator+name;
-        if(name.contains(".")){
-            hz = name.substring(name.lastIndexOf(".")+1);
-            if("jpg,JPG".contains(hz)){
-                tmpFile = downLoadBasepath+File.separator+GeneratorIDUtil.execute()+"."+hz;
-            }else{
-                tmpFile = returnKey;
-            }
-
-        }else{
-            tmpFile = returnKey;
-        }
+        hz = name.substring(name.lastIndexOf(".")+1);
         InputStream oss2InputStream =null;
         try {
-
-            ossClient = OSSUnit.getOSSClient();
-            if(StringUtils.isNotBlank(fileType) && fileType.equals(IDict.K_PIC_ID.VIDEO_INTERVIEW)){
-                oss2InputStream = OSSUnit.getOSS2InputStream(ossClient, videoBucketName, key);
+            if("jpg,JPG".contains(hz)){
+                returnKey = ImageUtil.getSinglePic(name, key);
             }else{
-                oss2InputStream = OSSUnit.getOSS2InputStream(key);
+                ossClient = OSSUnit.getOSSClient();
+                if(StringUtils.isNotBlank(fileType) && fileType.equals(IDict.K_PIC_ID.VIDEO_INTERVIEW)){
+                    oss2InputStream = OSSUnit.getOSS2InputStream(ossClient, videoBucketName, key);
+                }else{
+                    oss2InputStream = OSSUnit.getOSS2InputStream(key);
+                }
+                in = new BufferedInputStream(oss2InputStream);
+                out = new BufferedOutputStream(new FileOutputStream(returnKey));
+                int len ;
+                while ((len = in.read()) != -1) {
+                    out.write(len);
+                }
             }
-            in = new BufferedInputStream(oss2InputStream);
-            out = new BufferedOutputStream(new FileOutputStream(tmpFile));
-            int len ;
-            while ((len = in.read()) != -1) {
-                out.write(len);
-            }
-           if("jpg,JPG".contains(hz)){
-               ImageUtil.compress(tmpFile,returnKey);
-           }else{
-               returnKey = tmpFile;
-           }
 
         } catch (FileNotFoundException e) {
             throw new BizException("文件不存在");
@@ -549,10 +540,6 @@ public class ImageUtil {
                 if(ossClient!=null){
                     ossClient.shutdown();
                 }
-                if(!tmpFile.equals(returnKey)){
-                    FileUtil.deleteFile(tmpFile);
-                }
-
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -561,14 +548,13 @@ public class ImageUtil {
     }
 
     /**
-     * 获取视频文件
+     * 获取单张图片
      * @param key
      * @return
      */
-    public static final String  getSinglePic(String key) {
-        String fileName=GeneratorIDUtil.execute()+".jpg";
-        ImageUtil.mergetImage2PicByConvert(downLoadBasepath+File.separator,fileName,Lists.newArrayList(key));
-        return downLoadBasepath+File.separator+fileName;
+    public static final String  getSinglePic(String name ,String key) {
+        ImageUtil.mergetImage2PicByConvert(downLoadBasepath+File.separator,name,Lists.newArrayList(key));
+        return downLoadBasepath+File.separator+name;
     }
 
 
