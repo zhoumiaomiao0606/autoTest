@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<suite name="test">
+    <test name="zmm">
+        <classes>
+            <parameter name="name" value="周周"/>
+            <parameter name="age"   value="18"/>
+            <class name="come.course.testng.paramiter.paramiterteat"/>
+        </classes>
+
+
+    </test>
+
+
+
+</suite>
