@@ -1,0 +1,28 @@
+[{
+
+  "description": "模拟一个没有参数的get请求",
+  "request": {
+    "uri": "/demo1",
+    "method": "get"
+
+  },
+  "response": {
+    "text": "这是一个没有参数的get请求"
+  }
+},
+  {
+    "description": "这是一个带参的get请求",
+    "request": {
+      "method":"get",
+      "uri": "/demo2",
+      "queries":{
+        "name": "huhanshan",
+        "age": "18"
+      }
+    },
+    "response": {
+      "text": "huhanshanhuilaile"
+    }
+
+
+  }]
