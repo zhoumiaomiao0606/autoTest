@@ -10,7 +10,10 @@
     <option name="ignoredFiles">
       <set>
         <option value="$PROJECT_DIR$/chapter5/chapter6/pom.xml" />
+        <option value="$PROJECT_DIR$/chapter9/chapter10/pom.xml" />
+        <option value="$PROJECT_DIR$/chapter9/pom.xml" />
       </set>
     </option>
   </component>
+  <component name="ProjectRootManager" version="2" project-jdk-name="1.8" project-jdk-type="JavaSDK" />
 </project>

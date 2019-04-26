@@ -6,8 +6,8 @@
   },
   "response": {
     "cookies": {
-      "login": "true",
-      "status": "100"
+      "login": "true"
+
     },
     "text": "this is success"
   }
