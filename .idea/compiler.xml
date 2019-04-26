@@ -20,4 +20,11 @@
       <module name="chapter9new" target="7" />
     </bytecodeTargetLevel>
   </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="chapter10" options="" />
+      <module name="chapter6" options="" />
+      <module name="chapter9new" options="" />
+    </option>
+  </component>
 </project>
