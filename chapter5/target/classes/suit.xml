@@ -3,7 +3,7 @@
     <test name="login">
         <classes>
             <class name="come.course.testng.suit.suitconfig"/>
-            <class  name="come.course.testng.suit.logintest" />
+            <class name="come.course.testng.suit.logintest"/>
         </classes>
     </test>
     <test name="pay">

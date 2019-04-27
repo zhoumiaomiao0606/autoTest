@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <suite name="test">
     <test name="testall">
-        <classes >
+        <classes>
 
             <class name="come.course.testng.groups.groupsonclass1"/>
             <class name="come.course.testng.groups.groupsonclass2"/>
@@ -11,12 +11,12 @@
 
 
     <test name="testclass1">
-        <groups >
+        <groups>
             <run>
                 <include name="stu"/>
             </run>
         </groups>
-        <classes >
+        <classes>
 
             <class name="come.course.testng.groups.groupsonclass1"/>
             <class name="come.course.testng.groups.groupsonclass2"/>

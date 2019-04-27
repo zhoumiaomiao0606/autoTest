@@ -1,14 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<suite  name="zmm"  parallel="method" thread-count="2">
+<suite name="zmm" parallel="method" thread-count="2">
     <test name="test">
         <classes>
 
             <class name="come.course.testng.multithead.mutithreadonxml"/>
         </classes>
     </test>
-
-
-
 
 
 </suite>

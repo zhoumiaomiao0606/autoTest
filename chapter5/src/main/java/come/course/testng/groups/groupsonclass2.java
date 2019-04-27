@@ -6,11 +6,12 @@ import org.testng.annotations.Test;
 public class groupsonclass2 {
 
 
-    public void student1(){
+    public void student1() {
 
         System.out.println("这是groupsonclass2中的student11111111");
     }
-    public void student2(){
+
+    public void student2() {
 
         System.out.println("这是groupsonclass2中的student222222");
     }

@@ -6,25 +6,30 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="chapter10" />
+        <module name="chapter10new" />
         <module name="chapter6" />
         <module name="chapter9new" />
+        <module name="demo6" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="autoTest" target="7" />
       <module name="chapter10" target="7" />
+      <module name="chapter10new" target="8" />
       <module name="chapter5" target="1.5" />
       <module name="chapter6" target="7" />
       <module name="chapter9" target="1.5" />
       <module name="chapter9new" target="7" />
+      <module name="demo6" target="1.8" />
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
-      <module name="chapter10" options="" />
-      <module name="chapter6" options="" />
-      <module name="chapter9new" options="" />
+      <module name="chapter10" options="-parameters" />
+      <module name="chapter10new" options="-parameters" />
+      <module name="chapter6" options="-parameters" />
+      <module name="chapter9new" options="-parameters" />
+      <module name="demo6" options="-parameters" />
     </option>
   </component>
 </project>

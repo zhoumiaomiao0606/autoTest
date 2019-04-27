@@ -1,7 +1,7 @@
 [{
   "description": "这是一个有cookies返回值的get请求",
   "request": {
-    "uri": "/getcookies",
+    "uri": "/getcookieszmm",
     "method": "get"
   },
   "response": {

@@ -3,10 +3,10 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/autoTest.iml" filepath="$PROJECT_DIR$/.idea/autoTest.iml" />
-      <module fileurl="file://$PROJECT_DIR$/chapter10/chapter10.iml" filepath="$PROJECT_DIR$/chapter10/chapter10.iml" />
-      <module fileurl="file://$PROJECT_DIR$/chapter5/chapter5.iml" filepath="$PROJECT_DIR$/chapter5/chapter5.iml" />
+      <module fileurl="file://$PROJECT_DIR$/chapter10-new/chapter10new.iml" filepath="$PROJECT_DIR$/chapter10-new/chapter10new.iml" />
       <module fileurl="file://$PROJECT_DIR$/chapter6/chapter6.iml" filepath="$PROJECT_DIR$/chapter6/chapter6.iml" />
       <module fileurl="file://$PROJECT_DIR$/chapter9-new/chapter9new.iml" filepath="$PROJECT_DIR$/chapter9-new/chapter9new.iml" />
+      <module fileurl="file://$PROJECT_DIR$/chapter5/demo6.iml" filepath="$PROJECT_DIR$/chapter5/demo6.iml" />
     </modules>
   </component>
 </project>

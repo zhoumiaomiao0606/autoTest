@@ -3,8 +3,8 @@ package come.course.testng;
 import org.testng.annotations.Test;
 
 public class ignoretest {
-@Test
-    public void test1(){
+    @Test
+    public void test1() {
         System.out.println("ignoretest1执行");
     }
 
@@ -17,4 +17,4 @@ public class ignoretest {
     public void test3() {
         System.out.println("ignoretest3执行");
     }
-    }
+}

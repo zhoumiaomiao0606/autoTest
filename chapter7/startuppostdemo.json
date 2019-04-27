@@ -2,10 +2,13 @@
   {
     "description": "这是第一个post请求",
     "request": {
-      "uri": "/postdemo",
+      "uri": "/login",
       "method": "post"
     },
     "response": {
+      "cookies": {
+        "login": "true"
+      },
       "text": "this is a first"
 
     }
