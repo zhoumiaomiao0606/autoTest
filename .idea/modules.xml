@@ -2,9 +2,11 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/Chapter11/Chapter11.iml" filepath="$PROJECT_DIR$/Chapter11/Chapter11.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/autoTest.iml" filepath="$PROJECT_DIR$/.idea/autoTest.iml" />
       <module fileurl="file://$PROJECT_DIR$/chapter10-new/chapter10new.iml" filepath="$PROJECT_DIR$/chapter10-new/chapter10new.iml" />
+      <module fileurl="file://$PROJECT_DIR$/chapter11-new/chapter11new.iml" filepath="$PROJECT_DIR$/chapter11-new/chapter11new.iml" />
+      <module fileurl="file://$PROJECT_DIR$/chapter12/chapter12.iml" filepath="$PROJECT_DIR$/chapter12/chapter12.iml" />
+      <module fileurl="file://$PROJECT_DIR$/chapter13/chapter13.iml" filepath="$PROJECT_DIR$/chapter13/chapter13.iml" />
       <module fileurl="file://$PROJECT_DIR$/chapter6/chapter6.iml" filepath="$PROJECT_DIR$/chapter6/chapter6.iml" />
       <module fileurl="file://$PROJECT_DIR$/chapter9-new/chapter9new.iml" filepath="$PROJECT_DIR$/chapter9-new/chapter9new.iml" />
       <module fileurl="file://$PROJECT_DIR$/chapter5/demo6.iml" filepath="$PROJECT_DIR$/chapter5/demo6.iml" />

@@ -1,0 +1,17 @@
+server:
+  port: 6666
+loging:
+  path: logs
+  file: userManager.log
+spring:
+  application:
+    name: userManager
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/course
+    username: root
+    password: zhoumiaomiao
+  mybatis:
+    type-aliases-package: com.course.modle
+    mapper-locations:
+      - mapper/*

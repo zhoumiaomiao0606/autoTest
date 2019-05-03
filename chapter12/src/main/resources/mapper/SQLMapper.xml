@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper  namespace="com.course.model">
+        
+    <select id="logincase" resultType="com.course.model.logincase">
+       select * from logincase
+where id=#{id}
+    </select>
+<select id="addusercase" resultType="com.course.model.addusercase">
+
+select * from addusercase where id=#{id}
+</select>
+    <select id="getuserinfocase" resultType="com.course.model.getuserinforcase">
+
+        select * from getuserinfocase where id=#{id}
+    </select>
+    <select id="getuserlistcase" resultType="com.course.model.getuserlistcase">
+
+        select * from getuserlistcase where id=#{id}
+    </select>
+    <select id="updateuserinfocase" resultType="com.course.model.updateuserinforcase1">
+
+        select * from updateuserinfocase where id=#{id}
+    </select>
+    <select id="deleteuserinfo" resultType="com.course.model.updateuserinforcase1">
+
+        select * from updateuserinfocase where id=#{id}
+    </select>
+
+</mapper>

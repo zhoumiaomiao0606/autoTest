@@ -33,8 +33,11 @@
 
         <module>chapter9-new</module>
         <module>chapter10-new</module>
-        <module>chapter11</module>
-        <module>chapter11</module>
+
+        <module>chapter11-new</module>
+        <module>chapter12</module>
+        <module>chapter13</module>
+
 
     </modules>
     <dependencies>

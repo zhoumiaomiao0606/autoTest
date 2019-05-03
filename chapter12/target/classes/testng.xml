@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<suite name="用户管理系统测试套件">
+
+    <test name="用户管理系统测试套件">
+        <classes>
+            <class name="com.course.cases.logintest">
+                <methods>
+                    <include name="logintrue"/>
+                    <include name="loginfalse"/>
+                </methods>
+            </class>
+            <class name="com.course.cases.addusercase">
+                <methods>
+                    <include name="adduser"/>
+                </methods>
+            </class>
+            <class name="com.course.cases.updateuserinfocase">
+                <methods>
+                    <include name="updateuserinfocase"/>
+                </methods>
+            </class>
+            <class name="com.course.cases.getuserinfocase">
+                <methods>
+                    <include name="getuserinfocase"/>
+                </methods>
+            </class>
+            <class name="com.course.cases.getuserinfolistcase">
+                <methods>
+                    <include name="getuserinfolistcase"/>
+                </methods>
+            </class>
+            <class name="com.course.cases.deleteuser">
+                <methods>
+                    <include name="deleteuserinfo"/>
+                </methods>
+            </class>
+        </classes>
+
+    </test>
+<listeners>
+    <listener class-name ="com.course.config.extenttestngreportlistenerold"/>
+</listeners>
+</suite>
