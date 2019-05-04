@@ -23,7 +23,7 @@
       <module name="Chapter11" target="1.5" />
       <module name="chapter11new" target="7" />
       <module name="chapter12" target="7" />
-      <module name="chapter13" target="7" />
+      <module name="chapter13" target="1.8" />
       <module name="chapter5" target="1.5" />
       <module name="chapter6" target="7" />
       <module name="chapter9" target="1.5" />
@@ -38,7 +38,7 @@
       <module name="chapter11" options="-parameters" />
       <module name="chapter11new" options="-parameters" />
       <module name="chapter12" options="-parameters" />
-      <module name="chapter13" options="-parameters" />
+      <module name="chapter13" options="-parameters -extdirs C:\Users\19920\Desktop\muke\autoTest\chapter13/lib" />
       <module name="chapter6" options="-parameters" />
       <module name="chapter9new" options="-parameters" />
       <module name="demo6" options="-parameters" />

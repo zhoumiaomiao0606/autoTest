@@ -12,6 +12,7 @@ public class getuserinfocase {
         SqlSession sqlSession = databaseutil.getSqlSession();
         getuserinfocase getuserinfocase = sqlSession.selectOne("getuserinfocase", "1");
         System.out.println(getuserinfocase);
+
     }
 
     }
